@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/views/create/create_note_screen.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({
@@ -12,14 +13,170 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool isGrid = false;
+
+  final List<Map<String, dynamic>> folders = [
+    {"icon": Icons.folder, "title": "My Noted", "count": "10", "color": Colors.blue},
+    {"icon": Icons.folder, "title": "Personal", "count": "15", "color": Colors.blue},
+    {"icon": Icons.folder, "title": "Assingments", "count": "15", "color": Colors.blue},
+    {"icon": Icons.folder, "title": "Work", "count": "1", "color": Colors.blue},
+    {"icon": Icons.delete, "title": "Recently Deleted", "count": "1", "color": Colors.red},
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Text(
-          "HomeScreen".tr,
-          style: appbarTextSyle(),
+      backgroundColor: const Color(0xFFF8F9FB),
+      // appBar: AppBar(
+      //   backgroundColor: Colors.transparent,
+      //   elevation: 0,
+      //   actions: [
+      //     IconButton(
+      //       icon: Icon(isGrid ? Icons.list : Icons.grid_view),
+      //       onPressed: () {
+      //         setState(() {
+      //           isGrid = !isGrid;
+      //         });
+      //       },
+      //     )
+      //   ],
+      // ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+
+            /// Search
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE9E9EB),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const TextField(
+                decoration: InputDecoration(
+                  icon: Icon(Icons.search, color: Color(0XFF8E8E93)),
+                  hintText: "Search",
+                  hintStyle: TextStyle(color: Color(0XFF8E8E93)),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            const Text(
+              'Folder',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+
+            const SizedBox(height: 15),
+
+            /// List or Grid
+            Expanded(
+              child: isGrid ? _buildGrid() : _buildList(),
+            ),
+          ],
         ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColor().primaryColor,
+        foregroundColor: Colors.white,
+        onPressed: () {
+          setState(() {
+            Get.to(CreateNoteScreen());
+          });
+        },
+        child: const Icon(Icons.add),
+      ),
+    );
+  }
+
+  /// List View
+  Widget _buildList() {
+    return ListView.builder(
+      itemCount: folders.length,
+      itemBuilder: (context, index) {
+        final item = folders[index];
+        return _buildFolderItem(
+          item["icon"],
+          item["title"],
+          item["count"],
+          item["color"],
+        );
+      },
+    );
+  }
+
+  /// Grid View
+  Widget _buildGrid() {
+    return GridView.builder(
+      itemCount: folders.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.4,
+      ),
+      itemBuilder: (context, index) {
+        final item = folders[index];
+        return _buildGridItem(
+          item["icon"],
+          item["title"],
+          item["count"],
+          item["color"],
+        );
+      },
+    );
+  }
+
+  /// List item
+  Widget _buildFolderItem(IconData icon, String title, String count, Color iconColor) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: iconColor, size: 28),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
+        ),
+        trailing: Text(
+          count,
+          style: const TextStyle(color: Colors.grey),
+        ),
+      ),
+    );
+  }
+
+  /// Grid item
+  Widget _buildGridItem(IconData icon, String title, String count, Color iconColor) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Icon(icon, color: iconColor, size: 35),
+              Text(count, style: const TextStyle(color: Colors.grey)),
+            ],
+          ),
+          const SizedBox(height: 20),
+          Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+        ],
       ),
     );
   }

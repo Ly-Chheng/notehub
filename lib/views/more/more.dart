@@ -23,10 +23,41 @@ class _MoreScreenState extends State<MoreScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              const ChangeLanguageView(),
-              DarkModeView(),
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const ChangeLanguageView(),
+                      DarkModeView(),
+                    ],
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+               Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      const ChangeLanguageView(),
+                      DarkModeView(),
+                      
+                    ],
+                  ),
+                ),
+              ),
             ],
           ),
         ),

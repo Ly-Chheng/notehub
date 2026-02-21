@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 const String poppins = 'Poppins';
 appbarTextSyle() {
-  return const TextStyle(
+  return TextStyle(
     fontFamily: poppins,
     fontSize: 18,
     fontWeight: FontWeight.w700,

@@ -8,8 +8,8 @@ class BottomNavigationBarController extends GetxController {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedIndex = 0;
   List listTitle = [
-    'Home Screen',
-    'Business',
+    'Student Notes',
+    'Focus Track',
     'More',
   ];
   List screenWidget = [
