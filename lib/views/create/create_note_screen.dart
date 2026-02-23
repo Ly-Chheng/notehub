@@ -7,7 +7,7 @@ import 'package:project_structure/views/create/components/emoji_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/handwriting_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
-import 'package:project_structure/views/lock/create_password.dart';
+import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
 class CreateNoteScreen extends StatefulWidget {

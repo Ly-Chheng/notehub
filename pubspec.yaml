@@ -16,6 +16,7 @@ dependencies:
 
   #Http Request Api
   http: ^1.2.1
+  flutter_slidable: ^4.0.3
 
   #Notification
   firebase_core: ^3.11.0

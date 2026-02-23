@@ -66,7 +66,7 @@ customAppBar({
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.view_list_outlined),
+            icon: const Icon(Icons.format_list_bulleted,color: Colors.black,),
           ),
 
           /// Toggle view
