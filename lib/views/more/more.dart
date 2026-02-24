@@ -3,7 +3,10 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
 import 'package:project_structure/views/lock/change_password_screen.dart';
 import 'package:project_structure/views/lock/forget_password_screen.dart';
+import 'package:project_structure/views/lock/lock_verification_screen.dart';
 import 'package:project_structure/views/lock/reset_password_screen.dart';
+import 'package:project_structure/views/more/about_screen.dart';
+import 'package:project_structure/views/more/how_to_use_screen.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
 import 'package:project_structure/views/more/widgets/notification.dart';
 
@@ -30,29 +33,40 @@ class _MoreScreenState extends State<MoreScreen> {
             children: [
               // First Group: General Settings
               _buildSectionContainer([
-                _buildMenuTile(Icons.info_outline, "About", onTap: () {}),
+                _buildMenuTile(Icons.info_outline, "About", onTap: () {
+                  Get.to(AboutScreen());
+                }),
                 _buildMenuTile(Icons.text_fields, "Font size", onTap: () {}),
+                // _buildMenuTile(Icons.text_fields, "Font size", onTap: () => showFontSizeSheet(
+                //   context,
+                //   controller.fontSize,
+                //   (newSize) => controller.updateFontSize(newSize)
+                // ),),
                 DarkModeView(),
                 NotificationView(),
-                _buildMenuTile(Icons.help_outline, "How to use", onTap: () {}),
-                _buildMenuTile(Icons.share_outlined, "Share App", onTap: () {}, isLast: true),
-              ]),
-              const SizedBox(height: 20),
-
-              // Second Group: Security
-              _buildSectionContainer([
-                _buildMenuTile(Icons.lock_outline, "Change Password", onTap: () {
-                  Get.to(() => const ChangePasswordScreen());
+                _buildMenuTile(Icons.help_outline, "How to use", onTap: () {
+                  Get.to(HowToUseScreen());
                 }),
-                _buildMenuTile(Icons.history, "Reset Password", onTap: () {
-                  Get.to(() => const ResetPasswordScreen());
-                }),
-                _buildMenuTile(Icons.lock_reset, "Forget Password", onTap: () {
-                  Get.to(() => const ForgetPasswordScreen());
+                _buildMenuTile(Icons.share_outlined, "Share App", onTap: () {
+                  Get.to(LockVerificationScreen());
                 }, isLast: true),
               ]),
 
-              const SizedBox(height: 60),
+              // Second Group: Security
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 60),
+                child: _buildSectionContainer([
+                  _buildMenuTile(Icons.lock_outline, "Change Password", onTap: () {
+                    Get.to(() => const ChangePasswordScreen());
+                  }),
+                  _buildMenuTile(Icons.history, "Reset Password", onTap: () {
+                    Get.to(() => const ResetPasswordScreen());
+                  }),
+                  _buildMenuTile(Icons.lock_reset, "Forget Password", onTap: () {
+                    Get.to(() => const ForgetPasswordScreen());
+                  }, isLast: true),
+                ]),
+              ),
 
               // Footer
               const Text(

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/background_component.dart';
+import 'package:project_structure/views/create/components/choose_folder_component.dart';
 import 'package:project_structure/views/create/components/emoji_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/handwriting_component.dart';
@@ -55,7 +56,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             offset: const Offset(0, 50),
             color: Colors.white,
-            onSelected: (value) => _handleMenuSelection(value),
+            // onSelected: (value) => _handleMenuSelection(value),
+            onSelected: (value) => _handleMenuSelection(value, context),
             itemBuilder: (context) => [
               _buildPopupItem('Lock', Icons.lock_outline),
               _buildPopupItem('Pinned', Icons.push_pin_outlined),
@@ -66,7 +68,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               _buildPopupItem('Delete', Icons.delete_outline, color: Colors.red),
             ],
           ),
-          // --- DROPDOWN MENU END ---
         ],
       ),
       body: Padding(
@@ -113,7 +114,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 children: [
                   _bottomIcon(Icons.image_outlined, () => showMediaSheet(context)),
                   _bottomIcon(Icons.emoji_emotions_outlined, () => showEmojiSheet(context)),
-                  _bottomIcon(Icons.text_fields, () => showFormatSheet(context)),
+                  _bottomIcon(
+                      Icons.text_fields,
+                      () => showFormatSheet(
+                            context,
+                          )),
                   _bottomIcon(Icons.edit_outlined, () => showHandwritingSheet(context)),
                   _bottomIcon(Icons.palette_outlined, () => showBackgroundSheet(context)),
                 ],
@@ -151,7 +156,7 @@ PopupMenuItem<String> _buildPopupItem(String title, IconData icon, {Color? color
   );
 }
 
-void _handleMenuSelection(String value) {
+void _handleMenuSelection(String value, BuildContext context) {
   debugPrint("Selected: $value");
 
   switch (value) {
@@ -166,7 +171,23 @@ void _handleMenuSelection(String value) {
     case 'Share':
       // Add Share logic
       break;
-
+    // case 'Move Folder':
+    //   chooseFolderSheet(
+    //     context: context,
+    //     onSelected: (folder, color) {
+    //       debugPrint("Folder: $folder  Color: $color");
+    //     },
+    //   );
+    //   break;
+    case 'Move Folder':
+      showChooseFolderSheet(
+        context: context,
+        onDone: (folder) {
+          print("Selected folder: $folder");
+          // Save in controller
+        },
+      );
+      break;
     case 'Lines & Grids':
       // You can call a bottom sheet here similar to the background one
       break;

@@ -18,7 +18,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFFF8F9FB),
         elevation: 0,
         leadingWidth: 100,
         // Left side "Back" button
@@ -27,12 +27,9 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           icon: Icon(Icons.arrow_back_ios, size: 18, color: AppColor().primaryColor),
           label: Text("Back", style: TextStyle(color: AppColor().primaryColor, fontSize: 16)),
         ),
-        // Right side "Submit" button
         actions: [
           TextButton(
-            onPressed: () {
-              // Handle password verification logic here
-            },
+            onPressed: () {},
             child: Text("Submit", style: TextStyle(color: AppColor().primaryColor, fontSize: context.isPhone ? 16 : 20, fontWeight: FontWeight.w500)),
           ),
         ],

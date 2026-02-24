@@ -64,10 +64,10 @@ customAppBar({
             onPressed: () => showCreateFolderSheet(context),
             icon: const Icon(Icons.add_circle_outline, color: Colors.black),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.format_list_bulleted,color: Colors.black,),
-          ),
+          // IconButton(
+          //   onPressed: () {},
+          //   icon: const Icon(Icons.format_list_bulleted,color: Colors.black,),
+          // ),
 
           /// Toggle view
           // IconButton(
