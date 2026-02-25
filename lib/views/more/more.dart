@@ -37,11 +37,6 @@ class _MoreScreenState extends State<MoreScreen> {
                   Get.to(AboutScreen());
                 }),
                 _buildMenuTile(Icons.text_fields, "Font size", onTap: () {}),
-                // _buildMenuTile(Icons.text_fields, "Font size", onTap: () => showFontSizeSheet(
-                //   context,
-                //   controller.fontSize,
-                //   (newSize) => controller.updateFontSize(newSize)
-                // ),),
                 DarkModeView(),
                 NotificationView(),
                 _buildMenuTile(Icons.help_outline, "How to use", onTap: () {

@@ -46,7 +46,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         title: "Folder",
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
+        leadingColor: AppColor().black,
         actions: [
           TextButton(
             onPressed: () {

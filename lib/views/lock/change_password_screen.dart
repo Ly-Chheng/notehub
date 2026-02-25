@@ -46,15 +46,35 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FB),
-        elevation: 0,
-        leadingWidth: 100,
-        leading: TextButton.icon(
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back_ios, size: 18, color: AppColor().primaryColor),
-          label: Text("Back", style: TextStyle(color: AppColor().primaryColor, fontSize: 16)),
-        ),
+      // appBar: AppBar(
+      //   backgroundColor: const Color(0xFFF8F9FB),
+      //   elevation: 0,
+      //   leadingWidth: 100,
+      //   leading: TextButton.icon(
+      //     onPressed: () => Get.back(),
+      //     icon: Icon(Icons.arrow_back_ios, size: 18, color: AppColor().primaryColor),
+      //     label: Text("Back", style: TextStyle(color: AppColor().primaryColor, fontSize: 16)),
+      //   ),
+      //   actions: [
+      //     TextButton(
+      //       onPressed: () {
+      //         // 3. Simple Validation Example
+      //         if (_newPassController.text != _confirmPassController.text) {
+      //           Get.snackbar("Error", "New passwords do not match", snackPosition: SnackPosition.BOTTOM);
+      //         } else {
+      //           // Success logic
+      //           Get.back();
+      //         }
+      //       },
+      //       child: Text("Save", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontWeight: FontWeight.w500)),
+      //     ),
+      //   ],
+      // ),
+      appBar: customAppBar(
+        title: "Back",
+        titleColor: AppColor().primaryColor,
+        context: context,
+        leadingColor: AppColor().black,
         actions: [
           TextButton(
             onPressed: () {
@@ -70,26 +90,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           ),
         ],
       ),
-      // appBar: customAppBar(
-      //   title: "Back",
-      //   titleColor: AppColor().primaryColor,
-      //   context: context,
-      //   leadingColor: AppColor().primaryColor,
-      //   actions: [
-      //     TextButton(
-      //       onPressed: () {
-      //         // 3. Simple Validation Example
-      //         if (_newPassController.text != _confirmPassController.text) {
-      //           Get.snackbar("Error", "New passwords do not match", snackPosition: SnackPosition.BOTTOM);
-      //         } else {
-      //           // Success logic
-      //           Get.back();
-      //         }
-      //       },
-      //       child:  Text("Save", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontWeight: FontWeight.w500)),
-      //     ),
-      //   ],
-      // ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(

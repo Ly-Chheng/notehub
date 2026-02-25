@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 
 void showFormatSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
+    backgroundColor: AppColor().white,
     builder: (context) => Padding(
       padding: const EdgeInsets.all(20),
       child: Column(

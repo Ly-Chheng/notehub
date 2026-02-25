@@ -32,7 +32,7 @@ class _LockVerificationScreenState extends State<LockVerificationScreen> {
         title: "Folder",
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
+        leadingColor: AppColor().black,
         actions: [
           Padding(
             padding: EdgeInsets.only(right: context.isPhone ? 10 : 20),

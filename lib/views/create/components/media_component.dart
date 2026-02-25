@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 void showMediaSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
+    backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (context) => Padding(
       padding: const EdgeInsets.all(10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Drag Handle
           Center(
             child: Container(
               width: 40,

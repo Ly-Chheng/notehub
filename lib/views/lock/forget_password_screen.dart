@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
@@ -17,21 +18,33 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFFF8F9FB),
-        elevation: 0,
-        leadingWidth: 100,
-        // Left side "Back" button
-        leading: TextButton.icon(
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back_ios, size: 18, color: AppColor().primaryColor),
-          label: Text("Back", style: TextStyle(color: AppColor().primaryColor, fontSize: 16)),
-        ),
+      // appBar: AppBar(
+      //   backgroundColor: const Color(0xFFF8F9FB),
+      //   elevation: 0,
+      //   leadingWidth: 100,
+      //   // Left side "Back" button
+      //   leading: TextButton.icon(
+      //     onPressed: () => Get.back(),
+      //     icon: Icon(Icons.arrow_back_ios, size: 18, color: AppColor().primaryColor),
+      //     label: Text("Back", style: TextStyle(color: AppColor().primaryColor, fontSize: 16)),
+      //   ),
+      //   actions: [
+      //     TextButton(
+      //       onPressed: () {},
+      //       child: Text("Submit", style: TextStyle(color: AppColor().primaryColor, fontSize: context.isPhone ? 16 : 20, fontWeight: FontWeight.w500)),
+      //     ),
+      //   ],
+      // ),
+      appBar: customAppBar(
+        title: "Back",
+        titleColor: AppColor().primaryColor,
+        context: context,
+        leadingColor: AppColor().black,
         actions: [
-          TextButton(
-            onPressed: () {},
-            child: Text("Submit", style: TextStyle(color: AppColor().primaryColor, fontSize: context.isPhone ? 16 : 20, fontWeight: FontWeight.w500)),
-          ),
+              TextButton(
+                onPressed: () {},
+                child: Text("Submit", style: TextStyle(color: AppColor().primaryColor, fontSize: context.isPhone ? 16 : 20, fontWeight: FontWeight.w500)),
+              ),
         ],
       ),
       body: Padding(

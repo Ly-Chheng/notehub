@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
@@ -30,15 +31,41 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      appBar: AppBar(
-       backgroundColor: const Color(0xFFF8F9FB),
-        elevation: 0,
-        leadingWidth: 100,
-        leading: TextButton.icon(
-          onPressed: () => Get.back(),
-          icon: Icon(Icons.arrow_back_ios, size: 18, color: AppColor().primaryColor),
-          label: Text("Back", style: TextStyle(color: AppColor().primaryColor, fontSize: 16)),
-        ),
+      // appBar: AppBar(
+      //  backgroundColor: const Color(0xFFF8F9FB),
+      //   elevation: 0,
+      //   leadingWidth: 100,
+      //   leading: TextButton.icon(
+      //     onPressed: () => Get.back(),
+      //     icon: Icon(Icons.arrow_back_ios, size: 18, color: AppColor().primaryColor),
+      //     label: Text("Back", style: TextStyle(color: AppColor().primaryColor, fontSize: 16)),
+      //   ),
+      //   actions: [
+      //     TextButton(
+      //       onPressed: () {
+      //         // 3. Simple validation logic
+      //         String pass = _newPasswordController.text;
+      //         String confirm = _confirmPasswordController.text;
+
+      //         if (pass.isEmpty || confirm.isEmpty) {
+      //           Get.snackbar("Error", "Please fill in all fields", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.white);
+      //         } else if (pass != confirm) {
+      //           Get.snackbar("Error", "Passwords do not match", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.white);
+      //         } else {
+      //           // Success - Call your API or Update logic here
+      //           Get.snackbar("Success", "Password reset successfully", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.white);
+      //           Get.back(); // Go back to More screen
+      //         }
+      //       },
+      //       child: Text("Save", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontWeight: FontWeight.w500)),
+      //     ),
+      //   ],
+      // ),
+      appBar: customAppBar(
+        title: "Back",
+        titleColor: AppColor().primaryColor,
+        context: context,
+        leadingColor: AppColor().black,
         actions: [
           TextButton(
             onPressed: () {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
 class FolderScreen extends StatefulWidget {
@@ -31,7 +32,7 @@ class _FolderScreenState extends State<FolderScreen> {
           title: isSelectionMode ? "${selectedIndexes.length} Selected" : "Folder",
           titleColor: AppColor().primaryColor,
           context: context,
-          leadingColor: AppColor().primaryColor,
+          leadingColor: AppColor().black,
           leading: isSelectionMode
               ? IconButton(
                   icon: const Icon(Icons.close),
@@ -61,7 +62,7 @@ class _FolderScreenState extends State<FolderScreen> {
             ),
           ]),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0,vertical: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -159,7 +160,15 @@ class _FolderScreenState extends State<FolderScreen> {
                 icon: Icons.folder_open,
               ),
               SlidableAction(
-                onPressed: (context) {},
+                onPressed: (context) {
+                  setState(() {
+                    selectedIndexes.toList()
+                      ..sort((b, a) => a.compareTo(b))
+                      ..forEach((index) => notes.removeAt(index));
+                    selectedIndexes.clear();
+                    isSelectionMode = false;
+                  });
+                },
                 backgroundColor: Colors.red,
                 icon: Icons.delete_outline_rounded,
               ),
@@ -203,77 +212,12 @@ class _FolderScreenState extends State<FolderScreen> {
               padding: const EdgeInsets.only(right: 12),
               child: Icon(
                 isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                // Use blue for selected, grey for unselected to match common UI patterns
                 color: isSelected ? AppColor().primaryColor : Colors.grey.shade400,
                 size: 28,
               ),
             ),
           ),
 
-        // --- NOTE CARD ---
-        // Expanded(
-        //   child: Container(
-        //     padding: const EdgeInsets.all(15),
-        //     decoration: BoxDecoration(
-        //       color: selectedIndexes.contains(index) ? Colors.deepPurple.shade50 : Colors.white,
-        //       borderRadius: BorderRadius.circular(12),
-        //     ),
-        //     child: Column(
-        //       crossAxisAlignment: CrossAxisAlignment.start,
-        //       children: [
-        //         if (isGrid && hasImage)
-        //           Expanded(
-        //             child: Container(
-        //               width: double.infinity,
-        //               margin: const EdgeInsets.only(bottom: 10),
-        //               decoration: BoxDecoration(
-        //                 color: Colors.grey[200],
-        //                 borderRadius: BorderRadius.circular(8),
-        //               ),
-        //               child: const Icon(Icons.image, color: Colors.grey),
-        //             ),
-        //           ),
-        //         Row(
-        //           children: [
-        //             if (isLocked) const Icon(Icons.lock, size: 16, color: Colors.redAccent),
-        //             if (isLocked) const SizedBox(width: 5),
-        //             Expanded(
-        //               child: Text(
-        //                 title,
-        //                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-        //                 maxLines: 1,
-        //                 overflow: TextOverflow.ellipsis,
-        //               ),
-        //             ),
-        //             if (!isGrid && hasImage)
-        //               Container(
-        //                 width: 50,
-        //                 height: 50,
-        //                 decoration: BoxDecoration(
-        //                   color: Colors.grey[100],
-        //                   borderRadius: BorderRadius.circular(8),
-        //                 ),
-        //                 child: const Icon(Icons.image, size: 20, color: Colors.grey),
-        //               ),
-        //           ],
-        //         ),
-        //         const SizedBox(height: 5),
-        //         Text(
-        //           subtitle,
-        //           style: const TextStyle(color: Colors.black54, fontSize: 13),
-        //           maxLines: isGrid ? 2 : 1,
-        //           overflow: TextOverflow.ellipsis,
-        //         ),
-        //         if (isGrid) const Spacer(),
-        //         const SizedBox(height: 8),
-        //         Text(
-        //           date,
-        //           style: const TextStyle(color: Colors.grey, fontSize: 11),
-        //         ),
-        //       ],
-        //     ),
-        //   ),
-        // ),
         Expanded(
           child: Container(
             padding: const EdgeInsets.all(15),
@@ -340,7 +284,6 @@ class _FolderScreenState extends State<FolderScreen> {
                     ),
 
                     // --- 2. IMAGE FOR LIST MODE ---
-                    // This shows the image on the RIGHT when in List view
                     if (!isGrid && hasImage)
                       Container(
                         width: 70,
@@ -374,46 +317,95 @@ class _FolderScreenState extends State<FolderScreen> {
         border: Border(top: BorderSide(color: Colors.black12, width: 0.5)),
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _bottomActionItem(
-            Icons.folder_outlined,
-            "Move",
-            AppColor().primaryColor,
-            onTap: () {},
-          ),
-          _bottomActionItem(
-            Icons.delete_outline,
-            "Deletes",
-            AppColor().primaryColor,
-            onTap: () {
-              setState(() {
-                selectedIndexes.toList()
-                  ..sort((b, a) => a.compareTo(b))
-                  ..forEach((index) {
-                    notes.removeAt(index);
-                  });
-                selectedIndexes.clear();
-                isSelectionMode = false;
-              });
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _bottomActionItem(IconData icon, String label, Color color, {required VoidCallback onTap}) {
-    return InkWell(
-      onTap: onTap,
-      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, color: color, size: 24),
-          const SizedBox(width: 10),
-          Text(
-            label,
-            style: TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.w500),
+          Expanded(
+            child: CustomButton(
+              text: "Move",
+              backgroundColor: Colors.white,
+              textColor: AppColor().primaryColor,
+              icon: Icon(Icons.folder_outlined, size: 24, color: AppColor().primaryColor),
+              onPressed: () {},
+            ),
+          ),
+          Expanded(
+            child: CustomButton(
+              text: "Delete",
+              backgroundColor: Colors.white,
+              textColor: AppColor().primaryColor,
+              icon: Icon(Icons.folder_outlined, size: 24, color: AppColor().primaryColor),
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                  ),
+                  builder: (BuildContext context) {
+                    return SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 4,
+                              margin: const EdgeInsets.only(bottom: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            const Text(
+                              'Delete Notes?',
+                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Are you sure you want to delete these items? This action cannot be undone.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                            ),
+                            const SizedBox(height: 32),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: CustomButton(
+                                    text: "Cancel",
+                                    textColor: AppColor().black,
+                                    backgroundColor: Colors.grey.shade50,
+                                    onPressed: () => Navigator.pop(context),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: CustomButton(
+                                    text: "Delete",
+                                    backgroundColor: Colors.red,
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      setState(() {
+                                        selectedIndexes.toList()
+                                          ..sort((b, a) => a.compareTo(b))
+                                          ..forEach((index) => notes.removeAt(index));
+                                        selectedIndexes.clear();
+                                        isSelectionMode = false;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -464,7 +456,7 @@ class _FolderScreenState extends State<FolderScreen> {
     if (isSelectionMode) {
       _toggleSelection(index);
     } else {
-      // TODO: open note
+      // Open the note or perform the default action
     }
   }
 

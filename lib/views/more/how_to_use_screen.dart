@@ -7,15 +7,13 @@ class HowToUseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = AppColor().primaryColor ?? Colors.blue;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
       appBar: customAppBar(
         title: "How to Use",
-        titleColor: primaryColor,
+        titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: primaryColor,
+        leadingColor: AppColor().black,
         actions: [],
       ),
       body: ListView(
@@ -66,12 +64,15 @@ class HowToUseScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.1),
+              color: AppColor().primaryColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(15),
             ),
             child: Row(
               children: [
-                Icon(Icons.help_center_outlined, color: primaryColor),
+                Icon(
+                  Icons.help_center_outlined,
+                  color: AppColor().primaryColor,
+                ),
                 const SizedBox(width: 15),
                 const Expanded(
                   child: Text(

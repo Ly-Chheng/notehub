@@ -6,10 +6,12 @@ import 'package:project_structure/views/create/components/background_component.d
 import 'package:project_structure/views/create/components/choose_folder_component.dart';
 import 'package:project_structure/views/create/components/emoji_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
+import 'package:project_structure/views/create/components/grid_selector_component.dart';
 import 'package:project_structure/views/create/components/handwriting_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 
 class CreateNoteScreen extends StatefulWidget {
   const CreateNoteScreen({super.key});
@@ -21,6 +23,7 @@ class CreateNoteScreen extends StatefulWidget {
 class _CreateNoteScreenState extends State<CreateNoteScreen> {
   // Initialize the controller
   final NoteController controller = Get.put(NoteController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,34 +32,21 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         title: "Create Note",
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
+        leadingColor: AppColor().black,
         actions: [
           Obx(() => IconButton(
                 onPressed: controller.history.length > 1 ? () => controller.undo() : null,
-                icon: Image.asset(
-                  'assets/images/undo.png',
-                  width: 24,
-                  height: 24,
-                  color: controller.history.length > 1 ? AppColor().primaryColor : Colors.grey,
-                ),
+                icon: Image.asset('assets/images/undo.png', width: 24, height: 24, color: controller.history.length > 1 ? AppColor().primaryColor : Colors.grey),
               )),
-          // REDO BUTTON
           Obx(() => IconButton(
                 onPressed: controller.redoStack.isNotEmpty ? () => controller.redo() : null,
-                icon: Image.asset(
-                  'assets/images/redo.png',
-                  width: 24,
-                  height: 24,
-                  color: controller.redoStack.isNotEmpty ? AppColor().primaryColor : Colors.grey,
-                ),
+                icon: Image.asset('assets/images/redo.png', width: 24, height: 24, color: controller.redoStack.isNotEmpty ? AppColor().primaryColor : Colors.grey),
               )),
-          // --- DROPDOWN MENU START ---
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             offset: const Offset(0, 50),
             color: Colors.white,
-            // onSelected: (value) => _handleMenuSelection(value),
             onSelected: (value) => _handleMenuSelection(value, context),
             itemBuilder: (context) => [
               _buildPopupItem('Lock', Icons.lock_outline),
@@ -64,7 +54,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               _buildPopupItem('Share', Icons.share_outlined),
               _buildPopupItem('Lines & Grids', Icons.grid_on_outlined),
               _buildPopupItem('Move Folder', Icons.folder_outlined),
-              // const PopupMenuDivider(),
               _buildPopupItem('Delete', Icons.delete_outline, color: Colors.red),
             ],
           ),
@@ -73,24 +62,26 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
-          children: const [
+          children: [
             TextField(
-              decoration: InputDecoration(
+              controller: controller.titleController,
+              decoration: const InputDecoration(
                 hintText: 'Title',
                 hintStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                 border: InputBorder.none,
               ),
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Expanded(
               child: TextField(
+                controller: controller.contentController,
                 maxLines: null,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Note something down',
                   hintStyle: TextStyle(fontSize: 18, color: Colors.grey),
                   border: InputBorder.none,
                 ),
-                style: TextStyle(fontSize: 18),
+                style: const TextStyle(fontSize: 18),
               ),
             ),
           ],
@@ -156,8 +147,8 @@ PopupMenuItem<String> _buildPopupItem(String title, IconData icon, {Color? color
   );
 }
 
-void _handleMenuSelection(String value, BuildContext context) {
-  debugPrint("Selected: $value");
+void _handleMenuSelection(String value, BuildContext context) async {
+  final NoteController controller = Get.find<NoteController>();
 
   switch (value) {
     case 'Lock':
@@ -165,46 +156,38 @@ void _handleMenuSelection(String value, BuildContext context) {
       break;
 
     case 'Pinned':
-      // Add Pin logic
+      controller.togglePin();
       break;
 
     case 'Share':
-      // Add Share logic
+      final text = "${controller.titleController.text}\n\n${controller.contentController.text}";
+      if (text.trim().isNotEmpty) {
+        debugPrint("Sharing: $text");
+      }
       break;
-    // case 'Move Folder':
-    //   chooseFolderSheet(
-    //     context: context,
-    //     onSelected: (folder, color) {
-    //       debugPrint("Folder: $folder  Color: $color");
-    //     },
-    //   );
-    //   break;
+
+    case 'Lines & Grids':
+      showGridSelector(context, controller);
+      break;
+
     case 'Move Folder':
       showChooseFolderSheet(
         context: context,
         onDone: (folder) {
-          print("Selected folder: $folder");
-          // Save in controller
+          debugPrint("Moved to: $folder");
         },
       );
       break;
-    case 'Lines & Grids':
-      // You can call a bottom sheet here similar to the background one
-      break;
 
     case 'Delete':
-      // Show a confirmation dialog
-      Get.defaultDialog(
-        title: "Delete Note",
-        middleText: "Are you sure you want to delete this note?",
-        textConfirm: "Delete",
-        confirmTextColor: Colors.white,
-        buttonColor: Colors.red,
+      await showConfirmDeleteDialog(
+        context: context,
+        title: 'Delete Note',
+        subTitle: 'Are you sure you want to delete this note?',
         onConfirm: () {
-          Get.back(); // close dialog
-          Get.back(); // return to home
+          Get.back(); // Close dialog
+          Get.back(); // Exit screen
         },
-        textCancel: "Cancel",
       );
       break;
   }

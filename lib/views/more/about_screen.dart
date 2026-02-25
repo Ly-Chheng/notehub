@@ -7,15 +7,14 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color primaryColor = AppColor().primaryColor ?? Colors.blue;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
       appBar: customAppBar(
         title: "About",
-        titleColor: primaryColor,
+        titleColor:AppColor().primaryColor,
         context: context,
-        leadingColor: primaryColor,
+        leadingColor: AppColor().black,
         actions: [],
       ),
       body: SingleChildScrollView(
@@ -42,7 +41,7 @@ class AboutScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Image.asset('assets/images/logo.png', errorBuilder: (context, error, stackTrace) {
-                    return Icon(Icons.description_rounded, size: 50, color: primaryColor);
+                    return Icon(Icons.description_rounded, size: 50, color: AppColor().primaryColor);
                   }),
                 ),
               ),
