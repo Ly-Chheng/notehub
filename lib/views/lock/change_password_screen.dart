@@ -46,35 +46,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      // appBar: AppBar(
-      //   backgroundColor: const Color(0xFFF8F9FB),
-      //   elevation: 0,
-      //   leadingWidth: 100,
-      //   leading: TextButton.icon(
-      //     onPressed: () => Get.back(),
-      //     icon: Icon(Icons.arrow_back_ios, size: 18, color: AppColor().primaryColor),
-      //     label: Text("Back", style: TextStyle(color: AppColor().primaryColor, fontSize: 16)),
-      //   ),
-      //   actions: [
-      //     TextButton(
-      //       onPressed: () {
-      //         // 3. Simple Validation Example
-      //         if (_newPassController.text != _confirmPassController.text) {
-      //           Get.snackbar("Error", "New passwords do not match", snackPosition: SnackPosition.BOTTOM);
-      //         } else {
-      //           // Success logic
-      //           Get.back();
-      //         }
-      //       },
-      //       child: Text("Save", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontWeight: FontWeight.w500)),
-      //     ),
-      //   ],
-      // ),
       appBar: customAppBar(
         title: "Back",
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().black,
+        leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
             onPressed: () {
@@ -86,7 +62,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 Get.back();
               }
             },
-            child: Text("Save", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontWeight: FontWeight.w500)),
+            child: Text("Save",
+                style: TextStyle(
+                  color: AppColor().primaryColor,
+                  fontSize: context.isPhone ? 16 : 18,
+                  fontFamily: 'EN-SEMIBOLD',
+                )),
           ),
         ],
       ),
@@ -139,13 +120,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     );
   }
 
-  // Header and Dropdown UI helpers
   Widget _buildSecurityHeader() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text("Security Question Verification", style: TextStyle(fontSize: context.isPhone ? 15 : 17, fontWeight: FontWeight.bold)),
-        const Text("Optional", style: TextStyle(color: Colors.grey, fontSize: 14)),
+        Text("Security Question Verification",
+            style: TextStyle(
+              fontSize: context.isPhone ? 16 : 18,
+              fontFamily: 'EN-REGULAR',
+              color: AppColor().black,
+            )),
+        Text("Optional",
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: context.isPhone ? 14 : 16,
+              fontFamily: 'EN-REGULAR',
+            )),
       ],
     );
   }
@@ -161,11 +151,23 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         child: DropdownButton<String>(
           value: _selectedQuestion,
           dropdownColor: Colors.white,
-          hint: const Text("Select question", style: TextStyle(color: Colors.grey, fontSize: 15)),
+          hint: Text("Select question",
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: context.isPhone ? 14 : 18,
+                fontFamily: 'EN-REGULAR',
+              )),
           isExpanded: true,
           icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
           items: _questions.map((String q) {
-            return DropdownMenuItem(value: q, child: Text(q, style: const TextStyle(fontSize: 15)));
+            return DropdownMenuItem(
+                value: q,
+                child: Text(q,
+                    style: TextStyle(
+                      fontSize: context.isPhone ? 16 : 18,
+                      fontFamily: 'EN-REGULAR',
+                      color: AppColor().black,
+                    )));
           }).toList(),
           onChanged: (val) => setState(() => _selectedQuestion = val),
         ),

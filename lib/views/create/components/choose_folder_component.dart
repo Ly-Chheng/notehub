@@ -159,13 +159,12 @@ void showChooseFolderSheet({
                       onTap: () => Navigator.pop(context),
                       child: const Text(
                         "Cancel",
-                        style: TextStyle(color: Colors.red, fontSize: 16),
+                        style: TextStyle(color: Colors.red, fontSize: 16, fontFamily: 'EN-REGULAR'),
                       ),
                     ),
                     const Text(
                       "Choose Folder",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                      style: TextStyle(fontSize: 16, fontFamily: 'EN-Bold'),
                     ),
                     GestureDetector(
                       onTap: () {
@@ -174,7 +173,7 @@ void showChooseFolderSheet({
                       },
                       child: const Text(
                         "Done",
-                        style: TextStyle(color: Colors.blue, fontSize: 16),
+                        style: TextStyle(color: Colors.blue, fontSize: 16,fontFamily: 'EN-REGULAR'),
                       ),
                     ),
                   ],
@@ -212,8 +211,8 @@ void showChooseFolderSheet({
       );
     },
   );
-  
 }
+
 Widget _folderItem({
   required String title,
   required bool isSelected,

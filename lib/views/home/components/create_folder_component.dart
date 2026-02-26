@@ -1,25 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/models/folder_model.dart';
 
 void showCreateFolderSheet(BuildContext context) {
   TextEditingController folderController = TextEditingController();
+  final Box<Folder> folderBox = Hive.box<Folder>('folders_box');
 
   showModalBottomSheet(
     context: context,
-    isScrollControlled: true, // Required to push sheet up with keyboard
+    isScrollControlled: true,
     backgroundColor: Colors.white,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
     ),
     builder: (context) => Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom, // Moves sheet above keyboard
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Header Bar
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Row(
@@ -27,32 +27,41 @@ void showCreateFolderSheet(BuildContext context) {
               children: [
                 TextButton(
                   onPressed: () => Get.back(),
-                  child: const Text("Cancel", style: TextStyle(color: Colors.red, fontSize: 16)),
+                  child: Text("Cancel",
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: context.isPhone ? 16 : 18,
+                        fontFamily: 'EN-REGULAR',
+                      )),
                 ),
-                const Text(
-                  "Create Folder",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                Text("Create Folder",
+                    style: TextStyle(
+                      fontSize: context.isPhone ? 16 : 28,
+                      fontFamily: 'EN-BOLD',
+                      color: AppColor().black,
+                    )),
                 TextButton(
                   onPressed: () {
-                    if (folderController.text.isNotEmpty) {
-                      // setState(() {
-                      //   folders.insert(0, {
-                      //     "icon": Icons.folder,
-                      //     "title": folderController.text,
-                      //     "count": "0",
-                      //     "color": Colors.blue
-                      //   });
-                      // });
+                    if (folderController.text.trim().isNotEmpty) {
+                      // SAVE TO HIVE
+                      final newFolder = Folder(
+                        title: folderController.text.trim(),
+                        colorValue: Colors.blue.value,
+                      );
+                      folderBox.add(newFolder);
                       Get.back();
                     }
                   },
-                  child:   Text("Done", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontWeight: FontWeight.bold)),
+                  child: Text("Done",
+                      style: TextStyle(
+                        color: AppColor().primaryColor,
+                        fontSize: context.isPhone ? 16 : 18,
+                        fontFamily: 'EN-REGULAR',
+                      )),
                 ),
               ],
             ),
           ),
-          // Input Field
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
             child: Container(
@@ -63,11 +72,14 @@ void showCreateFolderSheet(BuildContext context) {
               ),
               child: TextField(
                 controller: folderController,
-                autofocus: true, // Automatically opens keyboard
-                decoration: const InputDecoration(
-                  hintText: "Folder Name",
-                  border: InputBorder.none,
-                ),
+                autofocus: true,
+                decoration: InputDecoration(
+                    hintText: "Folder Name",
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(
+                      fontSize: context.isPhone ? 16 : 18,
+                      fontFamily: 'EN-REGULAR',
+                    )),
               ),
             ),
           ),

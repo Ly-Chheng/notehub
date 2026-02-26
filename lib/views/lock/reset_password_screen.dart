@@ -31,41 +31,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      // appBar: AppBar(
-      //  backgroundColor: const Color(0xFFF8F9FB),
-      //   elevation: 0,
-      //   leadingWidth: 100,
-      //   leading: TextButton.icon(
-      //     onPressed: () => Get.back(),
-      //     icon: Icon(Icons.arrow_back_ios, size: 18, color: AppColor().primaryColor),
-      //     label: Text("Back", style: TextStyle(color: AppColor().primaryColor, fontSize: 16)),
-      //   ),
-      //   actions: [
-      //     TextButton(
-      //       onPressed: () {
-      //         // 3. Simple validation logic
-      //         String pass = _newPasswordController.text;
-      //         String confirm = _confirmPasswordController.text;
-
-      //         if (pass.isEmpty || confirm.isEmpty) {
-      //           Get.snackbar("Error", "Please fill in all fields", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.white);
-      //         } else if (pass != confirm) {
-      //           Get.snackbar("Error", "Passwords do not match", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.white);
-      //         } else {
-      //           // Success - Call your API or Update logic here
-      //           Get.snackbar("Success", "Password reset successfully", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.white);
-      //           Get.back(); // Go back to More screen
-      //         }
-      //       },
-      //       child: Text("Save", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontWeight: FontWeight.w500)),
-      //     ),
-      //   ],
-      // ),
       appBar: customAppBar(
         title: "Back",
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().black,
+        leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
             onPressed: () {
@@ -83,7 +53,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 Get.back(); // Go back to More screen
               }
             },
-            child: Text("Save", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontWeight: FontWeight.w500)),
+            child: Text("Save",
+                style: TextStyle(
+                  color: AppColor().primaryColor,
+                  fontSize: context.isPhone ? 16 : 20,
+                  fontFamily: 'EN-SEMIBOLD',
+                )),
           ),
         ],
       ),
@@ -92,12 +67,21 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            const Text("Reset Password", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Text("Reset Password",
+                style: TextStyle(
+                  fontSize: context.isPhone ? 18 : 24,
+                  fontFamily: 'EN-BOLD',
+                  color: AppColor().black,
+                )),
             const SizedBox(height: 15),
-            const Text(
+            Text(
               "For your security, please reset your password.",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: Colors.black87),
+              style: TextStyle(
+                fontSize: context.isPhone ? 16 : 20,
+                fontFamily: 'EN-REGULAR',
+                color: AppColor().black,
+              ),
             ),
             const SizedBox(height: 40),
 

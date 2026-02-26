@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:project_structure/core/utils/app_fonts.dart';
-import 'package:project_structure/views/home/components/create_folder_component.dart';
 
 customAppBar({
   required String title,
@@ -13,23 +11,22 @@ customAppBar({
   required BuildContext context,
   final bool isLeading = true,
   void Function()? onTap,
-
-  /// NEW
-  bool isGrid = false,
-  void Function()? onToggleView,
 }) {
   return AppBar(
     elevation: 0,
-    centerTitle: false, //Title on the left
-    titleSpacing: 10, // Control spacing
-    // centerTitle: true,
+    centerTitle: false,
+    titleSpacing: 10,
     // backgroundColor:
     //     backgroundColor ?? Theme.of(context).colorScheme.inversePrimary,
     backgroundColor: backgroundColor ?? Color(0xFFF8F9FB),
     title: Text(
       title,
       overflow: TextOverflow.ellipsis,
-      style: appbarTextSyle(),
+      style: TextStyle(
+        color: titleColor ?? Colors.black,
+        fontSize: 20,
+        fontFamily: 'EN-BOLD',
+      ),
     ),
     automaticallyImplyLeading: false,
     leading: isLeading
@@ -57,26 +54,8 @@ customAppBar({
         : leading,
     // actions: actions,
     /// Actions
-    actions: actions ??
-        [
-          //Create folder button
-          IconButton(
-            onPressed: () => showCreateFolderSheet(context),
-            icon: const Icon(Icons.add_circle_outline, color: Colors.black),
-          ),
-          // IconButton(
-          //   onPressed: () {},
-          //   icon: const Icon(Icons.format_list_bulleted,color: Colors.black,),
-          // ),
-
-          /// Toggle view
-          // IconButton(
-          //   onPressed: onToggleView,
-          //   icon: Icon(
-          //     isGrid ? Icons.view_list : Icons.grid_view,
-          //     color: Colors.black,
-          //   ),
-          // ),
-        ],
+    actions: actions?.map((action) {
+      return action;
+    }).toList(),
   );
 }

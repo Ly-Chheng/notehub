@@ -39,7 +39,11 @@ Widget buildStandardField(
       controller: controller,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey),
+        hintStyle: TextStyle(
+          color: Colors.grey,
+          fontSize: 16,
+          fontFamily: 'EN-REGULAR',
+        ),
         prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: const Color(0XFF8E8E93)) : null,
         suffixText: trailing,
         suffixStyle: const TextStyle(color: Colors.grey),

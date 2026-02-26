@@ -61,7 +61,7 @@ customNavigationBar({
       currentIndex: currentIndex,
       selectedItemColor: selectedItemColor ?? const Color.fromARGB(255, 108, 39, 176),
       onTap: onTap,
-      unselectedItemColor: unselectedItemColor ?? Colors.grey.shade600,
+      unselectedItemColor: unselectedItemColor ?? Colors.grey.shade700,
        backgroundColor: const Color(0xFFF8F9FB),
       type: BottomNavigationBarType.fixed,
       elevation: 10,

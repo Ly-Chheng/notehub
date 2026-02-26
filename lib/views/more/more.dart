@@ -94,7 +94,7 @@ class _MoreScreenState extends State<MoreScreen> {
       children: [
         ListTile(
           leading: Icon(icon, color: Colors.black87),
-          title: Text(title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500)),
+          title: Text(title, style: const TextStyle(fontSize: 16, fontFamily: 'EN-MEDIUM')),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black26),
           onTap: onTap,
         ),

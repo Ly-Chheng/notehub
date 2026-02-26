@@ -9,7 +9,7 @@ class NotificationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Using a RxBool for local state demo, or replace with your actual controller
-    RxBool isNotificationOn = true.obs; 
+    RxBool isNotificationOn = true.obs;
 
     return SizedBox(
       child: Column(
@@ -26,23 +26,20 @@ class NotificationView extends StatelessWidget {
                     Text(
                       'Notification',
                       style: TextStyle(
-                        // fontFamily: Get.locale == const Locale('km', 'KM') 
-                        //     ? 'KH-REGULAR' 
-                        //     : 'EN-REGULAR',
-                        fontSize: context.isPhone ? 16 : 18, // Adjusted to match your "More" screen font size
-                        fontWeight: FontWeight.w500,
+                        fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-MEDIUM',
+                        fontSize: context.isPhone ? 16 : 18,
                       ),
                     ),
                   ],
                 ),
                 Obx(() => Switch.adaptive(
-                  activeColor: Colors.green, // Matching your app's blue branding
-                  onChanged: (value) {
-                    isNotificationOn.value = value;
-                    // Add your notification service logic here
-                  },
-                  value: isNotificationOn.value,
-                )),
+                      activeColor: Colors.green, // Matching your app's blue branding
+                      onChanged: (value) {
+                        isNotificationOn.value = value;
+                        // Add your notification service logic here
+                      },
+                      value: isNotificationOn.value,
+                    )),
               ],
             ),
           ),

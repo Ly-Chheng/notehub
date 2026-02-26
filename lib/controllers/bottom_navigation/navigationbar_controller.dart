@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/views/focus_track/components/stopwatch_component.dart';
 import 'package:project_structure/views/home/home_screen.dart';
 import 'package:project_structure/views/more/more.dart';
 
@@ -14,10 +14,7 @@ class BottomNavigationBarController extends GetxController {
   ];
   List screenWidget = [
     const MyHomePage(),
-    Text(
-      'Index 1: Business',
-      style: appbarTextSyle(),
-    ),
+    const StopwatchScreen(),
     const MoreScreen(),
   ];
 }

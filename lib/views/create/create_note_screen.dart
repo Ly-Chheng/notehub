@@ -7,7 +7,6 @@ import 'package:project_structure/views/create/components/choose_folder_componen
 import 'package:project_structure/views/create/components/emoji_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/grid_selector_component.dart';
-import 'package:project_structure/views/create/components/handwriting_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
@@ -32,7 +31,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         title: "Create Note",
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().black,
+        leadingColor: AppColor().primaryColor,
         actions: [
           Obx(() => IconButton(
                 onPressed: controller.history.length > 1 ? () => controller.undo() : null,
@@ -70,7 +69,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 hintStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                 border: InputBorder.none,
               ),
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'EN-Bold'),
             ),
             Expanded(
               child: TextField(
@@ -78,7 +77,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 maxLines: null,
                 decoration: const InputDecoration(
                   hintText: 'Note something down',
-                  hintStyle: TextStyle(fontSize: 18, color: Colors.grey),
+                  hintStyle: TextStyle(fontSize: 18, color: Colors.grey, fontFamily: 'EN-REGULAR'),
                   border: InputBorder.none,
                 ),
                 style: const TextStyle(fontSize: 18),
@@ -110,7 +109,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                       () => showFormatSheet(
                             context,
                           )),
-                  _bottomIcon(Icons.edit_outlined, () => showHandwritingSheet(context)),
                   _bottomIcon(Icons.palette_outlined, () => showBackgroundSheet(context)),
                 ],
               ),
@@ -141,7 +139,7 @@ PopupMenuItem<String> _buildPopupItem(String title, IconData icon, {Color? color
       children: [
         Icon(icon, color: color ?? Colors.black87, size: 20),
         const SizedBox(width: 12),
-        Text(title, style: TextStyle(color: color ?? Colors.black87, fontSize: 16)),
+        Text(title, style: TextStyle(color: color ?? Colors.black87, fontSize: 16, fontFamily: 'EN-REGULAR')),
       ],
     ),
   );

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
-import 'package:share_plus/share_plus.dart';
 
 class NoteController extends GetxController {
   final titleController = TextEditingController();

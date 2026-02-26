@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/core/services/themes_services.dart';
 import 'package:project_structure/core/utils/app_language.dart';
 import 'package:project_structure/core/functions/local_storage.dart';
 import 'package:project_structure/firebase_options.dart';
+import 'package:project_structure/models/folder_model.dart';
 import 'package:project_structure/route.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -28,6 +31,18 @@ Future<void> main() async {
   await LocalStorage.init();
   await GetStorage.init();
   await dotenv.load(fileName: "assets/.env");
+
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize Hive
+  await Hive.initFlutter();
+
+  // Register the Adapter
+  Hive.registerAdapter(FolderAdapter());
+
+  // Open the box
+  await Hive.openBox<Folder>('folders_box');
+
   runApp(const MyApp());
 }
 
@@ -46,9 +61,7 @@ class MyApp extends StatelessWidget {
       getPages: appRoute,
       translations: AppTranslations(),
       fallbackLocale: AppTranslations().fallbackLocale,
-      locale: storage.read('langCode') != null
-          ? Locale(storage.read('langCode'), storage.read('countryCode'))
-          : const Locale('km', 'KM'),
+      locale: storage.read('langCode') != null ? Locale(storage.read('langCode'), storage.read('countryCode')) : const Locale('km', 'KM'),
     );
   }
 }

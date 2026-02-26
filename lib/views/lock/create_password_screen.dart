@@ -57,7 +57,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 Get.snackbar("Error", "Passwords do not match");
               }
             },
-            child:   Text("Create", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: AppColor().primaryColor)),
+            child: Text("Create", style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR', color: AppColor().primaryColor)),
           )
         ],
       ),
@@ -97,11 +97,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             const SizedBox(height: 15),
 
             // 4. Use buildStandardField for Hint
-            buildStandardField(
-              "Hint", 
-              trailing: "Optional", 
-              controller: _hintController
-            ),
+            buildStandardField("Hint", trailing: "Optional", controller: _hintController),
 
             const SizedBox(height: 30),
             const Text("Security Question Verification", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -113,10 +109,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             const SizedBox(height: 15),
 
             // 5. Use buildStandardField for Answer
-            buildStandardField(
-              "Enter your answer", 
-              controller: _answerController
-            ),
+            buildStandardField("Enter your answer", controller: _answerController),
             const SizedBox(height: 30),
           ],
         ),
@@ -134,7 +127,12 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _selectedQuestion,
-          hint: const Text("Select question", style: TextStyle(color: Colors.grey, fontSize: 15)),
+          hint: Text("Select question",
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: context.isPhone ? 16 : 18,
+                fontFamily: 'EN-REGULAR',
+              )),
           isExpanded: true,
           icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
           items: _questions.map((String q) {

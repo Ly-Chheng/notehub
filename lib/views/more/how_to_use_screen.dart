@@ -21,12 +21,12 @@ class HowToUseScreen extends StatelessWidget {
         children: [
           const Text(
             "Welcome to Student Note!",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 24, fontFamily: 'EN-BOLD'),
           ),
           const SizedBox(height: 8),
           const Text(
             "Follow these simple steps to master your notes.",
-            style: TextStyle(color: Colors.grey, fontSize: 16),
+            style: TextStyle(color: Colors.grey, fontSize: 16,fontFamily: 'EN-REGULAR'),
           ),
           const SizedBox(height: 30),
 
@@ -77,7 +77,7 @@ class HowToUseScreen extends StatelessWidget {
                 const Expanded(
                   child: Text(
                     "Still need help? Contact our student support team.",
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14,fontFamily: 'EN-REGULAR'),
                   ),
                 ),
               ],
@@ -136,17 +136,18 @@ class HowToUseScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                     letterSpacing: 1.2,
+                    fontFamily: 'EN-MEDIUM',
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 18, fontFamily: 'EN-BOLD'),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   description,
-                  style: const TextStyle(color: Colors.black54, height: 1.4),
+                  style: const TextStyle(color: Colors.black54, height: 1.4, fontFamily: 'EN-REGULAR'),
                 ),
               ],
             ),

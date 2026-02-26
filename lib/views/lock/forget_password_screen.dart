@@ -18,33 +18,21 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      // appBar: AppBar(
-      //   backgroundColor: const Color(0xFFF8F9FB),
-      //   elevation: 0,
-      //   leadingWidth: 100,
-      //   // Left side "Back" button
-      //   leading: TextButton.icon(
-      //     onPressed: () => Get.back(),
-      //     icon: Icon(Icons.arrow_back_ios, size: 18, color: AppColor().primaryColor),
-      //     label: Text("Back", style: TextStyle(color: AppColor().primaryColor, fontSize: 16)),
-      //   ),
-      //   actions: [
-      //     TextButton(
-      //       onPressed: () {},
-      //       child: Text("Submit", style: TextStyle(color: AppColor().primaryColor, fontSize: context.isPhone ? 16 : 20, fontWeight: FontWeight.w500)),
-      //     ),
-      //   ],
-      // ),
       appBar: customAppBar(
         title: "Back",
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().black,
+        leadingColor: AppColor().primaryColor,
         actions: [
-              TextButton(
-                onPressed: () {},
-                child: Text("Submit", style: TextStyle(color: AppColor().primaryColor, fontSize: context.isPhone ? 16 : 20, fontWeight: FontWeight.w500)),
-              ),
+          TextButton(
+            onPressed: () {},
+            child: Text("Submit",
+                style: TextStyle(
+                  color: AppColor().primaryColor,
+                  fontSize: context.isPhone ? 16 : 18,
+                  fontFamily: 'EN-REGULAR',
+                )),
+          ),
         ],
       ),
       body: Padding(
@@ -55,13 +43,13 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             const SizedBox(height: 20),
             Text(
               "Forget Password",
-              style: TextStyle(fontSize: context.isPhone ? 18 : 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: context.isPhone ? 18 : 24, fontFamily: 'EN-BOLD', color: AppColor().black),
             ),
             const SizedBox(height: 15),
-            const Text(
+            Text(
               "Please answer your security question to verify your identity.",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 15, color: Colors.black87, height: 1.4),
+              style: TextStyle(fontSize: context.isPhone ? 16 : 20, fontFamily: 'EN-REGULAR', color: AppColor().black, height: 1.4),
             ),
             const SizedBox(height: 60),
 
@@ -73,7 +61,11 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 children: [
                   Text(
                     "What was the name of your first school?",
-                    style: TextStyle(fontSize: context.isPhone ? 16 : 20, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      fontSize: context.isPhone ? 16 : 20,
+                      fontFamily: 'EN-REGULAR',
+                      color: AppColor().black,
+                    ),
                   ),
                   const SizedBox(height: 12),
                   // Styled Input Field

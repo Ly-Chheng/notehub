@@ -31,10 +31,7 @@ class DarkModeView extends GetView<DarkModeController> {
                     Text(
                       'Dark Mode',
                       style: TextStyle(
-                        // fontFamily: Get.locale == const Locale('km', 'KM')
-                        //     ? 'KH-REGULAR'
-                        //     : 'EN-REGULAR',
-                        fontWeight: FontWeight.w500,
+                        fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-MEDIUM',
                         fontSize: context.isPhone ? 16 : 18,
                       ),
                     ),

@@ -5,14 +5,14 @@ import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
-class FolderScreen extends StatefulWidget {
-  const FolderScreen({super.key});
+class FolderNoteListScreen extends StatefulWidget {
+  const FolderNoteListScreen({super.key});
 
   @override
-  State<FolderScreen> createState() => _FolderScreenState();
+  State<FolderNoteListScreen> createState() => _FolderNoteListScreenState();
 }
 
-class _FolderScreenState extends State<FolderScreen> {
+class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   bool isGridView = false;
   bool isSelectionMode = false;
   Set<int> selectedIndexes = {};
@@ -23,7 +23,6 @@ class _FolderScreenState extends State<FolderScreen> {
     {"title": "Projects", "subtitle": "Large assignments that require deep research...", "date": "30/01/2026", "hasImage": false, "isLocked": true},
     {"title": "Meeting Notes", "subtitle": "Discussion about the final year project...", "date": "15/02/2026", "hasImage": true, "isLocked": true},
   ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +44,7 @@ class _FolderScreenState extends State<FolderScreen> {
                 )
               : null,
           actions: [
-            Center(child: Text("My Note", style: TextStyle(color: AppColor().primaryColor, fontWeight: FontWeight.w500, fontSize: 16))),
+            Center(child: Text("My Note", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontFamily: 'EN-REGULAR'))),
             PopupMenuButton<String>(
               icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -260,7 +259,7 @@ class _FolderScreenState extends State<FolderScreen> {
                               Expanded(
                                 child: Text(
                                   title,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'EN-BOLD'),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -270,14 +269,14 @@ class _FolderScreenState extends State<FolderScreen> {
                           const SizedBox(height: 5),
                           Text(
                             subtitle,
-                            style: const TextStyle(color: Colors.black54, fontSize: 13),
+                            style: const TextStyle(color: Colors.black54, fontSize: 16, fontFamily: 'EN-REGULAR'),
                             maxLines: isGrid ? 1 : 2, // Fewer lines in grid to prevent overflow
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 8),
                           Text(
                             date,
-                            style: const TextStyle(color: Colors.grey, fontSize: 11),
+                            style: const TextStyle(color: Colors.grey, fontSize: 11, fontFamily: 'EN-REGULAR'),
                           ),
                         ],
                       ),
@@ -360,13 +359,13 @@ class _FolderScreenState extends State<FolderScreen> {
                             ),
                             const Text(
                               'Delete Notes?',
-                              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                              style: TextStyle(fontSize: 20, fontFamily: 'EN-BOLD'),
                             ),
                             const SizedBox(height: 12),
                             Text(
                               'Are you sure you want to delete these items? This action cannot be undone.',
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                              style: TextStyle(color: Colors.grey[600], fontSize: 16, fontFamily: 'EN-REGULAR'),
                             ),
                             const SizedBox(height: 32),
                             Row(
@@ -420,7 +419,7 @@ class _FolderScreenState extends State<FolderScreen> {
         children: [
           Icon(icon, size: 20),
           const SizedBox(width: 12),
-          Text(title, style: const TextStyle(fontSize: 16)),
+          Text(title, style: const TextStyle(fontSize: 16, fontFamily: 'EN-REGULAR')),
         ],
       ),
     );
