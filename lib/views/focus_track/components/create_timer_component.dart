@@ -1,8 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:project_structure/core/utils/app_color.dart';
-import 'package:project_structure/widgets/custom_appbar.dart';
 
 class CreateTimerScreen extends StatefulWidget {
   const CreateTimerScreen({super.key});
@@ -19,31 +16,13 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FE),
-      appBar: customAppBar(
-        title: "Back",
-        titleColor: AppColor().primaryColor,
-        context: context,
-        leadingColor: AppColor().primaryColor,
-        actions: [
-          TextButton(
-            onPressed: () {},
-            child: Text("Save",
-                style: TextStyle(
-                  color: AppColor().primaryColor,
-                  fontSize: context.isPhone ? 16 : 20,
-                  fontFamily: 'EN-SEMIBOLD',
-                )),
-          ),
-        ],
-      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             children: [
               const SizedBox(height: 20),
-              _buildToggleHeader(),
               const Spacer(),
               _buildTimePickerSection(),
               const Spacer(),
@@ -54,30 +33,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildToggleHeader() {
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8EBF6),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          const Expanded(
-            child: Center(child: Text("Stopwatch", style: TextStyle(color: Colors.black54))),
-          ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-              child: const Center(child: Text("Timer", style: TextStyle(fontWeight: FontWeight.w600))),
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -115,19 +70,44 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   }
 
   Widget _buildLabelField() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE8EBF6).withOpacity(0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text("Label", style: TextStyle(color: Colors.black87, fontWeight: FontWeight.w500)),
-          Text("Timer", style: TextStyle(color: Colors.grey)),
-        ],
-      ),
+    return Row(
+      children: [
+        Expanded(
+          child: TextFormField(
+            decoration: InputDecoration(
+              labelText: "Label",
+              hintStyle: const TextStyle(
+                color: Colors.black54,
+                fontFamily: 'EN-REGULAR',
+              ),
+              filled: true,
+              fillColor: const Color(0xFFE8EBF6).withOpacity(0.5),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: TextFormField(
+            decoration: InputDecoration(
+              hintText: "Timer",
+              hintStyle: const TextStyle(
+                color: Colors.black54,
+                fontFamily: 'EN-REGULAR',
+              ),
+              filled: true,
+              fillColor: const Color(0xFFE8EBF6).withOpacity(0.5),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -140,7 +120,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         shape: BoxShape.circle,
         boxShadow: [BoxShadow(color: Color(0x4D4D7CFF), blurRadius: 20, offset: Offset(0, 10))],
       ),
-      child: const Icon(Icons.play_arrow_rounded, color: Colors.white, size: 50),
+      child: Icon(Icons.play_arrow_rounded, color: Theme.of(context).cardColor, size: 50),
     );
   }
 }

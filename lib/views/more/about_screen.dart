@@ -7,14 +7,13 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         title: "About",
-        titleColor:AppColor().primaryColor,
+        titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().black,
+        leadingColor: AppColor().primaryColor,
         actions: [],
       ),
       body: SingleChildScrollView(
@@ -58,7 +57,7 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 40),
 
             // --- INFO GROUP ---
-            _buildAboutContainer([
+            _buildAboutContainer(context, [
               _buildAboutTile(Icons.language, "Website", "www.beltei.edu.kh"),
               _buildAboutTile(Icons.email_outlined, "Support", "info@beltei.edu.kh"),
               _buildAboutTile(Icons.policy_outlined, "Privacy Policy", "Read here"),
@@ -79,10 +78,10 @@ class AboutScreen extends StatelessWidget {
 
   // --- HELPER WIDGETS ---
 
-  Widget _buildAboutContainer(List<Widget> children) {
+  Widget _buildAboutContainer(BuildContext context, List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).iconTheme.color,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.black.withOpacity(0.05)),
       ),

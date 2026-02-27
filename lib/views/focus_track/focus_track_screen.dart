@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_structure/views/focus_track/components/stopwatch_component.dart';
-import 'package:project_structure/views/focus_track/components/timer_component.dart';
+import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 
 class FocusTrackScreen extends StatefulWidget {
   const FocusTrackScreen({super.key});
@@ -20,6 +20,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -39,11 +40,11 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
 
   Widget _buildToggleSwitch() {
     return Container(
-      height: 70,
+      height: 45,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
         color: const Color(0xFFE8EBF6),
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(25),
       ),
       child: Stack(
         children: [
@@ -55,8 +56,8 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
               width: (MediaQuery.of(context).size.width - 48) / 2,
               margin: const EdgeInsets.all(2),
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
           ),
@@ -76,7 +77,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
                       child: Text(
                         "Stopwatch",
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
+                          fontFamily: 'EN-BOLD',
                           color: selectedIndex == 0 ? Colors.black : Colors.grey,
                         ),
                       ),
@@ -98,7 +99,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
                       child: Text(
                         "Timer",
                         style: TextStyle(
-                          fontWeight: FontWeight.w600,
+                          fontFamily: 'EN-BOLD',
                           color: selectedIndex == 1 ? Colors.black : Colors.grey,
                         ),
                       ),

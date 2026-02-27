@@ -30,7 +30,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         title: "Back",
         titleColor: AppColor().primaryColor,
@@ -56,7 +56,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
             child: Text("Save",
                 style: TextStyle(
                   color: AppColor().primaryColor,
-                  fontSize: context.isPhone ? 16 : 20,
+                  fontSize: context.isPhone ? 20 : 22,
                   fontFamily: 'EN-SEMIBOLD',
                 )),
           ),
@@ -71,7 +71,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                 style: TextStyle(
                   fontSize: context.isPhone ? 18 : 24,
                   fontFamily: 'EN-BOLD',
-                  color: AppColor().black,
                 )),
             const SizedBox(height: 15),
             Text(
@@ -80,7 +79,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
               style: TextStyle(
                 fontSize: context.isPhone ? 16 : 20,
                 fontFamily: 'EN-REGULAR',
-                color: AppColor().black,
               ),
             ),
             const SizedBox(height: 40),

@@ -8,12 +8,13 @@ class HowToUseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: "How to Use",
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().black,
+        leadingColor: AppColor().primaryColor,
         actions: [],
       ),
       body: ListView(
@@ -26,7 +27,7 @@ class HowToUseScreen extends StatelessWidget {
           const SizedBox(height: 8),
           const Text(
             "Follow these simple steps to master your notes.",
-            style: TextStyle(color: Colors.grey, fontSize: 16,fontFamily: 'EN-REGULAR'),
+            style: TextStyle(color: Colors.grey, fontSize: 16, fontFamily: 'EN-REGULAR'),
           ),
           const SizedBox(height: 30),
 
@@ -77,7 +78,7 @@ class HowToUseScreen extends StatelessWidget {
                 const Expanded(
                   child: Text(
                     "Still need help? Contact our student support team.",
-                    style: TextStyle(fontSize: 14,fontFamily: 'EN-REGULAR'),
+                    style: TextStyle(fontSize: 14, fontFamily: 'EN-REGULAR'),
                   ),
                 ),
               ],
@@ -98,10 +99,9 @@ class HowToUseScreen extends StatelessWidget {
     required Color iconColor,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(20),
+      margin: EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(

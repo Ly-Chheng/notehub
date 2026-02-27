@@ -26,9 +26,9 @@ class _LockVerificationScreenState extends State<LockVerificationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        backgroundColor: const Color(0xFFF8F9FB),
+       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: "Folder",
         titleColor: AppColor().primaryColor,
         context: context,
@@ -43,7 +43,7 @@ class _LockVerificationScreenState extends State<LockVerificationScreen> {
                   style: TextStyle(
                     color: AppColor().primaryColor,
                     fontWeight: FontWeight.w500,
-                    fontSize: context.isPhone ? 16 : 20,
+                    fontSize: context.isPhone ? 20 : 22,
                   ),
                 ),
                 const SizedBox(width: 12),

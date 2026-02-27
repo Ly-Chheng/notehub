@@ -1,9 +1,395 @@
+// import 'package:flutter/material.dart';
+// import 'package:flutter_slidable/flutter_slidable.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:get/get.dart';
+// import 'package:project_structure/views/create/create_note_screen.dart';
+// // Import your custom widgets (AppColor, customAppBar, etc.) here
+
+// class FolderNoteListScreen extends StatefulWidget {
+//   const FolderNoteListScreen({super.key});
+
+//   @override
+//   State<FolderNoteListScreen> createState() => _FolderNoteListScreenState();
+// }
+
+// class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
+//   bool isGridView = false;
+//   bool isSelectionMode = false;
+//   Set<int> selectedIndexes = {};
+
+//   // Reference to our opened box
+//   final Box noteBox = Hive.box('student_notes');
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: const Color(0xFFF8F9FE),
+//       appBar: AppBar(title: const Text("My Notes")), // Use your customAppBar here
+
+//       // ValueListenableBuilder listens to the box for ANY changes
+//       body: ValueListenableBuilder(
+//         valueListenable: noteBox.listenable(),
+//         builder: (context, Box box, _) {
+//           // Get all data from local storage
+//           final notes = box.values.toList().cast<Map>().reversed.toList();
+
+//           if (notes.isEmpty) {
+//             return const Center(child: Text("No notes saved locally."));
+//           }
+
+//           return Padding(
+//             padding: const EdgeInsets.all(16.0),
+//             child: Column(
+//               children: [
+//                 const TextField(decoration: InputDecoration(hintText: "Search", prefixIcon: Icon(Icons.search))),
+//                 const SizedBox(height: 20),
+//                 Expanded(
+//                   child: isGridView ? _buildGridView(notes) : _buildListView(notes),
+//                 ),
+//               ],
+//             ),
+//           );
+//         },
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: () => Get.to(() => const CreateNoteScreen()),
+//         child: const Icon(Icons.add),
+//       ),
+//     );
+//   }
+
+//   Widget _buildListView(List notes) {
+//     return ListView.builder(
+//       itemCount: notes.length,
+//       itemBuilder: (context, index) {
+//         final note = notes[index];
+//         return _buildSlidableNote(index, note);
+//       },
+//     );
+//   }
+
+//   Widget _buildSlidableNote(int index, dynamic note) {
+//     return Slidable(
+//       endActionPane: ActionPane(
+//         motion: const ScrollMotion(),
+//         children: [
+//           SlidableAction(
+//             onPressed: (context) {
+//               // Delete from local storage using the correct key
+//               int actualKeyIndex = noteBox.length - 1 - index;
+//               noteBox.deleteAt(actualKeyIndex);
+//             },
+//             backgroundColor: Colors.red,
+//             icon: Icons.delete,
+//           ),
+//         ],
+//       ),
+//       child: Card(
+//         child: ListTile(
+//           title: Text(note['title'] ?? ""),
+//           subtitle: Text(note['subtitle'] ?? ""),
+//           trailing: Text(note['date'] ?? ""),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildGridView(List notes) {
+//     return GridView.builder(
+//       itemCount: notes.length,
+//       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+//       itemBuilder: (context, index) => Card(child: Text(notes[index]['title'])),
+//     );
+//   }
+// }
+
+//version 1 with crate and delete features, plus better UI. You can choose which version to use or combine features as needed.
+// import 'package:flutter/material.dart';
+// import 'package:flutter_slidable/flutter_slidable.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:get/get.dart';
+// import 'package:project_structure/core/utils/app_color.dart';
+// import 'package:project_structure/views/create/create_note_screen.dart';
+// import 'package:project_structure/widgets/custom_appbar.dart';
+// import 'package:project_structure/widgets/custom_text_field.dart';
+// // Import your custom widgets (AppColor, customAppBar, etc.) here
+
+// class FolderNoteListScreen extends StatefulWidget {
+//   const FolderNoteListScreen({super.key});
+
+//   @override
+//   State<FolderNoteListScreen> createState() => _FolderNoteListScreenState();
+// }
+
+// class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
+//   bool isGridView = false;
+//   bool isSelectionMode = false;
+//   Set<int> selectedIndexes = {};
+
+//   // Reference to our opened box
+//   final Box noteBox = Hive.box('student_notes');
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: const Color(0xFFF8F9FE),
+
+//       appBar: customAppBar(
+//           title: isSelectionMode ? "${selectedIndexes.length} Selected" : "Folder",
+//           titleColor: AppColor().primaryColor,
+//           context: context,
+//           leadingColor: AppColor().primaryColor,
+//           leading: isSelectionMode
+//               ? IconButton(
+//                   icon: const Icon(Icons.close),
+//                   onPressed: () {
+//                     setState(() {
+//                       isSelectionMode = false;
+//                       selectedIndexes.clear();
+//                     });
+//                   },
+//                 )
+//               : null,
+//           actions: [
+//             Center(child: Text("My Note", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontFamily: 'EN-REGULAR'))),
+//             PopupMenuButton<String>(
+//               icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
+//               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+//               offset: const Offset(0, 50),
+//               color: Colors.white,
+//               onSelected: (value) => (value),
+//               itemBuilder: (context) => [],
+//             ),
+//           ]),
+
+//       // ValueListenableBuilder listens to the box for ANY changes
+//       body: ValueListenableBuilder(
+//         valueListenable: noteBox.listenable(),
+//         builder: (context, Box box, _) {
+//           // Get all data from local storage
+//           final notes = box.values.toList().cast<Map>().reversed.toList();
+
+//           if (notes.isEmpty) {
+//             return const Center(child: Text("No notes saved locally."));
+//           }
+
+//           return Padding(
+//             padding: const EdgeInsets.symmetric(horizontal: 15),
+//             child: Column(
+//               children: [
+//                 buildStandardField(
+//                   "Search",
+//                   prefixIcon: Icons.search,
+//                 ),
+//                 const SizedBox(height: 20),
+//                 Expanded(
+//                   child: isGridView ? _buildGridView(notes) : _buildListView(notes),
+//                 ),
+//               ],
+//             ),
+//           );
+//         },
+//       ),
+
+//       floatingActionButton: FloatingActionButton(
+//         backgroundColor: AppColor().primaryColor,
+//         foregroundColor: Colors.white,
+//         onPressed: () => Get.to(() => const CreateNoteScreen()),
+//         child: const Icon(Icons.add, size: 30),
+//       ),
+//     );
+//   }
+
+//   Widget _buildListView(List notes) {
+//     return ListView.builder(
+//       itemCount: notes.length,
+//       itemBuilder: (context, index) {
+//         final note = notes[index];
+//         return _buildSlidableNote(index, note);
+//       },
+//     );
+//   }
+
+//   Widget _buildSlidableNote(int index, dynamic note) {
+//     return Slidable(
+//       endActionPane: ActionPane(
+//         motion: const ScrollMotion(),
+//         children: [
+//           SlidableAction(
+//             onPressed: (context) {
+//               // Delete from local storage using the correct key
+//               int actualKeyIndex = noteBox.length - 1 - index;
+//               noteBox.deleteAt(actualKeyIndex);
+//             },
+//             backgroundColor: Colors.red,
+//             icon: Icons.delete,
+//           ),
+//         ],
+//       ),
+//       child: Padding(
+//         padding: const EdgeInsets.all(8.0),
+//         child: Container(
+//           padding: const EdgeInsets.all(15),
+//           width: double.infinity,
+//           decoration: BoxDecoration(
+//             color: Colors.white,
+//             borderRadius: BorderRadius.circular(12),
+//           ),
+//           child: Row(
+//             crossAxisAlignment: CrossAxisAlignment.center,
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Text(note['title'] ?? "", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+//                   const SizedBox(height: 5),
+//                   Text(note['subtitle'] ?? "", style: const TextStyle(color: Colors.black54, fontSize: 16)),
+//                   const SizedBox(height: 8),
+//                   Text(note['date'] ?? "", style: const TextStyle(color: Colors.grey, fontSize: 11)),
+//                 ],
+//               ),
+//               Container(
+//                 width: 70,
+//                 height: 70,
+//                 margin: const EdgeInsets.only(left: 15),
+//                 decoration: BoxDecoration(
+//                   color: Colors.grey[100],
+//                   borderRadius: BorderRadius.circular(8),
+//                   image: const DecorationImage(
+//                     image: NetworkImage("https://via.placeholder.com/150"),
+//                     fit: BoxFit.cover,
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildGridView(List notes) {
+//     return GridView.builder(
+//       itemCount: notes.length,
+//       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+//       itemBuilder: (context, index) => Card(child: Text(notes[index]['title'])),
+//     );
+//   }
+// }
+
+//version 2 with pin and edit features, not have UI. You can choose which version to use or combine features as needed.
+// import 'package:flutter/material.dart';
+// import 'package:flutter_slidable/flutter_slidable.dart';
+// import 'package:hive_flutter/hive_flutter.dart';
+// import 'package:get/get.dart';
+// // Import your custom widgets (AppColor, customAppBar, etc.) here
+
+// class FolderNoteListScreen extends StatefulWidget {
+//   const FolderNoteListScreen({super.key});
+
+//   @override
+//   State<FolderNoteListScreen> createState() => _FolderNoteListScreenState();
+// }
+
+// class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
+//   bool isGridView = false;
+//   bool isSelectionMode = false;
+//   Set<int> selectedIndexes = {};
+
+//   // Reference to our opened box
+//   final Box noteBox = Hive.box('student_notes');
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: const Color(0xFFF8F9FE),
+//       appBar: AppBar(title: const Text("My Notes")), // Use your customAppBar here
+
+//       // ValueListenableBuilder listens to the box for ANY changes
+//       body: ValueListenableBuilder(
+//         valueListenable: noteBox.listenable(),
+//         builder: (context, Box box, _) {
+//           // Get all data from local storage
+//           final notes = box.values.toList().cast<Map>().reversed.toList();
+
+//           if (notes.isEmpty) {
+//             return const Center(child: Text("No notes saved locally."));
+//           }
+
+//           return Padding(
+//             padding: const EdgeInsets.all(16.0),
+//             child: Column(
+//               children: [
+//                 const TextField(decoration: InputDecoration(hintText: "Search", prefixIcon: Icon(Icons.search))),
+//                 const SizedBox(height: 20),
+//                 Expanded(
+//                   child: isGridView ? _buildGridView(notes) : _buildListView(notes),
+//                 ),
+//               ],
+//             ),
+//           );
+//         },
+//       ),
+//       floatingActionButton: FloatingActionButton(
+//         onPressed: () => Get.to(() => const CreateNoteScreen()),
+//         child: const Icon(Icons.add),
+//       ),
+//     );
+//   }
+
+//   Widget _buildListView(List notes) {
+//     return ListView.builder(
+//       itemCount: notes.length,
+//       itemBuilder: (context, index) {
+//         final note = notes[index];
+//         return _buildSlidableNote(index, note);
+//       },
+//     );
+//   }
+
+//   Widget _buildSlidableNote(int index, dynamic note) {
+//     return Slidable(
+//       endActionPane: ActionPane(
+//         motion: const ScrollMotion(),
+//         children: [
+//           SlidableAction(
+//             onPressed: (context) {
+//               // Delete from local storage using the correct key
+//               int actualKeyIndex = noteBox.length - 1 - index;
+//               noteBox.deleteAt(actualKeyIndex);
+//             },
+//             backgroundColor: Colors.red,
+//             icon: Icons.delete,
+//           ),
+//         ],
+//       ),
+//       child: Card(
+//         child: ListTile(
+//           title: Text(note['title'] ?? ""),
+//           subtitle: Text(note['subtitle'] ?? ""),
+//           trailing: Text(note['date'] ?? ""),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildGridView(List notes) {
+//     return GridView.builder(
+//       itemCount: notes.length,
+//       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+//       itemBuilder: (context, index) => Card(child: Text(notes[index]['title'])),
+//     );
+//   }
+// }
+//version 2 with pin and edit features, plus better UI. You can choose which version to use or combine features as needed.
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
-import 'package:project_structure/widgets/custom_button.dart';
-import 'package:project_structure/widgets/custom_text_field.dart';
 
 class FolderNoteListScreen extends StatefulWidget {
   const FolderNoteListScreen({super.key});
@@ -13,400 +399,144 @@ class FolderNoteListScreen extends StatefulWidget {
 }
 
 class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
-  bool isGridView = false;
+  final Box noteBox = Hive.box('student_notes');
   bool isSelectionMode = false;
   Set<int> selectedIndexes = {};
 
-  final List<Map<String, dynamic>> notes = [
-    {"title": "Homework", "subtitle": "Day to practice class exercises and coding", "date": "02/01/2026", "hasImage": false, "isLocked": false},
-    {"title": "Exams & Quizzes", "subtitle": "Test-related work including chemistry quizzes...", "date": "29/01/2026", "hasImage": true, "isLocked": false},
-    {"title": "Projects", "subtitle": "Large assignments that require deep research...", "date": "30/01/2026", "hasImage": false, "isLocked": true},
-    {"title": "Meeting Notes", "subtitle": "Discussion about the final year project...", "date": "15/02/2026", "hasImage": true, "isLocked": true},
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FE),
-      appBar: customAppBar(
-          title: isSelectionMode ? "${selectedIndexes.length} Selected" : "Folder",
-          titleColor: AppColor().primaryColor,
-          context: context,
-          leadingColor: AppColor().black,
-          leading: isSelectionMode
-              ? IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () {
-                    setState(() {
-                      isSelectionMode = false;
-                      selectedIndexes.clear();
-                    });
-                  },
-                )
-              : null,
-          actions: [
-            Center(child: Text("My Note", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontFamily: 'EN-REGULAR'))),
-            PopupMenuButton<String>(
-              icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-              offset: const Offset(0, 50),
-              color: Colors.white,
-              onSelected: (value) => _handleMenuSelection(value),
-              itemBuilder: (context) => [
-                _buildPopupItem(
-                  isGridView ? 'List view' : 'Grid view',
-                  isGridView ? Icons.list_outlined : Icons.grid_on_outlined,
-                ),
-                _buildPopupItem('Select Notes', Icons.radio_button_unchecked),
-              ],
-            ),
-          ]),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: customAppBar(title: "Student Notes", titleColor: AppColor().primaryColor, context: context, leadingColor: AppColor().primaryColor, actions: [
+        Center(child: Text("My Note", style: TextStyle(color: AppColor().primaryColor, fontSize: 16, fontFamily: 'EN-REGULAR'))),
+        PopupMenuButton<String>(
+          icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          offset: const Offset(0, 50),
+          color: Theme.of(context).cardColor,
+          onSelected: (value) => _handleMenuSelection(value),
+          itemBuilder: (context) => [
+            _buildPopupItem('Select Notes', Icons.radio_button_unchecked),
+          ],
+        ),
+      ]),
+      body: ValueListenableBuilder(
+        valueListenable: noteBox.listenable(),
+        builder: (context, Box box, _) {
+          // Get data and keys
+          List<dynamic> keys = box.keys.toList();
+          List<dynamic> values = box.values.toList();
+
+          // 1. Sort: Pinned first, then by date (optional)
+          // To keep it simple, we map keys to values so we don't lose the index
+          List<MapEntry<int, dynamic>> notesList = [];
+          for (int i = 0; i < keys.length; i++) {
+            notesList.add(MapEntry(i, values[i]));
+          }
+
+          // Sort logic: Pinned notes (true) come before unpinned (false)
+          notesList.sort((a, b) {
+            bool aPinned = a.value['isPinned'] ?? false;
+            bool bPinned = b.value['isPinned'] ?? false;
+            if (aPinned && !bPinned) return -1;
+            if (!aPinned && bPinned) return 1;
+            return 0; // Keep original order otherwise
+          });
+
+          if (notesList.isEmpty) return const Center(child: Text("No notes."));
+
+          return ListView.builder(
+            itemCount: notesList.length,
+            itemBuilder: (context, index) {
+              final entry = notesList[index];
+              return _buildSlidableNote(entry.key, entry.value);
+            },
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColor().primaryColor,
+        foregroundColor: Colors.white,
+        onPressed: () => Get.to(() => const CreateNoteScreen()),
+        child: const Icon(Icons.add, size: 30),
+      ),
+    );
+  }
+
+  Widget _buildSlidableNote(int actualBoxIndex, dynamic note) {
+    bool isPinned = note['isPinned'] ?? false;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: Slidable(
+        key: ValueKey(actualBoxIndex),
+        endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          extentRatio: 0.9,
           children: [
-            buildStandardField(
-              "Search",
-              prefixIcon: Icons.search,
+            // PIN ACTION
+            SlidableAction(
+              onPressed: (context) {
+                final updatedNote = Map<String, dynamic>.from(note);
+                updatedNote['isPinned'] = !isPinned;
+                noteBox.putAt(actualBoxIndex, updatedNote);
+              },
+              backgroundColor: Colors.orange,
+              foregroundColor: Colors.white,
+              icon: isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+              label: isPinned ? 'Unpin' : 'Pin',
             ),
-            const SizedBox(height: 20),
-            const Text("Today", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            Expanded(
-              child: isGridView ? _buildGridView() : _buildListView(),
+            // UPDATE ACTION
+            SlidableAction(
+              onPressed: (context) {
+                Get.to(() => CreateNoteScreen(
+                      isEditing: true,
+                      noteKey: actualBoxIndex,
+                      existingNote: note,
+                    ));
+              },
+              backgroundColor: Colors.blue,
+              icon: Icons.edit,
+              label: 'Edit',
+            ),
+            // DELETE ACTION
+            SlidableAction(
+              onPressed: (context) => noteBox.deleteAt(actualBoxIndex),
+              backgroundColor: Colors.red,
+              icon: Icons.delete,
+              label: 'Delete',
+              borderRadius: const BorderRadius.only(
+                topRight: Radius.circular(10),
+                bottomRight: Radius.circular(10),
+              ),
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: isSelectionMode ? _buildBottomActionNav() : null,
-    );
-  }
-
-  /// LIST VIEW
-  Widget _buildListView() {
-    return ListView.builder(
-      itemCount: notes.length,
-      physics: const BouncingScrollPhysics(),
-      itemBuilder: (context, index) {
-        final note = notes[index];
-        return _buildSlidableNote(
-          index: index,
-          title: note['title'],
-          subtitle: note['subtitle'],
-          date: note['date'],
-          hasImage: note['hasImage'],
-          isLocked: note['isLocked'],
-        );
-      },
-    );
-  }
-
-  /// GRID VIEW
-  Widget _buildGridView() {
-    return GridView.builder(
-      itemCount: notes.length,
-      padding: const EdgeInsets.only(bottom: 20),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 0.82,
-      ),
-      itemBuilder: (context, index) {
-        final note = notes[index];
-        return _buildNoteCard(
-          index: index,
-          title: note['title'],
-          subtitle: note['subtitle'],
-          date: note['date'],
-          hasImage: note['hasImage'],
-          isLocked: note['isLocked'],
-          isGrid: true,
-        );
-      },
-    );
-  }
-
-  /// SLIDABLE NOTE (LIST)
-  Widget _buildSlidableNote({
-    required int index,
-    required String title,
-    required String subtitle,
-    required String date,
-    bool hasImage = false,
-    bool isLocked = false,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Slidable(
-          key: ValueKey(title),
-          endActionPane: ActionPane(
-            motion: const ScrollMotion(),
-            extentRatio: 0.5,
+        child: Container(
+          padding: const EdgeInsets.all(15),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Row(
             children: [
-              SlidableAction(
-                onPressed: (context) {},
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.white,
-                icon: Icons.push_pin_outlined,
-              ),
-              SlidableAction(
-                onPressed: (context) {},
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                icon: Icons.folder_open,
-              ),
-              SlidableAction(
-                onPressed: (context) {
-                  setState(() {
-                    selectedIndexes.toList()
-                      ..sort((b, a) => a.compareTo(b))
-                      ..forEach((index) => notes.removeAt(index));
-                    selectedIndexes.clear();
-                    isSelectionMode = false;
-                  });
-                },
-                backgroundColor: Colors.red,
-                icon: Icons.delete_outline_rounded,
+              if (isPinned) const Icon(Icons.push_pin, color: Colors.orange),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(note['title'] ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontFamily: 'EN-BOLD')),
+                    const SizedBox(height: 10),
+                    Text(note['subtitle'] ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, fontFamily: 'EN-REGULAR')),
+                    const SizedBox(height: 10),
+                    Text(note['date'] ?? "", style: const TextStyle(fontSize: 12, fontFamily: 'EN-REGULAR')),
+                  ],
+                ),
               ),
             ],
           ),
-          child: GestureDetector(
-            onLongPress: () => _onLongPress(index),
-            onTap: () => _onTap(index),
-            child: _buildNoteCard(
-              index: index,
-              title: title,
-              subtitle: subtitle,
-              date: date,
-              hasImage: hasImage,
-              isLocked: isLocked,
-              isGrid: false,
-            ),
-          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildNoteCard({
-    required int index,
-    required String title,
-    required String subtitle,
-    required String date,
-    bool hasImage = false,
-    bool isLocked = false,
-    bool isGrid = false,
-  }) {
-    bool isSelected = selectedIndexes.contains(index);
-    return Row(
-      children: [
-        // --- SELECTION INDICATOR ---
-        if (isSelectionMode)
-          GestureDetector(
-            onTap: () => _toggleSelection(index),
-            child: Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: Icon(
-                isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                color: isSelected ? AppColor().primaryColor : Colors.grey.shade400,
-                size: 28,
-              ),
-            ),
-          ),
-
-        Expanded(
-          child: Container(
-            padding: const EdgeInsets.all(15),
-            decoration: BoxDecoration(
-              color: selectedIndexes.contains(index) ? Colors.deepPurple.shade50 : Colors.white,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              // mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isGrid && hasImage)
-                  Container(
-                    width: double.infinity,
-                    height: 100, // Give it a fixed height for the grid
-                    margin: const EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
-                      image: const DecorationImage(
-                        image: NetworkImage("https://via.placeholder.com/150"),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              if (isLocked)
-                                const Padding(
-                                  padding: EdgeInsets.only(right: 5),
-                                  child: Icon(Icons.lock_outline, size: 16, color: Colors.redAccent),
-                                ),
-                              Expanded(
-                                child: Text(
-                                  title,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, fontFamily: 'EN-BOLD'),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            subtitle,
-                            style: const TextStyle(color: Colors.black54, fontSize: 16, fontFamily: 'EN-REGULAR'),
-                            maxLines: isGrid ? 1 : 2, // Fewer lines in grid to prevent overflow
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            date,
-                            style: const TextStyle(color: Colors.grey, fontSize: 11, fontFamily: 'EN-REGULAR'),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    // --- 2. IMAGE FOR LIST MODE ---
-                    if (!isGrid && hasImage)
-                      Container(
-                        width: 70,
-                        height: 70,
-                        margin: const EdgeInsets.only(left: 15),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(8),
-                          image: const DecorationImage(
-                            image: NetworkImage("https://via.placeholder.com/150"),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBottomActionNav() {
-    return Container(
-      height: 70,
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        border: Border(top: BorderSide(color: Colors.black12, width: 0.5)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Expanded(
-            child: CustomButton(
-              text: "Move",
-              backgroundColor: Colors.white,
-              textColor: AppColor().primaryColor,
-              icon: Icon(Icons.folder_outlined, size: 24, color: AppColor().primaryColor),
-              onPressed: () {},
-            ),
-          ),
-          Expanded(
-            child: CustomButton(
-              text: "Delete",
-              backgroundColor: Colors.white,
-              textColor: AppColor().primaryColor,
-              icon: Icon(Icons.folder_outlined, size: 24, color: AppColor().primaryColor),
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                  ),
-                  builder: (BuildContext context) {
-                    return SafeArea(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 4,
-                              margin: const EdgeInsets.only(bottom: 20),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[300],
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            const Text(
-                              'Delete Notes?',
-                              style: TextStyle(fontSize: 20, fontFamily: 'EN-BOLD'),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              'Are you sure you want to delete these items? This action cannot be undone.',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.grey[600], fontSize: 16, fontFamily: 'EN-REGULAR'),
-                            ),
-                            const SizedBox(height: 32),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: CustomButton(
-                                    text: "Cancel",
-                                    textColor: AppColor().black,
-                                    backgroundColor: Colors.grey.shade50,
-                                    onPressed: () => Navigator.pop(context),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: CustomButton(
-                                    text: "Delete",
-                                    backgroundColor: Colors.red,
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                      setState(() {
-                                        selectedIndexes.toList()
-                                          ..sort((b, a) => a.compareTo(b))
-                                          ..forEach((index) => notes.removeAt(index));
-                                        selectedIndexes.clear();
-                                        isSelectionMode = false;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -428,12 +558,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   /// MENU LOGIC
   void _handleMenuSelection(String value) {
     switch (value) {
-      case 'Show List':
-      case 'Show Grid':
-        setState(() {
-          isGridView = !isGridView;
-        });
-        break;
       case 'Select Notes':
         setState(() {
           isSelectionMode = true;
@@ -441,32 +565,5 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         });
         break;
     }
-  }
-
-  /// SELECTION LOGIC
-  void _onLongPress(int index) {
-    setState(() {
-      isSelectionMode = true;
-      selectedIndexes.add(index);
-    });
-  }
-
-  void _onTap(int index) {
-    if (isSelectionMode) {
-      _toggleSelection(index);
-    } else {
-      // Open the note or perform the default action
-    }
-  }
-
-  void _toggleSelection(int index) {
-    setState(() {
-      if (selectedIndexes.contains(index)) {
-        selectedIndexes.remove(index);
-      } else {
-        selectedIndexes.add(index);
-      }
-      if (selectedIndexes.isEmpty) isSelectionMode = false;
-    });
   }
 }

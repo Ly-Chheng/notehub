@@ -25,7 +25,6 @@ class _MoreScreenState extends State<MoreScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
         child: Center(
@@ -80,8 +79,7 @@ class _MoreScreenState extends State<MoreScreen> {
   Widget _buildSectionContainer(List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
-        // color: Theme.of(context).cardColor,
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(children: children),
@@ -93,7 +91,10 @@ class _MoreScreenState extends State<MoreScreen> {
     return Column(
       children: [
         ListTile(
-          leading: Icon(icon, color: Colors.black87),
+          leading: Icon(
+            icon,
+            color: Theme.of(context).iconTheme.color,
+          ),
           title: Text(title, style: const TextStyle(fontSize: 16, fontFamily: 'EN-MEDIUM')),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black26),
           onTap: onTap,

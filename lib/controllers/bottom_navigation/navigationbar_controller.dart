@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/views/focus_track/components/stopwatch_component.dart';
+import 'package:project_structure/views/focus_track/focus_track_screen.dart';
 import 'package:project_structure/views/home/home_screen.dart';
 import 'package:project_structure/views/more/more.dart';
 
@@ -14,7 +14,7 @@ class BottomNavigationBarController extends GetxController {
   ];
   List screenWidget = [
     const MyHomePage(),
-    const StopwatchScreen(),
+    const FocusTrackScreen(),
     const MoreScreen(),
   ];
 }

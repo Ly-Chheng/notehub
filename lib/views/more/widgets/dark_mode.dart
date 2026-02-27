@@ -26,12 +26,16 @@ class DarkModeView extends GetView<DarkModeController> {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.light_mode_outlined, color: Colors.black87), // Updated icon
+                    Icon(
+                      Icons.light_mode_outlined,
+                      color: Theme.of(context).iconTheme.color,
+                    ), // Updated icon
                     const SizedBox(width: 15),
                     Text(
                       'Dark Mode',
                       style: TextStyle(
-                        fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-MEDIUM',
+                        // fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-MEDIUM',
+                        fontFamily: 'EN-REGULAR',
                         fontSize: context.isPhone ? 16 : 18,
                       ),
                     ),

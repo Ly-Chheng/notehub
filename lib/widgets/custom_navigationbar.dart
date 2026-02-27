@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 customNavigationBar({
+   required BuildContext context,
   final List<BottomNavigationBarItem>? items,
   required final int currentIndex,
   final Color? selectedItemColor,
@@ -23,12 +24,6 @@ customNavigationBar({
                 width: 24,
                 height: 24,
               ),
-              // icon: Image.asset(
-              //   'assets/images/home.png',
-              //   width: 24,
-              //   height: 24,
-              //   color: currentIndex == 0 ? const Color.fromARGB(255, 108, 39, 176) : Colors.grey,
-              // ),
               label: '',
             ),
             BottomNavigationBarItem(
@@ -62,12 +57,10 @@ customNavigationBar({
       selectedItemColor: selectedItemColor ?? const Color.fromARGB(255, 108, 39, 176),
       onTap: onTap,
       unselectedItemColor: unselectedItemColor ?? Colors.grey.shade700,
-       backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       type: BottomNavigationBarType.fixed,
       elevation: 10,
       showUnselectedLabels: true,
-      // selectedLabelStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
-      // unselectedLabelStyle: const TextStyle(fontSize: 12),
       showSelectedLabels: false,
     ),
   );

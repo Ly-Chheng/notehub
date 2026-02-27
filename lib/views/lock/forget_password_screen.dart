@@ -17,7 +17,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         title: "Back",
         titleColor: AppColor().primaryColor,
@@ -29,7 +29,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             child: Text("Submit",
                 style: TextStyle(
                   color: AppColor().primaryColor,
-                  fontSize: context.isPhone ? 16 : 18,
+                  fontSize: context.isPhone ? 20 : 22,
                   fontFamily: 'EN-REGULAR',
                 )),
           ),
@@ -43,13 +43,16 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             const SizedBox(height: 20),
             Text(
               "Forget Password",
-              style: TextStyle(fontSize: context.isPhone ? 18 : 24, fontFamily: 'EN-BOLD', color: AppColor().black),
+              style: TextStyle(
+                fontSize: context.isPhone ? 18 : 24,
+                fontFamily: 'EN-BOLD',
+              ),
             ),
             const SizedBox(height: 15),
             Text(
               "Please answer your security question to verify your identity.",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: context.isPhone ? 16 : 20, fontFamily: 'EN-REGULAR', color: AppColor().black, height: 1.4),
+              style: TextStyle(fontSize: context.isPhone ? 16 : 20, fontFamily: 'EN-REGULAR', height: 1.4),
             ),
             const SizedBox(height: 60),
 
@@ -64,7 +67,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     style: TextStyle(
                       fontSize: context.isPhone ? 16 : 20,
                       fontFamily: 'EN-REGULAR',
-                      color: AppColor().black,
                     ),
                   ),
                   const SizedBox(height: 12),

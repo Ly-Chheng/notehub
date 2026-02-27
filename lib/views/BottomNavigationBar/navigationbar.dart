@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/bottom_navigation/navigationbar_controller.dart';
-import 'package:project_structure/views/focus_track/components/timer_component.dart';
+import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_navigationbar.dart';
@@ -78,10 +78,12 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                             color: Theme.of(context).primaryColor,
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: const Center(
+                          child: Center(
                             child: Text(
                               "Yes",
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: Theme.of(context).cardColor,
+                              ),
                             ),
                           ),
                         ),
@@ -109,25 +111,28 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   showCreateFolderSheet(context);
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(1),
+                  padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.black, width: 2),
                   ),
-                  child: const Icon(Icons.add, color: Colors.black, size: 17),
+                  child: const Icon(Icons.add, size: 20),
                 ),
               ),
-              IconButton(
-                onPressed: () {
-                  setState(() => isGrid = !isGrid);
-                },
-                icon: const Icon(
-                  Icons.grid_view,
-                  color: Colors.black,
-                  size: 27,
-                ),
-              ),
+              // IconButton(
+              //   onPressed: () {
+              //     setState(() => isGrid = !isGrid);
+              //   },
+              //   icon: const Icon(
+              //     Icons.grid_view,
+              //     color: Colors.black,
+              //     size: 27,
+              //   ),
+              // ),
+              SizedBox(
+                width: 5,
+              )
             ],
 
             // Index 1 → Time icon
@@ -139,7 +144,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: const Color(0xFF4D7CFF).withOpacity(0.3)),
                   ),
@@ -155,6 +160,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
           child: controller.screenWidget[controller.selectedIndex],
         ),
         bottomNavigationBar: customNavigationBar(
+          context: context,
           currentIndex: controller.selectedIndex,
           onTap: _onItemTapped,
         ),

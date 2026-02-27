@@ -21,12 +21,15 @@ class NotificationView extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    const Icon(Icons.notifications_none, color: Colors.black87), // Updated icon
+                    Icon(
+                      Icons.notifications_none,
+                      color: Theme.of(context).iconTheme.color,
+                    ), // Updated icon
                     const SizedBox(width: 15),
                     Text(
                       'Notification',
                       style: TextStyle(
-                        fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-MEDIUM',
+                        fontFamily: 'EN-REGULAR',
                         fontSize: context.isPhone ? 16 : 18,
                       ),
                     ),

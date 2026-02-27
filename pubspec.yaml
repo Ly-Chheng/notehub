@@ -65,10 +65,10 @@ flutter:
   fonts:
     - family: KH-REGULAR
       fonts:
-        - asset: assets/fonts/KHMEROSBATTAMBANG.TTF
+        - asset: assets/fonts/Battambang-Regular.ttf
     - family: KH-Bold
       fonts:
-        - asset: assets/fonts/KHMEROSBATTAMBANG-BOLD.TTF
+        - asset: assets/fonts/Battambang-Bold.ttf
     - family: EN-REGULAR
       fonts:
         - asset: assets/fonts/Roboto-Regular.ttf

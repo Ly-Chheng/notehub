@@ -45,7 +45,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         title: "Back",
         titleColor: AppColor().primaryColor,
@@ -65,7 +65,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             child: Text("Save",
                 style: TextStyle(
                   color: AppColor().primaryColor,
-                  fontSize: context.isPhone ? 16 : 18,
+                  fontSize: context.isPhone ? 20 : 22,
                   fontFamily: 'EN-SEMIBOLD',
                 )),
           ),
@@ -128,7 +128,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             style: TextStyle(
               fontSize: context.isPhone ? 16 : 18,
               fontFamily: 'EN-REGULAR',
-              color: AppColor().black,
             )),
         Text("Optional",
             style: TextStyle(

@@ -15,15 +15,14 @@ customAppBar({
   return AppBar(
     elevation: 0,
     centerTitle: false,
-    titleSpacing: 10,
-    // backgroundColor:
-    //     backgroundColor ?? Theme.of(context).colorScheme.inversePrimary,
-    backgroundColor: backgroundColor ?? Color(0xFFF8F9FB),
+    titleSpacing: 15,
+    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
     title: Text(
       title,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-        color: titleColor ?? Colors.black,
+        // color: titleColor ?? Colors.black,
+        color: titleColor,
         fontSize: 20,
         fontFamily: 'EN-BOLD',
       ),
@@ -52,8 +51,6 @@ customAppBar({
                 ),
               )
         : leading,
-    // actions: actions,
-    /// Actions
     actions: actions?.map((action) {
       return action;
     }).toList(),

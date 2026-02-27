@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/core/services/themes_services.dart';
@@ -42,6 +41,9 @@ Future<void> main() async {
 
   // Open the box
   await Hive.openBox<Folder>('folders_box');
+
+  // This name 'student_notes' must match in both files
+  await Hive.openBox('student_notes');
 
   runApp(const MyApp());
 }

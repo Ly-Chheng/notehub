@@ -5,6 +5,7 @@ import 'package:project_structure/controllers/bottom_navigation/navigationbar_co
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/models/folder_model.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
+import 'package:project_structure/views/create/folder_note_list_screen.dart.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -21,7 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
@@ -77,10 +78,13 @@ class _MyHomePageState extends State<MyHomePage> {
       itemCount: folders.length,
       itemBuilder: (context, index) {
         final folder = folders[index];
-        return Dismissible(
-          key: Key(folder.key.toString()),
-          onDismissed: (direction) => folder.delete(), // Simple Swipe to Delete
-          child: _buildFolderItem(folder),
+        return GestureDetector(
+          onTap: () => Get.to(() => FolderNoteListScreen()),
+          child: Dismissible(
+            key: Key(folder.key.toString()),
+            onDismissed: (direction) => folder.delete(), // Simple Swipe to Delete
+            child: _buildFolderItem(folder),
+          ),
         );
       },
     );
@@ -102,11 +106,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildFolderItem(Folder folder) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(15)),
       child: ListTile(
-        leading: Icon(Icons.folder, color: Color(folder.colorValue), size: 28),
-        title: Text(folder.title, style: const TextStyle(fontWeight: FontWeight.w500)),
-        trailing: Text("${folder.count}", style: const TextStyle(color: Colors.grey)),
+        leading: Icon(Icons.folder, color: Color(folder.colorValue), size: 30),
+        title: Text(folder.title, style: TextStyle(fontFamily: 'EN-REGULAR', fontSize: 18, color: Theme.of(context).textTheme.bodyMedium?.color)),
+        trailing: Text("${folder.count}", style: const TextStyle(color: Colors.grey, fontFamily: 'EN-REGULAR', fontSize: 18)),
       ),
     );
   }
@@ -114,13 +118,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildGridItem(Folder folder) {
     return Container(
       padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(15)),
+      decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(15)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(Icons.folder, color: Color(folder.colorValue), size: 35),
-          Text(folder.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          Text(folder.title, style: TextStyle(fontFamily: 'EN-REGULAR', fontSize: 18, color: Theme.of(context).textTheme.bodyMedium?.color)),
         ],
       ),
     );

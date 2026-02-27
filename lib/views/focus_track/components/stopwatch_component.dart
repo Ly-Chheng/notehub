@@ -52,7 +52,7 @@ class _StopwatchScreenState extends State<StopwatchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FE),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -75,37 +75,6 @@ class _StopwatchScreenState extends State<StopwatchScreen> {
     );
   }
 
-  Widget _buildHeader() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text("Focus Track", style: TextStyle(color: Color(0xFF4D7CFF), fontWeight: FontWeight.bold, fontSize: 18)),
-        const SizedBox(height: 20),
-        Container(
-          padding: const EdgeInsets.all(4),
-          decoration: BoxDecoration(
-            color: const Color(0xFFE8EBF6),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)),
-                  child: const Center(child: Text("Stopwatch", style: TextStyle(fontWeight: FontWeight.w600))),
-                ),
-              ),
-              const Expanded(
-                child: Center(child: Text("Timer", style: TextStyle(color: Colors.grey))),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildTimerDisplay() {
     return Stack(
       alignment: Alignment.center,
@@ -124,7 +93,7 @@ class _StopwatchScreenState extends State<StopwatchScreen> {
           child: CircularProgressIndicator(
             value: (_milliseconds % 60000) / 60000, // Syncs with seconds
             strokeWidth: 12,
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).cardColor,
             valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFF0F2F9)),
           ),
         ),
@@ -158,8 +127,8 @@ class _StopwatchScreenState extends State<StopwatchScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("${_laps.length - index}", style: const TextStyle(color: Colors.grey, fontFamily: 'EN-REGULAR')),
-                      Text(_laps[index], style: const TextStyle(color: Colors.black54, fontFamily: 'EN-BOLD')),
+                      Text("${_laps.length - index}", style: TextStyle(fontFamily: 'EN-REGULAR')),
+                      Text(_laps[index], style: const TextStyle(fontFamily: 'EN-BOLD')),
                     ],
                   ),
                 );

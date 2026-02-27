@@ -1,192 +1,236 @@
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:hive/hive.dart';
+// import 'package:intl/intl.dart';
+// import 'package:project_structure/core/utils/app_color.dart';
+// import 'package:project_structure/widgets/custom_appbar.dart';
+
+// class CreateNoteScreen extends StatefulWidget {
+//   const CreateNoteScreen({super.key});
+
+//   @override
+//   State<CreateNoteScreen> createState() => _CreateNoteScreenState();
+// }
+
+// class _CreateNoteScreenState extends State<CreateNoteScreen> {
+//   final titleController = TextEditingController();
+//   final contentController = TextEditingController();
+
+//   // THE LOCAL SAVE FUNCTION
+//   void _saveNoteLocally() async {
+//     if (titleController.text.isEmpty && contentController.text.isEmpty) {
+//       Get.back();
+//       return;
+//     }
+
+//     // 1. Prepare the data map
+//     final newNoteData = {
+//       "title": titleController.text.isEmpty ? "Untitled" : titleController.text,
+//       "subtitle": contentController.text,
+//       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
+//       "hasImage": false,
+//       "isLocked": false,
+//     };
+
+//     // 2. Add to the local Hive box
+//     final box = Hive.box('student_notes');
+//     await box.add(newNoteData);
+
+//     // 3. Print success message and go back
+//     print("SUCCESS: Note saved to local database!");
+
+//     Get.back(); // Close screen
+
+//     Get.snackbar(
+//       "Success",
+//       "Note created successfully",
+//       backgroundColor: Colors.green,
+//       colorText: Colors.white,
+//       snackPosition: SnackPosition.TOP,
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: const Color(0xFFF8F9FB),
+//       appBar: customAppBar(
+//         title: "Create Note",
+//         titleColor: AppColor().primaryColor,
+//         context: context,
+//         leadingColor: AppColor().primaryColor,
+//         actions: [
+//           IconButton(
+//             onPressed: () {},
+//             icon: Image.asset('assets/images/undo.png', width: 24, height: 24, color: AppColor().primaryColor),
+//           ),
+//           IconButton(
+//             onPressed: () {},
+//             icon: Image.asset('assets/images/redo.png', width: 24, height: 24, color: AppColor().primaryColor),
+//           ),
+//           PopupMenuButton<String>(
+//             icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
+//             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+//             offset: const Offset(0, 50),
+//             color: Colors.white,
+//             onSelected: (value) => (value, context),
+//             itemBuilder: (context) => [],
+//           ),
+//         ],
+//       ),
+//       body: Padding(
+//         padding: const EdgeInsets.all(24.0),
+//         child: Column(
+//           children: [
+//             TextField(
+//               controller: titleController,
+//               decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
+//               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+//             ),
+//             Expanded(
+//               child: TextField(
+//                 controller: contentController,
+//                 maxLines: null,
+//                 decoration: const InputDecoration(hintText: 'Note something down', border: InputBorder.none),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//       bottomNavigationBar: SafeArea(
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.end,
+//           children: [
+//             IconButton(
+//               icon: const Icon(Icons.send_outlined, color: Colors.blueAccent),
+//               onPressed: _saveNoteLocally, // TRIGGER SAVE
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+//version 2 have create,delete, pinnded, edit
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/controllers/notes/note_controller.dart';
+import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:project_structure/core/utils/app_color.dart';
-import 'package:project_structure/views/create/components/background_component.dart';
-import 'package:project_structure/views/create/components/choose_folder_component.dart';
-import 'package:project_structure/views/create/components/emoji_component.dart';
-import 'package:project_structure/views/create/components/format_component.dart';
-import 'package:project_structure/views/create/components/grid_selector_component.dart';
-import 'package:project_structure/views/create/components/media_component.dart';
-import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
-import 'package:project_structure/widgets/custom_dialog.dart';
 
 class CreateNoteScreen extends StatefulWidget {
-  const CreateNoteScreen({super.key});
+  final bool isEditing;
+  final int? noteKey;
+  final Map? existingNote;
+
+  const CreateNoteScreen({super.key, this.isEditing = false, this.noteKey, this.existingNote});
 
   @override
   State<CreateNoteScreen> createState() => _CreateNoteScreenState();
 }
 
 class _CreateNoteScreenState extends State<CreateNoteScreen> {
-  // Initialize the controller
-  final NoteController controller = Get.put(NoteController());
+  late TextEditingController titleController;
+  late TextEditingController contentController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fill text if we are editing
+    titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
+    contentController = TextEditingController(text: widget.existingNote?['subtitle'] ?? "");
+  }
+
+  void _saveNote() async {
+    if (titleController.text.isEmpty && contentController.text.isEmpty) {
+      Get.back();
+      return;
+    }
+
+    final box = Hive.box('student_notes');
+
+    // Data Map
+    final noteData = {
+      "title": titleController.text,
+      "subtitle": contentController.text,
+      "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
+      "isPinned": widget.existingNote?['isPinned'] ?? false, // Keep pin status if editing
+    };
+    Get.back(); // Close screen
+
+    if (widget.isEditing && widget.noteKey != null) {
+      // UPDATE: Overwrite at specific index
+      await box.putAt(widget.noteKey!, noteData);
+      Get.snackbar("Updated", "Note updated successfully", backgroundColor: Colors.green, colorText: Colors.white);
+    } else {
+      // CREATE: Add new
+      await box.add(noteData);
+      Get.snackbar("Success", "Note created successfully", backgroundColor: Colors.blue, colorText: Colors.white);
+    }
+
+    Get.back();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+      // appBar: AppBar(title: Text(widget.isEditing ? "Edit Note" : "Create Note")),
       appBar: customAppBar(
-        title: "Create Note",
+        title: widget.isEditing ? "Edit Note" : "Create Note",
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
-          Obx(() => IconButton(
-                onPressed: controller.history.length > 1 ? () => controller.undo() : null,
-                icon: Image.asset('assets/images/undo.png', width: 24, height: 24, color: controller.history.length > 1 ? AppColor().primaryColor : Colors.grey),
-              )),
-          Obx(() => IconButton(
-                onPressed: controller.redoStack.isNotEmpty ? () => controller.redo() : null,
-                icon: Image.asset('assets/images/redo.png', width: 24, height: 24, color: controller.redoStack.isNotEmpty ? AppColor().primaryColor : Colors.grey),
-              )),
+          IconButton(
+            onPressed: () {},
+            icon: Image.asset('assets/images/undo.png', width: 24, height: 24, color: AppColor().primaryColor),
+          ),
+          IconButton(
+            onPressed: () {},
+            icon: Image.asset('assets/images/redo.png', width: 24, height: 24, color: AppColor().primaryColor),
+          ),
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             offset: const Offset(0, 50),
             color: Colors.white,
-            onSelected: (value) => _handleMenuSelection(value, context),
-            itemBuilder: (context) => [
-              _buildPopupItem('Lock', Icons.lock_outline),
-              _buildPopupItem('Pinned', Icons.push_pin_outlined),
-              _buildPopupItem('Share', Icons.share_outlined),
-              _buildPopupItem('Lines & Grids', Icons.grid_on_outlined),
-              _buildPopupItem('Move Folder', Icons.folder_outlined),
-              _buildPopupItem('Delete', Icons.delete_outline, color: Colors.red),
-            ],
+            onSelected: (value) => (value, context),
+            itemBuilder: (context) => [],
           ),
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
             TextField(
-              controller: controller.titleController,
-              decoration: const InputDecoration(
-                hintText: 'Title',
-                hintStyle: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
-                border: InputBorder.none,
-              ),
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, fontFamily: 'EN-Bold'),
+              controller: titleController,
+              decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             Expanded(
               child: TextField(
-                controller: controller.contentController,
+                controller: contentController,
                 maxLines: null,
-                decoration: const InputDecoration(
-                  hintText: 'Note something down',
-                  hintStyle: TextStyle(fontSize: 18, color: Colors.grey, fontFamily: 'EN-REGULAR'),
-                  border: InputBorder.none,
-                ),
-                style: const TextStyle(fontSize: 18),
+                decoration: const InputDecoration(hintText: 'Content...', border: InputBorder.none),
               ),
             ),
           ],
         ),
       ),
       bottomNavigationBar: SafeArea(
-        child: Container(
-          margin: const EdgeInsets.all(15),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(15),
-            boxShadow: [
-              BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 1),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  _bottomIcon(Icons.image_outlined, () => showMediaSheet(context)),
-                  _bottomIcon(Icons.emoji_emotions_outlined, () => showEmojiSheet(context)),
-                  _bottomIcon(
-                      Icons.text_fields,
-                      () => showFormatSheet(
-                            context,
-                          )),
-                  _bottomIcon(Icons.palette_outlined, () => showBackgroundSheet(context)),
-                ],
-              ),
-              IconButton(
-                icon: const Icon(Icons.send_outlined, color: Colors.blueAccent),
-                onPressed: () {},
-              ),
-            ],
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.send_outlined, color: Colors.blueAccent, size: 30),
+              onPressed: _saveNote,
+            ),
+          ],
         ),
       ),
     );
-  }
-}
-// --- HELPER WIDGETS ---
-
-Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
-  return IconButton(
-    icon: Icon(icon, color: Colors.black54, size: 24),
-    onPressed: onPressed,
-  );
-}
-
-PopupMenuItem<String> _buildPopupItem(String title, IconData icon, {Color? color}) {
-  return PopupMenuItem<String>(
-    value: title,
-    child: Row(
-      children: [
-        Icon(icon, color: color ?? Colors.black87, size: 20),
-        const SizedBox(width: 12),
-        Text(title, style: TextStyle(color: color ?? Colors.black87, fontSize: 16, fontFamily: 'EN-REGULAR')),
-      ],
-    ),
-  );
-}
-
-void _handleMenuSelection(String value, BuildContext context) async {
-  final NoteController controller = Get.find<NoteController>();
-
-  switch (value) {
-    case 'Lock':
-      Get.to(() => const CreatePasswordScreen());
-      break;
-
-    case 'Pinned':
-      controller.togglePin();
-      break;
-
-    case 'Share':
-      final text = "${controller.titleController.text}\n\n${controller.contentController.text}";
-      if (text.trim().isNotEmpty) {
-        debugPrint("Sharing: $text");
-      }
-      break;
-
-    case 'Lines & Grids':
-      showGridSelector(context, controller);
-      break;
-
-    case 'Move Folder':
-      showChooseFolderSheet(
-        context: context,
-        onDone: (folder) {
-          debugPrint("Moved to: $folder");
-        },
-      );
-      break;
-
-    case 'Delete':
-      await showConfirmDeleteDialog(
-        context: context,
-        title: 'Delete Note',
-        subTitle: 'Are you sure you want to delete this note?',
-        onConfirm: () {
-          Get.back(); // Close dialog
-          Get.back(); // Exit screen
-        },
-      );
-      break;
   }
 }
