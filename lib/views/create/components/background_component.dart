@@ -1,86 +1,254 @@
-import 'package:flutter/material.dart';
+// // --- BACKGROUND PALETTE SHEET ---
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
 
-void showBackgroundSheet(BuildContext context) {
-  // Mock data for colors and background image paths
-  final List<Color> bgColors = [
-    Color(0xFF8D4B3D), Color(0xFF438A3E), Color(0xFFE57C38), Color(0xFF1B998B),
-    Color(0xFF4A0E0E), Color(0xFF34495E), Color(0xFF959595), Color(0xFFD4C300),
-    Color(0xFF748CAB), Color(0xFF2E5BCC), Color(0xFFE60000), Color(0xFF27AE60),
-    Color(0xFF8E00E6), Color(0xFF63392D), Color(0xFFB35E26), Color(0xFF6A1B71),
-  ];
+// void showPaletteSheet({
+//   required BuildContext context,
+//   required Function(Color) onColorSelected,
+// }) {
+//   showModalBottomSheet(
+//     context: context,
+//     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+//     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+//     builder: (context) => Padding(
+//       padding: const EdgeInsets.all(20),
+//       child: Column(
+//         mainAxisSize: MainAxisSize.min,
+//         children: [
+//           Container(
+//             width: 40,
+//             height: 4,
+//             margin: const EdgeInsets.only(bottom: 10),
+//             decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
+//           ),
+//           Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//             children: [
+//               TextButton(
+//                   onPressed: () => Navigator.pop(context),
+//                   child: Text("Cancel",
+//                       style: TextStyle(
+//                         color: Colors.red,
+//                         fontSize: context.isPhone ? 16 : 18,
+//                         fontFamily: 'EN-REGULAR',
+//                       ))),
+//               Text("Note Background",
+//                   style: TextStyle(
+//                     fontSize: context.isPhone ? 16 : 18,
+//                     fontFamily: 'EN-BOLD',
+//                   )),
+//             ],
+//           ),
+//           const SizedBox(height: 20),
+//           Wrap(
+//             spacing: 15,
+//             runSpacing: 15,
+//             children: [
+//               Colors.white,
+//               // const Color(0xFFFFF9C4),
+//               // const Color(0xFFF8BBD0),
+//               // const Color(0xFFE1F5FE),
+//               // const Color(0xFFE8F5E9),
+//               // const Color(0xFFFFE0B2),
+//               // // More soft pastel colors
+//               // const Color(0xFFEDE7F6), // Light purple
+//               // const Color(0xFFD1C4E9), // Lavender
+//               // const Color(0xFFF3E5F5), // Soft violet
+//               // const Color(0xFFFFEBEE), // Very light red
+//               // const Color(0xFFFFF3E0), // Cream orange
+//               // const Color(0xFFE0F7FA), // Cyan light
+//               // const Color(0xFFF1F8E9), // Lime light
+//               // const Color(0xFFFFFDE7), // Very soft yellow
+//               // const Color(0xFFECEFF1), // Light grey
+//               // const Color(0xFFD7CCC8), // Light brown
 
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-    ),
-    builder: (context) => DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      maxChildSize: 0.9,
-      expand: false,
-      builder: (context, scrollController) => Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            // Handle & Cancel
-            Center(
-              child: Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10))),
-            ),
-            Row(
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel", style: TextStyle(color: Colors.red, fontSize: 16)),
-                ),
-              ],
-            ),
-            // Solid Colors Grid
-            Expanded(
-              child: GridView.builder(
-                controller: scrollController,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 4,
-                  mainAxisSpacing: 15,
-                  crossAxisSpacing: 15,
-                ),
-                itemCount: bgColors.length,
-                itemBuilder: (context, index) => Container(
-                  decoration: BoxDecoration(
-                    color: bgColors[index],
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2))],
-                  ),
-                  child: index == 0 // Show checkmark on the selected item
-                      ? const Icon(Icons.check, color: Colors.white70, size: 30)
-                      : null,
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            // Image Presets Row
-            SizedBox(
-              height: 80,
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: 3,
-                separatorBuilder: (context, index) => const SizedBox(width: 15),
-                itemBuilder: (context, index) => Container(
-                  width: 120,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: const DecorationImage(
-                      image: NetworkImage('https://via.placeholder.com/120x80'), // Replace with your assets
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    ),
-  );
-}
+//               const Color(0xFFFFF1F0),
+//               const Color(0xFFFFF7E6),
+//               const Color(0xFFFFFBEB),
+//               const Color(0xFFF0FFF4),
+//               const Color(0xFFE6FFFA),
+//               const Color(0xFFF0F5FF),
+//               const Color(0xFFF9F0FF),
+//               const Color(0xFFFFE4E1),
+//               const Color(0xFFFFEFD5),
+//               const Color(0xFFFFF0F5),
+//               const Color(0xFFF0FFFF),
+//               const Color(0xFFF5FFFA),
+
+//               const Color(0xFFEAF4F4),
+//               const Color(0xFFDFF5E1),
+//               const Color(0xFFF7FBEF),
+//               const Color(0xFFE3F6F5),
+//               const Color(0xFFF6FFF8),
+//               const Color(0xFFE8F8F5),
+//               const Color(0xFFF0FDF4),
+//               const Color(0xFFE6F7FF),
+
+//               const Color(0xFFFFE4F0),
+//               const Color(0xFFFFF0F6),
+//               const Color(0xFFFFF5E4),
+//               const Color(0xFFE4F9FF),
+//               const Color(0xFFEAF0FF),
+//               const Color(0xFFF4E4FF),
+//               const Color(0xFFFFE4E4),
+
+//               const Color(0xFFFAFAFA),
+//               const Color(0xFFF7F7F7),
+//               const Color(0xFFF5F5F5),
+//               const Color(0xFFF3F4F6),
+//               const Color(0xFFF1F5F9),
+//               const Color(0xFFF8FAFC),
+//             ]
+//                 .map((color) => GestureDetector(
+//                       onTap: () {
+//                         onColorSelected(color);
+//                         Navigator.pop(context);
+//                       },
+//                       child: CircleAvatar(
+//                         backgroundColor: color,
+//                         radius: 25,
+//                         child: Container(decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.black12))),
+//                       ),
+//                     ))
+//                 .toList(),
+//           ),
+//           const SizedBox(height: 20),
+//         ],
+//       ),
+//     ),
+//   );
+// }
+
+// // --- BACKGROUND PALETTE SHEET ---
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+
+// void showPaletteSheet({
+//   required BuildContext context,
+//   required Function(Color) onColorSelected,
+//   Color? selectedColor,
+// }) {
+//   final colors = [
+//     Colors.white,
+//     const Color(0xFFFFF1F0),
+//     const Color(0xFFFFF7E6),
+//     const Color(0xFFFFFBEB),
+//     const Color(0xFFF0FFF4),
+//     const Color(0xFFE6FFFA),
+//     const Color(0xFFF0F5FF),
+//     const Color(0xFFF9F0FF),
+//     const Color(0xFFFFE4E1),
+//     const Color(0xFFFFEFD5),
+//     const Color(0xFFFFF0F5),
+//     const Color(0xFFF0FFFF),
+//     const Color(0xFFF5FFFA),
+//     const Color(0xFFEAF4F4),
+//     const Color(0xFFDFF5E1),
+//     const Color(0xFFF7FBEF),
+//     const Color(0xFFE3F6F5),
+//     const Color(0xFFF6FFF8),
+//     const Color(0xFFE8F8F5),
+//     const Color(0xFFF0FDF4),
+//     const Color(0xFFE6F7FF),
+//   ];
+
+//   showModalBottomSheet(
+//     context: context,
+//     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+//     shape: const RoundedRectangleBorder(
+//       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+//     ),
+//     builder: (context) => DraggableScrollableSheet(
+//       expand: false,
+//       initialChildSize: 0.6,
+//       maxChildSize: 0.9,
+//       minChildSize: 0.4,
+//       builder: (context, scrollController) {
+//         return Padding(
+//           padding: const EdgeInsets.all(20),
+//           child: SingleChildScrollView(
+//             controller: scrollController,
+//             child: Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 /// Drag indicator
+//                 Center(
+//                   child: Container(
+//                     width: 40,
+//                     height: 4,
+//                     margin: const EdgeInsets.only(bottom: 10),
+//                     decoration: BoxDecoration(
+//                       color: Colors.grey[300],
+//                       borderRadius: BorderRadius.circular(10),
+//                     ),
+//                   ),
+//                 ),
+
+//                 /// Header
+//                 Row(
+//                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//                   children: [
+//                     TextButton(
+//                         onPressed: () => Navigator.pop(context),
+//                         child: Text("Cancel",
+//                             style: TextStyle(
+//                               color: Colors.red,
+//                               fontSize: context.isPhone ? 16 : 18,
+//                               fontFamily: 'EN-REGULAR',
+//                             ))),
+//                     Text("Note Background",
+//                         style: TextStyle(
+//                           fontSize: context.isPhone ? 16 : 18,
+//                           fontFamily: 'EN-BOLD',
+//                         )),
+//                   ],
+//                 ),
+
+//                 const SizedBox(height: 20),
+
+//                 /// Color grid
+//                 GridView.builder(
+//                   controller: scrollController,
+//                   shrinkWrap: true,
+//                   physics: const NeverScrollableScrollPhysics(),
+//                   itemCount: colors.length,
+//                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//                     crossAxisCount: context.isPhone ? 4 : 6,
+//                     crossAxisSpacing: 12,
+//                     mainAxisSpacing: 12,
+//                     childAspectRatio: 1.6,
+//                   ),
+//                   itemBuilder: (context, index) {
+//                     final color = colors[index];
+//                     final isSelected = selectedColor == color;
+
+//                     return GestureDetector(
+//                       onTap: () {
+//                         onColorSelected(color);
+//                         Navigator.pop(context);
+//                       },
+//                       child: AnimatedContainer(
+//                         duration: const Duration(milliseconds: 200),
+//                         decoration: BoxDecoration(
+//                           borderRadius: BorderRadius.circular(12),
+//                           color: color,
+//                           border: Border.all(
+//                             color: isSelected ? Colors.blue : Colors.black12,
+//                             width: isSelected ? 2 : 1,
+//                           ),
+//                         ),
+//                         child: isSelected ? const Icon(Icons.check, color: Colors.blue) : null,
+//                       ),
+//                     );
+//                   },
+//                 ),
+
+//                 const SizedBox(height: 30),
+//               ],
+//             ),
+//           ),
+//         );
+//       },
+//     ),
+//   );
+// }

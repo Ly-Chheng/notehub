@@ -36,9 +36,8 @@ void showCreateFolderSheet(BuildContext context) {
                 ),
                 Text("Create Folder",
                     style: TextStyle(
-                      fontSize: context.isPhone ? 16 : 28,
+                      fontSize: context.isPhone ? 16 : 18,
                       fontFamily: 'EN-BOLD',
-                      color: AppColor().black,
                     )),
                 TextButton(
                   onPressed: () {

@@ -466,6 +466,18 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   Widget _buildSlidableNote(int actualBoxIndex, dynamic note) {
     bool isPinned = note['isPinned'] ?? false;
 
+    // Retrieve formatting from Hive data
+    // 1. Retrieve Text Formatting
+    bool noteIsBold = note['isBold'] ?? false;
+    bool noteIsItalic = note['isItalic'] ?? false;
+    bool noteIsUnderlined = note['isUnderlined'] ?? false;
+    bool noteIsStrikethrough = note['isStrikethrough'] ?? false;
+
+    // 2. Retrieve Colors
+    int? colorValue = note['colorValue'];
+    Color noteColor = colorValue != null ? Color(colorValue) : Colors.black;
+    final bgColor = Color(note['bgColorValue'] ?? 0xFFFFFFFF);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Slidable(
@@ -515,7 +527,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         child: Container(
           padding: const EdgeInsets.all(15),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: bgColor,
             borderRadius: BorderRadius.circular(10),
           ),
           child: Row(
@@ -528,7 +540,24 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   children: [
                     Text(note['title'] ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontFamily: 'EN-BOLD')),
                     const SizedBox(height: 10),
-                    Text(note['subtitle'] ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 16, fontFamily: 'EN-REGULAR')),
+                    Text(
+                      note['subtitle'] ?? "",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'EN-REGULAR',
+                        // --- APPLY FORMATTING HERE ---
+                        color: noteColor.withOpacity(0.8),
+                        fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
+                        fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
+                        // decoration: noteIsUnderlined ? TextDecoration.underline : TextDecoration.none,
+                        decoration: TextDecoration.combine([
+                          if (noteIsUnderlined) TextDecoration.underline,
+                          if (noteIsStrikethrough) TextDecoration.lineThrough,
+                        ]),
+                      ),
+                    ),
                     const SizedBox(height: 10),
                     Text(note['date'] ?? "", style: const TextStyle(fontSize: 12, fontFamily: 'EN-REGULAR')),
                   ],

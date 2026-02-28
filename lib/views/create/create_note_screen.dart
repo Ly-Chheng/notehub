@@ -118,6 +118,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
 class CreateNoteScreen extends StatefulWidget {
@@ -135,12 +136,31 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   late TextEditingController titleController;
   late TextEditingController contentController;
 
+  // Formatting State
+  bool isBold = false;
+  bool isItalic = false;
+  bool isUnderlined = false;
+  bool isStrikethrough = false;
+  Color selectedColor = Colors.black;
+  Color noteBgColor = Colors.white;
+
   @override
   void initState() {
     super.initState();
     // Fill text if we are editing
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
     contentController = TextEditingController(text: widget.existingNote?['subtitle'] ?? "");
+
+    // Load existing styles if editing
+    if (widget.isEditing && widget.existingNote != null) {
+      isBold = widget.existingNote?['isBold'] ?? false;
+      isItalic = widget.existingNote?['isItalic'] ?? false;
+      isUnderlined = widget.existingNote?['isUnderlined'] ?? false;
+      isStrikethrough = widget.existingNote?['isStrikethrough'] ?? false;
+      int? colorVal = widget.existingNote?['colorValue'];
+      noteBgColor = Color(widget.existingNote?['bgColorValue'] ?? 0xFFFFFFFF);
+      if (colorVal != null) selectedColor = Color(colorVal);
+    }
   }
 
   void _saveNote() async {
@@ -157,6 +177,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "subtitle": contentController.text,
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
       "isPinned": widget.existingNote?['isPinned'] ?? false, // Keep pin status if editing
+      // SAVE STYLES HERE
+      "isBold": isBold,
+      "isItalic": isItalic,
+      "isUnderlined": isUnderlined,
+      "isStrikethrough": isStrikethrough,
+      "colorValue": selectedColor.value,
+      "bgColorValue": noteBgColor.value,
     };
     Get.back(); // Close screen
 
@@ -173,10 +200,43 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     Get.back();
   }
 
+  //Format
+  void _insertBulletPoint() {
+    final text = contentController.text;
+    final selection = contentController.selection;
+
+    // Insert "• " at the current cursor position
+    final String newText = text.replaceRange(selection.start, selection.end, text.isEmpty ? "• " : "\n• ");
+
+    contentController.text = newText;
+
+    // Move cursor to the end of the bullet point
+    contentController.selection = TextSelection.fromPosition(
+      TextPosition(offset: selection.start + (text.isEmpty ? 2 : 3)),
+    );
+  }
+
+  void _insertNumberedList() {
+    final text = contentController.text;
+    final selection = contentController.selection;
+
+    // Insert "1. " at the current cursor position
+    final String insertion = text.isEmpty ? "1. " : "\n1. ";
+    final String newText = text.replaceRange(selection.start, selection.end, insertion);
+
+    contentController.text = newText;
+
+    // Move cursor to the end of the "1. " string
+    contentController.selection = TextSelection.fromPosition(
+      TextPosition(offset: selection.start + insertion.length),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(title: Text(widget.isEditing ? "Edit Note" : "Create Note")),
+      backgroundColor: noteBgColor,
+      resizeToAvoidBottomInset: true,
       appBar: customAppBar(
         title: widget.isEditing ? "Edit Note" : "Create Note",
         titleColor: AppColor().primaryColor,
@@ -214,6 +274,17 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               child: TextField(
                 controller: contentController,
                 maxLines: null,
+                style: TextStyle(
+                  fontSize: 18,
+                  color: selectedColor,
+                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                  fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
+                  // decoration: isUnderlined ? TextDecoration.underline : TextDecoration.none,
+                  decoration: TextDecoration.combine([
+                    if (isUnderlined) TextDecoration.underline,
+                    if (isStrikethrough) TextDecoration.lineThrough,
+                  ]),
+                ),
                 decoration: const InputDecoration(hintText: 'Content...', border: InputBorder.none),
               ),
             ),
@@ -221,16 +292,73 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         ),
       ),
       bottomNavigationBar: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.send_outlined, color: Colors.blueAccent, size: 30),
-              onPressed: _saveNote,
+        child: Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Container(
+            margin: const EdgeInsets.all(15),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(40),
+              boxShadow: [
+                BoxShadow(color: Colors.black12, blurRadius: 10, spreadRadius: 1),
+              ],
             ),
-          ],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    _bottomIcon(Icons.image_outlined, () {}),
+                    _bottomIcon(Icons.text_fields, () {
+                      showFormatSheet(
+                        context: context,
+                        isBold: isBold,
+                        isItalic: isItalic,
+                        isUnderlined: isUnderlined,
+                        isStrikethrough: isStrikethrough,
+                        selectedColor: selectedColor,
+                        onBoldChanged: (val) => setState(() => isBold = val),
+                        onItalicChanged: (val) => setState(() => isItalic = val),
+                        onUnderlineChanged: (val) => setState(() => isUnderlined = val),
+                        onStrikethroughChanged: (val) => setState(() => isStrikethrough = val),
+                        onColorChanged: (val) => setState(() => selectedColor = val),
+                        onBulletPressed: _insertBulletPoint,
+                        onNumberedPressed: _insertNumberedList,
+                      );
+                    }),
+                    // IconButton(icon: const Icon(Icons.palette_outlined), onPressed: () => showPaletteSheet(context: context, onColorSelected: (c) => setState(() => noteBgColor = c))),
+                    _bottomIcon(Icons.palette_outlined, () {
+                      showPaletteSheet(
+                        context: context,
+                        selectedColor: noteBgColor, // Pass current background color here
+                        onColorSelected: (color) {
+                          setState(() {
+                            noteBgColor = color;
+                          });
+                        },
+                      );
+                    }),
+                  ],
+                ),
+                IconButton(
+                  icon: const Icon(Icons.send_outlined, color: Colors.blueAccent),
+                  onPressed: _saveNote,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
+    return IconButton(
+      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: 24),
+      onPressed: onPressed,
     );
   }
 }
