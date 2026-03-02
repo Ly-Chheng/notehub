@@ -33,17 +33,14 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive
+// 2. Initialize Hive properly
   await Hive.initFlutter();
 
-  // Register the Adapter
-  Hive.registerAdapter(FolderAdapter());
-
-  // Open the box
-  await Hive.openBox<Folder>('folders_box');
-
-  // This name 'student_notes' must match in both files
+  // 3. Open Boxes as Generic (No <Models>)
+  // If you still get errors, you can use Hive.deleteBoxFromDisk('folders_box') 
+  // once to force a reset, then remove that line.
   await Hive.openBox('student_notes');
+  await Hive.openBox('folders_box');
 
   runApp(const MyApp());
 }

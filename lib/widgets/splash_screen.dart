@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/splash_controller.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -23,6 +24,14 @@ class SplashScreen extends StatelessWidget {
               'assets/icons/Flutter_logo.png',
               fit: BoxFit.cover,
               height: 250,
+            ),
+            Text(
+              'Study Notes',
+              style: TextStyle(
+                fontSize: 20,
+                fontFamily: 'EN-BOLD',
+                color: AppColor().primaryColor,
+              ),
             ),
           ],
         ),

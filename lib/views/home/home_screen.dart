@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:project_structure/controllers/bottom_navigation/navigationbar_controller.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:project_structure/core/utils/app_color.dart';
-import 'package:project_structure/models/folder_model.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/views/create/folder_note_list_screen.dart.dart';
 
@@ -15,117 +14,308 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final controller = Get.find<BottomNavigationBarController>();
-  bool isGrid = false;
-  final Box<Folder> folderBox = Hive.box<Folder>('folders_box');
+  final Box folderBox = Hive.box('folders_box');
+  final String defaultFolderName = "My Note";
+
+  // 1. Define the note box at the top of your _MyHomePageState
+  final Box noteBox = Hive.box('student_notes');
+
+  @override
+  void initState() {
+    super.initState();
+    _ensureDefaultFolder();
+  }
+
+  void _ensureDefaultFolder() {
+    bool exists = folderBox.values.any((f) => f['title'] == defaultFolderName);
+    if (!exists) {
+      folderBox.add({
+        "title": defaultFolderName,
+        "colorValue": Colors.orange.value,
+        "isPinned": false,
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                const Text('Folders', style: TextStyle(fontSize: 18, fontFamily: 'EN-BOLD')),
-                // IconButton(
-                //   icon: Icon(
-                //     isGrid ? Icons.list : Icons.grid_view,
-                //     color: Colors.black,
-                //     size: 20,
-                //   ),
-                //   onPressed: () => setState(() => isGrid = !isGrid),
-                // )
-              ],
-            ),
-            const SizedBox(height: 15),
-            Expanded(
-              child: ValueListenableBuilder(
-                valueListenable: folderBox.listenable(),
-                builder: (context, Box<Folder> box, _) {
-                  final folders = box.values.toList();
-
-                  if (folders.isEmpty) {
-                    return Center(
-                        child: Text(
-                      "No folders yet. Tap + to create one.",
-                      style: TextStyle(fontFamily: 'EN-REGULAR', color: Colors.grey),
-                    ));
-                  }
-
-                  return isGrid ? _buildGrid(folders) : _buildList(folders);
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColor().primaryColor,
-        foregroundColor: Colors.white,
-        onPressed: () => Get.to(() => const CreateNoteScreen()),
-        child: const Icon(Icons.add, size: 30),
-      ),
-    );
-  }
-
-  Widget _buildList(List<Folder> folders) {
-    return ListView.builder(
-      itemCount: folders.length,
-      itemBuilder: (context, index) {
-        final folder = folders[index];
-        return GestureDetector(
-          onTap: () => Get.to(() => FolderNoteListScreen()),
-          child: Dismissible(
-            key: Key(folder.key.toString()),
-            onDismissed: (direction) => folder.delete(), // Simple Swipe to Delete
-            child: _buildFolderItem(folder),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildGrid(List<Folder> folders) {
-    return GridView.builder(
-      itemCount: folders.length,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        mainAxisSpacing: 15,
-        crossAxisSpacing: 15,
-        childAspectRatio: 1.3,
-      ),
-      itemBuilder: (context, index) => _buildGridItem(folders[index]),
-    );
-  }
-
-  Widget _buildFolderItem(Folder folder) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(15)),
-      child: ListTile(
-        leading: Icon(Icons.folder, color: Color(folder.colorValue), size: 30),
-        title: Text(folder.title, style: TextStyle(fontFamily: 'EN-REGULAR', fontSize: 18, color: Theme.of(context).textTheme.bodyMedium?.color)),
-        trailing: Text("${folder.count}", style: const TextStyle(color: Colors.grey, fontFamily: 'EN-REGULAR', fontSize: 18)),
-      ),
-    );
-  }
-
-  Widget _buildGridItem(Folder folder) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(15)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.folder, color: Color(folder.colorValue), size: 35),
-          Text(folder.title, style: TextStyle(fontFamily: 'EN-REGULAR', fontSize: 18, color: Theme.of(context).textTheme.bodyMedium?.color)),
+          Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Text("Folders", style: TextStyle(fontSize: 18, fontFamily: 'EN-BOLD')),
+          ),
+          Expanded(
+            child: ValueListenableBuilder(
+              valueListenable: folderBox.listenable(),
+              builder: (context, Box box, _) {
+                List<MapEntry<dynamic, dynamic>> folders = box.toMap().entries.toList();
+
+                // iPhone Sort: 1. Default Folder, 2. Pinned Folders, 3. Rest
+                folders.sort((a, b) {
+                  if (a.value['title'] == defaultFolderName) return -1;
+                  if (b.value['title'] == defaultFolderName) return 1;
+
+                  bool aPinned = a.value['isPinned'] ?? false;
+                  bool bPinned = b.value['isPinned'] ?? false;
+                  if (aPinned && !bPinned) return -1;
+                  if (!aPinned && bPinned) return 1;
+                  return 0;
+                });
+
+                return ListView.builder(
+                  itemCount: folders.length,
+                  itemBuilder: (context, index) {
+                    final folderKey = folders[index].key;
+                    final folderData = folders[index].value;
+                    bool isDefault = folderData['title'] == defaultFolderName;
+                    bool isPinned = folderData['isPinned'] ?? false;
+
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Slidable(
+                            enabled: !isDefault,
+                            // START ACTION (Swipe Right to Pin)
+                            startActionPane: ActionPane(
+                              motion: const BehindMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: (c) {
+                                    final updated = Map<String, dynamic>.from(folderData);
+                                    updated['isPinned'] = !isPinned;
+                                    folderBox.put(folderKey, updated);
+                                  },
+                                  backgroundColor: Colors.orange,
+                                  foregroundColor: Colors.white,
+                                  icon: isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+                                  label: isPinned ? 'Unpin' : 'Pin',
+                                ),
+                              ],
+                            ),
+                            // END ACTION (Swipe Left to Edit/Delete)
+                            endActionPane: ActionPane(
+                              motion: const DrawerMotion(),
+                              children: [
+                                SlidableAction(
+                                  onPressed: (c) => _showFolderSheet(context, folderKey: folderKey, existingData: folderData),
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.edit,
+                                  label: 'Edit',
+                                ),
+                                SlidableAction(
+                                  onPressed: (c) => folderBox.delete(folderKey),
+                                  backgroundColor: Colors.red,
+                                  foregroundColor: Colors.white,
+                                  icon: Icons.delete,
+                                  label: 'Delete',
+                                ),
+                              ],
+                            ),
+                            // child: Container(
+                            //   color: Colors.white,
+                            //   child: ListTile(
+
+                            //     leading: Icon(
+                            //       isDefault ? Icons.folder_shared : Icons.folder,
+                            //       color: Color(folderData['colorValue']),
+                            //       size: 28,
+                            //     ),
+                            //     title: Row(
+                            //       children: [
+                            //         if (isPinned) const Icon(Icons.push_pin, size: 14, color: Colors.orange),
+                            //         if (isPinned) const SizedBox(width: 5),
+                            //         Text(folderData['title'], style: const TextStyle(fontSize: 17)),
+                            //       ],
+                            //     ),
+                            //     trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                            //     onTap: () => Get.to(() => FolderNoteListScreen(
+                            //           folderKey: folderKey,
+                            //           folderName: folderData['title'],
+                            //         )),
+                            //   ),
+                            // ),
+                            child: Container(
+                              color: Colors.white,
+                              child: ListTile(
+                                leading: Icon(
+                                  isDefault ? Icons.folder_shared : Icons.folder,
+                                  color: Color(folderData['colorValue']),
+                                  size: 28,
+                                ),
+                                title: Row(
+                                  children: [
+                                    if (isPinned) const Icon(Icons.push_pin, size: 14, color: Colors.orange),
+                                    if (isPinned) const SizedBox(width: 5),
+                                    Text(folderData['title'], style: const TextStyle(fontSize: 17)),
+                                  ],
+                                ),
+                                // --- UPDATED TRAILING SECTION ---
+                                trailing: SizedBox(
+                                  width: 60, // Give it enough width for the number + arrow
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      // The Note Count
+                                      ValueListenableBuilder(
+                                        valueListenable: noteBox.listenable(),
+                                        builder: (context, Box box, _) {
+                                          // Count notes where folderKey matches this folder's key
+                                          int noteCount = box.values.where((note) => note['folderKey'] == folderKey).length;
+
+                                          return Text(
+                                            "$noteCount",
+                                            style: const TextStyle(color: Colors.grey, fontSize: 16, fontFamily: 'EN-REGULAR'),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                onTap: () => Get.to(() => FolderNoteListScreen(
+                                      folderKey: folderKey,
+                                      folderName: folderData['title'],
+                                    )),
+                              ),
+                            )),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
         ],
+      ),
+      // 1. Remove the old floatingActionButton
+      // 2. Add this bottomNavigationBar to your Scaffold:
+
+      // bottomNavigationBar: BottomAppBar(
+      //   elevation: 0,
+      //   color: const Color(0xFFF2F2F7),
+      //   child: Container(
+      //     height: 50,
+      //     padding: const EdgeInsets.symmetric(horizontal: 10),
+      //     child: Row(
+      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //       children: [
+      //         // --- CREATE FOLDER BUTTON (Bottom Left) ---
+      //         IconButton(
+      //           onPressed: () => _showFolderSheet(context),
+      //           icon: const Icon(Icons.create_new_folder_outlined, color: Colors.orange, size: 28),
+      //         ),
+
+      //         // --- CREATE NOTE BUTTON (Bottom Right) ---
+      //         IconButton(
+      //           onPressed: () {
+      //             // Find the key for "My Note" folder
+      //             final defaultFolder = folderBox.values.firstWhere(
+      //               (f) => f['title'] == defaultFolderName,
+      //               orElse: () => null,
+      //             );
+
+      //             // Get the key of the default folder
+      //             dynamic defaultKey = folderBox.keyAt(folderBox.values.toList().indexOf(defaultFolder));
+
+      //             // Go straight to Create Note, tagged to "My Note"
+      //             Get.to(() => CreateNoteScreen(folderKey: defaultKey));
+      //           },
+      //           icon: const Icon(Icons.edit_note, color: Colors.orange, size: 32),
+      //         ),
+      //       ],
+      //     ),
+      //   ),
+      // ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColor().primaryColor,
+        onPressed: () {
+          // Find the key for "My Note" folder
+          final defaultFolder = folderBox.values.firstWhere(
+            (f) => f['title'] == defaultFolderName,
+            orElse: () => null,
+          );
+
+          // Get the key of the default folder
+          dynamic defaultKey = folderBox.keyAt(folderBox.values.toList().indexOf(defaultFolder));
+
+          // Go straight to Create Note, tagged to "My Note"
+          Get.to(() => CreateNoteScreen(folderKey: defaultKey));
+        },
+        child: const Icon(Icons.add, size: 30, color: Colors.white),
+      ),
+    );
+  }
+
+  // CREATE & EDIT SHEET (iPhone Style)
+  void _showFolderSheet(BuildContext context, {dynamic folderKey, dynamic existingData}) {
+    TextEditingController folderController = TextEditingController(
+      text: existingData != null ? existingData['title'] : "",
+    );
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          top: 20,
+          left: 20,
+          right: 20,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(onPressed: () => Get.back(), child: const Text("Cancel", style: TextStyle(color: Colors.red))),
+                Text(existingData == null ? "New Folder" : "Rename Folder", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                TextButton(
+                  onPressed: () {
+                    String name = folderController.text.trim();
+                    if (name.isNotEmpty) {
+                      final data = {
+                        "title": name,
+                        "colorValue": existingData != null ? existingData['colorValue'] : Colors.blue.value,
+                        "isPinned": existingData?['isPinned'] ?? false,
+                      };
+
+                      if (existingData != null) {
+                        folderBox.put(folderKey, data);
+                      } else {
+                        folderBox.add(data);
+                      }
+                      Get.back();
+                    }
+                  },
+                  child: const Text("Save", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            TextField(
+              controller: folderController,
+              autofocus: true,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: const Color(0xFFF2F2F7),
+                hintText: "Enter Name",
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
+              ),
+            ),
+            const SizedBox(height: 30),
+          ],
+        ),
       ),
     );
   }

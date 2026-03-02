@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/widgets/custom_appbar.dart';
 
 class CreateTimerScreen extends StatefulWidget {
   const CreateTimerScreen({super.key});
@@ -17,6 +20,24 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: customAppBar(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: "Back",
+        titleColor: AppColor().primaryColor,
+        context: context,
+        leadingColor: AppColor().primaryColor,
+        actions: [
+          TextButton(
+            onPressed: () {},
+            child: Text("Save",
+                style: TextStyle(
+                  color: AppColor().primaryColor,
+                  fontSize: context.isPhone ? 20 : 22,
+                  fontFamily: 'EN-SEMIBOLD',
+                )),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -27,6 +48,10 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
               _buildTimePickerSection(),
               const Spacer(),
               _buildLabelField(),
+              SizedBox(
+                height: 20,
+              ),
+              _buildQuickTimerRow(),
               const Spacer(),
               _buildStartButton(),
               const SizedBox(height: 30),
@@ -121,6 +146,47 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         boxShadow: [BoxShadow(color: Color(0x4D4D7CFF), blurRadius: 20, offset: Offset(0, 10))],
       ),
       child: Icon(Icons.play_arrow_rounded, color: Theme.of(context).cardColor, size: 50),
+    );
+  }
+
+  Widget _buildQuickTimerRow() {
+    final presets = [1, 5, 10, 15, 30];
+
+    return SizedBox(
+      height: 45,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: presets.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          final minute = presets[index];
+
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedHours = 0;
+                selectedMinutes = minute;
+                selectedSeconds = 0;
+              });
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: const Color(0xFFE8EBF6).withOpacity(0.6),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                "$minute MIN",
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:project_structure/views/focus_track/components/timer_component.dart';
 import 'package:project_structure/views/focus_track/components/stopwatch_component.dart';
-import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 
 class FocusTrackScreen extends StatefulWidget {
   const FocusTrackScreen({super.key});
@@ -14,7 +14,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
 
   final List<Widget> screens = [
     const StopwatchScreen(),
-    CreateTimerScreen(),
+    TimerComponent(),
   ];
 
   @override

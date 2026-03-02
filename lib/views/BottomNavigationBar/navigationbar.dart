@@ -108,7 +108,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
             if (controller.selectedIndex == 0) ...[
               GestureDetector(
                 onTap: () {
-                  showCreateFolderSheet(context);
+                  showFolderSheet(context);
                 },
                 child: Container(
                   padding: const EdgeInsets.all(2),
