@@ -22,8 +22,8 @@ class SplashScreen extends StatelessWidget {
             Image.asset(
               'assets/icons/note_book.png',
               fit: BoxFit.cover,
-              height: context.isPhone ? 100 : 130,
-              width: context.isPhone ? 100 : 130,
+              height: context.isPhone ? 120 : 130,
+              width: context.isPhone ? 120 : 130,
             ),
           ],
         ),

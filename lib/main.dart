@@ -32,12 +32,10 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-// 2. Initialize Hive properly
+  // 2. Initialize Hive properly
   await Hive.initFlutter();
 
   // 3. Open Boxes as Generic (No <Models>)
-  // If you still get errors, you can use Hive.deleteBoxFromDisk('folders_box') 
-  // once to force a reset, then remove that line.
   await Hive.openBox('student_notes');
   await Hive.openBox('folders_box');
 
