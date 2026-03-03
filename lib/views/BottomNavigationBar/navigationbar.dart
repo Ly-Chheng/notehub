@@ -148,7 +148,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: const Color(0xFF4D7CFF).withOpacity(0.3)),
                   ),
-                  child: const Icon(Icons.add, color: Color(0xFF4D7CFF), size: 20),
+                  child: Icon(Icons.add, color: Color(0xFF4D7CFF), size: context.isPhone ? 20 : 25),
                 ),
               ),
             SizedBox(width: 10),

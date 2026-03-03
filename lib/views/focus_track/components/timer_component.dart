@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
@@ -15,7 +17,22 @@ class TimerComponent extends StatefulWidget {
 class _TimerComponentState extends State<TimerComponent> {
   bool isGridView = false;
   bool isSelectionMode = false;
-  Set<int> selectedIndexes = {};
+  Timer? _timer;
+  int _milliseconds = 0;
+  bool _isRunning = false;
+
+  void _startStopwatch() {
+    if (_isRunning) {
+      _timer?.cancel();
+    } else {
+      _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
+        setState(() {
+          _milliseconds += 10;
+        });
+      });
+    }
+    setState(() => _isRunning = !_isRunning);
+  }
 
   // Reference to our opened box
   final Box noteBox = Hive.box('student_notes');
@@ -57,15 +74,8 @@ class _TimerComponentState extends State<TimerComponent> {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColor().primaryColor,
-        foregroundColor: Colors.white,
-        onPressed: () => Get.to(() => const CreateNoteScreen()),
-        child: const Icon(Icons.add, size: 30),
-      ),
     );
   }
-
 
   Widget _buildSlidableNote(int actualBoxIndex, dynamic note) {
     bool isPinned = note['isPinned'] ?? false;
@@ -128,49 +138,93 @@ class _TimerComponentState extends State<TimerComponent> {
             ),
           ],
         ),
-        child: Container(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: bgColor,
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: Row(
-            children: [
-              if (isPinned) const Icon(Icons.push_pin, color: Colors.orange),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(note['title'] ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontFamily: 'EN-BOLD')),
-                    const SizedBox(height: 10),
-                    Text(
-                      note['subtitle'] ?? "",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'EN-REGULAR',
-                        // --- APPLY FORMATTING HERE ---
-                        color: noteColor.withOpacity(0.8),
-                        fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
-                        fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
-                        // decoration: noteIsUnderlined ? TextDecoration.underline : TextDecoration.none,
-                        decoration: TextDecoration.combine([
-                          if (noteIsUnderlined) TextDecoration.underline,
-                          if (noteIsStrikethrough) TextDecoration.lineThrough,
-                        ]),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Text(note['date'] ?? "", style: const TextStyle(fontSize: 12, fontFamily: 'EN-REGULAR')),
-                  ],
-                ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Timers", maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 18, fontFamily: 'EN-BOLD')),
+            Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(10),
               ),
-            ],
-          ),
+              child: Row(
+                children: [
+                  if (isPinned) const Icon(Icons.push_pin, color: Colors.orange),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(note['title'] ?? "", maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 25, fontFamily: 'EN-BOLD')),
+                        const SizedBox(height: 10),
+                        Text(
+                          note['subtitle'] ?? "",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'EN-REGULAR',
+                            // --- APPLY FORMATTING HERE ---
+                            color: noteColor.withOpacity(0.8),
+                            fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
+                            fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
+                            // decoration: noteIsUnderlined ? TextDecoration.underline : TextDecoration.none,
+                            decoration: TextDecoration.combine([
+                              if (noteIsUnderlined) TextDecoration.underline,
+                              if (noteIsStrikethrough) TextDecoration.lineThrough,
+                            ]),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  _buildTimerDisplay(),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _buildTimerDisplay() {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: const BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.transparent,
+            boxShadow: [
+              BoxShadow(color: Colors.white, offset: Offset(-5, -5), blurRadius: 15),
+              BoxShadow(color: Color(0x1A000000), offset: Offset(5, 5), blurRadius: 15),
+            ],
+          ),
+          child: CircularProgressIndicator(
+            value: (_milliseconds % 60000) / 60000, // Syncs with seconds
+            strokeWidth: 5,
+            backgroundColor: Theme.of(context).cardColor,
+            valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFFF0F2F9)),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GestureDetector(
+              onTap: _startStopwatch,
+              child: Icon(
+                _isRunning ? Icons.stop_circle_outlined : Icons.play_circle_filled_outlined,
+                size: 60,
+                color: Colors.white,
+              ),
+            ),
+          ],
+        )
+      ],
     );
   }
 }

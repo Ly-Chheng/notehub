@@ -144,15 +144,18 @@ class _MyHomePageState extends State<MyHomePage> {
                               color: Colors.white,
                               child: ListTile(
                                 leading: Icon(
-                                  isDefault ? Icons.folder_shared : Icons.folder,
+                                  isDefault ? Icons.folder : Icons.folder,
                                   color: Color(folderData['colorValue']),
                                   size: 28,
                                 ),
                                 title: Row(
                                   children: [
-                                    if (isPinned) const Icon(Icons.push_pin, size: 14, color: Colors.orange),
+                                    if (isPinned) Icon(Icons.push_pin, size: context.isPhone ? 14 : 16, color: Colors.orange),
                                     if (isPinned) const SizedBox(width: 5),
-                                    Text(folderData['title'], style: const TextStyle(fontSize: 17)),
+                                    Text(folderData['title'],
+                                        style: TextStyle(
+                                          fontSize: context.isPhone ? 18 : 20,
+                                        )),
                                   ],
                                 ),
                                 // --- UPDATED TRAILING SECTION ---
@@ -170,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                           return Text(
                                             "$noteCount",
-                                            style: const TextStyle(color: Colors.grey, fontSize: 16, fontFamily: 'EN-REGULAR'),
+                                            style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR'),
                                           );
                                         },
                                       ),
@@ -246,7 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
           // Go straight to Create Note, tagged to "My Note"
           Get.to(() => CreateNoteScreen(folderKey: defaultKey));
         },
-        child: const Icon(Icons.add, size: 30, color: Colors.white),
+        child: Icon(Icons.add, size: context.isPhone ? 30 : 33, color: Colors.white),
       ),
     );
   }

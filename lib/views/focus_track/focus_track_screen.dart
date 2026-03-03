@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/views/focus_track/components/timer_component.dart';
 import 'package:project_structure/views/focus_track/components/stopwatch_component.dart';
 
@@ -13,7 +14,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
   int selectedIndex = 0;
 
   final List<Widget> screens = [
-    const StopwatchScreen(),
+    StopwatchScreen(),
     TimerComponent(),
   ];
 
@@ -24,10 +25,10 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: _buildToggleSwitch(),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: _buildToggleSwitch(context),
             ),
 
             /// Screen content
@@ -38,17 +39,16 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
     );
   }
 
-  Widget _buildToggleSwitch() {
+  Widget _buildToggleSwitch(BuildContext context) {
     return Container(
-      height: 45,
-      padding: const EdgeInsets.all(4),
+      height: context.isPhone ? 45 : 60,
+      padding: EdgeInsets.all(context.isPhone ? 4 : 7),
       decoration: BoxDecoration(
         color: const Color(0xFFE8EBF6),
         borderRadius: BorderRadius.circular(25),
       ),
       child: Stack(
         children: [
-          /// Sliding active tab
           AnimatedAlign(
             duration: const Duration(milliseconds: 250),
             alignment: selectedIndex == 0 ? Alignment.centerLeft : Alignment.centerRight,
@@ -79,6 +79,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
                         style: TextStyle(
                           fontFamily: 'EN-BOLD',
                           color: selectedIndex == 0 ? Colors.black : Colors.grey,
+                          fontSize: context.isPhone ? 16 : 18,
                         ),
                       ),
                     ),
@@ -100,6 +101,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
                         "Timer",
                         style: TextStyle(
                           fontFamily: 'EN-BOLD',
+                          fontSize: context.isPhone ? 16 : 18,
                           color: selectedIndex == 1 ? Colors.black : Colors.grey,
                         ),
                       ),

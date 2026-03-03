@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/views/create/components/delete_confirmation_sheet.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
-import 'package:project_structure/widgets/custom_button.dart';
+import 'package:project_structure/widgets/custome_no_data.dart';
 
 class FolderNoteListScreen extends StatefulWidget {
   final dynamic folderKey;
@@ -36,11 +39,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
-          if (isSelectionMode)
-            IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
-              onPressed: _deleteSelectedNotes,
-            ),
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -50,7 +48,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             itemBuilder: (context) => [
               _buildPopupItem(
                 isSelectionMode ? 'Cancel Selection' : 'Select Notes',
-                isSelectionMode ? Icons.close : Icons.radio_button_unchecked,
+                isSelectionMode ? Icons.check_circle_sharp : Icons.radio_button_unchecked,
               ),
             ],
           ),
@@ -73,7 +71,10 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           });
 
           if (notesList.isEmpty) {
-            return const Center(child: Text("No notes in this folder."));
+            // return const Center(child: Text("No notes in this folder."));
+            return const CustomNoData(
+              message: "No notes in this folder",
+            );
           }
 
           return ListView.builder(
@@ -94,6 +95,42 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         onPressed: () => Get.to(() => CreateNoteScreen(folderKey: widget.folderKey)),
         child: const Icon(Icons.add, size: 30),
       ),
+      bottomNavigationBar: isSelectionMode
+          ? BottomAppBar(
+              color: Theme.of(context).cardColor,
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    IconButton(
+                      icon: Icon(Icons.folder, color: AppColor().primaryColor),
+                      onPressed: selectedKeys.isEmpty ? null : _deleteSelectedNotes,
+                    ),
+                    const Spacer(),
+                    Text(
+                      "${selectedKeys.length} selected",
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      icon: Icon(Icons.delete, color: Colors.red),
+                      onPressed: selectedKeys.isEmpty
+                          ? null
+                          : () {
+                              showDeleteConfirmationSheet(
+                                context,
+                                () {
+                                  _deleteSelectedNotes();
+                                },
+                              );
+                            },
+                    ),
+                  ],
+                ),
+              ),
+            )
+          : null,
     );
   }
 
@@ -108,6 +145,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     int? colorValue = note['colorValue'];
     Color noteColor = colorValue != null ? Color(colorValue) : Colors.black;
     final bgColor = Color(note['bgColorValue'] ?? 0xFFFFFFFF);
+
+    // Image Data
+    List<dynamic>? imagePaths = note['images'];
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
@@ -190,25 +230,70 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      const SizedBox(height: 5),
-                      Text(
-                        note['subtitle'] ?? "",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: noteColor.withOpacity(0.7),
-                          fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
-                          fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
-                          decoration: TextDecoration.combine([
-                            if (noteIsUnderlined) TextDecoration.underline,
-                            if (noteIsStrikethrough) TextDecoration.lineThrough,
-                          ]),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        child: Text(
+                          note['subtitle'] ?? "",
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: noteColor.withOpacity(0.7),
+                            fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
+                            fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
+                            decoration: TextDecoration.combine([
+                              if (noteIsUnderlined) TextDecoration.underline,
+                              if (noteIsStrikethrough) TextDecoration.lineThrough,
+                            ]),
+                          ),
                         ),
+                      ),
+                      Text(
+                        note['date'] ?? "",
+                        style: TextStyle(fontSize: 12, color: noteColor.withOpacity(0.5)),
                       ),
                     ],
                   ),
                 ),
+
+                // // --- IMAGE PREVIEW THUMBNAIL ---
+                // if (imagePaths != null && imagePaths.isNotEmpty)
+                //   Padding(
+                //     padding: const EdgeInsets.only(left: 10),
+                //     child: ClipRRect(
+                //       borderRadius: BorderRadius.circular(8),
+                //       child: Image.file(
+                //         File(imagePaths[0]),
+                //         width: 50,
+                //         height: 50,
+                //         fit: BoxFit.cover,
+                //         errorBuilder: (_, __, ___) => Container(
+                //           width: 50, height: 50, color: Colors.grey[200],
+                //           child: const Icon(Icons.broken_image, size: 20),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // --- IMAGE PREVIEW THUMBNAIL (Right side) ---
+                if (imagePaths != null && imagePaths.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        File(imagePaths[0]), // Displays the first image taken
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: 70,
+                          height: 70,
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.broken_image, size: 24),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
           ),

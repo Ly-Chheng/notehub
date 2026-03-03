@@ -102,6 +102,7 @@ class HowToUseScreen extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 20),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(

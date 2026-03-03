@@ -19,14 +19,15 @@ void showFolderSheet(BuildContext context, {dynamic folderKey, dynamic existingD
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          const SizedBox(height: 10),
+          Container(width: 40, height: 4, color: Colors.grey[300]),
           Padding(
             padding: const EdgeInsets.all(15),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(onPressed: () => Get.back(), child: const Text("Cancel", style: TextStyle(color: Colors.red))),
-                Text(existingData == null ? "Create Folder" : "Update Folder", 
-                     style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                TextButton(onPressed: () => Get.back(), child: const Text("Cancel", style: TextStyle(color: Colors.red, fontFamily: 'EN-ENGINEER', fontSize: 16))),
+                Text(existingData == null ? "Create Folder" : "Update Folder", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'EN-ENGINEER')),
                 TextButton(
                   onPressed: () async {
                     if (folderController.text.trim().isNotEmpty) {
@@ -46,20 +47,29 @@ void showFolderSheet(BuildContext context, {dynamic folderKey, dynamic existingD
                       Get.back();
                     }
                   },
-                  child: Text("Done", style: TextStyle(color: AppColor().primaryColor)),
+                  child: Text("Done",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColor().primaryColor,
+                        fontFamily: 'EN-ENGINEER',
+                      )),
                 ),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 50),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 15),
               decoration: BoxDecoration(color: const Color(0xFFE9E9EB), borderRadius: BorderRadius.circular(12)),
               child: TextField(
                 controller: folderController,
                 autofocus: true,
-                decoration: const InputDecoration(hintText: "Folder Name", border: InputBorder.none),
+                decoration: const InputDecoration(
+                  hintText: "Folder Name",
+                  border: InputBorder.none,
+                  hintStyle: TextStyle(fontFamily: 'EN-ENGINEER', fontSize: 16),
+                ),
               ),
             ),
           ),

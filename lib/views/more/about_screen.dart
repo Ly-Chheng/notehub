@@ -38,16 +38,16 @@ class AboutScreen extends StatelessWidget {
                   ],
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Image.asset('assets/images/logo.png', errorBuilder: (context, error, stackTrace) {
-                    return Icon(Icons.description_rounded, size: 50, color: AppColor().primaryColor);
+                  padding: const EdgeInsets.all(25.0),
+                  child: Image.asset('assets/images/note_book.png', errorBuilder: (context, error, stackTrace) {
+                    return Image.asset( 'assets/icons/note_book.png',height: 50,width: 50,);
                   }),
                 ),
               ),
             ),
             const SizedBox(height: 16),
             const Text(
-              "BELTEI Student Note",
+              "Student Note",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const Text(
@@ -68,7 +68,7 @@ class AboutScreen extends StatelessWidget {
             const Text(
               "Developed by BELTEI Students\n© 2026 BELTEI Group. All rights reserved.",
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 12, height: 1.6),
+              style: TextStyle(color: Colors.grey, fontSize: 12, height: 1.6, fontFamily: 'EN-ENGULAR'),
             ),
           ],
         ),
@@ -81,7 +81,7 @@ class AboutScreen extends StatelessWidget {
   Widget _buildAboutContainer(BuildContext context, List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).iconTheme.color,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.black.withOpacity(0.05)),
       ),
@@ -94,16 +94,16 @@ class AboutScreen extends StatelessWidget {
       children: [
         ListTile(
           leading: Icon(icon, color: Colors.black87, size: 22),
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+          title: Text(title, style: const TextStyle(fontSize: 16, fontFamily: 'EN-ENGULAR')),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(value, style: const TextStyle(color: Colors.grey)),
+              Text(value, style: const TextStyle(color: Colors.grey, fontSize: 12, fontFamily: 'EN-ENGULAR')),
               const SizedBox(width: 8),
               const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
             ],
           ),
-          onTap: () {}, // Handle navigation or URL launching
+          onTap: () {},  
         ),
         if (!isLast)
           Divider(

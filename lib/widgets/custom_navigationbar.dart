@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 customNavigationBar({
-   required BuildContext context,
+  required BuildContext context,
   final List<BottomNavigationBarItem>? items,
   required final int currentIndex,
   final Color? selectedItemColor,
@@ -16,39 +17,39 @@ customNavigationBar({
             BottomNavigationBarItem(
               icon: Image.asset(
                 'assets/images/home.png',
-                width: 24,
-                height: 24,
+                width: context.isPhone ? 24 : 30,
+                height: context.isPhone ? 24 : 30,
               ),
               activeIcon: Image.asset(
                 'assets/images/home_active.png',
-                width: 24,
-                height: 24,
+                width: context.isPhone ? 24 : 30,
+                height: context.isPhone ? 24 : 30,
               ),
               label: '',
             ),
             BottomNavigationBarItem(
               icon: Image.asset(
                 'assets/images/timer.png',
-                width: 24,
-                height: 24,
+                width: context.isPhone ? 26 : 32,
+                height: context.isPhone ? 26 : 32,
               ),
               activeIcon: Image.asset(
                 'assets/images/timer_active.png',
-                width: 24,
-                height: 24,
+                width: context.isPhone ? 26 : 32,
+                height: context.isPhone ? 26 : 32,
               ),
               label: '',
             ),
             BottomNavigationBarItem(
               icon: Image.asset(
                 'assets/images/more.png',
-                width: 24,
-                height: 24,
+                width: context.isPhone ? 24 : 30,
+                height: context.isPhone ? 24 : 30,
               ),
               activeIcon: Image.asset(
                 'assets/images/more_active.png',
-                width: 24,
-                height: 24,
+                width: context.isPhone ? 24 : 30,
+                height: context.isPhone ? 24 : 30,
               ),
               label: '',
             ),

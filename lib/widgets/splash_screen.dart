@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/splash_controller.dart';
-import 'package:project_structure/core/utils/app_color.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -21,17 +20,10 @@ class SplashScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/icons/Flutter_logo.png',
+              'assets/icons/note_book.png',
               fit: BoxFit.cover,
-              height: 250,
-            ),
-            Text(
-              'Study Notes',
-              style: TextStyle(
-                fontSize: 20,
-                fontFamily: 'EN-BOLD',
-                color: AppColor().primaryColor,
-              ),
+              height: context.isPhone ? 100 : 130,
+              width: context.isPhone ? 100 : 130,
             ),
           ],
         ),

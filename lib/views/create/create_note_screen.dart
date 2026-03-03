@@ -1,11 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
+import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:share_plus/share_plus.dart';
 
 class CreateNoteScreen extends StatefulWidget {
   final bool isEditing;
@@ -36,6 +40,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   bool isStrikethrough = false;
   Color selectedColor = Colors.black;
   Color noteBgColor = Colors.white;
+  List<File> selectedImages = []; // List to hold picked images
 
   // Track length to detect new lines for auto-numbering
   int _lastTextLength = 0;
@@ -55,6 +60,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       isUnderlined = widget.existingNote?['isUnderlined'] ?? false;
       isStrikethrough = widget.existingNote?['isStrikethrough'] ?? false;
       noteBgColor = Color(widget.existingNote?['bgColorValue'] ?? 0xFFFFFFFF);
+
+      // Load Images from Hive (Strings to Files)
+      List<dynamic>? imagePaths = widget.existingNote?['images'];
+      if (imagePaths != null) {
+        selectedImages = imagePaths.map((path) => File(path)).toList();
+      }
 
       int? colorVal = widget.existingNote?['colorValue'];
       if (colorVal != null) selectedColor = Color(colorVal);
@@ -142,6 +153,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "isStrikethrough": isStrikethrough,
       "colorValue": selectedColor.value,
       "bgColorValue": noteBgColor.value,
+      "images": selectedImages.map((file) => file.path).toList(), // Save paths
     };
 
     Get.back(); // Close screen
@@ -175,6 +187,21 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     contentController.selection = TextSelection.fromPosition(TextPosition(offset: selection.start + insertion.length));
   }
 
+  void _shareNote() async {
+    final String title = titleController.text.isEmpty ? "Untitled Note" : titleController.text;
+    final String content = contentController.text;
+    final String fullText = "$title\n\n$content";
+
+    if (selectedImages.isNotEmpty) {
+      // Share text and images together
+      final List<XFile> filesToShare = selectedImages.map((file) => XFile(file.path)).toList();
+      await Share.shareXFiles(filesToShare, text: fullText);
+    } else {
+      // Share text only
+      await Share.share(fullText);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -197,8 +224,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            offset: const Offset(0, 50),
+            color: Theme.of(context).cardColor,
             onSelected: (value) => _handleMenuSelection(value, context),
             itemBuilder: (context) => [
+              _buildPopupItem('Share', Icons.share_outlined),
               _buildPopupItem('Lock', Icons.lock_outline),
               _buildPopupItem('Delete', Icons.delete_outline, color: Colors.red),
             ],
@@ -206,20 +236,57 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
         child: Column(
           children: [
             TextField(
               controller: titleController,
               decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
             ),
+            // Horizontal Image Preview (New Section)
+            if (selectedImages.isNotEmpty)
+              SizedBox(
+                height: 120,
+                child: ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  scrollDirection: Axis.horizontal,
+                  itemCount: selectedImages.length,
+                  itemBuilder: (context, index) => Stack(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(right: 12, top: 10),
+                        width: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          image: DecorationImage(
+                            image: FileImage(selectedImages[index]),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        top: 0,
+                        child: GestureDetector(
+                          onTap: () => setState(() => selectedImages.removeAt(index)),
+                          child: const CircleAvatar(
+                            radius: 12,
+                            backgroundColor: Colors.red,
+                            child: Icon(Icons.close, size: 16, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
             Expanded(
               child: TextField(
                 controller: contentController,
                 maxLines: null,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: context.isPhone ? 18 : 20,
                   color: selectedColor,
                   fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                   fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
@@ -250,7 +317,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               children: [
                 Row(
                   children: [
-                    _bottomIcon(Icons.image_outlined, () {}),
+                    _bottomIcon(Icons.image_outlined, () {
+                      showMediaSheet(
+                        context: context,
+                        onImageSelected: (File image) {
+                          setState(() => selectedImages.add(image));
+                        },
+                      );
+                    }),
                     _bottomIcon(Icons.text_fields, () {
                       showFormatSheet(
                         context: context,
@@ -278,7 +352,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   ],
                 ),
                 IconButton(
-                  icon: const Icon(Icons.send_outlined, color: Colors.blueAccent, size: 28),
+                  icon: Icon(Icons.send_outlined, color: Colors.blueAccent, size: context.isPhone ? 28 : 33),
                   onPressed: _saveNote,
                 ),
               ],
@@ -291,7 +365,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
     return IconButton(
-      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: 24),
+      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 24 : 30),
       onPressed: onPressed,
     );
   }
@@ -301,25 +375,34 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       value: title,
       child: Row(
         children: [
-          Icon(icon, color: color ?? Colors.black87, size: 20),
-          const SizedBox(width: 12),
-          Text(title, style: TextStyle(color: color ?? Colors.black87, fontSize: 16)),
+          Icon(icon, color: color ?? Colors.black87, size: context.isPhone ? 20 : 25),
+          SizedBox(width: context.isPhone ? 14 : 16),
+          Text(title, style: TextStyle(color: color ?? Colors.black87, fontSize: context.isPhone ? 16 : 18)),
         ],
       ),
     );
   }
 
   void _handleMenuSelection(String value, BuildContext context) async {
-    if (value == 'Delete') {
-      await showConfirmDeleteDialog(
-        context: context,
-        title: 'Delete Note',
-        subTitle: 'Are you sure you want to delete this note?',
-        onConfirm: () {
-          Get.back(); // Close dialog
-          Get.back(); // Exit screen
-        },
-      );
+    switch (value) {
+      case 'Share':
+        _shareNote();
+        break;
+      case 'Lock':
+        Get.snackbar("Locked", "Note protection enabled", snackPosition: SnackPosition.BOTTOM);
+        break;
+      case 'Delete':
+        await showConfirmDeleteDialog(
+          context: context,
+          title: 'Delete Note',
+          subTitle: 'Are you sure you want to delete this note?',
+          onConfirm: () {
+            // If you are using Hive, you might need to delete by key here
+            Get.back(); // Close dialog
+            Get.back(); // Exit screen
+          },
+        );
+        break;
     }
   }
 }

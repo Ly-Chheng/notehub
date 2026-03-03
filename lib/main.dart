@@ -10,7 +10,6 @@ import 'package:project_structure/core/services/themes_services.dart';
 import 'package:project_structure/core/utils/app_language.dart';
 import 'package:project_structure/core/functions/local_storage.dart';
 import 'package:project_structure/firebase_options.dart';
-import 'package:project_structure/models/folder_model.dart';
 import 'package:project_structure/route.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
