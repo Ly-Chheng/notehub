@@ -1,20 +1,171 @@
+// import 'package:flutter/cupertino.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:hive/hive.dart';
+// import 'package:project_structure/core/utils/app_color.dart';
+// import 'package:project_structure/widgets/custom_appbar.dart';
+
+// class CreateTimerScreen extends StatefulWidget {
+//   const CreateTimerScreen({super.key});
+
+//   @override
+//   State<CreateTimerScreen> createState() => _CreateTimerScreenState();
+// }
+
+// class _CreateTimerScreenState extends State<CreateTimerScreen> {
+//   int selectedHours = 0;
+//   int selectedMinutes = 0;
+//   int selectedSeconds = 0;
+//   final TextEditingController _labelController = TextEditingController(text: "Timer");
+
+//   void _saveTimer() async {
+//     final box = Hive.box('student_notes');
+
+//     // Calculate total duration
+//     int totalSec = (selectedHours * 3600) + (selectedMinutes * 60) + selectedSeconds;
+
+//     if (totalSec <= 0) {
+//       Get.snackbar("Error", "Please set a duration", snackPosition: SnackPosition.BOTTOM);
+//       return;
+//     }
+
+//     final timerData = {
+//       "type": "timer", // Used to filter in the list
+//       "title": _labelController.text,
+//       "subtitle": "${selectedHours}h ${selectedMinutes}m ${selectedSeconds}s",
+//       "totalSeconds": totalSec,
+//       "remainingSeconds": totalSec,
+//       "isRunning": false,
+//       "bgColorValue": 0xFF4D7CFF, // Timer Blue
+//       "isDeleted": false,
+//       "createdAt": DateTime.now().toIso8601String(),
+//     };
+
+//     await box.add(timerData);
+//     Get.back(); // Go back to the timer list
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: customAppBar(
+//         title: "New Timer",
+//         context: context,
+//         actions: [
+//           TextButton(onPressed: _saveTimer, child: const Text("Save", style: TextStyle(fontSize: 18))),
+//         ],
+//       ),
+//       body: Column(
+//         children: [
+//           const SizedBox(height: 40),
+//           SizedBox(
+//             height: 200,
+//             child: Row(
+//               children: [
+//                 _buildPicker(24, "hours", (v) => setState(() => selectedHours = v)),
+//                 _buildPicker(60, "min", (v) => setState(() => selectedMinutes = v)),
+//                 _buildPicker(60, "sec", (v) => setState(() => selectedSeconds = v)),
+//               ],
+//             ),
+//           ),
+//           Padding(
+//             padding: const EdgeInsets.all(20.0),
+//             child: TextField(
+//               controller: _labelController,
+//               decoration: InputDecoration(
+//                 labelText: "Label",
+//                 filled: true,
+//                 fillColor: Colors.grey.withOpacity(0.1),
+//                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildPicker(int count, String unit, ValueChanged<int> onSelect) {
+//     return Expanded(
+//       child: CupertinoPicker(
+//         itemExtent: 40,
+//         onSelectedItemChanged: onSelect,
+//         children: List.generate(count, (i) => Center(child: Text("$i $unit"))),
+//       ),
+//     );
+//   }
+// }
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
 class CreateTimerScreen extends StatefulWidget {
-  const CreateTimerScreen({super.key});
+  final bool isEditing;
+  final dynamic timerKey;
+  final Map? existingTimer;
+
+  const CreateTimerScreen({super.key, this.isEditing = false, this.timerKey, this.existingTimer});
 
   @override
   State<CreateTimerScreen> createState() => _CreateTimerScreenState();
 }
 
 class _CreateTimerScreenState extends State<CreateTimerScreen> {
-  int selectedHours = 1;
-  int selectedMinutes = 2;
-  int selectedSeconds = 21;
+  late int selectedHours;
+  late int selectedMinutes;
+  late int selectedSeconds;
+  late TextEditingController _labelController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill data if editing, otherwise default to 0
+    if (widget.isEditing && widget.existingTimer != null) {
+      int total = widget.existingTimer!['totalSeconds'];
+      selectedHours = total ~/ 3600;
+      selectedMinutes = (total % 3600) ~/ 60;
+      selectedSeconds = total % 60;
+      _labelController = TextEditingController(text: widget.existingTimer!['title']);
+    } else {
+      selectedHours = 0;
+      selectedMinutes = 0;
+      selectedSeconds = 0;
+      _labelController = TextEditingController(text: "Timer");
+    }
+  }
+
+  void _saveTimer() async {
+    final box = Hive.box('timer_box');
+    int totalSec = (selectedHours * 3600) + (selectedMinutes * 60) + selectedSeconds;
+
+    if (totalSec <= 0) {
+      Get.snackbar("Error", "Duration cannot be zero");
+      return;
+    }
+
+    final timerData = {
+      "type": "timer",
+      "title": _labelController.text,
+      "subtitle": "${selectedHours}h ${selectedMinutes}m ${selectedSeconds}s",
+      "totalSeconds": totalSec,
+      "remainingSeconds": totalSec, // Reset time on edit
+      "isRunning": false,
+      "bgColorValue": 0xFF4D7CFF,
+      "isDeleted": false,
+      "updatedAt": DateTime.now().toIso8601String(),
+    };
+
+    if (widget.isEditing) {
+      await box.put(widget.timerKey, timerData);
+    } else {
+      await box.add(timerData);
+    }
+    Get.back();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,13 +173,13 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: "Back",
+        title: widget.isEditing ? "Edit Timer" : "New Timer",
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
-            onPressed: () {},
+            onPressed: _saveTimer,
             child: Text("Save",
                 style: TextStyle(
                   color: AppColor().primaryColor,
@@ -38,154 +189,62 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           ),
         ],
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
+      body: Column(
+        children: [
+          _buildPickerSection(),
+          SizedBox(height: 30),
+          Row(
             children: [
-              const SizedBox(height: 20),
-              const Spacer(),
-              _buildTimePickerSection(),
-              const Spacer(),
-              _buildLabelField(),
-              SizedBox(
-                height: 20,
+              const SizedBox(width: 20),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  "Label:",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontFamily: 'EN-ENGINEER',
+                  ),
+                ),
               ),
-              _buildQuickTimerRow(),
-              const Spacer(),
-              _buildStartButton(),
-              const SizedBox(height: 30),
+              SizedBox(width: 10),
+              Expanded(
+                child: TextField(
+                  controller: _labelController,
+                  decoration: InputDecoration(filled: true, fillColor: Colors.grey.withOpacity(0.1), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none)),
+                ),
+              ),
+              SizedBox(width: 20),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTimePickerSection() {
-    return SizedBox(
-      height: 250,
-      child: Row(
-        children: [
-          _buildPickerColumn(24, "hours", (val) => setState(() => selectedHours = val), selectedHours),
-          _buildPickerColumn(60, "min", (val) => setState(() => selectedMinutes = val), selectedMinutes),
-          _buildPickerColumn(60, "sec", (val) => setState(() => selectedSeconds = val), selectedSeconds),
         ],
       ),
     );
   }
 
-  Widget _buildPickerColumn(int count, String unit, ValueChanged<int> onChanged, int initial) {
+  Widget _buildPickerSection() {
+    return SizedBox(
+      height: 200,
+      child: Row(
+        children: [
+          _buildPicker(24, "hours", selectedHours, (v) => setState(() => selectedHours = v)),
+          _buildPicker(60, "min", selectedMinutes, (v) => setState(() => selectedMinutes = v)),
+          _buildPicker(60, "sec", selectedSeconds, (v) => setState(() => selectedSeconds = v)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPicker(int count, String unit, int initial, ValueChanged<int> onSelect) {
     return Expanded(
       child: CupertinoPicker(
         scrollController: FixedExtentScrollController(initialItem: initial),
-        itemExtent: 50,
-        onSelectedItemChanged: onChanged,
-        selectionOverlay: const CupertinoPickerDefaultSelectionOverlay(capStartEdge: false, capEndEdge: false),
-        children: List.generate(count, (index) {
-          return Center(
-            child: Text(
-              "$index $unit",
-              style: const TextStyle(fontSize: 22, color: Colors.black87),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget _buildLabelField() {
-    return Row(
-      children: [
-        Expanded(
-          child: TextFormField(
-            decoration: InputDecoration(
-              labelText: "Label",
-              hintStyle: const TextStyle(
-                color: Colors.black54,
-                fontFamily: 'EN-REGULAR',
-              ),
-              filled: true,
-              fillColor: const Color(0xFFE8EBF6).withOpacity(0.5),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: TextFormField(
-            decoration: InputDecoration(
-              hintText: "Timer",
-              hintStyle: const TextStyle(
-                color: Colors.black54,
-                fontFamily: 'EN-REGULAR',
-              ),
-              filled: true,
-              fillColor: const Color(0xFFE8EBF6).withOpacity(0.5),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none,
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStartButton() {
-    return Container(
-      width: 80,
-      height: 80,
-      decoration: const BoxDecoration(
-        color: Color(0xFF4D7CFF),
-        shape: BoxShape.circle,
-        boxShadow: [BoxShadow(color: Color(0x4D4D7CFF), blurRadius: 20, offset: Offset(0, 10))],
-      ),
-      child: Icon(Icons.play_arrow_rounded, color: Theme.of(context).cardColor, size: 50),
-    );
-  }
-
-  Widget _buildQuickTimerRow() {
-    final presets = [1, 5, 10, 15, 30];
-
-    return SizedBox(
-      height: 45,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: presets.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
-        itemBuilder: (context, index) {
-          final minute = presets[index];
-
-          return GestureDetector(
-            onTap: () {
-              setState(() {
-                selectedHours = 0;
-                selectedMinutes = minute;
-                selectedSeconds = 0;
-              });
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8EBF6).withOpacity(0.6),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                "$minute MIN",
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          );
-        },
+        itemExtent: 40,
+        onSelectedItemChanged: onSelect,
+        children: List.generate(count, (i) => Center(child: Text("$i $unit"))),
       ),
     );
   }

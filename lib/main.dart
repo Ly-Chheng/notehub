@@ -38,6 +38,7 @@ Future<void> main() async {
   // 3. Open Boxes as Generic (No <Models>)
   await Hive.openBox('student_notes');
   await Hive.openBox('folders_box');
+  await Hive.openBox('timer_box');
 
   runApp(const MyApp());
 }

@@ -26,49 +26,52 @@ class _MoreScreenState extends State<MoreScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+        padding: const EdgeInsets.only(left: 20, right: 20,bottom: 10),
         child: Center(
-          child: Column(
-            children: [
-              // First Group: General Settings
-              _buildSectionContainer([
-                _buildMenuTile(Icons.info_outline, "About", onTap: () {
-                  Get.to(AboutScreen());
-                }),
-                _buildMenuTile(Icons.text_fields, "Font size", onTap: () {}),
-                DarkModeView(),
-                NotificationView(),
-                _buildMenuTile(Icons.help_outline, "How to use", onTap: () {
-                  Get.to(HowToUseScreen());
-                }),
-                _buildMenuTile(Icons.share_outlined, "Share App", onTap: () {
-                  Get.to(LockVerificationScreen());
-                }, isLast: true),
-              ]),
-
-              // Second Group: Security
-              Padding(
-                padding: const EdgeInsets.only(top: 20, bottom: 60),
-                child: _buildSectionContainer([
-                  _buildMenuTile(Icons.lock_outline, "Change Password", onTap: () {
-                    Get.to(() => const ChangePasswordScreen());
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              children: [
+                // First Group: General Settings
+                _buildSectionContainer([
+                  _buildMenuTile(Icons.info_outline, "About", onTap: () {
+                    Get.to(AboutScreen());
                   }),
-                  _buildMenuTile(Icons.history, "Reset Password", onTap: () {
-                    Get.to(() => const ResetPasswordScreen());
+                  _buildMenuTile(Icons.text_fields, "Font size", onTap: () {}),
+                  DarkModeView(),
+                  NotificationView(),
+                  _buildMenuTile(Icons.help_outline, "How to use", onTap: () {
+                    Get.to(HowToUseScreen());
                   }),
-                  _buildMenuTile(Icons.lock_reset, "Forget Password", onTap: () {
-                    Get.to(() => const ForgetPasswordScreen());
+                  _buildMenuTile(Icons.share_outlined, "Share App", onTap: () {
+                    Get.to(LockVerificationScreen());
                   }, isLast: true),
                 ]),
-              ),
 
-              // Footer
-              const Text(
-                "Copyright © 2026 BELTEI Student Note App.\nVersion 1.0.0",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey, fontSize: 12, height: 1.5),
-              ),
-            ],
+                // Second Group: Security
+                Padding(
+                  padding: const EdgeInsets.only(top: 20, bottom: 60),
+                  child: _buildSectionContainer([
+                    _buildMenuTile(Icons.lock_outline, "Change Password", onTap: () {
+                      Get.to(() => const ChangePasswordScreen());
+                    }),
+                    _buildMenuTile(Icons.history, "Reset Password", onTap: () {
+                      Get.to(() => const ResetPasswordScreen());
+                    }),
+                    _buildMenuTile(Icons.lock_reset, "Forget Password", onTap: () {
+                      Get.to(() => const ForgetPasswordScreen());
+                    }, isLast: true),
+                  ]),
+                ),
+
+                // Footer
+                const Text(
+                  "Copyright © 2026 BELTEI Student Note App.\nVersion 1.0.0",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.grey, fontSize: 12, height: 1.5),
+                ),
+              ],
+            ),
           ),
         ),
       ),

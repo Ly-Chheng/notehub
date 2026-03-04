@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     bool isPinned = folderData['isPinned'] ?? false;
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Slidable(
@@ -141,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             //   ),
                             // ),
                             child: Container(
-                              color: Colors.white,
+                              color: Theme.of(context).cardColor,
                               child: ListTile(
                                 leading: Icon(
                                   isDefault ? Icons.folder : Icons.folder,
@@ -150,12 +150,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                                 title: Row(
                                   children: [
-                                    if (isPinned) Icon(Icons.push_pin, size: context.isPhone ? 14 : 16, color: Colors.orange),
                                     if (isPinned) const SizedBox(width: 5),
                                     Text(folderData['title'],
                                         style: TextStyle(
                                           fontSize: context.isPhone ? 18 : 20,
                                         )),
+                                    if (isPinned) Icon(Icons.push_pin, size: context.isPhone ? 14 : 16, color: Colors.orange),
                                   ],
                                 ),
                                 // --- UPDATED TRAILING SECTION ---
@@ -195,45 +195,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      // 1. Remove the old floatingActionButton
-      // 2. Add this bottomNavigationBar to your Scaffold:
-
-      // bottomNavigationBar: BottomAppBar(
-      //   elevation: 0,
-      //   color: const Color(0xFFF2F2F7),
-      //   child: Container(
-      //     height: 50,
-      //     padding: const EdgeInsets.symmetric(horizontal: 10),
-      //     child: Row(
-      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //       children: [
-      //         // --- CREATE FOLDER BUTTON (Bottom Left) ---
-      //         IconButton(
-      //           onPressed: () => _showFolderSheet(context),
-      //           icon: const Icon(Icons.create_new_folder_outlined, color: Colors.orange, size: 28),
-      //         ),
-
-      //         // --- CREATE NOTE BUTTON (Bottom Right) ---
-      //         IconButton(
-      //           onPressed: () {
-      //             // Find the key for "My Note" folder
-      //             final defaultFolder = folderBox.values.firstWhere(
-      //               (f) => f['title'] == defaultFolderName,
-      //               orElse: () => null,
-      //             );
-
-      //             // Get the key of the default folder
-      //             dynamic defaultKey = folderBox.keyAt(folderBox.values.toList().indexOf(defaultFolder));
-
-      //             // Go straight to Create Note, tagged to "My Note"
-      //             Get.to(() => CreateNoteScreen(folderKey: defaultKey));
-      //           },
-      //           icon: const Icon(Icons.edit_note, color: Colors.orange, size: 32),
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColor().primaryColor,
         onPressed: () {
@@ -281,8 +242,8 @@ class _MyHomePageState extends State<MyHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(onPressed: () => Get.back(), child: const Text("Cancel", style: TextStyle(color: Colors.red))),
-                Text(existingData == null ? "New Folder" : "Rename Folder", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+                TextButton(onPressed: () => Get.back(), child: const Text("Cancel", style: TextStyle(color: Colors.red, fontFamily: 'EN-ENGINEER', fontSize: 16))),
+                Text(existingData == null ? "New Folder" : "Rename Folder", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'EN-ENGINEER')),
                 TextButton(
                   onPressed: () {
                     String name = folderController.text.trim();
@@ -301,7 +262,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       Get.back();
                     }
                   },
-                  child: const Text("Save", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue)),
+                  child: Text("Save",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: AppColor().primaryColor,
+                        fontFamily: 'EN-ENGINEER',
+                      )),
                 ),
               ],
             ),

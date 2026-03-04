@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/views/create/components/background_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
@@ -40,7 +41,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Color selectedColor = Colors.black;
   Color noteBgColor = Colors.white;
   List<File> selectedImages = [];
-  
+
   // Track current folder selection in state
   dynamic currentFolderKey;
   int _lastTextLength = 0;
@@ -50,7 +51,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     super.initState();
     // 1. Initialize the folder key from widget props (IMPORTANT)
     currentFolderKey = widget.folderKey;
-    
+
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
     contentController = TextEditingController(text: widget.existingNote?['subtitle'] ?? "");
     _lastTextLength = contentController.text.length;
@@ -61,7 +62,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       isUnderlined = widget.existingNote?['isUnderlined'] ?? false;
       isStrikethrough = widget.existingNote?['isStrikethrough'] ?? false;
       noteBgColor = Color(widget.existingNote?['bgColorValue'] ?? 0xFFFFFFFF);
-      
+
       // If editing, use the folder key saved in the note data
       currentFolderKey = widget.existingNote?['folderKey'] ?? widget.folderKey;
 
@@ -107,7 +108,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 itemBuilder: (context, index) {
                   final folder = folders[index];
                   bool isSelected = currentFolderKey == folder.key;
-                  
+
                   // FIXED: Changed 'name' to 'title' to match your Hive storage key
                   String folderTitle = folder.value['title'] ?? "Unnamed Folder";
 
@@ -138,7 +139,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
 
     final noteBox = Hive.box('student_notes');
-    
+
     final noteData = {
       "title": titleController.text,
       "subtitle": contentController.text,
@@ -293,7 +294,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                         ),
                       ),
                       Positioned(
-                        right: 0, top: 0,
+                        right: 0,
+                        top: 0,
                         child: GestureDetector(
                           onTap: () => setState(() => selectedImages.removeAt(index)),
                           child: const CircleAvatar(radius: 12, backgroundColor: Colors.red, child: Icon(Icons.close, size: 16, color: Colors.white)),
@@ -339,12 +341,23 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               Row(
                 children: [
                   _bottomIcon(Icons.image_outlined, () => showMediaSheet(context: context, onImageSelected: (img) => setState(() => selectedImages.add(img)))),
-                  _bottomIcon(Icons.text_fields, () => showFormatSheet(
-                    context: context, isBold: isBold, isItalic: isItalic, isUnderlined: isUnderlined, isStrikethrough: isStrikethrough, selectedColor: selectedColor,
-                    onBoldChanged: (v) => setState(() => isBold = v), onItalicChanged: (v) => setState(() => isItalic = v),
-                    onUnderlineChanged: (v) => setState(() => isUnderlined = v), onStrikethroughChanged: (v) => setState(() => isStrikethrough = v),
-                    onColorChanged: (v) => setState(() => selectedColor = v), onBulletPressed: _insertBulletPoint, onNumberedPressed: _insertNumberedList,
-                  )),
+                  _bottomIcon(
+                      Icons.text_fields,
+                      () => showFormatSheet(
+                            context: context,
+                            isBold: isBold,
+                            isItalic: isItalic,
+                            isUnderlined: isUnderlined,
+                            isStrikethrough: isStrikethrough,
+                            selectedColor: selectedColor,
+                            onBoldChanged: (v) => setState(() => isBold = v),
+                            onItalicChanged: (v) => setState(() => isItalic = v),
+                            onUnderlineChanged: (v) => setState(() => isUnderlined = v),
+                            onStrikethroughChanged: (v) => setState(() => isStrikethrough = v),
+                            onColorChanged: (v) => setState(() => selectedColor = v),
+                            onBulletPressed: _insertBulletPoint,
+                            onNumberedPressed: _insertNumberedList,
+                          )),
                   _bottomIcon(Icons.palette_outlined, () => showPaletteSheet(context: context, selectedColor: noteBgColor, onColorSelected: (c) => setState(() => noteBgColor = c))),
                 ],
               ),
@@ -359,13 +372,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Widget _bottomIcon(IconData icon, VoidCallback onPressed) => IconButton(icon: Icon(icon), onPressed: onPressed);
 
   PopupMenuItem<String> _buildPopupItem(String title, IconData icon, {Color? color}) => PopupMenuItem<String>(
-    value: title,
-    child: Row(
-      children: [
-        Icon(icon, color: color ?? Colors.black87, size: 20),
-        const SizedBox(width: 12),
-        Text(title, style: TextStyle(color: color ?? Colors.black87)),
-      ],
-    ),
-  );
+        value: title,
+        child: Row(
+          children: [
+            Icon(icon, color: color ?? Colors.black87, size: 20),
+            const SizedBox(width: 12),
+            Text(title, style: TextStyle(color: color ?? Colors.black87)),
+          ],
+        ),
+      );
 }

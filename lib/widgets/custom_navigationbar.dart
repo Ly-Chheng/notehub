@@ -9,6 +9,9 @@ customNavigationBar({
   final Color? unselectedItemColor,
   final void Function(int)? onTap,
 }) {
+  final double iconSize = context.isPhone ? 25 : 30;
+  final double timerIconSize = context.isPhone ? 28 : 32;
+
   return ClipRRect(
     borderRadius: BorderRadius.circular(0),
     child: BottomNavigationBar(
@@ -17,39 +20,39 @@ customNavigationBar({
             BottomNavigationBarItem(
               icon: Image.asset(
                 'assets/images/home.png',
-                width: context.isPhone ? 24 : 30,
-                height: context.isPhone ? 24 : 30,
+                width: iconSize,
+                height: iconSize,
               ),
               activeIcon: Image.asset(
                 'assets/images/home_active.png',
-                width: context.isPhone ? 24 : 30,
-                height: context.isPhone ? 24 : 30,
+                width: iconSize,
+                height: iconSize,
               ),
               label: '',
             ),
             BottomNavigationBarItem(
               icon: Image.asset(
                 'assets/images/timer.png',
-                width: context.isPhone ? 26 : 32,
-                height: context.isPhone ? 26 : 32,
+                width: timerIconSize,
+                height: timerIconSize,
               ),
               activeIcon: Image.asset(
                 'assets/images/timer_active.png',
-                width: context.isPhone ? 26 : 32,
-                height: context.isPhone ? 26 : 32,
+                width: timerIconSize,
+                height: timerIconSize,
               ),
               label: '',
             ),
             BottomNavigationBarItem(
               icon: Image.asset(
                 'assets/images/more.png',
-                width: context.isPhone ? 24 : 30,
-                height: context.isPhone ? 24 : 30,
+                width: iconSize,
+                height: iconSize,
               ),
               activeIcon: Image.asset(
                 'assets/images/more_active.png',
-                width: context.isPhone ? 24 : 30,
-                height: context.isPhone ? 24 : 30,
+                width: iconSize,
+                height: iconSize,
               ),
               label: '',
             ),

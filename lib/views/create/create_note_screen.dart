@@ -1,10 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/views/create/components/background_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
@@ -45,9 +45,16 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   // Track length to detect new lines for auto-numbering
   int _lastTextLength = 0;
 
+  // Track current folder selection in state
+  dynamic currentFolderKey;
+
   @override
   void initState() {
     super.initState();
+
+    // 1. Initialize the folder key from widget props (IMPORTANT)
+    currentFolderKey = widget.folderKey;
+
     // Initialize Controllers
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
     contentController = TextEditingController(text: widget.existingNote?['subtitle'] ?? "");
@@ -60,6 +67,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       isUnderlined = widget.existingNote?['isUnderlined'] ?? false;
       isStrikethrough = widget.existingNote?['isStrikethrough'] ?? false;
       noteBgColor = Color(widget.existingNote?['bgColorValue'] ?? 0xFFFFFFFF);
+
+      // If editing, use the folder key saved in the note data
+      currentFolderKey = widget.existingNote?['folderKey'] ?? widget.folderKey;
 
       // Load Images from Hive (Strings to Files)
       List<dynamic>? imagePaths = widget.existingNote?['images'];
@@ -127,24 +137,25 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
 
     final noteBox = Hive.box('student_notes');
-    final folderBox = Hive.box('folders_box');
+    // final folderBox = Hive.box('folders_box');
 
-    // DETERMINE FOLDER KEY
-    dynamic targetFolderKey = widget.folderKey;
+    // // DETERMINE FOLDER KEY
+    // dynamic targetFolderKey = widget.folderKey;
 
-    // If no folderKey passed, default to the first folder (usually "My Note")
-    if (targetFolderKey == null) {
-      if (folderBox.isNotEmpty) {
-        targetFolderKey = folderBox.keys.first;
-      } else {
-        targetFolderKey = "default_folder"; // Fallback if no folders exist
-      }
-    }
+    // // If no folderKey passed, default to the first folder (usually "My Note")
+    // if (targetFolderKey == null) {
+    //   if (folderBox.isNotEmpty) {
+    //     targetFolderKey = folderBox.keys.first;
+    //   } else {
+    //     targetFolderKey = "default_folder"; // Fallback if no folders exist
+    //   }
+    // }
 
     final noteData = {
       "title": titleController.text,
       "subtitle": contentController.text,
-      "folderKey": targetFolderKey, // Linked to specific folder
+      // "folderKey": targetFolderKey, // Linked to specific folder
+      "folderKey": currentFolderKey, // Saving the updated folder key here
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
       "isPinned": widget.existingNote?['isPinned'] ?? false,
       "isBold": isBold,
@@ -230,6 +241,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             itemBuilder: (context) => [
               _buildPopupItem('Share', Icons.share_outlined),
               _buildPopupItem('Lock', Icons.lock_outline),
+              _buildPopupItem('Move Note', Icons.folder_outlined),
               _buildPopupItem('Delete', Icons.delete_outline, color: Colors.red),
             ],
           ),
@@ -249,13 +261,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               SizedBox(
                 height: 120,
                 child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   scrollDirection: Axis.horizontal,
                   itemCount: selectedImages.length,
                   itemBuilder: (context, index) => Stack(
                     children: [
                       Container(
-                        margin: const EdgeInsets.only(right: 12, top: 10),
+                        margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
                         width: 100,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(12),
@@ -266,12 +278,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                         ),
                       ),
                       Positioned(
-                        right: 0,
-                        top: 0,
+                        right: 2,
+                        top: 2,
                         child: GestureDetector(
                           onTap: () => setState(() => selectedImages.removeAt(index)),
                           child: const CircleAvatar(
-                            radius: 12,
+                            radius: 13,
                             backgroundColor: Colors.red,
                             child: Icon(Icons.close, size: 16, color: Colors.white),
                           ),
@@ -375,9 +387,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       value: title,
       child: Row(
         children: [
-          Icon(icon, color: color ?? Colors.black87, size: context.isPhone ? 20 : 25),
+          Icon(icon, size: context.isPhone ? 20 : 25),
           SizedBox(width: context.isPhone ? 14 : 16),
-          Text(title, style: TextStyle(color: color ?? Colors.black87, fontSize: context.isPhone ? 16 : 18)),
+          Text(title, style: TextStyle(fontSize: context.isPhone ? 16 : 18)),
         ],
       ),
     );
@@ -390,6 +402,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         break;
       case 'Lock':
         Get.snackbar("Locked", "Note protection enabled", snackPosition: SnackPosition.BOTTOM);
+        break;
+      case 'Move Note':
+        _showMoveFolderSheet();
         break;
       case 'Delete':
         await showConfirmDeleteDialog(
@@ -404,5 +419,61 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         );
         break;
     }
+  }
+
+  // --- LOGIC: MOVE FOLDER BOTTOM SHEET ---
+  void _showMoveFolderSheet() {
+    final folderBox = Hive.box('folders_box');
+    final List<MapEntry<dynamic, dynamic>> folders = folderBox.toMap().entries.toList();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(onPressed: () => Get.back(), child: const Text("Cancel", style: TextStyle(color: Colors.red, fontFamily: 'EN-ENGINEER', fontSize: 16))),
+                Text("Move to Folder", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'EN-ENGINEER')),
+              ],
+            ),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: folders.length,
+                itemBuilder: (context, index) {
+                  final folder = folders[index];
+                  bool isSelected = currentFolderKey == folder.key;
+
+                  String folderTitle = folder.value['title'] ?? "Unnamed Folder";
+
+                  return ListTile(
+                    leading: Icon(Icons.folder, color: isSelected ? AppColor().primaryColor : Colors.grey),
+                    title: Text(folderTitle),
+                    trailing: isSelected ? Icon(Icons.check, color: AppColor().primaryColor) : null,
+                    onTap: () {
+                      setState(() => currentFolderKey = folder.key);
+                      Navigator.pop(context);
+                      Get.snackbar("Success", "Note will be saved to $folderTitle", snackPosition: SnackPosition.BOTTOM);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -105,7 +105,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   children: [
                     IconButton(
                       icon: Icon(Icons.folder, color: AppColor().primaryColor),
-                      onPressed: selectedKeys.isEmpty ? null : _deleteSelectedNotes,
+                      onPressed: selectedKeys.isEmpty ? null : _showMoveNotesSheet,
                     ),
                     const Spacer(),
                     Text(
@@ -166,8 +166,16 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               },
               backgroundColor: Colors.orange,
               foregroundColor: Colors.white,
-              icon: isPinned ? Icons.push_pin : Icons.push_pin,
+              icon: isPinned ? Icons.push_pin_outlined : Icons.push_pin,
               label: isPinned ? 'Unpin' : 'Pin',
+              borderRadius: const BorderRadius.horizontal(left: Radius.circular(10)),
+            ),
+            SlidableAction(
+              onPressed: (context) => _showMoveNotesSheet(singleNoteKey: noteKey),
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+              icon: Icons.folder,
+              label: 'Folder',
             ),
             SlidableAction(
               onPressed: (context) => noteBox.delete(noteKey),
@@ -202,8 +210,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: BorderRadius.circular(10),
-              border: isSelected ? Border.all(color: AppColor().primaryColor, width: 2) : null,
+              borderRadius: BorderRadius.circular(15),
+              border: isSelected ? Border.all(color: AppColor().primaryColor, width: 1) : null,
             ),
             child: Row(
               children: [
@@ -231,14 +239,14 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        padding: const EdgeInsets.symmetric(vertical: 4),
                         child: Text(
                           note['subtitle'] ?? "",
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 14,
-                            color: noteColor.withOpacity(0.7),
+                            color: noteColor,
                             fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
                             fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
                             decoration: TextDecoration.combine([
@@ -250,30 +258,11 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       ),
                       Text(
                         note['date'] ?? "",
-                        style: TextStyle(fontSize: 12, color: noteColor.withOpacity(0.5)),
+                        style: TextStyle(fontSize: 11, color: noteColor),
                       ),
                     ],
                   ),
                 ),
-
-                // // --- IMAGE PREVIEW THUMBNAIL ---
-                // if (imagePaths != null && imagePaths.isNotEmpty)
-                //   Padding(
-                //     padding: const EdgeInsets.only(left: 10),
-                //     child: ClipRRect(
-                //       borderRadius: BorderRadius.circular(8),
-                //       child: Image.file(
-                //         File(imagePaths[0]),
-                //         width: 50,
-                //         height: 50,
-                //         fit: BoxFit.cover,
-                //         errorBuilder: (_, __, ___) => Container(
-                //           width: 50, height: 50, color: Colors.grey[200],
-                //           child: const Icon(Icons.broken_image, size: 20),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
                 // --- IMAGE PREVIEW THUMBNAIL (Right side) ---
                 if (imagePaths != null && imagePaths.isNotEmpty)
                   Padding(
@@ -332,5 +321,171 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         selectedKeys.clear();
       });
     }
+  }
+
+  // --- LOGIC: MOVE SELECTED NOTES TO ANOTHER FOLDER ---
+  // void _showMoveNotesSheet() {
+  //   final folderBox = Hive.box('folders_box');
+  //   // Get all folders except the current one
+  //   final List<MapEntry<dynamic, dynamic>> folders = folderBox.toMap().entries.where((entry) => entry.key != widget.folderKey).toList();
+
+  //   showModalBottomSheet(
+  //     context: context,
+  //     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+  //     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+  //     builder: (context) => Padding(
+  //       padding: const EdgeInsets.all(20.0),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           Container(
+  //             width: 40,
+  //             height: 4,
+  //             margin: const EdgeInsets.only(bottom: 10),
+  //             decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
+  //           ),
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //             children: [
+  //               TextButton(
+  //                   onPressed: () => Navigator.pop(context),
+  //                   child: Text("Cancel",
+  //                       style: TextStyle(
+  //                         color: Colors.red,
+  //                         fontSize: context.isPhone ? 16 : 18,
+  //                         fontFamily: 'EN-REGULAR',
+  //                       ))),
+  //               Text("Move to Folder",
+  //                   style: TextStyle(
+  //                     fontSize: context.isPhone ? 16 : 18,
+  //                     fontFamily: 'EN-BOLD',
+  //                   )),
+  //             ],
+  //           ),
+  //           const SizedBox(height: 20),
+  //           if (folders.isEmpty)
+  //             const Padding(
+  //               padding: EdgeInsets.all(20.0),
+  //               child: Text("No other folders found"),
+  //             ),
+  //           Flexible(
+  //             child: ListView.builder(
+  //               shrinkWrap: true,
+  //               itemCount: folders.length,
+  //               itemBuilder: (context, index) {
+  //                 final folder = folders[index];
+  //                 return ListTile(
+  //                   leading: Icon(Icons.folder, color: Color(folder.value['colorValue'] ?? Colors.blue.value)),
+  //                   title: Text(folder.value['title'] ?? "Unnamed Folder"),
+  //                   onTap: () async {
+  //                     // Move each selected note to the new folder
+  //                     for (var noteKey in selectedKeys) {
+  //                       final noteData = noteBox.get(noteKey);
+  //                       if (noteData != null) {
+  //                         final updatedNote = Map<String, dynamic>.from(noteData);
+  //                         updatedNote['folderKey'] = folder.key;
+  //                         await noteBox.put(noteKey, updatedNote);
+  //                       }
+  //                     }
+
+  //                     Navigator.pop(context);
+  //                     setState(() {
+  //                       isSelectionMode = false;
+  //                       selectedKeys.clear();
+  //                     });
+
+  //                     Get.snackbar("Success", "Notes moved to ${folder.value['title']}", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
+  //                   },
+  //                 );
+  //               },
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+  // Add dynamic? singleNoteKey as a parameter
+  void _showMoveNotesSheet({dynamic singleNoteKey}) {
+    final folderBox = Hive.box('folders_box');
+    final List<MapEntry<dynamic, dynamic>> folders = folderBox.toMap().entries.where((entry) => entry.key != widget.folderKey).toList();
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => Container(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text("Cancel",
+                        style: TextStyle(
+                          color: Colors.red,
+                          fontSize: context.isPhone ? 16 : 18,
+                          fontFamily: 'EN-REGULAR',
+                        ))),
+                Text("Move to Folder",
+                    style: TextStyle(
+                      fontSize: context.isPhone ? 16 : 18,
+                      fontFamily: 'EN-BOLD',
+                    )),
+              ],
+            ),
+            const SizedBox(height: 20),
+            if (folders.isEmpty)
+              const Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Text("No other folders found"),
+              ),
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: folders.length,
+                itemBuilder: (context, index) {
+                  final folder = folders[index];
+                  return ListTile(
+                    leading: Icon(Icons.folder, color: Color(folder.value['colorValue'] ?? Colors.blue.value)),
+                    title: Text(folder.value['title'] ?? "Unnamed Folder"),
+                    onTap: () async {
+                      // Determine if we are moving one note or the selection
+                      List<dynamic> keysToMove = singleNoteKey != null ? [singleNoteKey] : selectedKeys.toList();
+
+                      for (var noteKey in keysToMove) {
+                        final noteData = noteBox.get(noteKey);
+                        if (noteData != null) {
+                          final updatedNote = Map<String, dynamic>.from(noteData);
+                          updatedNote['folderKey'] = folder.key;
+                          await noteBox.put(noteKey, updatedNote);
+                        }
+                      }
+
+                      Navigator.pop(context);
+                      setState(() {
+                        isSelectionMode = false;
+                        selectedKeys.clear();
+                      });
+
+                      Get.snackbar("Success", "Moved to ${folder.value['title']}", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

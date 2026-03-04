@@ -33,7 +33,7 @@ Future<void> showConfirmDeleteDialog({
               style: TextStyle(
                 fontSize: context.isPhone ? 18 : 20,
                 color: AppColor().black,
-                fontFamily: 'KH-Bold',
+                fontFamily: 'EN-BOLD',
                 fontWeight: FontWeight.bold,
                  
               ),
@@ -44,7 +44,7 @@ Future<void> showConfirmDeleteDialog({
               style: TextStyle(
                 fontSize: context.isPhone ? 16 : 18,
                 color: AppColor().black,
-                fontFamily: 'KH-REGULAR',
+                fontFamily: 'EN-REGULAR',
               ),
             ),
             actionsPadding: const EdgeInsets.only(bottom: 16, left: kIsWeb ? 30 : 16, right: kIsWeb ? 30 : 16),
@@ -69,7 +69,7 @@ Future<void> showConfirmDeleteDialog({
                         style: TextStyle(
                           fontSize: context.isPhone ? 16 : 18,
                           color: AppColor().black,
-                          fontFamily: 'KH-Medium',
+                          fontFamily: 'EN-REGULAR',
                         ),
                       ),
                     ),
@@ -96,7 +96,7 @@ Future<void> showConfirmDeleteDialog({
                         style: TextStyle(
                           fontSize: context.isPhone ? 16 : 18,
                           color: Colors.white,
-                          fontFamily: 'KH-Medium',
+                          fontFamily: 'EN-REGULAR',
                         ),
                       ),
                     ),

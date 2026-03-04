@@ -115,21 +115,11 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.black, width: 2),
+                    border: Border.all(width: 1),
                   ),
                   child: const Icon(Icons.add, size: 20),
                 ),
               ),
-              // IconButton(
-              //   onPressed: () {
-              //     setState(() => isGrid = !isGrid);
-              //   },
-              //   icon: const Icon(
-              //     Icons.grid_view,
-              //     color: Colors.black,
-              //     size: 27,
-              //   ),
-              // ),
               SizedBox(
                 width: 5,
               )
@@ -146,7 +136,9 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: const Color(0xFF4D7CFF).withOpacity(0.3)),
+                    border: Border.all(
+                      color: const Color(0xFF4D7CFF).withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Icon(Icons.add, color: Color(0xFF4D7CFF), size: context.isPhone ? 20 : 25),
                 ),
