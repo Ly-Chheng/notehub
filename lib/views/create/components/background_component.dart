@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 
 void showPaletteSheet({
   required BuildContext context,
-  required Color selectedColor, // Added this to track current selection
+  required Color selectedColor,
   required Function(Color) onColorSelected,
 }) {
   showModalBottomSheet(
@@ -55,17 +55,16 @@ void showPaletteSheet({
                     const Color(0xFFE1F5FE),
                     const Color(0xFFE8F5E9),
                     const Color(0xFFFFE0B2),
-
-                    const Color(0xFFEDE7F6), // Light purple
-                    const Color(0xFFD1C4E9), // Lavender
-                    const Color(0xFFF3E5F5), // Soft violet
-                    const Color(0xFFFFEBEE), // Very light red
-                    const Color(0xFFFFF3E0), // Cream orange
-                    const Color(0xFFE0F7FA), // Cyan light
-                    const Color(0xFFF1F8E9), // Lime light
-                    const Color(0xFFFFFDE7), // Very soft yellow
-                    const Color(0xFFECEFF1), // Light grey
-                    const Color(0xFFD7CCC8), // Light brown
+                    const Color(0xFFEDE7F6),
+                    const Color(0xFFD1C4E9),
+                    const Color(0xFFF3E5F5),
+                    const Color(0xFFFFEBEE),
+                    const Color(0xFFFFF3E0),
+                    const Color(0xFFE0F7FA),
+                    const Color(0xFFF1F8E9),
+                    const Color(0xFFFFFDE7),
+                    const Color(0xFFECEFF1),
+                    const Color(0xFFD7CCC8),
                   ].map((color) {
                     // Check if this specific circle is the active one
                     bool isActive = selectedColor.value == color.value;
@@ -75,18 +74,6 @@ void showPaletteSheet({
                         onColorSelected(color);
                         Navigator.pop(context);
                       },
-                      // child: CircleAvatar(
-                      //   backgroundColor: color,
-                      //   radius: 25,
-                      //   child: Container(
-                      //     decoration: BoxDecoration(
-                      //       shape: BoxShape.circle,
-                      //       border: Border.all(color: Colors.black12),
-                      //     ),
-                      //     // --- YOUR REQUESTED ICON LOGIC ---
-                      //     child: isActive ? const Icon(Icons.check, color: Colors.blue) : null,
-                      //   ),
-                      // ),
                       child: Container(
                         width: 100,
                         height: 60,

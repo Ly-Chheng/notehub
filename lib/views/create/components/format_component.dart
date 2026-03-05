@@ -15,6 +15,7 @@ void showFormatSheet({
   required Function(Color) onColorChanged,
   required VoidCallback onBulletPressed,
   required VoidCallback onNumberedPressed,
+  required VoidCallback onHyphenPressed,
 }) {
   showModalBottomSheet(
     context: context,
@@ -107,12 +108,17 @@ void showFormatSheet({
                       children: [
                         _formatToggle(Icons.format_list_bulleted, false, () {
                           onBulletPressed();
-                          Navigator.pop(context); // Close sheet after inserting
+                          Navigator.pop(context);
+                        }),
+                        const SizedBox(width: 20),
+                        _formatToggle(Icons.format_line_spacing_rounded, false, () {
+                          onHyphenPressed();
+                          Navigator.pop(context);
                         }),
                         const SizedBox(width: 20),
                         _formatToggle(Icons.format_list_numbered, false, () {
                           onNumberedPressed();
-                          Navigator.pop(context); // Close sheet after action
+                          Navigator.pop(context);
                         }),
                       ],
                     ),

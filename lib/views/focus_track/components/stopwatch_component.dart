@@ -12,21 +12,21 @@ class StopwatchScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            children: [
-              const Spacer(),
-              _buildTimerDisplay(context),
-              const Spacer(),
-              _buildLapList(),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
-                child: _buildControls(context),
-              ),
-              const SizedBox(height: 60),
-            ],
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+            child: Column(
+              children: [
+                _buildTimerDisplay(context),
+                _buildLapList(),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 50),
+                  child: _buildControls(context),
+                ),
+                const SizedBox(height: 60),
+              ],
+            ),
           ),
         ),
       ),
@@ -38,15 +38,15 @@ class StopwatchScreen extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             Container(
-              width: context.isPhone ? 250 : 330,
-              height: context.isPhone ? 250 : 330,
+              width: context.isPhone ? 270 : 330,
+              height: context.isPhone ? 270 : 330,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.transparent,
               ),
               child: CircularProgressIndicator(
                 value: (controller.milliseconds.value % 60000) / 60000,
-                strokeWidth: context.isPhone ? 13 : 17,
+                strokeWidth: context.isPhone ? 10 : 12,
                 backgroundColor: Colors.grey.shade200,
                 valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4D7CFF)),
               ),
@@ -54,8 +54,8 @@ class StopwatchScreen extends StatelessWidget {
             Text(
               controller.formatTime(controller.milliseconds.value),
               style: TextStyle(
-                fontFamily: 'EN-BOLD',
-                fontSize: context.isPhone ? 50 : 60,
+                fontFamily: 'EN-REGULAR',
+                fontSize: context.isPhone ? 55 : 60,
                 letterSpacing: -1,
               ),
             ),

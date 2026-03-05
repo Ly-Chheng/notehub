@@ -1,152 +1,8 @@
-// import 'dart:async';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-
-// class TimerDetailScreen extends StatefulWidget {
-//   final dynamic timerKey;
-//   final Map data;
-//   final int initialSeconds;
-//   final bool isRunning;
-
-//   const TimerDetailScreen({
-//     super.key,
-//     required this.timerKey,
-//     required this.data,
-//     required this.initialSeconds,
-//     required this.isRunning,
-//   });
-
-//   @override
-//   State<TimerDetailScreen> createState() => _TimerDetailScreenState();
-// }
-
-// class _TimerDetailScreenState extends State<TimerDetailScreen> {
-//   late int _currentSeconds;
-//   late bool _active;
-//   Timer? _ticker;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _currentSeconds = widget.initialSeconds;
-//     _active = widget.isRunning;
-//     if (_active) _startTicker();
-//   }
-
-//   void _startTicker() {
-//     _ticker = Timer.periodic(const Duration(seconds: 1), (timer) {
-//       if (_currentSeconds > 0) {
-//         setState(() => _currentSeconds--);
-//       } else {
-//         _ticker?.cancel();
-//         setState(() => _active = false);
-//       }
-//     });
-//   }
-
-//   void _toggle() {
-//     setState(() {
-//       _active = !_active;
-//       if (_active) _startTicker();
-//       else _ticker?.cancel();
-//     });
-//   }
-
-//   @override
-//   void dispose() {
-//     _ticker?.cancel();
-//     super.dispose();
-//   }
-
-//   String _formatTime(int seconds) {
-//     int h = seconds ~/ 3600;
-//     int m = (seconds % 3600) ~/ 60;
-//     int s = seconds % 60;
-//     return "${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}";
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     double progress = _currentSeconds / widget.data['totalSeconds'];
-
-//     return Scaffold(
-//       backgroundColor: Colors.black, // iPhone detail is always dark
-//       appBar: AppBar(
-//         backgroundColor: Colors.black,
-//         leading: IconButton(
-//           icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 30),
-//           onPressed: () => Get.back(),
-//         ),
-//       ),
-//       body: Column(
-//         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//         children: [
-//           // THE LARGE IPHONE CIRCLE
-//           Center(
-//             child: Stack(
-//               alignment: Alignment.center,
-//               children: [
-//                 SizedBox(
-//                   width: 300,
-//                   height: 300,
-//                   child: CircularProgressIndicator(
-//                     value: progress,
-//                     strokeWidth: 8,
-//                     backgroundColor: Colors.white10,
-//                     valueColor: const AlwaysStoppedAnimation<Color>(Colors.orange),
-//                   ),
-//                 ),
-//                 Text(
-//                   _formatTime(_currentSeconds),
-//                   style: const TextStyle(
-//                     color: Colors.white,
-//                     fontSize: 50,
-//                     fontWeight: FontWeight.w200,
-//                     fontFamily: 'monospace'
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-
-//           // BOTTOM BUTTONS (Cancel & Pause)
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 40),
-//             child: Row(
-//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//               children: [
-//                 _iphoneButton("Cancel", Colors.grey[800]!, Colors.white, () => Get.back()),
-//                 _iphoneButton(
-//                   _active ? "Pause" : "Resume",
-//                   _active ? Colors.orange.withOpacity(0.2) : Colors.green.withOpacity(0.2),
-//                   _active ? Colors.orange : Colors.green,
-//                   _toggle
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _iphoneButton(String label, Color bg, Color textCol, VoidCallback tap) {
-//     return GestureDetector(
-//       onTap: tap,
-//       child: Container(
-//         width: 80,
-//         height: 80,
-//         decoration: BoxDecoration(shape: BoxShape.circle, color: bg),
-//         alignment: Alignment.center,
-//         child: Text(label, style: TextStyle(color: textCol, fontWeight: FontWeight.bold)),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/focus_track/timer_controller.dart';
+import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/widgets/custom_appbar.dart';
 
 class TimerDetailScreen extends StatelessWidget {
   final dynamic timerKey;
@@ -159,8 +15,13 @@ class TimerDetailScreen extends StatelessWidget {
     final TimerController controller = Get.find<TimerController>();
 
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(backgroundColor: Colors.black, leading: IconButton(icon: Icon(Icons.arrow_back_ios, color: Colors.white), onPressed: () => Get.back())),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: customAppBar(
+        title: "Timer Detail",
+        titleColor: AppColor().primaryColor,
+        context: context,
+        leadingColor: AppColor().primaryColor,
+      ),
       body: Obx(() {
         int currentSec = controller.runningSeconds[timerKey] ?? 0;
         bool isRunning = controller.activeTimerKeys.contains(timerKey);
@@ -173,18 +34,45 @@ class TimerDetailScreen extends StatelessWidget {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  SizedBox(width: 280, height: 280, child: CircularProgressIndicator(value: progress, strokeWidth: 10, valueColor: AlwaysStoppedAnimation(Colors.orange))),
-                  Text(controller.formatTime(currentSec), style: TextStyle(color: Colors.white, fontSize: 54, fontWeight: FontWeight.w200)),
+                  SizedBox(
+                      width: 280,
+                      height: 280,
+                      child: CircularProgressIndicator(value: progress, strokeWidth: 10, valueColor: AlwaysStoppedAnimation(AppColor().primaryColor), backgroundColor: Colors.grey.shade300)),
+                  Text(controller.formatTime(currentSec), style: TextStyle(fontSize: 55, fontFamily: 'EN-REGULAR', color: Theme.of(context).textTheme.bodyLarge!.color)),
                 ],
               ),
             ),
-            const SizedBox(height: 60),
+            const SizedBox(height: 100),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //   children: [
+            //     _actionButton("Cancel", Colors.grey[800]!, Colors.white, () => Get.back()),
+            //     _actionButton(isRunning ? "Pause" : "Resume", isRunning ? Colors.deepPurpleAccent.withOpacity(0.2) : Colors.green.withOpacity(0.2), isRunning ? AppColor().primaryColor : Colors.green,
+            //         () => controller.toggleTimer(timerKey)),
+            //   ],
+            // )
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _actionButton("Cancel", Colors.grey[800]!, Colors.white, () => Get.back()),
-                _actionButton(isRunning ? "Pause" : "Resume", isRunning ? Colors.orange.withOpacity(0.2) : Colors.green.withOpacity(0.2), isRunning ? Colors.orange : Colors.green,
-                    () => controller.toggleTimer(timerKey)),
+                // Cancel Button with X icon
+                _actionButton(
+                  const Icon(Icons.close, color: Colors.white, size: 30),
+                  Colors.grey[800]!,
+                  Colors.white,
+                  () => Get.back(),
+                ),
+
+                // Play/Pause Button with dynamic icons
+                _actionButton(
+                  Icon(
+                    isRunning ? Icons.pause : Icons.play_arrow,
+                    color: isRunning ? AppColor().primaryColor : Colors.green,
+                    size: 35,
+                  ),
+                  isRunning ? AppColor().primaryColor.withOpacity(0.2) : Colors.green.withOpacity(0.2),
+                  isRunning ? AppColor().primaryColor : Colors.green,
+                  () => controller.toggleTimer(timerKey),
+                ),
               ],
             )
           ],
@@ -193,15 +81,31 @@ class TimerDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _actionButton(String title, Color bg, Color txt, VoidCallback tap) {
+  Widget _actionButton(Widget icon, Color bg, Color iconColor, VoidCallback tap) {
     return GestureDetector(
       onTap: tap,
       child: Container(
-          width: 80,
-          height: 80,
-          decoration: BoxDecoration(shape: BoxShape.circle, color: bg),
-          alignment: Alignment.center,
-          child: Text(title, style: TextStyle(color: txt, fontWeight: FontWeight.bold))),
+        width: 80,
+        height: 80,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: bg,
+        ),
+        alignment: Alignment.center,
+        child: icon, // Now renders the Icon widget
+      ),
     );
   }
+
+  // Widget _actionButton(String title, Color bg, Color txt, VoidCallback tap) {
+  //   return GestureDetector(
+  //     onTap: tap,
+  //     child: Container(
+  //         width: 80,
+  //         height: 80,
+  //         decoration: BoxDecoration(shape: BoxShape.circle, color: bg),
+  //         alignment: Alignment.center,
+  //         child: Text(title, style: TextStyle(color: txt, fontFamily: 'EN-ENGINEER'))),
+  //   );
+  // }
 }

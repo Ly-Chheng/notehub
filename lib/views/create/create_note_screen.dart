@@ -7,6 +7,7 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/background_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
+import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:share_plus/share_plus.dart';
@@ -48,6 +49,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   // Track current folder selection in state
   dynamic currentFolderKey;
 
+  // --- TABLE STATE ---
+  bool showTable = false;
+  List<List<String>> tableData = [
+    ["", ""], // Default 3x2 table
+    ["", ""],
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -75,6 +83,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       List<dynamic>? imagePaths = widget.existingNote?['images'];
       if (imagePaths != null) {
         selectedImages = imagePaths.map((path) => File(path)).toList();
+      }
+
+      // Load Table Data
+      showTable = widget.existingNote?['showTable'] ?? false;
+      if (widget.existingNote?['tableData'] != null) {
+        tableData = List<List<String>>.from(
+          (widget.existingNote?['tableData'] as List).map((row) => List<String>.from(row)),
+        );
       }
 
       int? colorVal = widget.existingNote?['colorValue'];
@@ -115,6 +131,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         // Check for Bullet pattern
         else if (previousLine.startsWith('•')) {
           _insertTextAtEnd("• ");
+        } else if (previousLine.startsWith('-')) {
+          _insertTextAtEnd("- ");
         }
       }
     }
@@ -125,6 +143,16 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     contentController.text = contentController.text + insertion;
     contentController.selection = TextSelection.fromPosition(
       TextPosition(offset: contentController.text.length),
+    );
+  }
+
+  void _insertDashList() {
+    final text = contentController.text;
+    final selection = contentController.selection;
+    final String insertion = (text.isEmpty || text.endsWith('\n')) ? "- " : "\n- ";
+    contentController.text = text.replaceRange(selection.start, selection.end, insertion);
+    contentController.selection = TextSelection.fromPosition(
+      TextPosition(offset: selection.start + insertion.length),
     );
   }
 
@@ -165,6 +193,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "colorValue": selectedColor.value,
       "bgColorValue": noteBgColor.value,
       "images": selectedImages.map((file) => file.path).toList(), // Save paths
+      "showTable": showTable,
+      "tableData": tableData, // Save the dynamic table
     };
 
     Get.back(); // Close screen
@@ -249,52 +279,52 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
-        child: Column(
-          children: [
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
-              style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
-            ),
-            // Horizontal Image Preview (New Section)
-            if (selectedImages.isNotEmpty)
-              SizedBox(
-                height: 120,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: selectedImages.length,
-                  itemBuilder: (context, index) => Stack(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
-                        width: 100,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          image: DecorationImage(
-                            image: FileImage(selectedImages[index]),
-                            fit: BoxFit.cover,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
+                style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
+              ),
+              // Horizontal Image Preview (New Section)
+              if (selectedImages.isNotEmpty)
+                SizedBox(
+                  height: context.isPhone ? 120 : 150,
+                  child: ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: selectedImages.length,
+                    itemBuilder: (context, index) => Stack(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
+                          width: context.isPhone ? 100 : 130,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            image: DecorationImage(
+                              image: FileImage(selectedImages[index]),
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ),
-                      Positioned(
-                        right: 2,
-                        top: 2,
-                        child: GestureDetector(
-                          onTap: () => setState(() => selectedImages.removeAt(index)),
-                          child: const CircleAvatar(
-                            radius: 13,
-                            backgroundColor: Colors.red,
-                            child: Icon(Icons.close, size: 16, color: Colors.white),
+                        Positioned(
+                          right: 2,
+                          top: 2,
+                          child: GestureDetector(
+                            onTap: () => setState(() => selectedImages.removeAt(index)),
+                            child: CircleAvatar(
+                              radius: context.isPhone ? 13 : 16,
+                              backgroundColor: Colors.red,
+                              child: Icon(Icons.close, size: context.isPhone ? 20 : 24, color: Colors.white),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            Expanded(
-              child: TextField(
+              TextField(
                 controller: contentController,
                 maxLines: null,
                 style: TextStyle(
@@ -309,8 +339,87 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 ),
                 decoration: const InputDecoration(hintText: 'Content...', border: InputBorder.none),
               ),
-            ),
-          ],
+
+              // if (showTable)
+              //   EditableTableComponent(
+              //     tableData: tableData,
+              //     onCellChanged: (rowIndex, colIndex, value) {
+              //       tableData[rowIndex][colIndex] = value;
+              //     },
+              //     onAddRow: () {
+              //       setState(() {
+              //         tableData.add(["", "", ""]);
+              //       });
+              //     },
+              //     onRemoveRow: (index) {
+              //       setState(() {
+              //         // Prevent deleting the last row if you want to keep the table visible
+              //         if (tableData.length > 1) {
+              //           tableData.removeAt(index);
+              //         } else {
+              //           showTable = false; // Hide table if no rows left
+              //         }
+              //       });
+              //     },
+              //     onDeleteTable: () {
+              //       setState(() {
+              //         showTable = false;
+              //       });
+              //     },
+              //   ),
+              if (showTable)
+                EditableTableComponent(
+                  tableData: tableData,
+                  onCellChanged: (rowIndex, colIndex, value) {
+                    tableData[rowIndex][colIndex] = value;
+                  },
+                  onAddRow: () {
+                    setState(() {
+                      // Add a new row with the same number of columns as existing rows
+                      int currentCols = tableData[0].length;
+                      tableData.add(List.generate(currentCols, (_) => ""));
+                    });
+                  },
+                  onRemoveRow: (index) {
+                    setState(() {
+                      if (tableData.length > 1) {
+                        tableData.removeAt(index);
+                      } else {
+                        showTable = false;
+                      }
+                    });
+                  },
+                  onAddColumn: () {
+                    setState(() {
+                      // Add a new cell to every existing row
+                      for (var row in tableData) {
+                        row.add("");
+                      }
+                    });
+                  },
+                  onRemoveColumn: (colIndex) {
+                    setState(() {
+                      // Remove the cell at colIndex from every row
+                      if (tableData[0].length > 1) {
+                        for (var row in tableData) {
+                          row.removeAt(colIndex);
+                        }
+                      } else {
+                        Get.snackbar("Warning", "Table must have at least one column");
+                      }
+                    });
+                  },
+                  onDeleteTable: () {
+                    setState(() {
+                      showTable = false;
+                      tableData = [
+                        ["", "", ""]
+                      ]; // Reset to default
+                    });
+                  },
+                ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -352,6 +461,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                         onColorChanged: (val) => setState(() => selectedColor = val),
                         onBulletPressed: _insertBulletPoint,
                         onNumberedPressed: _insertNumberedList,
+                        onHyphenPressed: _insertDashList,
                       );
                     }),
                     _bottomIcon(Icons.palette_outlined, () {
@@ -360,6 +470,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                         selectedColor: noteBgColor,
                         onColorSelected: (color) => setState(() => noteBgColor = color),
                       );
+                    }),
+                    _bottomIcon(Icons.table_chart_outlined, () {
+                      setState(() => showTable = !showTable);
                     }),
                   ],
                 ),
@@ -411,10 +524,16 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           context: context,
           title: 'Delete Note',
           subTitle: 'Are you sure you want to delete this note?',
-          onConfirm: () {
-            // If you are using Hive, you might need to delete by key here
-            Get.back(); // Close dialog
-            Get.back(); // Exit screen
+          onConfirm: () async {
+            final noteBox = Hive.box('student_notes');
+
+            // 1. Check if we are editing an existing note with a valid key
+            if (widget.isEditing && widget.noteKey != null) {
+              await noteBox.delete(widget.noteKey);
+              Get.back();
+            }
+            Get.back();
+            Get.back();
           },
         );
         break;
@@ -428,7 +547,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Container(
         padding: const EdgeInsets.all(20),

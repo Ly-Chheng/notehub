@@ -226,10 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-        ),
+        decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
         padding: EdgeInsets.only(
           bottom: MediaQuery.of(context).viewInsets.bottom,
           top: 20,

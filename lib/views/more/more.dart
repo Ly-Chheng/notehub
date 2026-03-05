@@ -26,52 +26,50 @@ class _MoreScreenState extends State<MoreScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20,bottom: 10),
-        child: Center(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                // First Group: General Settings
-                _buildSectionContainer([
-                  _buildMenuTile(Icons.info_outline, "About", onTap: () {
-                    Get.to(AboutScreen());
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 20),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Column(
+            children: [
+              // First Group: General Settings
+              _buildSectionContainer([
+                _buildMenuTile(Icons.info_outline, "About", onTap: () {
+                  Get.to(AboutScreen());
+                }),
+                _buildMenuTile(Icons.text_fields, "Font size", onTap: () {}),
+                DarkModeView(),
+                NotificationView(),
+                _buildMenuTile(Icons.help_outline, "How to use", onTap: () {
+                  Get.to(HowToUseScreen());
+                }),
+                _buildMenuTile(Icons.share_outlined, "Share App", onTap: () {
+                  Get.to(LockVerificationScreen());
+                }, isLast: true),
+              ]),
+
+              // Second Group: Security
+              Padding(
+                padding: const EdgeInsets.only(top: 20, bottom: 60),
+                child: _buildSectionContainer([
+                  _buildMenuTile(Icons.lock_outline, "Change Password", onTap: () {
+                    Get.to(() => const ChangePasswordScreen());
                   }),
-                  _buildMenuTile(Icons.text_fields, "Font size", onTap: () {}),
-                  DarkModeView(),
-                  NotificationView(),
-                  _buildMenuTile(Icons.help_outline, "How to use", onTap: () {
-                    Get.to(HowToUseScreen());
+                  _buildMenuTile(Icons.history, "Reset Password", onTap: () {
+                    Get.to(() => const ResetPasswordScreen());
                   }),
-                  _buildMenuTile(Icons.share_outlined, "Share App", onTap: () {
-                    Get.to(LockVerificationScreen());
+                  _buildMenuTile(Icons.lock_reset, "Forget Password", onTap: () {
+                    Get.to(() => const ForgetPasswordScreen());
                   }, isLast: true),
                 ]),
+              ),
 
-                // Second Group: Security
-                Padding(
-                  padding: const EdgeInsets.only(top: 20, bottom: 60),
-                  child: _buildSectionContainer([
-                    _buildMenuTile(Icons.lock_outline, "Change Password", onTap: () {
-                      Get.to(() => const ChangePasswordScreen());
-                    }),
-                    _buildMenuTile(Icons.history, "Reset Password", onTap: () {
-                      Get.to(() => const ResetPasswordScreen());
-                    }),
-                    _buildMenuTile(Icons.lock_reset, "Forget Password", onTap: () {
-                      Get.to(() => const ForgetPasswordScreen());
-                    }, isLast: true),
-                  ]),
-                ),
-
-                // Footer
-                const Text(
-                  "Copyright © 2026 BELTEI Student Note App.\nVersion 1.0.0",
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey, fontSize: 12, height: 1.5),
-                ),
-              ],
-            ),
+              // Footer
+              Text(
+                "Copyright © 2026 BELTEI Student Note App.\nVersion 1.0.0",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 12 : 14, height: 1.5),
+              ),
+            ],
           ),
         ),
       ),
@@ -89,7 +87,6 @@ class _MoreScreenState extends State<MoreScreen> {
     );
   }
 
-  // Standard Tile with Arrow
   Widget _buildMenuTile(IconData icon, String title, {required VoidCallback onTap, bool isLast = false}) {
     return Column(
       children: [
@@ -98,11 +95,13 @@ class _MoreScreenState extends State<MoreScreen> {
             icon,
             color: Theme.of(context).iconTheme.color,
           ),
-          title: Text(title, style: const TextStyle(fontSize: 16, fontFamily: 'EN-MEDIUM')),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black26),
+          title: Text(title, style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-MEDIUM')),
+          trailing: Icon(
+            Icons.arrow_forward_ios,
+            size: context.isPhone ? 14 : 16,
+          ),
           onTap: onTap,
         ),
-        // if (!isLast) const Divider(height: 1, indent: 50, endIndent: 20, color: Color(0xFFEEEEEE)),
       ],
     );
   }

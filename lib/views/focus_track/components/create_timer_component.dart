@@ -1,105 +1,8 @@
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:hive/hive.dart';
-// import 'package:project_structure/core/utils/app_color.dart';
-// import 'package:project_structure/widgets/custom_appbar.dart';
-
-// class CreateTimerScreen extends StatefulWidget {
-//   const CreateTimerScreen({super.key});
-
-//   @override
-//   State<CreateTimerScreen> createState() => _CreateTimerScreenState();
-// }
-
-// class _CreateTimerScreenState extends State<CreateTimerScreen> {
-//   int selectedHours = 0;
-//   int selectedMinutes = 0;
-//   int selectedSeconds = 0;
-//   final TextEditingController _labelController = TextEditingController(text: "Timer");
-
-//   void _saveTimer() async {
-//     final box = Hive.box('student_notes');
-
-//     // Calculate total duration
-//     int totalSec = (selectedHours * 3600) + (selectedMinutes * 60) + selectedSeconds;
-
-//     if (totalSec <= 0) {
-//       Get.snackbar("Error", "Please set a duration", snackPosition: SnackPosition.BOTTOM);
-//       return;
-//     }
-
-//     final timerData = {
-//       "type": "timer", // Used to filter in the list
-//       "title": _labelController.text,
-//       "subtitle": "${selectedHours}h ${selectedMinutes}m ${selectedSeconds}s",
-//       "totalSeconds": totalSec,
-//       "remainingSeconds": totalSec,
-//       "isRunning": false,
-//       "bgColorValue": 0xFF4D7CFF, // Timer Blue
-//       "isDeleted": false,
-//       "createdAt": DateTime.now().toIso8601String(),
-//     };
-
-//     await box.add(timerData);
-//     Get.back(); // Go back to the timer list
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: customAppBar(
-//         title: "New Timer",
-//         context: context,
-//         actions: [
-//           TextButton(onPressed: _saveTimer, child: const Text("Save", style: TextStyle(fontSize: 18))),
-//         ],
-//       ),
-//       body: Column(
-//         children: [
-//           const SizedBox(height: 40),
-//           SizedBox(
-//             height: 200,
-//             child: Row(
-//               children: [
-//                 _buildPicker(24, "hours", (v) => setState(() => selectedHours = v)),
-//                 _buildPicker(60, "min", (v) => setState(() => selectedMinutes = v)),
-//                 _buildPicker(60, "sec", (v) => setState(() => selectedSeconds = v)),
-//               ],
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.all(20.0),
-//             child: TextField(
-//               controller: _labelController,
-//               decoration: InputDecoration(
-//                 labelText: "Label",
-//                 filled: true,
-//                 fillColor: Colors.grey.withOpacity(0.1),
-//                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _buildPicker(int count, String unit, ValueChanged<int> onSelect) {
-//     return Expanded(
-//       child: CupertinoPicker(
-//         itemExtent: 40,
-//         onSelectedItemChanged: onSelect,
-//         children: List.generate(count, (i) => Center(child: Text("$i $unit"))),
-//       ),
-//     );
-//   }
-// }
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:project_structure/controllers/focus_track/timer_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
@@ -150,16 +53,16 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     final timerData = {
       "type": "timer",
       "title": _labelController.text,
-      "subtitle": "${selectedHours}h ${selectedMinutes}m ${selectedSeconds}s",
       "totalSeconds": totalSec,
-      "remainingSeconds": totalSec, // Reset time on edit
-      "isRunning": false,
-      "bgColorValue": 0xFF4D7CFF,
-      "isDeleted": false,
+      "remainingSeconds": totalSec, // Reset to new total on edit
       "updatedAt": DateTime.now().toIso8601String(),
     };
 
     if (widget.isEditing) {
+      // IMPORTANT: Clear the controller's memory for this specific timer
+      final TimerController controller = Get.find<TimerController>();
+      controller.resetTimerMemory(widget.timerKey);
+
       await box.put(widget.timerKey, timerData);
     } else {
       await box.add(timerData);

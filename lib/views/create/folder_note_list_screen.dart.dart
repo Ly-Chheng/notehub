@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -236,7 +235,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         note['title']?.isEmpty == true ? "Untitled" : note['title'],
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(fontSize: context.isPhone ? 18 : 20, fontWeight: FontWeight.bold),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 4),
@@ -245,7 +244,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
-                            fontSize: 14,
+                            fontSize: context.isPhone ? 14 : 16,
                             color: noteColor,
                             fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
                             fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
@@ -257,8 +256,10 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         ),
                       ),
                       Text(
-                        note['date'] ?? "",
-                        style: TextStyle(fontSize: 11, color: noteColor),
+                        (note['date'] ?? "").replaceAll("/", "-"),
+                        style: TextStyle(
+                          fontSize: context.isPhone ? 11 : 13,
+                        ),
                       ),
                     ],
                   ),
@@ -271,14 +272,14 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       borderRadius: BorderRadius.circular(8),
                       child: Image.file(
                         File(imagePaths[0]), // Displays the first image taken
-                        width: 70,
-                        height: 70,
+                        width: context.isPhone ? 70 : 100,
+                        height: context.isPhone ? 70 : 100,
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => Container(
-                          width: 70,
-                          height: 70,
+                          width: context.isPhone ? 70 : 100,
+                          height: context.isPhone ? 70 : 100,
                           color: Colors.grey[200],
-                          child: const Icon(Icons.broken_image, size: 24),
+                          child: Icon(Icons.broken_image, size: context.isPhone ? 24 : 30),
                         ),
                       ),
                     ),
@@ -306,9 +307,12 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       value: title,
       child: Row(
         children: [
-          Icon(icon, size: 20),
+          Icon(icon, size: context.isPhone ? 20 : 24),
           const SizedBox(width: 12),
-          Text(title),
+          Text(
+            title,
+            style: TextStyle(fontSize: context.isPhone ? 14 : 16),
+          ),
         ],
       ),
     );
@@ -323,88 +327,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     }
   }
 
-  // --- LOGIC: MOVE SELECTED NOTES TO ANOTHER FOLDER ---
-  // void _showMoveNotesSheet() {
-  //   final folderBox = Hive.box('folders_box');
-  //   // Get all folders except the current one
-  //   final List<MapEntry<dynamic, dynamic>> folders = folderBox.toMap().entries.where((entry) => entry.key != widget.folderKey).toList();
-
-  //   showModalBottomSheet(
-  //     context: context,
-  //     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-  //     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-  //     builder: (context) => Padding(
-  //       padding: const EdgeInsets.all(20.0),
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           Container(
-  //             width: 40,
-  //             height: 4,
-  //             margin: const EdgeInsets.only(bottom: 10),
-  //             decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
-  //           ),
-  //           Row(
-  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //             children: [
-  //               TextButton(
-  //                   onPressed: () => Navigator.pop(context),
-  //                   child: Text("Cancel",
-  //                       style: TextStyle(
-  //                         color: Colors.red,
-  //                         fontSize: context.isPhone ? 16 : 18,
-  //                         fontFamily: 'EN-REGULAR',
-  //                       ))),
-  //               Text("Move to Folder",
-  //                   style: TextStyle(
-  //                     fontSize: context.isPhone ? 16 : 18,
-  //                     fontFamily: 'EN-BOLD',
-  //                   )),
-  //             ],
-  //           ),
-  //           const SizedBox(height: 20),
-  //           if (folders.isEmpty)
-  //             const Padding(
-  //               padding: EdgeInsets.all(20.0),
-  //               child: Text("No other folders found"),
-  //             ),
-  //           Flexible(
-  //             child: ListView.builder(
-  //               shrinkWrap: true,
-  //               itemCount: folders.length,
-  //               itemBuilder: (context, index) {
-  //                 final folder = folders[index];
-  //                 return ListTile(
-  //                   leading: Icon(Icons.folder, color: Color(folder.value['colorValue'] ?? Colors.blue.value)),
-  //                   title: Text(folder.value['title'] ?? "Unnamed Folder"),
-  //                   onTap: () async {
-  //                     // Move each selected note to the new folder
-  //                     for (var noteKey in selectedKeys) {
-  //                       final noteData = noteBox.get(noteKey);
-  //                       if (noteData != null) {
-  //                         final updatedNote = Map<String, dynamic>.from(noteData);
-  //                         updatedNote['folderKey'] = folder.key;
-  //                         await noteBox.put(noteKey, updatedNote);
-  //                       }
-  //                     }
-
-  //                     Navigator.pop(context);
-  //                     setState(() {
-  //                       isSelectionMode = false;
-  //                       selectedKeys.clear();
-  //                     });
-
-  //                     Get.snackbar("Success", "Notes moved to ${folder.value['title']}", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
-  //                   },
-  //                 );
-  //               },
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
   // Add dynamic? singleNoteKey as a parameter
   void _showMoveNotesSheet({dynamic singleNoteKey}) {
     final folderBox = Hive.box('folders_box');
@@ -456,8 +378,11 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 itemBuilder: (context, index) {
                   final folder = folders[index];
                   return ListTile(
-                    leading: Icon(Icons.folder, color: Color(folder.value['colorValue'] ?? Colors.blue.value)),
-                    title: Text(folder.value['title'] ?? "Unnamed Folder"),
+                    leading: Icon(Icons.folder, size: context.isPhone ? 24 : 30, color: Color(folder.value['colorValue'] ?? Colors.blue.value)),
+                    title: Text(
+                      folder.value['title'] ?? "Unnamed Folder",
+                      style: TextStyle(fontSize: context.isPhone ? 14 : 16),
+                    ),
                     onTap: () async {
                       // Determine if we are moving one note or the selection
                       List<dynamic> keysToMove = singleNoteKey != null ? [singleNoteKey] : selectedKeys.toList();
@@ -477,7 +402,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         selectedKeys.clear();
                       });
 
-                      Get.snackbar("Success", "Moved to ${folder.value['title']}", snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.green, colorText: Colors.white);
+                      Get.snackbar("Success", "Moved to ${folder.value['title']}", snackPosition: SnackPosition.BOTTOM, colorText: Colors.white);
                     },
                   );
                 },
