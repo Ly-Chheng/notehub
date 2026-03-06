@@ -72,7 +72,7 @@ class TimerComponent extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
-                        color: isFinished ? const Color(0xFF1C1C1E) : Colors.white,
+                        color: isFinished ? const Color(0xFF1C1C1E) : Theme.of(context).cardColor,
                       ),
                       child: Row(
                         children: [
@@ -80,8 +80,14 @@ class TimerComponent extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(data['title'] ?? "Timer", style: TextStyle(color: isFinished ? Colors.grey : Colors.black)),
-                                Text(controller.formatTime(currentSec), style: TextStyle(fontSize: 32, color: isFinished ? Colors.orange : Colors.black)),
+                                Text(
+                                  data['title'] ?? "Timer",
+                                  style: TextStyle(color: isFinished ? Colors.grey : Colors.black, fontSize: 14, fontFamily: 'EN-REGULAR'),
+                                ),
+                                Text(controller.formatTime(currentSec), style: TextStyle(fontSize: 32, color: isFinished ? Colors.white : Colors.black, fontFamily: 'EN-REGULAR')),
+                                // SHOW DYNAMIC TOTAL TIME
+                                Text("${controller.formatToHMS(data['totalSeconds'])} total",
+                                    style: TextStyle(color: isFinished ? Colors.grey : Colors.black54, fontSize: 14, fontFamily: 'EN-REGULAR')),
                               ],
                             ),
                           ),
@@ -105,12 +111,12 @@ class TimerComponent extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          SizedBox(width: 60, height: 60, child: CircularProgressIndicator(value: 1.0, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(Colors.black12))),
+          SizedBox(width: 60, height: 60, child: CircularProgressIndicator(value: 1.0, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(Colors.grey.shade200))),
           SizedBox(
               width: 60, height: 60, child: CircularProgressIndicator(value: progress, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
           Icon(
             isFinished ? Icons.refresh : (isRunning ? Icons.pause : Icons.play_arrow),
-            color: isFinished ? Colors.orange : AppColor().primaryColor,
+            color: isFinished ? Colors.white : AppColor().primaryColor,
             size: 30,
           ),
         ],

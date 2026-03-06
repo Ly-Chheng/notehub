@@ -160,9 +160,9 @@ class EditableTableComponent extends StatelessWidget {
     int columnCount = tableData.isNotEmpty ? tableData[0].length : 0;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 16),
+      margin: const EdgeInsets.symmetric(vertical: 15),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.transparent,
         border: Border.all(color: Colors.grey.shade300, width: 0.8),
         borderRadius: BorderRadius.circular(10),
       ),
@@ -173,7 +173,7 @@ class EditableTableComponent extends StatelessWidget {
               for (var i = 0; i < columnCount; i++) i: const FlexColumnWidth(),
               columnCount: const FixedColumnWidth(35), // Side actions
             },
-            border: TableBorder.all(color: Colors.grey.shade300, width: 0.5),
+            border: TableBorder.all(color: Colors.black12, width: 1),
             children: [
               // --- TOP HEADER: COLUMN ACTIONS ---
               TableRow(
@@ -234,7 +234,7 @@ class EditableTableComponent extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.grey.shade50,
+              color: Colors.transparent,
               borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
             ),
             child: Row(
@@ -268,7 +268,7 @@ class EditableTableComponent extends StatelessWidget {
       child: Text(
         text,
         style: TextStyle(
-          fontSize: 13,
+          fontSize: 12,
           color: isDestructive ? Colors.red : Colors.blueAccent,
           fontWeight: FontWeight.w600,
           fontFamily: 'EN-REGULAR',

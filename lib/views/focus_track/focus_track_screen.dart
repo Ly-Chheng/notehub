@@ -73,7 +73,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
                     child: Text(
                       "Stopwatch",
                       style: TextStyle(
-                        fontFamily: 'EN-BOLD',
+                        fontFamily: 'EN-SEMIBOLD',
                         color: selectedIndex == 0 ? Colors.black : Colors.grey,
                         fontSize: context.isPhone ? 16 : 18,
                       ),
@@ -92,7 +92,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
                     child: Text(
                       "Timer",
                       style: TextStyle(
-                        fontFamily: 'EN-BOLD',
+                        fontFamily: 'EN-SEMIBOLD',
                         fontSize: context.isPhone ? 16 : 18,
                         color: selectedIndex == 1 ? Colors.black : Colors.grey,
                       ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/widgets/sheet_header.dart';
 
 void showMediaSheet({
   required BuildContext context,
@@ -38,29 +39,8 @@ void showMediaSheet({
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text("Cancel",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: context.isPhone ? 16 : 18,
-                          fontFamily: 'EN-REGULAR',
-                        ))),
-                Text("Add Media",
-                    style: TextStyle(
-                      fontSize: context.isPhone ? 16 : 18,
-                      fontFamily: 'EN-BOLD',
-                    )),
-              ],
+            SheetHeader(
+              title: "Add Media",
             ),
             const SizedBox(height: 20),
             ListTile(

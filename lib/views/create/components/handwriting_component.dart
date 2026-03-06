@@ -1,85 +1,83 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:signature/signature.dart';
 
-void showHandwritingSheet(BuildContext context) {
-  // Mock data for the drawing tools
-  final List<Map<String, dynamic>> drawingTools = [
-    {'name': 'Highlighter', 'icon': Icons.edit_attributes, 'color': Colors.amber},
-    {'name': 'Pencil', 'icon': Icons.edit, 'color': Colors.orangeAccent},
-    {'name': 'Pen', 'icon': Icons.pending_actions_outlined, 'color': Colors.orange},
-    {'name': 'Marker', 'icon': Icons.border_color, 'color': Colors.black87},
-    {'name': 'Eraser', 'icon': Icons.auto_fix_normal, 'color': Colors.blueGrey},
-  ];
+class HandwritingCanvas extends StatefulWidget {
+  final Function(Uint8List) onSave;
 
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-    ),
-    builder: (context) => Container(
-      height: 250,
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+  const HandwritingCanvas({super.key, required this.onSave});
+
+  @override
+  State<HandwritingCanvas> createState() => _HandwritingCanvasState();
+}
+
+class _HandwritingCanvasState extends State<HandwritingCanvas> {
+  final SignatureController _controller = SignatureController(
+    penStrokeWidth: 3,
+    penColor: Colors.black,
+    exportBackgroundColor: Colors.transparent,
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.9,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       child: Column(
         children: [
-          // Drag Handle
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
-              ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+                const Text("Handwriting", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                TextButton(
+                  onPressed: () async {
+                    if (_controller.isNotEmpty) {
+                      final data = await _controller.toPngBytes();
+                      if (data != null) widget.onSave(data);
+                    }
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Done", style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+              ],
             ),
           ),
-          // Header with Cancel
-          Align(
-            alignment: Alignment.centerLeft,
-            child: TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text("Cancel", style: TextStyle(color: Colors.red, fontSize: 16)),
-            ),
-          ),
-          const SizedBox(height: 10),
-          // Scrollable Tools Row
           Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: drawingTools.length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                  child: Column(
-                    children: [
-                      // Representative Tool Graphics
-                      // In a real app, use Image.asset() for the custom pen illustrations
-                      Container(
-                        height: 120,
-                        width: 40,
-                        decoration: BoxDecoration(
-                          color: drawingTools[index]['color'].withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Icon(
-                              drawingTools[index]['icon'], 
-                              size: 30, 
-                              color: drawingTools[index]['color']
-                            ),
-                            const SizedBox(height: 10),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+            child: Signature(
+              controller: _controller,
+              backgroundColor: const Color(0xFFF5F5F5),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            color: Colors.white,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _toolIcon(Icons.undo, () => _controller.undo()),
+                _toolIcon(Icons.redo, () => _controller.redo()),
+                _toolIcon(Icons.delete_outline, () => _controller.clear()),
+              ],
             ),
           ),
         ],
       ),
-    ),
-  );
+    );
+  }
+
+  Widget _toolIcon(IconData icon, VoidCallback tap) {
+    return IconButton(icon: Icon(icon, color: Colors.black54), onPressed: tap);
+  }
 }

@@ -36,6 +36,8 @@ dependencies:
   image_picker: ^1.2.1
 
   intl: ^0.20.2
+  signature: ^6.3.0
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
@@ -74,10 +76,10 @@ flutter:
     - family: EN-REGULAR
       fonts:
         - asset: assets/fonts/Roboto-Regular.ttf
-    - family: KEN-SemiBold
+    - family: KEN-SEMIBOLD
       fonts:
         - asset: assets/fonts/Roboto-SemiBold.ttf
-    - family: EN-Bold
+    - family: EN-BOLD
       fonts:
         - asset: assets/fonts/Roboto-Bold.ttf
 

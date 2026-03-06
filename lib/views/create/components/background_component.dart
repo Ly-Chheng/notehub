@@ -1,6 +1,7 @@
 // --- BACKGROUND PALETTE SHEET ---
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_structure/widgets/sheet_header.dart';
 
 void showPaletteSheet({
   required BuildContext context,
@@ -18,29 +19,8 @@ void showPaletteSheet({
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text("Cancel",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: context.isPhone ? 16 : 18,
-                          fontFamily: 'EN-REGULAR',
-                        ))),
-                Text("Note Background",
-                    style: TextStyle(
-                      fontSize: context.isPhone ? 16 : 18,
-                      fontFamily: 'EN-BOLD',
-                    )),
-              ],
+            SheetHeader(
+              title: "Note Background",
             ),
             const SizedBox(height: 20),
             Expanded(

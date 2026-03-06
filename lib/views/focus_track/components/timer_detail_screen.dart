@@ -43,14 +43,6 @@ class TimerDetailScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 100),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            //   children: [
-            //     _actionButton("Cancel", Colors.grey[800]!, Colors.white, () => Get.back()),
-            //     _actionButton(isRunning ? "Pause" : "Resume", isRunning ? Colors.deepPurpleAccent.withOpacity(0.2) : Colors.green.withOpacity(0.2), isRunning ? AppColor().primaryColor : Colors.green,
-            //         () => controller.toggleTimer(timerKey)),
-            //   ],
-            // )
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -92,20 +84,8 @@ class TimerDetailScreen extends StatelessWidget {
           color: bg,
         ),
         alignment: Alignment.center,
-        child: icon, // Now renders the Icon widget
+        child: icon, 
       ),
     );
   }
-
-  // Widget _actionButton(String title, Color bg, Color txt, VoidCallback tap) {
-  //   return GestureDetector(
-  //     onTap: tap,
-  //     child: Container(
-  //         width: 80,
-  //         height: 80,
-  //         decoration: BoxDecoration(shape: BoxShape.circle, color: bg),
-  //         alignment: Alignment.center,
-  //         child: Text(title, style: TextStyle(color: txt, fontFamily: 'EN-ENGINEER'))),
-  //   );
-  // }
 }

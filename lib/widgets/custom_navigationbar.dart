@@ -9,8 +9,8 @@ customNavigationBar({
   final Color? unselectedItemColor,
   final void Function(int)? onTap,
 }) {
-  final double iconSize = context.isPhone ? 25 : 30;
-  final double timerIconSize = context.isPhone ? 28 : 32;
+  final double iconSize = context.isPhone ? 26 : 30;
+  final double timerIconSize = context.isPhone ? 29 : 32;
 
   return ClipRRect(
     borderRadius: BorderRadius.circular(0),

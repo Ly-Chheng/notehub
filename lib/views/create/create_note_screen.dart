@@ -1,15 +1,20 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/background_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
+import 'package:project_structure/views/create/components/handwriting_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/sheet_header.dart';
 import 'package:share_plus/share_plus.dart';
 
 class CreateNoteScreen extends StatefulWidget {
@@ -31,6 +36,7 @@ class CreateNoteScreen extends StatefulWidget {
 }
 
 class _CreateNoteScreenState extends State<CreateNoteScreen> {
+  final NoteController noteController = Get.put(NoteController());
   late TextEditingController titleController;
   late TextEditingController contentController;
 
@@ -43,7 +49,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Color noteBgColor = Colors.white;
   List<File> selectedImages = []; // List to hold picked images
 
-  // Track length to detect new lines for auto-numbering
   int _lastTextLength = 0;
 
   // Track current folder selection in state
@@ -52,7 +57,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   // --- TABLE STATE ---
   bool showTable = false;
   List<List<String>> tableData = [
-    ["", ""], // Default 3x2 table
+    ["", ""], // Default 2x2 table
     ["", ""],
   ];
 
@@ -139,6 +144,22 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _lastTextLength = text.length;
   }
 
+  // HANDWRITING SAVE LOGIC
+  void _openHandwriting() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => HandwritingCanvas(
+        onSave: (Uint8List bytes) async {
+          final tempDir = await getTemporaryDirectory();
+          final file = await File('${tempDir.path}/hw_${DateTime.now().millisecondsSinceEpoch}.png').create();
+          await file.writeAsBytes(bytes);
+          setState(() => selectedImages.add(file));
+        },
+      ),
+    );
+  }
+
   void _insertTextAtEnd(String insertion) {
     contentController.text = contentController.text + insertion;
     contentController.selection = TextSelection.fromPosition(
@@ -165,24 +186,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
 
     final noteBox = Hive.box('student_notes');
-    // final folderBox = Hive.box('folders_box');
-
-    // // DETERMINE FOLDER KEY
-    // dynamic targetFolderKey = widget.folderKey;
-
-    // // If no folderKey passed, default to the first folder (usually "My Note")
-    // if (targetFolderKey == null) {
-    //   if (folderBox.isNotEmpty) {
-    //     targetFolderKey = folderBox.keys.first;
-    //   } else {
-    //     targetFolderKey = "default_folder"; // Fallback if no folders exist
-    //   }
-    // }
 
     final noteData = {
       "title": titleController.text,
       "subtitle": contentController.text,
-      // "folderKey": targetFolderKey, // Linked to specific folder
       "folderKey": currentFolderKey, // Saving the updated folder key here
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
       "isPinned": widget.existingNote?['isPinned'] ?? false,
@@ -192,15 +199,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "isStrikethrough": isStrikethrough,
       "colorValue": selectedColor.value,
       "bgColorValue": noteBgColor.value,
-      "images": selectedImages.map((file) => file.path).toList(), // Save paths
+      "images": selectedImages.map((file) => file.path).toList(),
       "showTable": showTable,
-      "tableData": tableData, // Save the dynamic table
+      "tableData": tableData,
     };
 
     Get.back(); // Close screen
 
     if (widget.isEditing && widget.noteKey != null) {
-      // Use put() with the key to overwrite existing entry
       await noteBox.put(widget.noteKey, noteData);
       Get.snackbar("Updated", "Note saved successfully", backgroundColor: Colors.green, colorText: Colors.white, snackPosition: SnackPosition.BOTTOM);
     } else {
@@ -208,7 +214,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       Get.snackbar("Success", "Note created", backgroundColor: AppColor().primaryColor, colorText: Colors.white, snackPosition: SnackPosition.BOTTOM);
     }
 
-    Get.back(); // Close the screen
+    Get.back();
   }
 
   // --- FORMATTING HELPERS ---
@@ -228,19 +234,27 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     contentController.selection = TextSelection.fromPosition(TextPosition(offset: selection.start + insertion.length));
   }
 
-  void _shareNote() async {
-    final String title = titleController.text.isEmpty ? "Untitled Note" : titleController.text;
-    final String content = contentController.text;
-    final String fullText = "$title\n\n$content";
+  // void _shareNote() async {
+  //   final String title = titleController.text.isEmpty ? "Untitled Note" : titleController.text;
+  //   final String content = contentController.text;
+  //   final String fullText = "$title\n\n$content";
 
-    if (selectedImages.isNotEmpty) {
-      // Share text and images together
-      final List<XFile> filesToShare = selectedImages.map((file) => XFile(file.path)).toList();
-      await Share.shareXFiles(filesToShare, text: fullText);
-    } else {
-      // Share text only
-      await Share.share(fullText);
-    }
+  //   if (selectedImages.isNotEmpty) {
+  //     // Share text and images together
+  //     final List<XFile> filesToShare = selectedImages.map((file) => XFile(file.path)).toList();
+  //     await Share.shareXFiles(filesToShare, text: fullText);
+  //   } else {
+  //     // Share text only
+  //     await Share.share(fullText);
+  //   }
+  // }
+
+  void _shareNote() {
+    noteController.shareNote(
+      title: titleController.text,
+      content: contentController.text,
+      selectedImages: selectedImages,
+    );
   }
 
   @override
@@ -255,11 +269,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         leadingColor: AppColor().primaryColor,
         actions: [
           IconButton(
-            onPressed: () {}, // Implement undo logic if needed
+            onPressed: () {},
             icon: Image.asset('assets/images/undo.png', width: 24, height: 24, color: AppColor().primaryColor),
           ),
           IconButton(
-            onPressed: () {}, // Implement redo logic if needed
+            onPressed: () {},
             icon: Image.asset('assets/images/redo.png', width: 24, height: 24, color: AppColor().primaryColor),
           ),
           PopupMenuButton<String>(
@@ -340,33 +354,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 decoration: const InputDecoration(hintText: 'Content...', border: InputBorder.none),
               ),
 
-              // if (showTable)
-              //   EditableTableComponent(
-              //     tableData: tableData,
-              //     onCellChanged: (rowIndex, colIndex, value) {
-              //       tableData[rowIndex][colIndex] = value;
-              //     },
-              //     onAddRow: () {
-              //       setState(() {
-              //         tableData.add(["", "", ""]);
-              //       });
-              //     },
-              //     onRemoveRow: (index) {
-              //       setState(() {
-              //         // Prevent deleting the last row if you want to keep the table visible
-              //         if (tableData.length > 1) {
-              //           tableData.removeAt(index);
-              //         } else {
-              //           showTable = false; // Hide table if no rows left
-              //         }
-              //       });
-              //     },
-              //     onDeleteTable: () {
-              //       setState(() {
-              //         showTable = false;
-              //       });
-              //     },
-              //   ),
               if (showTable)
                 EditableTableComponent(
                   tableData: tableData,
@@ -413,7 +400,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     setState(() {
                       showTable = false;
                       tableData = [
-                        ["", "", ""]
+                        ["", ""]
                       ]; // Reset to default
                     });
                   },
@@ -422,66 +409,71 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: Container(
-            margin: const EdgeInsets.all(15),
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(40),
-              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    _bottomIcon(Icons.image_outlined, () {
-                      showMediaSheet(
-                        context: context,
-                        onImageSelected: (File image) {
-                          setState(() => selectedImages.add(image));
-                        },
-                      );
-                    }),
-                    _bottomIcon(Icons.text_fields, () {
-                      showFormatSheet(
-                        context: context,
-                        isBold: isBold,
-                        isItalic: isItalic,
-                        isUnderlined: isUnderlined,
-                        isStrikethrough: isStrikethrough,
-                        selectedColor: selectedColor,
-                        onBoldChanged: (val) => setState(() => isBold = val),
-                        onItalicChanged: (val) => setState(() => isItalic = val),
-                        onUnderlineChanged: (val) => setState(() => isUnderlined = val),
-                        onStrikethroughChanged: (val) => setState(() => isStrikethrough = val),
-                        onColorChanged: (val) => setState(() => selectedColor = val),
-                        onBulletPressed: _insertBulletPoint,
-                        onNumberedPressed: _insertNumberedList,
-                        onHyphenPressed: _insertDashList,
-                      );
-                    }),
-                    _bottomIcon(Icons.palette_outlined, () {
-                      showPaletteSheet(
-                        context: context,
-                        selectedColor: noteBgColor,
-                        onColorSelected: (color) => setState(() => noteBgColor = color),
-                      );
-                    }),
-                    _bottomIcon(Icons.table_chart_outlined, () {
-                      setState(() => showTable = !showTable);
-                    }),
-                  ],
-                ),
-                IconButton(
-                  icon: Icon(Icons.send_outlined, color: Colors.blueAccent, size: context.isPhone ? 28 : 33),
-                  onPressed: _saveNote,
-                ),
-              ],
-            ),
+      bottomNavigationBar: _buildBottomToolbar(),
+    );
+  }
+
+  Widget _buildBottomToolbar() {
+    return SafeArea(
+      child: Padding(
+        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        child: Container(
+          margin: const EdgeInsets.all(15),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(40),
+            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  _bottomIcon(Icons.image_outlined, () {
+                    showMediaSheet(
+                      context: context,
+                      onImageSelected: (File image) {
+                        setState(() => selectedImages.add(image));
+                      },
+                    );
+                  }),
+                  _bottomIcon(Icons.text_fields, () {
+                    showFormatSheet(
+                      context: context,
+                      isBold: isBold,
+                      isItalic: isItalic,
+                      isUnderlined: isUnderlined,
+                      isStrikethrough: isStrikethrough,
+                      selectedColor: selectedColor,
+                      onBoldChanged: (val) => setState(() => isBold = val),
+                      onItalicChanged: (val) => setState(() => isItalic = val),
+                      onUnderlineChanged: (val) => setState(() => isUnderlined = val),
+                      onStrikethroughChanged: (val) => setState(() => isStrikethrough = val),
+                      onColorChanged: (val) => setState(() => selectedColor = val),
+                      onBulletPressed: _insertBulletPoint,
+                      onNumberedPressed: _insertNumberedList,
+                      onHyphenPressed: _insertDashList,
+                    );
+                  }),
+                  _bottomIcon(Icons.palette_outlined, () {
+                    showPaletteSheet(
+                      context: context,
+                      selectedColor: noteBgColor,
+                      onColorSelected: (color) => setState(() => noteBgColor = color),
+                    );
+                  }),
+                  _bottomIcon(Icons.table_chart_outlined, () {
+                    setState(() => showTable = !showTable);
+                  }),
+                  _bottomIcon(Icons.mode, _openHandwriting),
+                ],
+              ),
+              IconButton(
+                icon: Icon(Icons.send_outlined, color: Colors.blueAccent, size: context.isPhone ? 28 : 33),
+                onPressed: _saveNote,
+              ),
+            ],
           ),
         ),
       ),
@@ -527,13 +519,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           onConfirm: () async {
             final noteBox = Hive.box('student_notes');
 
-            // 1. Check if we are editing an existing note with a valid key
             if (widget.isEditing && widget.noteKey != null) {
               await noteBox.delete(widget.noteKey);
               Get.back();
             }
-            Get.back();
-            Get.back();
+            Get.close(2);
           },
         );
         break;
@@ -554,18 +544,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(onPressed: () => Get.back(), child: const Text("Cancel", style: TextStyle(color: Colors.red, fontFamily: 'EN-ENGINEER', fontSize: 16))),
-                Text("Move to Folder", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'EN-ENGINEER')),
-              ],
+            SheetHeader(
+              title: "Move to Folder",
             ),
             Flexible(
               child: ListView.builder(
