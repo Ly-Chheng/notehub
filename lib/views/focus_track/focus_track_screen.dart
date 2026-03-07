@@ -44,7 +44,9 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
       height: context.isPhone ? 45 : 60,
       decoration: BoxDecoration(
         color: const Color(0xFFE8EBF6),
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(
+          context.isPhone ? 25 : 45,
+        ),
       ),
       child: Stack(
         children: [
@@ -53,10 +55,14 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
             alignment: selectedIndex == 0 ? Alignment.centerLeft : Alignment.centerRight,
             child: Container(
               width: switchWidth / 2,
-              margin: const EdgeInsets.all(4),
+              margin: EdgeInsets.all(
+                context.isPhone ? 4 : 6,
+              ),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(
+                  context.isPhone ? 20 : 40,
+                ),
               ),
             ),
           ),

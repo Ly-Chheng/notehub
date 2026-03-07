@@ -42,19 +42,33 @@ class TimerController extends GetxController {
     }
   }
 
+  // void toggleTimer(dynamic key) {
+  //   if (activeTimerKeys.contains(key)) {
+  //     activeTimerKeys.remove(key);
+  //     _updateHiveSeconds(key, runningSeconds[key]!);
+  //   } else {
+  //     if (runningSeconds[key]! > 0) {
+  //       activeTimerKeys.add(key);
+  //     } else {
+  //       // iPhone "Restart" logic if finished
+  //       final data = timerBox.get(key);
+  //       runningSeconds[key] = data['totalSeconds'];
+  //       activeTimerKeys.add(key);
+  //     }
+  //   }
+  // }
   void toggleTimer(dynamic key) {
     if (activeTimerKeys.contains(key)) {
       activeTimerKeys.remove(key);
-      _updateHiveSeconds(key, runningSeconds[key]!);
+      _updateHiveSeconds(key, runningSeconds[key]!); // Save pause state
     } else {
-      if (runningSeconds[key]! > 0) {
-        activeTimerKeys.add(key);
-      } else {
-        // iPhone "Restart" logic if finished
+      // If restarting a finished timer
+      if ((runningSeconds[key] ?? 0) <= 0) {
         final data = timerBox.get(key);
         runningSeconds[key] = data['totalSeconds'];
-        activeTimerKeys.add(key);
+        _updateHiveSeconds(key, data['totalSeconds']); // <--- THIS MOVES IT IN HIVE
       }
+      activeTimerKeys.add(key);
     }
   }
 

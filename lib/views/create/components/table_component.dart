@@ -163,7 +163,7 @@ class EditableTableComponent extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 15),
       decoration: BoxDecoration(
         color: Colors.transparent,
-        border: Border.all(color: Colors.grey.shade300, width: 0.8),
+        border: Border.all(color: Colors.grey.shade400, width:1),
         borderRadius: BorderRadius.circular(10),
       ),
       child: Column(
@@ -270,7 +270,6 @@ class EditableTableComponent extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           color: isDestructive ? Colors.red : Colors.blueAccent,
-          fontWeight: FontWeight.w600,
           fontFamily: 'EN-REGULAR',
         ),
       ),

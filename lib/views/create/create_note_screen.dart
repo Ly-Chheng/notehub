@@ -15,7 +15,7 @@ import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:signature/signature.dart';
 
 class CreateNoteScreen extends StatefulWidget {
   final bool isEditing;
@@ -57,7 +57,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   // --- TABLE STATE ---
   bool showTable = false;
   List<List<String>> tableData = [
-    ["", ""], // Default 2x2 table
+    ["", ""],
     ["", ""],
   ];
 
@@ -65,13 +65,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   void initState() {
     super.initState();
 
-    // 1. Initialize the folder key from widget props (IMPORTANT)
     currentFolderKey = widget.folderKey;
 
-    // Initialize Controllers
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
     contentController = TextEditingController(text: widget.existingNote?['subtitle'] ?? "");
     _lastTextLength = contentController.text.length;
+    // Initialize the history with current content
+    noteController.initializeHistory(contentController.text);
 
     // Load existing styles and background if editing
     if (widget.isEditing && widget.existingNote != null) {
@@ -100,10 +100,24 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
       int? colorVal = widget.existingNote?['colorValue'];
       if (colorVal != null) selectedColor = Color(colorVal);
+
+      if (widget.existingNote?['drawingPoints'] != null) {
+        savedPoints = (widget.existingNote?['drawingPoints'] as List).map((p) {
+          return Point(
+            Offset(p['x'], p['y']),
+            PointType.values[p['t']],
+            1.0,
+          );
+        }).toList();
+      }
     }
 
-    // Listener for Auto-numbering and Bullets
     contentController.addListener(_handleAutoNumbering);
+
+    // Listen for changes to record them in the controller
+    contentController.addListener(() {
+      noteController.recordChange(contentController.text);
+    });
   }
 
   @override
@@ -114,7 +128,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     super.dispose();
   }
 
-  // --- LOGIC: AUTO-NUMBERING & BULLETS ---
   void _handleAutoNumbering() {
     final text = contentController.text;
 
@@ -144,16 +157,23 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _lastTextLength = text.length;
   }
 
-  // HANDWRITING SAVE LOGIC
+  List<Point>? savedPoints; // Add this variable
+
+  // Modified Handwriting Trigger
   void _openHandwriting() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (context) => HandwritingCanvas(
-        onSave: (Uint8List bytes) async {
+        initialPoints: savedPoints, // Pass existing points to edit
+        onSave: (Uint8List bytes, List<Point> points) async {
+          savedPoints = points; // Keep the points for future editing
+
+          // Save image to file as you already do
           final tempDir = await getTemporaryDirectory();
           final file = await File('${tempDir.path}/hw_${DateTime.now().millisecondsSinceEpoch}.png').create();
           await file.writeAsBytes(bytes);
+
           setState(() => selectedImages.add(file));
         },
       ),
@@ -177,7 +197,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  // --- LOGIC: SAVE NOTE TO HIVE ---
   void _saveNote() async {
     // Prevent saving empty notes
     if (titleController.text.trim().isEmpty && contentController.text.trim().isEmpty) {
@@ -190,7 +209,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final noteData = {
       "title": titleController.text,
       "subtitle": contentController.text,
-      "folderKey": currentFolderKey, // Saving the updated folder key here
+      "folderKey": currentFolderKey,
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
       "isPinned": widget.existingNote?['isPinned'] ?? false,
       "isBold": isBold,
@@ -202,6 +221,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "images": selectedImages.map((file) => file.path).toList(),
       "showTable": showTable,
       "tableData": tableData,
+      "drawingPoints": savedPoints?.map((p) => {'x': p.offset.dx, 'y': p.offset.dy, 't': p.type.index}).toList(),
     };
 
     Get.back(); // Close screen
@@ -234,26 +254,18 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     contentController.selection = TextSelection.fromPosition(TextPosition(offset: selection.start + insertion.length));
   }
 
-  // void _shareNote() async {
-  //   final String title = titleController.text.isEmpty ? "Untitled Note" : titleController.text;
-  //   final String content = contentController.text;
-  //   final String fullText = "$title\n\n$content";
-
-  //   if (selectedImages.isNotEmpty) {
-  //     // Share text and images together
-  //     final List<XFile> filesToShare = selectedImages.map((file) => XFile(file.path)).toList();
-  //     await Share.shareXFiles(filesToShare, text: fullText);
-  //   } else {
-  //     // Share text only
-  //     await Share.share(fullText);
-  //   }
-  // }
-
   void _shareNote() {
     noteController.shareNote(
       title: titleController.text,
       content: contentController.text,
       selectedImages: selectedImages,
+    );
+  }
+
+  void _setText(String text) {
+    contentController.text = text;
+    contentController.selection = TextSelection.fromPosition(
+      TextPosition(offset: text.length),
     );
   }
 
@@ -268,14 +280,22 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Image.asset('assets/images/undo.png', width: 24, height: 24, color: AppColor().primaryColor),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Image.asset('assets/images/redo.png', width: 24, height: 24, color: AppColor().primaryColor),
-          ),
+          Obx(() => _actionButton(
+                asset: 'assets/images/undo.png',
+                isEnabled: noteController.undoStack.length > 1,
+                onTap: () {
+                  final text = noteController.undo();
+                  if (text != null) _setText(text);
+                },
+              )),
+          Obx(() => _actionButton(
+                asset: 'assets/images/redo.png',
+                isEnabled: noteController.redoStack.isNotEmpty,
+                onTap: () {
+                  final text = noteController.redo();
+                  if (text != null) _setText(text);
+                },
+              )),
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -284,7 +304,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             onSelected: (value) => _handleMenuSelection(value, context),
             itemBuilder: (context) => [
               _buildPopupItem('Share', Icons.share_outlined),
-              _buildPopupItem('Lock', Icons.lock_outline),
               _buildPopupItem('Move Note', Icons.folder_outlined),
               _buildPopupItem('Delete', Icons.delete_outline, color: Colors.red),
             ],
@@ -301,7 +320,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
                 style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
               ),
-              // Horizontal Image Preview (New Section)
               if (selectedImages.isNotEmpty)
                 SizedBox(
                   height: context.isPhone ? 120 : 150,
@@ -353,7 +371,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 ),
                 decoration: const InputDecoration(hintText: 'Content...', border: InputBorder.none),
               ),
-
               if (showTable)
                 EditableTableComponent(
                   tableData: tableData,
@@ -378,7 +395,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   },
                   onAddColumn: () {
                     setState(() {
-                      // Add a new cell to every existing row
                       for (var row in tableData) {
                         row.add("");
                       }
@@ -386,7 +402,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   },
                   onRemoveColumn: (colIndex) {
                     setState(() {
-                      // Remove the cell at colIndex from every row
                       if (tableData[0].length > 1) {
                         for (var row in tableData) {
                           row.removeAt(colIndex);
@@ -401,7 +416,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                       showTable = false;
                       tableData = [
                         ["", ""]
-                      ]; // Reset to default
+                      ];
                     });
                   },
                 ),
@@ -480,33 +495,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
-    return IconButton(
-      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 24 : 30),
-      onPressed: onPressed,
-    );
-  }
-
-  PopupMenuItem<String> _buildPopupItem(String title, IconData icon, {Color? color}) {
-    return PopupMenuItem<String>(
-      value: title,
-      child: Row(
-        children: [
-          Icon(icon, size: context.isPhone ? 20 : 25),
-          SizedBox(width: context.isPhone ? 14 : 16),
-          Text(title, style: TextStyle(fontSize: context.isPhone ? 16 : 18)),
-        ],
-      ),
-    );
-  }
-
   void _handleMenuSelection(String value, BuildContext context) async {
     switch (value) {
       case 'Share':
         _shareNote();
-        break;
-      case 'Lock':
-        Get.snackbar("Locked", "Note protection enabled", snackPosition: SnackPosition.BOTTOM);
         break;
       case 'Move Note':
         _showMoveFolderSheet();
@@ -530,7 +522,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
-  // --- LOGIC: MOVE FOLDER BOTTOM SHEET ---
   void _showMoveFolderSheet() {
     final folderBox = Hive.box('folders_box');
     final List<MapEntry<dynamic, dynamic>> folders = folderBox.toMap().entries.toList();
@@ -572,6 +563,42 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  PopupMenuItem<String> _buildPopupItem(String title, IconData icon, {Color? color}) {
+    return PopupMenuItem<String>(
+      value: title,
+      child: Row(
+        children: [
+          Icon(icon, size: context.isPhone ? 20 : 25),
+          SizedBox(width: context.isPhone ? 20 : 25),
+          Text(title, style: TextStyle(fontSize: context.isPhone ? 16 : 18)),
+        ],
+      ),
+    );
+  }
+
+  Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
+    return IconButton(
+      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 24 : 30),
+      onPressed: onPressed,
+    );
+  }
+
+  Widget _actionButton({
+    required String asset,
+    required bool isEnabled,
+    required VoidCallback? onTap,
+  }) {
+    return IconButton(
+      onPressed: isEnabled ? onTap : null,
+      icon: Image.asset(
+        asset,
+        width: 24,
+        height: 24,
+        color: isEnabled ? AppColor().primaryColor : Colors.grey.shade400,
       ),
     );
   }

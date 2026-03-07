@@ -3,12 +3,16 @@ import 'package:get/get.dart';
 
 class SheetHeader extends StatelessWidget {
   final String title;
+  final String saveText;
   final VoidCallback? onCancel;
+  final VoidCallback? onSave;
 
   const SheetHeader({
     super.key,
     required this.title,
+    this.saveText = "",
     this.onCancel,
+    this.onSave,
   });
 
   @override
@@ -44,6 +48,17 @@ class SheetHeader extends StatelessWidget {
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
                 fontFamily: 'EN-ENGINEER',
+              ),
+            ),
+            TextButton(
+              onPressed: onSave,
+              child: Text(
+                saveText,
+                style: const TextStyle(
+                  color: Colors.blue,
+                  fontFamily: 'EN-ENGINEER',
+                  fontSize: 16,
+                ),
               ),
             ),
           ],

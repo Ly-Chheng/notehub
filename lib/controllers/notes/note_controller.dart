@@ -4,75 +4,54 @@ import 'package:get/get.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 
-class NotesController extends GetxController {
-  final titleController = TextEditingController();
-  final contentController = TextEditingController();
-
-  var history = <String>[].obs;
-  var redoStack = <String>[].obs;
-  var isPinned = false.obs;
-  var selectedGridType = 'none'.obs;
-
-  bool _isActionInProgress = false;
-  Timer? _debounce;
-
-  @override
-  void onInit() {
-    super.onInit();
-    history.add("");
-    contentController.addListener(_onTextChanged);
-  }
-
-  void _onTextChanged() {
-    if (_isActionInProgress) return;
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-
-    _debounce = Timer(const Duration(milliseconds: 500), () {
-      final currentText = contentController.text;
-      if (history.isEmpty || currentText != history.last) {
-        history.add(currentText);
-        redoStack.clear();
-      }
-    });
-  }
-
-  void undo() {
-    if (history.length > 1) {
-      _isActionInProgress = true;
-      redoStack.add(history.removeLast());
-      contentController.text = history.last;
-      _moveCursorToEnd();
-      _isActionInProgress = false;
-    }
-  }
-
-  void redo() {
-    if (redoStack.isNotEmpty) {
-      _isActionInProgress = true;
-      final String nextText = redoStack.removeLast();
-      history.add(nextText);
-      contentController.text = nextText;
-      _moveCursorToEnd();
-      _isActionInProgress = false;
-    }
-  }
-
-  void _moveCursorToEnd() {
-    contentController.selection = TextSelection.fromPosition(
-      TextPosition(offset: contentController.text.length),
-    );
-  }
-
-  @override
-  void onClose() {
-    _debounce?.cancel();
-    titleController.dispose();
-    contentController.dispose();
-    super.onClose();
-  }
-}
-
 class NoteController extends GetxController {
+  // Observable stacks for Undo/Redo
+  var undoStack = <String>[].obs;
+  var redoStack = <String>[].obs;
+  bool isUndoRedoAction = false;
+
+  // Initialize the stack with the starting text
+  void initializeHistory(String initialText) {
+    undoStack.clear();
+    redoStack.clear();
+    undoStack.add(initialText);
+  }
+
+  // Record a new state
+  void recordChange(String text) {
+    if (isUndoRedoAction) return;
+
+    // Only record if the text is different from the last snapshot
+    if (undoStack.isEmpty || undoStack.last != text) {
+      if (undoStack.length > 50) undoStack.removeAt(0); // Limit memory
+      undoStack.add(text);
+      redoStack.clear(); // New manual typing clears the Redo path
+    }
+  }
+
+  // Undo Logic
+  String? undo() {
+    if (undoStack.length > 1) {
+      isUndoRedoAction = true;
+      redoStack.add(undoStack.removeLast());
+      isUndoRedoAction = false;
+      return undoStack.last;
+    }
+    return null;
+  }
+
+  // Redo Logic
+  String? redo() {
+    if (redoStack.isNotEmpty) {
+      isUndoRedoAction = true;
+      String redoneText = redoStack.removeLast();
+      undoStack.add(redoneText);
+      isUndoRedoAction = false;
+      return redoneText;
+    }
+    return null;
+  }
+
   Future<void> shareNote({
     required String title,
     required String content,
@@ -99,4 +78,49 @@ class NoteController extends GetxController {
       );
     }
   }
+
+  void handleAutoNumbering({
+    required TextEditingController controller,
+    required int lastTextLength,
+    required Function(int) updateLastLength,
+  }) {
+    final text = controller.text;
+
+    if (text.length > lastTextLength && text.endsWith('\n')) {
+      List<String> lines = text.split('\n');
+
+      if (lines.length > 1) {
+        String previousLine = lines[lines.length - 2].trimLeft();
+
+        RegExp regExp = RegExp(r'^(\d+)\.\s');
+        Match? match = regExp.firstMatch(previousLine);
+
+        if (match != null) {
+          int lastNumber = int.parse(match.group(1)!);
+          _insertText(controller, "${lastNumber + 1}. ");
+        } else if (previousLine.startsWith('•')) {
+          _insertText(controller, "• ");
+        } else if (previousLine.startsWith('-')) {
+          _insertText(controller, "- ");
+        }
+      }
+    }
+
+    updateLastLength(text.length);
+  }
+
+  void _insertText(TextEditingController controller, String insertion) {
+    controller.text = controller.text + insertion;
+    controller.selection = TextSelection.fromPosition(
+      TextPosition(offset: controller.text.length),
+    );
+  }
 }
+
+// contentController.addListener(() {
+//   noteController.handleAutoNumbering(
+//     controller: contentController,
+//     lastTextLength: _lastTextLength,
+//     updateLastLength: (value) => _lastTextLength = value,
+//   );
+// });

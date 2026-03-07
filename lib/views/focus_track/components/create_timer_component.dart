@@ -56,6 +56,8 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       "totalSeconds": totalSec,
       "remainingSeconds": totalSec, // Reset to new total on edit
       "updatedAt": DateTime.now().toIso8601String(),
+      // Use existing createdAt if editing, otherwise set new one
+      // "createdAt": widget.isEditing ? widget.existingTimer!['createdAt'] : DateTime.now().toIso8601String(),
     };
 
     if (widget.isEditing) {
