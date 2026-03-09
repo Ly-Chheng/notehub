@@ -1,10 +1,8 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/background_component.dart';
@@ -47,7 +45,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   bool isStrikethrough = false;
   Color selectedColor = Colors.black;
   Color noteBgColor = Colors.white;
+
   List<File> selectedImages = []; // List to hold picked images
+  List<Point>? savedPoints; // Add this variable
 
   int _lastTextLength = 0;
 
@@ -157,24 +157,73 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _lastTextLength = text.length;
   }
 
-  List<Point>? savedPoints; // Add this variable
-
   // Modified Handwriting Trigger
+  // void _openHandwriting() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     builder: (context) => HandwritingCanvas(
+  //       initialPoints: savedPoints, // Pass existing points to edit
+  //       onSave: (Uint8List bytes, List<Point> points) async {
+  //         savedPoints = points; // Keep the points for future editing
+
+  //         // Save image to file as you already do
+  //         final tempDir = await getTemporaryDirectory();
+  //         final file = await File('${tempDir.path}/hw_${DateTime.now().millisecondsSinceEpoch}.png').create();
+  //         await file.writeAsBytes(bytes);
+
+  //         setState(() => selectedImages.add(file));
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // Inside _CreateNoteScreenState
+  // void _openHandwriting() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (context) => HandwritingCanvas(
+  //       initialPoints: savedPoints, // Pass the existing points for editing
+  //       onSave: (String? filePath, List<Point> points) {
+  //         setState(() {
+  //           // Update the points so the user can re-edit later
+  //           savedPoints = points;
+
+  //           if (filePath == null) {
+  //             // If cleared, we need to remove the drawing from selectedImages
+  //             // We identify drawings by looking for the "draw_" prefix in the path
+  //             selectedImages.removeWhere((file) => file.path.contains('draw_'));
+  //           } else {
+  //             // Remove the old drawing first if it exists, then add the new one
+  //             selectedImages.removeWhere((file) => file.path.contains('draw_'));
+  //             selectedImages.add(File(filePath));
+  //           }
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
+
+  // 1. UPDATED HANDWRITING TRIGGER
   void _openHandwriting() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (context) => HandwritingCanvas(
-        initialPoints: savedPoints, // Pass existing points to edit
-        onSave: (Uint8List bytes, List<Point> points) async {
-          savedPoints = points; // Keep the points for future editing
+        initialPoints: savedPoints,
+        onSave: (String? filePath, List<Point> points) {
+          setState(() {
+            savedPoints = points;
+            // Clean up any previous drawing from the list
+            selectedImages.removeWhere((file) => file.path.contains('draw_'));
 
-          // Save image to file as you already do
-          final tempDir = await getTemporaryDirectory();
-          final file = await File('${tempDir.path}/hw_${DateTime.now().millisecondsSinceEpoch}.png').create();
-          await file.writeAsBytes(bytes);
-
-          setState(() => selectedImages.add(file));
+            if (filePath != null) {
+              selectedImages.add(File(filePath));
+            }
+          });
         },
       ),
     );
@@ -320,42 +369,97 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
                 style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
               ),
+              // if (selectedImages.isNotEmpty)
+              //   SizedBox(
+              //     height: context.isPhone ? 120 : 150,
+              //     child: ListView.builder(
+              //       padding: const EdgeInsets.symmetric(horizontal: 15),
+              //       scrollDirection: Axis.horizontal,
+              //       itemCount: selectedImages.length,
+              //       itemBuilder: (context, index) => Stack(
+              //         children: [
+              //           Container(
+              //             margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
+              //             width: context.isPhone ? 100 : 130,
+              //             decoration: BoxDecoration(
+              //               borderRadius: BorderRadius.circular(12),
+              //               image: DecorationImage(
+              //                 image: FileImage(selectedImages[index]),
+              //                 fit: BoxFit.cover,
+              //               ),
+              //             ),
+              //           ),
+              //           Positioned(
+              //             right: 2,
+              //             top: 2,
+              //             child: GestureDetector(
+              //               onTap: () => setState(() => selectedImages.removeAt(index)),
+              //               child: CircleAvatar(
+              //                 radius: context.isPhone ? 13 : 16,
+              //                 backgroundColor: Colors.red,
+              //                 child: Icon(Icons.close, size: context.isPhone ? 20 : 24, color: Colors.white),
+              //               ),
+              //             ),
+              //           ),
+              //         ],
+              //       ),
+              //     ),
+              //   ),
               if (selectedImages.isNotEmpty)
-                SizedBox(
-                  height: context.isPhone ? 120 : 150,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: selectedImages.length,
-                    itemBuilder: (context, index) => Stack(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
-                          width: context.isPhone ? 100 : 130,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            image: DecorationImage(
-                              image: FileImage(selectedImages[index]),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        Positioned(
-                          right: 2,
-                          top: 2,
-                          child: GestureDetector(
-                            onTap: () => setState(() => selectedImages.removeAt(index)),
-                            child: CircleAvatar(
-                              radius: context.isPhone ? 13 : 16,
-                              backgroundColor: Colors.red,
-                              child: Icon(Icons.close, size: context.isPhone ? 20 : 24, color: Colors.white),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                Builder(
+                  builder: (context) {
+                    // 1. Filter the list to only include actual photos, NOT drawings
+                    final photoFiles = selectedImages.where((file) => !file.path.contains('draw_')).toList();
+
+                    // 2. If after filtering there are no photos, show nothing
+                    if (photoFiles.isEmpty) return const SizedBox();
+
+                    return SizedBox(
+                      height: context.isPhone ? 120 : 150,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: photoFiles.length,
+                        itemBuilder: (context, index) {
+                          final file = photoFiles[index];
+                          return Stack(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
+                                width: context.isPhone ? 100 : 130,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  image: DecorationImage(
+                                    image: FileImage(file),
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                right: 2,
+                                top: 2,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      // Remove from the master list using the specific file object
+                                      selectedImages.remove(file);
+                                    });
+                                  },
+                                  child: CircleAvatar(
+                                    radius: context.isPhone ? 13 : 16,
+                                    backgroundColor: Colors.red,
+                                    child: Icon(Icons.close, size: context.isPhone ? 20 : 24, color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    );
+                  },
                 ),
+
               TextField(
                 controller: contentController,
                 maxLines: null,
@@ -481,7 +585,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   _bottomIcon(Icons.table_chart_outlined, () {
                     setState(() => showTable = !showTable);
                   }),
-                  _bottomIcon(Icons.mode, _openHandwriting),
+                  _bottomIcon(Icons.mode_outlined, _openHandwriting),
                 ],
               ),
               IconButton(

@@ -28,6 +28,10 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   bool isSelectionMode = false;
   Set<dynamic> selectedKeys = {}; // Store Hive keys, not indexes
 
+  bool isSearching = false;
+  String searchQuery = "";
+  final TextEditingController searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,40 +57,99 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           ),
         ],
       ),
-      body: ValueListenableBuilder(
-        valueListenable: noteBox.listenable(),
-        builder: (context, Box box, _) {
-          // 1. Convert box to a list of entries (Key + Value)
-          // 2. FILTER: Only notes belonging to THIS folder
-          List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: Column(
+          children: [
+            TextFormField(
+              controller: searchController,
+              style: TextStyle(fontSize: context.isPhone ? 16 : 18),
+              textInputAction: TextInputAction.search,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Theme.of(context).cardColor,
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 15,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: AppColor().primaryColor, width: 1),
+                ),
+                hintText: "Search",
+                hintStyle: const TextStyle(color: Colors.grey),
+                prefixIcon: Icon(Icons.search, color: AppColor().primaryColor),
+                suffixIcon: searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 20),
+                        onPressed: () {
+                          searchController.clear();
+                          setState(() {
+                            searchQuery = "";
+                          });
+                        },
+                      )
+                    : null,
+              ),
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value.trim().toLowerCase();
+                });
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Expanded(
+              child: ValueListenableBuilder(
+                valueListenable: noteBox.listenable(),
+                builder: (context, Box box, _) {
+                  // 1. Get notes for THIS folder
+                  List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
 
-          // 3. SORT: Pinned first
-          notesList.sort((a, b) {
-            bool aPinned = a.value['isPinned'] ?? false;
-            bool bPinned = b.value['isPinned'] ?? false;
-            if (aPinned && !bPinned) return -1;
-            if (!aPinned && bPinned) return 1;
-            return 0;
-          });
+                  // 2. APPLY SEARCH FILTER (Title and Subtitle/Constant)
+                  if (searchQuery.isNotEmpty) {
+                    notesList = notesList.where((entry) {
+                      final title = (entry.value['title'] ?? "").toString().toLowerCase();
+                      final content = (entry.value['subtitle'] ?? "").toString().toLowerCase();
 
-          if (notesList.isEmpty) {
-            // return const Center(child: Text("No notes in this folder."));
-            return const CustomNoData(
-              message: "No notes in this folder",
-            );
-          }
+                      return title.contains(searchQuery) || content.contains(searchQuery);
+                    }).toList();
+                  }
 
-          return ListView.builder(
-            itemCount: notesList.length,
-            itemBuilder: (context, index) {
-              final entry = notesList[index];
-              final noteKey = entry.key; // The unique Hive ID
-              final noteData = entry.value;
+                  // 3. SORT: Pinned first
+                  notesList.sort((a, b) {
+                    bool aPinned = a.value['isPinned'] ?? false;
+                    bool bPinned = b.value['isPinned'] ?? false;
+                    if (aPinned && !bPinned) return -1;
+                    if (!aPinned && bPinned) return 1;
+                    return 0;
+                  });
 
-              return _buildSlidableNote(noteKey, noteData);
-            },
-          );
-        },
+                  if (notesList.isEmpty) {
+                    return CustomNoData(
+                      message: searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
+                    );
+                  }
+
+                  return ListView.builder(
+                    itemCount: notesList.length,
+                    itemBuilder: (context, index) {
+                      final entry = notesList[index];
+                      final noteKey = entry.key; // The unique Hive ID
+                      final noteData = entry.value;
+
+                      return _buildSlidableNote(noteKey, noteData);
+                    },
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColor().primaryColor,
@@ -98,7 +161,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           ? BottomAppBar(
               color: Theme.of(context).cardColor,
               child: Container(
-                height: 40,
+                height: 30,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
@@ -149,7 +212,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     List<dynamic>? imagePaths = note['images'];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      padding: const EdgeInsets.only(bottom: 15),
       child: Slidable(
         key: ValueKey(noteKey),
         enabled: !isSelectionMode, // Disable slide when selecting

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 
 class SheetHeader extends StatelessWidget {
   final String title;
@@ -54,8 +55,8 @@ class SheetHeader extends StatelessWidget {
               onPressed: onSave,
               child: Text(
                 saveText,
-                style: const TextStyle(
-                  color: Colors.blue,
+                style:   TextStyle(
+                  color: AppColor().primaryColor,
                   fontFamily: 'EN-ENGINEER',
                   fontSize: 16,
                 ),

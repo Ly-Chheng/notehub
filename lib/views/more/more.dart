@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
+import 'package:project_structure/views/focus_track/components/clock_componet.dart';
 import 'package:project_structure/views/lock/change_password_screen.dart';
 import 'package:project_structure/views/lock/forget_password_screen.dart';
 import 'package:project_structure/views/lock/lock_verification_screen.dart';
@@ -36,7 +37,9 @@ class _MoreScreenState extends State<MoreScreen> {
                 _buildMenuTile(Icons.info_outline, "About", onTap: () {
                   Get.to(AboutScreen());
                 }),
-                _buildMenuTile(Icons.text_fields, "Font size", onTap: () {}),
+                _buildMenuTile(Icons.timer_outlined, "Clock", onTap: () {
+                  Get.to(() => ClockScreen());
+                }),
                 DarkModeView(),
                 NotificationView(),
                 _buildMenuTile(Icons.help_outline, "How to use", onTap: () {

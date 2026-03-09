@@ -5,6 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/views/create/folder_note_list_screen.dart.dart';
+import 'package:project_structure/widgets/sheet_header.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -117,29 +118,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ],
                             ),
-                            // child: Container(
-                            //   color: Colors.white,
-                            //   child: ListTile(
-
-                            //     leading: Icon(
-                            //       isDefault ? Icons.folder_shared : Icons.folder,
-                            //       color: Color(folderData['colorValue']),
-                            //       size: 28,
-                            //     ),
-                            //     title: Row(
-                            //       children: [
-                            //         if (isPinned) const Icon(Icons.push_pin, size: 14, color: Colors.orange),
-                            //         if (isPinned) const SizedBox(width: 5),
-                            //         Text(folderData['title'], style: const TextStyle(fontSize: 17)),
-                            //       ],
-                            //     ),
-                            //     trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-                            //     onTap: () => Get.to(() => FolderNoteListScreen(
-                            //           folderKey: folderKey,
-                            //           folderName: folderData['title'],
-                            //         )),
-                            //   ),
-                            // ),
                             child: Container(
                               color: Theme.of(context).cardColor,
                               child: ListTile(
@@ -239,8 +217,11 @@ class _MyHomePageState extends State<MyHomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton(onPressed: () => Get.back(), child: const Text("Cancel", style: TextStyle(color: Colors.red, fontFamily: 'EN-ENGINEER', fontSize: 16))),
-                Text(existingData == null ? "New Folder" : "Rename Folder", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'EN-ENGINEER')),
+                SheetHeader(
+                  title: existingData == null ? "New Folder" : "Rename Folder",
+                ),
+                // TextButton(onPressed: () => Get.back(), child: const Text("Cancel", style: TextStyle(color: Colors.red, fontFamily: 'EN-ENGINEER', fontSize: 16))),
+                // Text(existingData == null ? "New Folder" : "Rename Folder", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'EN-ENGINEER')),
                 TextButton(
                   onPressed: () {
                     String name = folderController.text.trim();
