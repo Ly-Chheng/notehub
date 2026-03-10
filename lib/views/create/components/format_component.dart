@@ -115,7 +115,31 @@ void showFormatSheet({
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: [0XFF00FB3F, 0XFF9500FF, 0XFFFF0000, 0XFF002AFC, 0XFF2196F3, 0XFF4CAF50, 0XFFFF9800, 0XFF000000].map((colorValue) {
+                  children: [
+                    0XFF00FB3F,
+                    0XFF9500FF,
+                    0XFFFF0000,
+                    0XFF002AFC,
+                    0XFF2196F3,
+                    0XFF4CAF50,
+                    0XFFFF9800,
+                    0XFF000000,
+                    0xFFFFC107,
+                    0xFF9C27B0,
+                    0xFFE91E63,
+                    0xFF00BCD4,
+                    0xFF8BC34A,
+                    0xFFFF5722,
+                    0xFF607D8B,
+                    0xFF795548,
+                    0xFFECEFF1, // Light Grey
+                    0xFFB71C1C, // Dark Red
+                    0xFF1B5E20, // Dark Green
+                    0xFF0D47A1, // Dark Blue
+                    0xFFFFEB3B, // Yellow
+                    0xFF673AB7, // Deep Purple
+                    0xFF3F51B5, // Indigo
+                  ].map((colorValue) {
                     Color color = Color(colorValue);
                     return GestureDetector(
                       onTap: () {

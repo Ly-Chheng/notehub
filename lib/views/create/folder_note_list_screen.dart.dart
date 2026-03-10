@@ -61,6 +61,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         child: Column(
           children: [
+            /// SEARCH BAR
             TextFormField(
               controller: searchController,
               style: TextStyle(fontSize: context.isPhone ? 16 : 18),
@@ -69,7 +70,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 filled: true,
                 fillColor: Theme.of(context).cardColor,
                 contentPadding: const EdgeInsets.symmetric(
-                  vertical: 15,
+                  vertical: 10,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -103,6 +104,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             SizedBox(
               height: 20,
             ),
+
+            /// NOTES LIST
             Expanded(
               child: ValueListenableBuilder(
                 valueListenable: noteBox.listenable(),
@@ -110,7 +113,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   // 1. Get notes for THIS folder
                   List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
 
-                  // 2. APPLY SEARCH FILTER (Title and Subtitle/Constant)
+                  /// SEARCH FILTER
                   if (searchQuery.isNotEmpty) {
                     notesList = notesList.where((entry) {
                       final title = (entry.value['title'] ?? "").toString().toLowerCase();
@@ -135,6 +138,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     );
                   }
 
+                  /// LIST BUILDER WITH DATE HEADERS
                   return ListView.builder(
                     itemCount: notesList.length,
                     itemBuilder: (context, index) {
@@ -151,6 +155,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           ],
         ),
       ),
+
+      /// ADD NOTE BUTTON
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColor().primaryColor,
         foregroundColor: Colors.white,
@@ -316,12 +322,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                               if (noteIsStrikethrough) TextDecoration.lineThrough,
                             ]),
                           ),
-                        ),
-                      ),
-                      Text(
-                        (note['date'] ?? "").replaceAll("/", "-"),
-                        style: TextStyle(
-                          fontSize: context.isPhone ? 11 : 13,
                         ),
                       ),
                     ],

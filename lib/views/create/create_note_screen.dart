@@ -12,6 +12,7 @@ import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/popup_lists_menu.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 import 'package:signature/signature.dart';
 
@@ -19,7 +20,7 @@ class CreateNoteScreen extends StatefulWidget {
   final bool isEditing;
   final int? noteKey;
   final Map? existingNote;
-  final dynamic folderKey; // The ID/Key of the folder this note belongs to
+  final dynamic folderKey;
 
   const CreateNoteScreen({
     super.key,
@@ -46,16 +47,15 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Color selectedColor = Colors.black;
   Color noteBgColor = Colors.white;
 
-  List<File> selectedImages = []; // List to hold picked images
-  List<Point>? savedPoints; // Add this variable
+  Color drawingColor = Colors.black;
+  double drawingWidth = 3.0;
 
+  List<File> selectedImages = [];
+  List<Point>? savedPoints;
   int _lastTextLength = 0;
-
-  // Track current folder selection in state
   dynamic currentFolderKey;
-
-  // --- TABLE STATE ---
   bool showTable = false;
+
   List<List<String>> tableData = [
     ["", ""],
     ["", ""],
@@ -110,6 +110,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           );
         }).toList();
       }
+
+      drawingColor = Color(widget.existingNote?['drawingColorValue'] ?? Colors.black.value);
+      drawingWidth = (widget.existingNote?['drawingWidth'] ?? 3.0).toDouble();
     }
 
     contentController.addListener(_handleAutoNumbering);
@@ -157,55 +160,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _lastTextLength = text.length;
   }
 
-  // Modified Handwriting Trigger
-  // void _openHandwriting() {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     builder: (context) => HandwritingCanvas(
-  //       initialPoints: savedPoints, // Pass existing points to edit
-  //       onSave: (Uint8List bytes, List<Point> points) async {
-  //         savedPoints = points; // Keep the points for future editing
-
-  //         // Save image to file as you already do
-  //         final tempDir = await getTemporaryDirectory();
-  //         final file = await File('${tempDir.path}/hw_${DateTime.now().millisecondsSinceEpoch}.png').create();
-  //         await file.writeAsBytes(bytes);
-
-  //         setState(() => selectedImages.add(file));
-  //       },
-  //     ),
-  //   );
-  // }
-
-  // Inside _CreateNoteScreenState
-  // void _openHandwriting() {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (context) => HandwritingCanvas(
-  //       initialPoints: savedPoints, // Pass the existing points for editing
-  //       onSave: (String? filePath, List<Point> points) {
-  //         setState(() {
-  //           // Update the points so the user can re-edit later
-  //           savedPoints = points;
-
-  //           if (filePath == null) {
-  //             // If cleared, we need to remove the drawing from selectedImages
-  //             // We identify drawings by looking for the "draw_" prefix in the path
-  //             selectedImages.removeWhere((file) => file.path.contains('draw_'));
-  //           } else {
-  //             // Remove the old drawing first if it exists, then add the new one
-  //             selectedImages.removeWhere((file) => file.path.contains('draw_'));
-  //             selectedImages.add(File(filePath));
-  //           }
-  //         });
-  //       },
-  //     ),
-  //   );
-  // }
-
   // 1. UPDATED HANDWRITING TRIGGER
   void _openHandwriting() {
     showModalBottomSheet(
@@ -214,12 +168,15 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => HandwritingCanvas(
         initialPoints: savedPoints,
-        onSave: (String? filePath, List<Point> points) {
+        initialColor: drawingColor, // Now defined!
+        initialWidth: drawingWidth, // Now defined!
+        onSave: (String? filePath, List<Point> points, Color color, double width) {
           setState(() {
             savedPoints = points;
-            // Clean up any previous drawing from the list
-            selectedImages.removeWhere((file) => file.path.contains('draw_'));
+            drawingColor = color;
+            drawingWidth = width;
 
+            selectedImages.removeWhere((file) => file.path.contains('draw_'));
             if (filePath != null) {
               selectedImages.add(File(filePath));
             }
@@ -271,6 +228,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "showTable": showTable,
       "tableData": tableData,
       "drawingPoints": savedPoints?.map((p) => {'x': p.offset.dx, 'y': p.offset.dy, 't': p.type.index}).toList(),
+      "drawingColorValue": drawingColor.value,
+      "drawingWidth": drawingWidth,
     };
 
     Get.back(); // Close screen
@@ -352,9 +311,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             color: Theme.of(context).cardColor,
             onSelected: (value) => _handleMenuSelection(value, context),
             itemBuilder: (context) => [
-              _buildPopupItem('Share', Icons.share_outlined),
-              _buildPopupItem('Move Note', Icons.folder_outlined),
-              _buildPopupItem('Delete', Icons.delete_outline, color: Colors.red),
+              buildPopupItem(context, 'Share', Icons.share_outlined),
+              buildPopupItem(context, 'Move Note', Icons.folder_outlined),
+              buildPopupItem(context, 'Delete', Icons.delete_outline, color: Colors.red),
             ],
           ),
         ],
@@ -369,42 +328,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
                 style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
               ),
-              // if (selectedImages.isNotEmpty)
-              //   SizedBox(
-              //     height: context.isPhone ? 120 : 150,
-              //     child: ListView.builder(
-              //       padding: const EdgeInsets.symmetric(horizontal: 15),
-              //       scrollDirection: Axis.horizontal,
-              //       itemCount: selectedImages.length,
-              //       itemBuilder: (context, index) => Stack(
-              //         children: [
-              //           Container(
-              //             margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
-              //             width: context.isPhone ? 100 : 130,
-              //             decoration: BoxDecoration(
-              //               borderRadius: BorderRadius.circular(12),
-              //               image: DecorationImage(
-              //                 image: FileImage(selectedImages[index]),
-              //                 fit: BoxFit.cover,
-              //               ),
-              //             ),
-              //           ),
-              //           Positioned(
-              //             right: 2,
-              //             top: 2,
-              //             child: GestureDetector(
-              //               onTap: () => setState(() => selectedImages.removeAt(index)),
-              //               child: CircleAvatar(
-              //                 radius: context.isPhone ? 13 : 16,
-              //                 backgroundColor: Colors.red,
-              //                 child: Icon(Icons.close, size: context.isPhone ? 20 : 24, color: Colors.white),
-              //               ),
-              //             ),
-              //           ),
-              //         ],
-              //       ),
-              //     ),
-              //   ),
               if (selectedImages.isNotEmpty)
                 Builder(
                   builder: (context) {
@@ -459,7 +382,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     );
                   },
                 ),
-
               TextField(
                 controller: contentController,
                 maxLines: null,
@@ -538,7 +460,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Container(
           margin: const EdgeInsets.all(15),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(40),
@@ -589,7 +511,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 ],
               ),
               IconButton(
-                icon: Icon(Icons.send_outlined, color: Colors.blueAccent, size: context.isPhone ? 28 : 33),
+                icon: Icon(Icons.send_outlined, color: AppColor().primaryColor, size: context.isPhone ? 28 : 33),
                 onPressed: _saveNote,
               ),
             ],
@@ -671,22 +593,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  PopupMenuItem<String> _buildPopupItem(String title, IconData icon, {Color? color}) {
-    return PopupMenuItem<String>(
-      value: title,
-      child: Row(
-        children: [
-          Icon(icon, size: context.isPhone ? 20 : 25),
-          SizedBox(width: context.isPhone ? 20 : 25),
-          Text(title, style: TextStyle(fontSize: context.isPhone ? 16 : 18)),
-        ],
-      ),
-    );
-  }
-
   Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
     return IconButton(
-      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 24 : 30),
+      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 20 : 30),
       onPressed: onPressed,
     );
   }

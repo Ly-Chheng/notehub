@@ -151,7 +151,7 @@ class _CategoryHeader extends StatelessWidget {
       child: Text(title,
           style: const TextStyle(
             fontSize: 18,
-            fontFamily: 'EN-SEMIBOLD',
+            fontFamily: 'EN-BOLD',
           )),
     );
   }
