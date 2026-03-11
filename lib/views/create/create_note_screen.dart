@@ -9,12 +9,12 @@ import 'package:project_structure/views/create/components/background_component.d
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/handwriting_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
+import 'package:project_structure/views/create/components/notebook_painter.dart';
 import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
-import 'package:signature/signature.dart';
 
 class CreateNoteScreen extends StatefulWidget {
   final bool isEditing;
@@ -46,12 +46,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   bool isStrikethrough = false;
   Color selectedColor = Colors.black;
   Color noteBgColor = Colors.white;
+  PaperType selectedPaperType = PaperType.none;
 
-  Color drawingColor = Colors.black;
-  double drawingWidth = 3.0;
+  List<Map<String, dynamic>> drawingLayers = []; // Multi-Layer Drawing State
 
   List<File> selectedImages = [];
-  List<Point>? savedPoints;
   int _lastTextLength = 0;
   dynamic currentFolderKey;
   bool showTable = false;
@@ -64,14 +63,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   @override
   void initState() {
     super.initState();
-
     currentFolderKey = widget.folderKey;
-
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
     contentController = TextEditingController(text: widget.existingNote?['subtitle'] ?? "");
     _lastTextLength = contentController.text.length;
-    // Initialize the history with current content
-    noteController.initializeHistory(contentController.text);
+    noteController.initializeHistory(contentController.text); // Initialize the history with current content
 
     // Load existing styles and background if editing
     if (widget.isEditing && widget.existingNote != null) {
@@ -80,9 +76,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       isUnderlined = widget.existingNote?['isUnderlined'] ?? false;
       isStrikethrough = widget.existingNote?['isStrikethrough'] ?? false;
       noteBgColor = Color(widget.existingNote?['bgColorValue'] ?? 0xFFFFFFFF);
+      int paperIndex = widget.existingNote?['paperTypeIndex'] ?? 0;
+      selectedPaperType = PaperType.values[paperIndex];
 
-      // If editing, use the folder key saved in the note data
-      currentFolderKey = widget.existingNote?['folderKey'] ?? widget.folderKey;
+      currentFolderKey = widget.existingNote?['folderKey'] ?? widget.folderKey; // If editing, use the folder key saved in the note data
 
       // Load Images from Hive (Strings to Files)
       List<dynamic>? imagePaths = widget.existingNote?['images'];
@@ -101,18 +98,24 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       int? colorVal = widget.existingNote?['colorValue'];
       if (colorVal != null) selectedColor = Color(colorVal);
 
-      if (widget.existingNote?['drawingPoints'] != null) {
-        savedPoints = (widget.existingNote?['drawingPoints'] as List).map((p) {
-          return Point(
-            Offset(p['x'], p['y']),
-            PointType.values[p['t']],
-            1.0,
-          );
-        }).toList();
-      }
+      // Load Multi-Layer Drawing Data
+      // if (widget.existingNote?['drawingLayers'] != null) {
+      //   try {
+      //     final List<dynamic> rawLayers = widget.existingNote?['drawingLayers'];
+      //     drawingLayers = rawLayers.map((layer) {
+      //       return Map<String, dynamic>.from(layer as Map);
+      //     }).toList();
+      //   } catch (e) {
+      //     debugPrint("Error loading drawing layers: $e");
+      //     drawingLayers = [];
+      //   }
+      // }
 
-      drawingColor = Color(widget.existingNote?['drawingColorValue'] ?? Colors.black.value);
-      drawingWidth = (widget.existingNote?['drawingWidth'] ?? 3.0).toDouble();
+      // Load Multi-Layer Drawing Data with strict casting
+      if (widget.existingNote?['drawingLayers'] != null) {
+        final List<dynamic> rawLayers = widget.existingNote?['drawingLayers'];
+        drawingLayers = rawLayers.map((item) => Map<String, dynamic>.from(item as Map)).toList();
+      }
     }
 
     contentController.addListener(_handleAutoNumbering);
@@ -140,8 +143,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       if (lines.length > 1) {
         String previousLine = lines[lines.length - 2].trimLeft();
 
-        // Check for "1. " pattern
-        RegExp regExp = RegExp(r'^(\d+)\.\s');
+        RegExp regExp = RegExp(r'^(\d+)\.\s'); // Check for "1. " pattern
         Match? match = regExp.firstMatch(previousLine);
 
         if (match != null) {
@@ -160,29 +162,54 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _lastTextLength = text.length;
   }
 
-  // 1. UPDATED HANDWRITING TRIGGER
+  // void _openHandwriting() {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     backgroundColor: Colors.transparent,
+  //     builder: (context) => HandwritingCanvas(
+  //       initialLayers: drawingLayers, // Pass the layers list
+  //       onSave: (String? filePath, List<Map<String, dynamic>> allLayers) {
+  //         setState(() {
+  //           drawingLayers = allLayers;
+
+  //           // Remove old drawing preview from images and add the new one
+  //           selectedImages.removeWhere((file) => file.path.contains('draw_'));
+  //           if (filePath != null) {
+  //             selectedImages.add(File(filePath));
+  //           }
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
   void _openHandwriting() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => HandwritingCanvas(
-        initialPoints: savedPoints,
-        initialColor: drawingColor, // Now defined!
-        initialWidth: drawingWidth, // Now defined!
-        onSave: (String? filePath, List<Point> points, Color color, double width) {
+        initialLayers: drawingLayers,
+        onSave: (String? filePath, List<Map<String, dynamic>> layers) {
           setState(() {
-            savedPoints = points;
-            drawingColor = color;
-            drawingWidth = width;
-
+            drawingLayers = layers; // This is now a type-safe List<Map<String, dynamic>>
             selectedImages.removeWhere((file) => file.path.contains('draw_'));
-            if (filePath != null) {
-              selectedImages.add(File(filePath));
-            }
+            if (filePath != null) selectedImages.add(File(filePath));
           });
         },
       ),
+    );
+  }
+
+  Widget _paperStyleTile(String title, IconData icon, PaperType type) {
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(title),
+      trailing: selectedPaperType == type ? const Icon(Icons.check, color: Colors.blue) : null,
+      onTap: () {
+        setState(() => selectedPaperType = type);
+        Navigator.pop(context);
+      },
     );
   }
 
@@ -227,9 +254,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "images": selectedImages.map((file) => file.path).toList(),
       "showTable": showTable,
       "tableData": tableData,
-      "drawingPoints": savedPoints?.map((p) => {'x': p.offset.dx, 'y': p.offset.dy, 't': p.type.index}).toList(),
-      "drawingColorValue": drawingColor.value,
-      "drawingWidth": drawingWidth,
+      "paperTypeIndex": selectedPaperType.index,
+      "drawingLayers": drawingLayers,
     };
 
     Get.back(); // Close screen
@@ -318,135 +344,139 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
-                style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
-              ),
-              if (selectedImages.isNotEmpty)
-                Builder(
-                  builder: (context) {
-                    // 1. Filter the list to only include actual photos, NOT drawings
-                    final photoFiles = selectedImages.where((file) => !file.path.contains('draw_')).toList();
+      body: CustomPaint(
+        painter: NotebookPainter(type: selectedPaperType, lineColor: Colors.grey.withOpacity(0.2)),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
+                  style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
+                ),
+                if (selectedImages.isNotEmpty)
+                  Builder(
+                    builder: (context) {
+                      // 1. Filter the list to only include actual photos, NOT drawings
+                      final photoFiles = selectedImages.where((file) => !file.path.contains('draw_')).toList();
 
-                    // 2. If after filtering there are no photos, show nothing
-                    if (photoFiles.isEmpty) return const SizedBox();
+                      // 2. If after filtering there are no photos, show nothing
+                      if (photoFiles.isEmpty) return const SizedBox();
 
-                    return SizedBox(
-                      height: context.isPhone ? 120 : 150,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: photoFiles.length,
-                        itemBuilder: (context, index) {
-                          final file = photoFiles[index];
-                          return Stack(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
-                                width: context.isPhone ? 100 : 130,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  image: DecorationImage(
-                                    image: FileImage(file),
-                                    fit: BoxFit.cover,
+                      return SizedBox(
+                        height: context.isPhone ? 120 : 150,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          scrollDirection: Axis.horizontal,
+                          itemCount: photoFiles.length,
+                          itemBuilder: (context, index) {
+                            final file = photoFiles[index];
+                            return Stack(
+                              children: [
+                                Container(
+                                  margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
+                                  width: context.isPhone ? 100 : 130,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    image: DecorationImage(
+                                      image: FileImage(file),
+                                      fit: BoxFit.cover,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Positioned(
-                                right: 2,
-                                top: 2,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      // Remove from the master list using the specific file object
-                                      selectedImages.remove(file);
-                                    });
-                                  },
-                                  child: CircleAvatar(
-                                    radius: context.isPhone ? 13 : 16,
-                                    backgroundColor: Colors.red,
-                                    child: Icon(Icons.close, size: context.isPhone ? 20 : 24, color: Colors.white),
+                                Positioned(
+                                  right: 2,
+                                  top: 2,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        // Remove from the master list using the specific file object
+                                        selectedImages.remove(file);
+                                      });
+                                    },
+                                    child: CircleAvatar(
+                                      radius: context.isPhone ? 13 : 16,
+                                      backgroundColor: Colors.red,
+                                      child: Icon(Icons.close, size: context.isPhone ? 20 : 24, color: Colors.white),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    );
-                  },
+                              ],
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                TextField(
+                  controller: contentController,
+                  maxLines: null,
+                  style: TextStyle(
+                    fontSize: context.isPhone ? 16 : 18,
+                    height: 1.78, // Aligns with 32.0 spacing in painter
+                    color: selectedColor,
+                    fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+                    fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
+                    decoration: TextDecoration.combine([
+                      if (isUnderlined) TextDecoration.underline,
+                      if (isStrikethrough) TextDecoration.lineThrough,
+                    ]),
+                  ),
+                  decoration: const InputDecoration(hintText: 'Content...', border: InputBorder.none),
                 ),
-              TextField(
-                controller: contentController,
-                maxLines: null,
-                style: TextStyle(
-                  fontSize: context.isPhone ? 18 : 20,
-                  color: selectedColor,
-                  fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-                  fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
-                  decoration: TextDecoration.combine([
-                    if (isUnderlined) TextDecoration.underline,
-                    if (isStrikethrough) TextDecoration.lineThrough,
-                  ]),
-                ),
-                decoration: const InputDecoration(hintText: 'Content...', border: InputBorder.none),
-              ),
-              if (showTable)
-                EditableTableComponent(
-                  tableData: tableData,
-                  onCellChanged: (rowIndex, colIndex, value) {
-                    tableData[rowIndex][colIndex] = value;
-                  },
-                  onAddRow: () {
-                    setState(() {
-                      // Add a new row with the same number of columns as existing rows
-                      int currentCols = tableData[0].length;
-                      tableData.add(List.generate(currentCols, (_) => ""));
-                    });
-                  },
-                  onRemoveRow: (index) {
-                    setState(() {
-                      if (tableData.length > 1) {
-                        tableData.removeAt(index);
-                      } else {
-                        showTable = false;
-                      }
-                    });
-                  },
-                  onAddColumn: () {
-                    setState(() {
-                      for (var row in tableData) {
-                        row.add("");
-                      }
-                    });
-                  },
-                  onRemoveColumn: (colIndex) {
-                    setState(() {
-                      if (tableData[0].length > 1) {
-                        for (var row in tableData) {
-                          row.removeAt(colIndex);
+                if (showTable)
+                  EditableTableComponent(
+                    tableData: tableData,
+                    onCellChanged: (rowIndex, colIndex, value) {
+                      tableData[rowIndex][colIndex] = value;
+                    },
+                    onAddRow: () {
+                      setState(() {
+                        // Add a new row with the same number of columns as existing rows
+                        int currentCols = tableData[0].length;
+                        tableData.add(List.generate(currentCols, (_) => ""));
+                      });
+                    },
+                    onRemoveRow: (index) {
+                      setState(() {
+                        if (tableData.length > 1) {
+                          tableData.removeAt(index);
+                        } else {
+                          showTable = false;
                         }
-                      } else {
-                        Get.snackbar("Warning", "Table must have at least one column");
-                      }
-                    });
-                  },
-                  onDeleteTable: () {
-                    setState(() {
-                      showTable = false;
-                      tableData = [
-                        ["", ""]
-                      ];
-                    });
-                  },
-                ),
-            ],
+                      });
+                    },
+                    onAddColumn: () {
+                      setState(() {
+                        for (var row in tableData) {
+                          row.add("");
+                        }
+                      });
+                    },
+                    onRemoveColumn: (colIndex) {
+                      setState(() {
+                        if (tableData[0].length > 1) {
+                          for (var row in tableData) {
+                            row.removeAt(colIndex);
+                          }
+                        } else {
+                          Get.snackbar("Warning", "Table must have at least one column");
+                        }
+                      });
+                    },
+                    onDeleteTable: () {
+                      setState(() {
+                        showTable = false;
+                        tableData = [
+                          ["", ""]
+                        ];
+                      });
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -460,7 +490,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Container(
           margin: const EdgeInsets.all(15),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(40),
@@ -469,49 +499,55 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  _bottomIcon(Icons.image_outlined, () {
-                    showMediaSheet(
-                      context: context,
-                      onImageSelected: (File image) {
-                        setState(() => selectedImages.add(image));
-                      },
-                    );
-                  }),
-                  _bottomIcon(Icons.text_fields, () {
-                    showFormatSheet(
-                      context: context,
-                      isBold: isBold,
-                      isItalic: isItalic,
-                      isUnderlined: isUnderlined,
-                      isStrikethrough: isStrikethrough,
-                      selectedColor: selectedColor,
-                      onBoldChanged: (val) => setState(() => isBold = val),
-                      onItalicChanged: (val) => setState(() => isItalic = val),
-                      onUnderlineChanged: (val) => setState(() => isUnderlined = val),
-                      onStrikethroughChanged: (val) => setState(() => isStrikethrough = val),
-                      onColorChanged: (val) => setState(() => selectedColor = val),
-                      onBulletPressed: _insertBulletPoint,
-                      onNumberedPressed: _insertNumberedList,
-                      onHyphenPressed: _insertDashList,
-                    );
-                  }),
-                  _bottomIcon(Icons.palette_outlined, () {
-                    showPaletteSheet(
-                      context: context,
-                      selectedColor: noteBgColor,
-                      onColorSelected: (color) => setState(() => noteBgColor = color),
-                    );
-                  }),
-                  _bottomIcon(Icons.table_chart_outlined, () {
-                    setState(() => showTable = !showTable);
-                  }),
-                  _bottomIcon(Icons.mode_outlined, _openHandwriting),
-                ],
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _bottomIcon(Icons.image_outlined, () {
+                        showMediaSheet(
+                          context: context,
+                          onImageSelected: (File image) {
+                            setState(() => selectedImages.add(image));
+                          },
+                        );
+                      }),
+                      _bottomIcon(Icons.text_fields, () {
+                        showFormatSheet(
+                          context: context,
+                          isBold: isBold,
+                          isItalic: isItalic,
+                          isUnderlined: isUnderlined,
+                          isStrikethrough: isStrikethrough,
+                          selectedColor: selectedColor,
+                          onBoldChanged: (val) => setState(() => isBold = val),
+                          onItalicChanged: (val) => setState(() => isItalic = val),
+                          onUnderlineChanged: (val) => setState(() => isUnderlined = val),
+                          onStrikethroughChanged: (val) => setState(() => isStrikethrough = val),
+                          onColorChanged: (val) => setState(() => selectedColor = val),
+                          onBulletPressed: _insertBulletPoint,
+                          onNumberedPressed: _insertNumberedList,
+                          onHyphenPressed: _insertDashList,
+                        );
+                      }),
+                      _bottomIcon(Icons.palette_outlined, () {
+                        showPaletteSheet(
+                          context: context,
+                          selectedColor: noteBgColor,
+                          onColorSelected: (color) => setState(() => noteBgColor = color),
+                        );
+                      }),
+                      _bottomIcon(Icons.table_chart_outlined, () {
+                        setState(() => showTable = !showTable);
+                      }),
+                      _bottomIcon(Icons.mode_outlined, _openHandwriting),
+                      _bottomIcon(Icons.grid_3x3, _showPaperStyleSheet),
+                    ],
+                  ),
+                ),
               ),
               IconButton(
-                icon: Icon(Icons.send_outlined, color: AppColor().primaryColor, size: context.isPhone ? 28 : 33),
+                icon: Icon(Icons.send, color: AppColor().primaryColor, size: context.isPhone ? 24 : 30),
                 onPressed: _saveNote,
               ),
             ],
@@ -546,6 +582,32 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         );
         break;
     }
+  }
+
+  void _showPaperStyleSheet() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) => SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            const SheetHeader(title: "Paper Style"),
+            _paperStyleTile("Blank", Icons.not_interested, PaperType.none),
+            _paperStyleTile("Standard Lines", Icons.reorder, PaperType.lines),
+            _paperStyleTile("College Ruled", Icons.format_line_spacing, PaperType.collegeRuled),
+            _paperStyleTile("Standard Grid", Icons.grid_3x3, PaperType.grid),
+            _paperStyleTile("Small Graph", Icons.grid_on, PaperType.engineering),
+            _paperStyleTile("Dot Matrix", Icons.more_horiz, PaperType.dots),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showMoveFolderSheet() {

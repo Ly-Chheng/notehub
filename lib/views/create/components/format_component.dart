@@ -132,13 +132,13 @@ void showFormatSheet({
                     0xFFFF5722,
                     0xFF607D8B,
                     0xFF795548,
-                    0xFFECEFF1, // Light Grey
-                    0xFFB71C1C, // Dark Red
-                    0xFF1B5E20, // Dark Green
-                    0xFF0D47A1, // Dark Blue
-                    0xFFFFEB3B, // Yellow
-                    0xFF673AB7, // Deep Purple
-                    0xFF3F51B5, // Indigo
+                    0xFFECEFF1,
+                    0xFFB71C1C,
+                    0xFF1B5E20,
+                    0xFF0D47A1,
+                    0xFFFFEB3B,
+                    0xFF673AB7,
+                    0xFF3F51B5,
                   ].map((colorValue) {
                     Color color = Color(colorValue);
                     return GestureDetector(

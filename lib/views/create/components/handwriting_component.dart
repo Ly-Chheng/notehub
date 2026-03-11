@@ -1,24 +1,21 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:signature/signature.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
 class HandwritingCanvas extends StatefulWidget {
-  final Function(String? filePath, List<Point> points, Color color, double width) onSave;
-  final List<Point>? initialPoints;
-  final Color? initialColor;
-  final double? initialWidth;
+  final List<Map<String, dynamic>> initialLayers;
+  final Function(String? filePath, List<Map<String, dynamic>> layers) onSave;
 
   const HandwritingCanvas({
     super.key,
     required this.onSave,
-    this.initialPoints,
-    this.initialColor,
-    this.initialWidth,
+    this.initialLayers = const [],
   });
 
   @override
@@ -26,93 +23,122 @@ class HandwritingCanvas extends StatefulWidget {
 }
 
 class _HandwritingCanvasState extends State<HandwritingCanvas> {
-  late SignatureController _controller;
-  late Color currentPenColor;
-  late double currentWidth;
+  final GlobalKey _repaintKey = GlobalKey();
+  List<SignatureController> _layers = [];
+  late SignatureController _activeController;
+
+  Color currentPenColor = Colors.black;
+  double currentWidth = 2.0;
+  bool isEraser = false;
+  final Color canvasBgColor = const Color(0xFFF9F9F9);
 
   @override
   void initState() {
     super.initState();
-    // Initialize with passed values from Hive or defaults
-    currentPenColor = widget.initialColor ?? Colors.black;
-    currentWidth = widget.initialWidth ?? 3.0;
-
-    _initController(widget.initialPoints);
+    _loadInitialLayers();
+    _activeController = _createController();
   }
 
-  void _initController(List<Point>? points) {
-    _controller = SignatureController(
-      penStrokeWidth: currentWidth,
-      penColor: currentPenColor,
-      exportBackgroundColor: Colors.white,
-      points: points,
+  void _loadInitialLayers() {
+    for (var layer in widget.initialLayers) {
+      final pointsData = layer['points'] as List;
+      List<Point> points = pointsData.map((p) {
+        return Point(Offset(p['x'], p['y']), PointType.values[p['t']], 1.0);
+      }).toList();
+
+      _layers.add(SignatureController(
+        penStrokeWidth: (layer['width'] as num).toDouble(),
+        penColor: Color(layer['color'] as int),
+        points: points,
+      ));
+    }
+  }
+
+  SignatureController _createController() {
+    return SignatureController(
+      penStrokeWidth: isEraser ? 30.0 : currentWidth,
+      penColor: isEraser ? canvasBgColor : currentPenColor,
+      exportBackgroundColor: Colors.transparent,
     );
   }
 
-  // Updates the brush style while maintaining the current drawing
-  void _updateBrush({double? width, Color? color}) {
-    final existingPoints = _controller.points;
+  void _updateBrush({double? width, Color? color, bool? eraser}) {
+    if (_activeController.isNotEmpty) {
+      _layers.add(_activeController);
+    } else {
+      _activeController.dispose();
+    }
+
     setState(() {
       if (width != null) currentWidth = width;
       if (color != null) currentPenColor = color;
-
-      _controller.dispose();
-      _initController(existingPoints);
+      if (eraser != null) {
+        isEraser = eraser;
+      } else if (color != null || width != null) {
+        isEraser = false;
+      }
+      _activeController = _createController();
     });
+  }
+
+  Future<void> _saveAndExit() async {
+    try {
+      RenderRepaintBoundary boundary = _repaintKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0);
+      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+      final directory = await getApplicationDocumentsDirectory();
+      final path = '${directory.path}/draw_${DateTime.now().millisecondsSinceEpoch}.png';
+      await File(path).writeAsBytes(pngBytes);
+
+      // Convert Controllers to Hive-compatible Maps
+      List<SignatureController> allControllers = [..._layers, _activeController];
+      List<Map<String, dynamic>> exportData = allControllers
+          .where((c) => c.isNotEmpty)
+          .map((c) => {
+                'color': c.penColor.value,
+                'width': c.penStrokeWidth,
+                'points': c.points.map((p) => {'x': p.offset.dx, 'y': p.offset.dy, 't': p.type.index}).toList(),
+              })
+          .toList();
+
+      widget.onSave(path, exportData);
+      Navigator.pop(context);
+    } catch (e) {
+      debugPrint("Save error: $e");
+    }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    for (var c in _layers) {
+      c.dispose();
+    }
+    _activeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.97,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      height: MediaQuery.of(context).size.height * 100,
+      decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       child: Column(
         children: [
-          const SizedBox(height: 10),
-          SheetHeader(
-            title: "Handwriting",
-            saveText: "Done",
-            onSave: () async {
-              if (_controller.isNotEmpty) {
-                final Uint8List? data = await _controller.toPngBytes();
-                if (data != null) {
-                  final directory = await getApplicationDocumentsDirectory();
-                  final path = '${directory.path}/draw_${DateTime.now().millisecondsSinceEpoch}.png';
-                  await File(path).writeAsBytes(data);
-
-                  // Return all data to the main screen
-                  widget.onSave(path, _controller.points, currentPenColor, currentWidth);
-                }
-              } else {
-                widget.onSave(null, [], currentPenColor, currentWidth);
-              }
-              Navigator.pop(context);
-            },
-          ),
-
-          // Tool & Color Selection Bar
-
+          const SizedBox(height: 20),
+          SheetHeader(title: "Handwriting", saveText: "Done", onSave: _saveAndExit),
           Expanded(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade200),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Signature(
-                  controller: _controller,
-                  backgroundColor: const Color(0xFFF9F9F9),
+            child: RepaintBoundary(
+              key: _repaintKey,
+              child: Container(
+                margin: const EdgeInsets.only(top: 5, bottom: 5),
+                decoration: BoxDecoration(color: canvasBgColor, borderRadius: BorderRadius.circular(12)),
+                child: Stack(
+                  children: [
+                    ..._layers.map((l) => Signature(controller: l, backgroundColor: Colors.transparent)),
+                    Signature(controller: _activeController, backgroundColor: Colors.transparent),
+                  ],
                 ),
               ),
             ),
@@ -123,60 +149,77 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
     );
   }
 
-  Widget _buildToolBar() {
+  Widget _buildBottomActions() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Column(
         children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [Colors.black, Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple].map((c) => _colorCircle(c)).toList(),
+            ),
+          ),
+          const SizedBox(height: 5),
           Row(
             children: [
-              _toolButton(
-                imagePath: 'assets/images/pen.png', // your pen image
-                label: "Pen",
-                isSelected: currentWidth == 4.0,
-                onTap: () => _updateBrush(width: 4.0),
+              // _toolBtn("Pen", !isEraser && currentWidth == 4.0, () => _updateBrush(width: 4.0)),
+              // _toolBtn("Thin", !isEraser && currentWidth == 1.0, () => _updateBrush(width: 1.0)),
+              // _toolBtn("Eraser", isEraser, () => _updateBrush(eraser: true)),
+              _toolBtn(
+                "Pen",
+                !isEraser && currentWidth == 2.0,
+                () => _updateBrush(width: 2.0),
+                imagePath: 'assets/images/pen.png',
               ),
-              _toolButton(
-                imagePath: 'assets/images/pencle.png', // your pen image
-                label: "Pencle",
-                isSelected: currentWidth == 1,
-                onTap: () => _updateBrush(width: 1),
+              _toolBtn(
+                "Thin",
+                !isEraser && currentWidth == 1.0,
+                () => _updateBrush(width: 1.0),
+                imagePath: 'assets/images/pencle.png',
               ),
+              _toolBtn(
+                "Highlighter",
+                !isEraser && currentWidth == 20.0,
+                () => _updateBrush(width: 20.0),
+                imagePath: 'assets/images/highlighter.png',
+              ),
+              _toolBtn(
+                "Eraser",
+                isEraser,
+                () => _updateBrush(eraser: true),
+                imagePath: 'assets/images/easer.png',
+              ),
+              const Spacer(),
+              IconButton(
+                  icon: const Icon(Icons.undo),
+                  onPressed: () {
+                    setState(() {
+                      if (_activeController.isNotEmpty) {
+                        _activeController.undo();
+                      } else if (_layers.isNotEmpty) {
+                        _activeController = _layers.removeLast();
+                      }
+                    });
+                  }),
+              IconButton(
+                  icon: const Icon(Icons.redo_outlined),
+                  onPressed: () {
+                    setState(() {
+                      if (_activeController.isNotEmpty) {
+                        _activeController.redo();
+                      } else if (_layers.isNotEmpty) {
+                        _activeController = _layers.removeLast();
+                      }
+                    });
+                  }),
+              IconButton(
+                  icon: const Icon(Icons.delete, color: Colors.red),
+                  onPressed: () => setState(() {
+                        _layers.clear();
+                        _activeController.clear();
+                      })),
             ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _toolButton({
-    String? imagePath, // optional image asset path
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (imagePath != null)
-            Image.asset(
-              imagePath,
-              width: context.isPhone ? 40 : 50,
-              height: context.isPhone ? 40 : 50,
-              //color: isSelected ? AppColor().primaryColor : Colors.grey,
-              colorBlendMode: BlendMode.srcIn, // tint the image
-            ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: context.isPhone ? 10 : 12,
-              fontFamily: 'EN-REHURE',
-              color: isSelected ? AppColor().primaryColor : Colors.grey,
-            ),
           ),
         ],
       ),
@@ -184,83 +227,56 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
   }
 
   Widget _colorCircle(Color color) {
-    // bool isSelected = currentPenColor == color;
-    // Compare using .value to ensure accuracy (int vs int)
-    bool isSelected = currentPenColor.value == color.value;
+    bool isSelected = !isEraser && currentPenColor.value == color.value;
     return GestureDetector(
       onTap: () => _updateBrush(color: color),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.all(1),
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: isSelected ? AppColor().primaryColor : Colors.transparent, width: 1.5),
-        ),
-        child: CircleAvatar(radius: context.isPhone ? 9 : 12, backgroundColor: color),
+        margin: const EdgeInsets.symmetric(horizontal: 5),
+        padding: const EdgeInsets.all(2),
+        decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: isSelected ? AppColor().primaryColor : Colors.transparent, width: 1)),
+        child: CircleAvatar(radius: 12, backgroundColor: color),
       ),
     );
   }
 
-  Widget _buildBottomActions() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 10, right: 10),
-      child: Column(
-        children: [
-          SizedBox(
-            height: 5,
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _colorCircle(Colors.black),
-                _colorCircle(Colors.red),
-                _colorCircle(Colors.blue),
-                _colorCircle(Colors.green),
-                _colorCircle(Colors.grey),
-                _colorCircle(Colors.black54),
-                _colorCircle(Colors.pink),
-                _colorCircle(Colors.orange),
-                _colorCircle(Colors.yellow),
-                _colorCircle(Colors.purple),
-                _colorCircle(Colors.brown),
-                _colorCircle(Colors.cyan),
-                _colorCircle(Colors.teal),
-                _colorCircle(Colors.indigo),
-                _colorCircle(Colors.lime),
-                _colorCircle(Colors.amber),
-              ],
-            ),
-          ),
-          Row(
-            children: [
-              _buildToolBar(),
-              const Spacer(),
-              IconButton(
-                  icon: Icon(
-                    Icons.undo,
-                    color: AppColor().primaryColor,
-                    size: context.isPhone ? 20 : 24,
-                  ),
-                  onPressed: () => _controller.undo()),
-              IconButton(
-                  icon: Icon(
-                    Icons.redo_rounded,
-                    color: AppColor().primaryColor,
-                    size: context.isPhone ? 20 : 24,
-                  ),
-                  onPressed: () => _controller.redo()),
-              IconButton(
-                icon: Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                  size: context.isPhone ? 20 : 24,
-                ),
-                onPressed: () => _controller.clear(),
+  // Widget _toolBtn(String label, bool sel, VoidCallback tap) =>
+  //     TextButton(onPressed: tap, child: Text(label, style: TextStyle(color: sel ? AppColor().primaryColor : Colors.grey, fontWeight: sel ? FontWeight.bold : FontWeight.normal)));
+  Widget _toolBtn(String label, bool sel, VoidCallback tap, {String? imagePath, IconData? icon}) {
+    return InkWell(
+      onTap: tap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Render Image asset if provided
+            if (imagePath != null)
+              Image.asset(
+                imagePath,
+                width: 35,
+                height: 35,
+                // color: sel ? AppColor().primaryColor : Colors.grey,
+                colorBlendMode: BlendMode.srcIn,
+              )
+            // Otherwise render Icon if provided
+            else if (icon != null)
+              Icon(
+                icon,
+                size: 24,
+                // color: sel ? AppColor().primaryColor : Colors.grey,
               ),
-            ],
-          ),
-        ],
+            //const SizedBox(height: 4),
+            // Text(
+            //   label,
+            //   style: TextStyle(
+            //     fontSize: 10,
+            //     color: sel ? AppColor().primaryColor : Colors.grey,
+            //     fontWeight: sel ? FontWeight.bold : FontWeight.normal,
+            //   ),
+            // ),
+          ],
+        ),
       ),
     );
   }

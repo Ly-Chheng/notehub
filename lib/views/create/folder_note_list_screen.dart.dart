@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/delete_confirmation_sheet.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
@@ -32,6 +33,27 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   String searchQuery = "";
   final TextEditingController searchController = TextEditingController();
 
+  String _getDateHeader(String dateStr) {
+    try {
+      DateTime noteDate = DateFormat('dd/MM/yyyy').parse(dateStr);
+      DateTime now = DateTime.now();
+      DateTime today = DateTime(now.year, now.month, now.day);
+      DateTime yesterday = today.subtract(const Duration(days: 1));
+
+      if (noteDate.isAtSameMomentAs(today)) {
+        return "Today";
+      } else if (noteDate.isAtSameMomentAs(yesterday)) {
+        return "Yesterday";
+      } else if (noteDate.year == now.year) {
+        return DateFormat('MMMM d').format(noteDate); // e.g., "March 11"
+      } else {
+        return DateFormat('MMMM d, y').format(noteDate); // e.g., "March 11, 2025"
+      }
+    } catch (e) {
+      return "Earlier";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,7 +80,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 20,
+        ),
         child: Column(
           children: [
             /// SEARCH BAR
@@ -124,12 +148,25 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   }
 
                   // 3. SORT: Pinned first
+                  // notesList.sort((a, b) {
+                  //   bool aPinned = a.value['isPinned'] ?? false;
+                  //   bool bPinned = b.value['isPinned'] ?? false;
+                  //   if (aPinned && !bPinned) return -1;
+                  //   if (!aPinned && bPinned) return 1;
+                  //   return 0;
+                  // });
+
+                  // 3. SORT: Pinned first, then by Date (Newest first)
                   notesList.sort((a, b) {
                     bool aPinned = a.value['isPinned'] ?? false;
                     bool bPinned = b.value['isPinned'] ?? false;
                     if (aPinned && !bPinned) return -1;
                     if (!aPinned && bPinned) return 1;
-                    return 0;
+
+                    // Secondary sort by date
+                    DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.value['date'] ?? "01/01/2000");
+                    DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.value['date'] ?? "01/01/2000");
+                    return dateB.compareTo(dateA);
                   });
 
                   if (notesList.isEmpty) {
@@ -146,7 +183,33 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       final noteKey = entry.key; // The unique Hive ID
                       final noteData = entry.value;
 
-                      return _buildSlidableNote(noteKey, noteData);
+                      // 4. GROUPING LOGIC
+                      String currentHeader = _getDateHeader(noteData['date'] ?? "");
+                      String? prevHeader;
+                      if (index > 0) {
+                        prevHeader = _getDateHeader(notesList[index - 1].value['date'] ?? "");
+                      }
+
+                      bool showHeader = currentHeader != prevHeader;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (showHeader)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
+                              child: Text(
+                                currentHeader,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ),
+                          _buildSlidableNote(noteKey, noteData),
+                        ],
+                      );
                     },
                   );
                 },
