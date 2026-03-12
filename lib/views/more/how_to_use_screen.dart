@@ -27,11 +27,12 @@ class HowToUseScreen extends StatelessWidget {
           const SizedBox(height: 8),
           const Text(
             "Follow these simple steps to master your notes.",
-            style: TextStyle(color: Colors.grey, fontSize: 16, fontFamily: 'EN-REGULAR'),
+            style: TextStyle(fontSize: 16, fontFamily: 'EN-REGULAR', color: Colors.grey),
           ),
           const SizedBox(height: 30),
 
           _buildStepCard(
+            context,
             stepNumber: "1",
             title: "Create Your First Note",
             description: "Tap the '+' button on the home screen to start writing. You can add titles and body text easily.",
@@ -39,6 +40,7 @@ class HowToUseScreen extends StatelessWidget {
             iconColor: Colors.blue,
           ),
           _buildStepCard(
+            context,
             stepNumber: "2",
             title: "Organize with Folders",
             description: "Swipe left on any note to move it to a specific folder like 'Homework' or 'Exams'.",
@@ -46,6 +48,7 @@ class HowToUseScreen extends StatelessWidget {
             iconColor: Colors.orange,
           ),
           _buildStepCard(
+            context,
             stepNumber: "3",
             title: "Secure Your Content",
             description: "Use the 'Lock' feature in the note menu to protect sensitive information with a password.",
@@ -53,6 +56,7 @@ class HowToUseScreen extends StatelessWidget {
             iconColor: Colors.redAccent,
           ),
           _buildStepCard(
+            context,
             stepNumber: "4",
             title: "Focus with Stopwatch",
             description: "Use the built-in stopwatch to track your study sessions and stay productive.",
@@ -91,7 +95,8 @@ class HowToUseScreen extends StatelessWidget {
   }
 
   // --- STEP CARD BUILDER ---
-  Widget _buildStepCard({
+  Widget _buildStepCard(
+    BuildContext context, {
     required String stepNumber,
     required String title,
     required String description,
@@ -102,7 +107,7 @@ class HowToUseScreen extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 20),
       padding: EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
@@ -148,7 +153,7 @@ class HowToUseScreen extends StatelessWidget {
                 const SizedBox(height: 8),
                 Text(
                   description,
-                  style: const TextStyle(color: Colors.black54, height: 1.4, fontFamily: 'EN-REGULAR'),
+                  style: const TextStyle(color: Colors.grey, height: 1.4, fontFamily: 'EN-REGULAR'),
                 ),
               ],
             ),

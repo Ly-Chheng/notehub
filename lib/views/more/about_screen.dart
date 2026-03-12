@@ -27,7 +27,7 @@ class AboutScreen extends StatelessWidget {
                 height: 120,
                 width: 120,
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
@@ -40,7 +40,11 @@ class AboutScreen extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(25.0),
                   child: Image.asset('assets/images/note_book.png', errorBuilder: (context, error, stackTrace) {
-                    return Image.asset( 'assets/icons/note_book.png',height: 50,width: 50,);
+                    return Image.asset(
+                      'assets/icons/note_book.png',
+                      height: 50,
+                      width: 50,
+                    );
                   }),
                 ),
               ),
@@ -81,7 +85,7 @@ class AboutScreen extends StatelessWidget {
   Widget _buildAboutContainer(BuildContext context, List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(15),
         border: Border.all(color: Colors.black.withOpacity(0.05)),
       ),
@@ -93,7 +97,7 @@ class AboutScreen extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          leading: Icon(icon, color: Colors.black87, size: 22),
+          leading: Icon(icon, size: 22),
           title: Text(title, style: const TextStyle(fontSize: 16, fontFamily: 'EN-ENGULAR')),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
@@ -103,7 +107,7 @@ class AboutScreen extends StatelessWidget {
               const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
             ],
           ),
-          onTap: () {},  
+          onTap: () {},
         ),
         if (!isLast)
           Divider(

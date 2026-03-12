@@ -17,8 +17,23 @@ class TimerComponent extends StatelessWidget {
     return ValueListenableBuilder(
         valueListenable: controller.timerBox.listenable(),
         builder: (context, Box box, _) {
-          final allKeys = box.keys.where((k) => box.get(k)['type'] == 'timer').toList();
-          if (allKeys.isEmpty) return const Center(child: Text("No Timers"));
+          // final allKeys = box.keys.where((k) => box.get(k)['type'] == 'timer').toList();
+          // if (allKeys.isEmpty) return const Center(child: Text("No Timers"));
+          final allKeys = box.keys.where((k) {
+            final data = box.get(k);
+            // CHECK: Ensure data is actually a Map before accessing keys
+            if (data is Map) {
+              return data['type'] == 'timer';
+            }
+            return false;
+          }).toList();
+
+          if (allKeys.isEmpty) {
+            // Use microtask to wait until the current frame is done building
+            Future.microtask(() => Get.to(() => const CreateTimerScreen()));
+
+            return const Center(child: Text("No Timers"));
+          }
 
           // 1. IMPROVED FILTERING:
           // A timer is "Running" if Hive says it has time OR if the Controller has it active.
@@ -131,7 +146,15 @@ class TimerComponent extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: [
-          SizedBox(width: 60, height: 60, child: CircularProgressIndicator(value: 1.0, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(Colors.grey.shade200))),
+          SizedBox(
+              width: 60,
+              height: 60,
+              child: CircularProgressIndicator(
+                  value: 1.0,
+                  strokeWidth: 4,
+                  valueColor: AlwaysStoppedAnimation(
+                    Colors.grey.withOpacity(0.1),
+                  ))),
           SizedBox(
               width: 60, height: 60, child: CircularProgressIndicator(value: progress, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
           Icon(isFinished ? Icons.refresh : (isRunning ? Icons.pause : Icons.play_arrow), color: isFinished ? Colors.white : AppColor().primaryColor, size: 30),

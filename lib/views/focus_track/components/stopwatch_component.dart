@@ -48,7 +48,7 @@ class StopwatchScreen extends StatelessWidget {
               child: CircularProgressIndicator(
                 value: (controller.milliseconds.value % 60000) / 60000,
                 strokeWidth: context.isPhone ? 10 : 12,
-                backgroundColor: Colors.grey.shade100,
+                backgroundColor: Colors.grey.withOpacity(0.1),
                 strokeCap: StrokeCap.round,
                 valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4D7CFF)),
               ),
@@ -71,9 +71,9 @@ class StopwatchScreen extends StatelessWidget {
       child: Obx(() => Column(
             children: [
               Container(
-                decoration: BoxDecoration(color: const Color(0xFFE8EBF6), borderRadius: BorderRadius.circular(5)),
+                decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(5)),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                  padding: const EdgeInsets.all(8),
                   child: const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -202,7 +202,7 @@ class _MyHomePageState extends State<MyHomePage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (context) => Container(
         decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
         padding: EdgeInsets.only(

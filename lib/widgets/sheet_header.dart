@@ -25,7 +25,7 @@ class SheetHeader extends StatelessWidget {
           height: 4,
           margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
-            color: Colors.grey[300],
+            color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(10),
           ),
         ),
@@ -55,7 +55,7 @@ class SheetHeader extends StatelessWidget {
               onPressed: onSave,
               child: Text(
                 saveText,
-                style:   TextStyle(
+                style: TextStyle(
                   color: AppColor().primaryColor,
                   fontFamily: 'EN-ENGINEER',
                   fontSize: 16,
