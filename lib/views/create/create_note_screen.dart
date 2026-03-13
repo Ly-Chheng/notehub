@@ -11,6 +11,7 @@ import 'package:project_structure/views/create/components/handwriting_component.
 import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/views/create/components/notebook_painter.dart';
 import 'package:project_structure/views/create/components/table_component.dart';
+import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
@@ -48,6 +49,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Color noteBgColor = Colors.white;
   PaperType selectedPaperType = PaperType.none;
 
+  bool isLocked = false;
+
   List<Map<String, dynamic>> drawingLayers = []; // Multi-Layer Drawing State
 
   List<File> selectedImages = [];
@@ -78,6 +81,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       noteBgColor = Color(widget.existingNote?['bgColorValue'] ?? 0xFFFFFFFF);
       int paperIndex = widget.existingNote?['paperTypeIndex'] ?? 0;
       selectedPaperType = PaperType.values[paperIndex];
+      isLocked = widget.existingNote?['isLocked'] ?? false;
 
       currentFolderKey = widget.existingNote?['folderKey'] ?? widget.folderKey; // If editing, use the folder key saved in the note data
 
@@ -97,19 +101,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
       int? colorVal = widget.existingNote?['colorValue'];
       if (colorVal != null) selectedColor = Color(colorVal);
-
-      // Load Multi-Layer Drawing Data
-      // if (widget.existingNote?['drawingLayers'] != null) {
-      //   try {
-      //     final List<dynamic> rawLayers = widget.existingNote?['drawingLayers'];
-      //     drawingLayers = rawLayers.map((layer) {
-      //       return Map<String, dynamic>.from(layer as Map);
-      //     }).toList();
-      //   } catch (e) {
-      //     debugPrint("Error loading drawing layers: $e");
-      //     drawingLayers = [];
-      //   }
-      // }
 
       // Load Multi-Layer Drawing Data with strict casting
       if (widget.existingNote?['drawingLayers'] != null) {
@@ -162,27 +153,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _lastTextLength = text.length;
   }
 
-  // void _openHandwriting() {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     backgroundColor: Colors.transparent,
-  //     builder: (context) => HandwritingCanvas(
-  //       initialLayers: drawingLayers, // Pass the layers list
-  //       onSave: (String? filePath, List<Map<String, dynamic>> allLayers) {
-  //         setState(() {
-  //           drawingLayers = allLayers;
-
-  //           // Remove old drawing preview from images and add the new one
-  //           selectedImages.removeWhere((file) => file.path.contains('draw_'));
-  //           if (filePath != null) {
-  //             selectedImages.add(File(filePath));
-  //           }
-  //         });
-  //       },
-  //     ),
-  //   );
-  // }
   void _openHandwriting() {
     showModalBottomSheet(
       context: context,
@@ -230,6 +200,84 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  // --- LOCK LOGIC ---
+  Future<void> _handleLockToggle() async {
+    try {
+      if (!Hive.isBoxOpen('settings_box')) {
+        await Hive.openBox('settings_box');
+      }
+
+      final settingsBox = Hive.box('settings_box');
+      String? masterPass = settingsBox.get('master_password');
+
+      // Case 1: Set new password if none exists
+      if (masterPass == null) {
+        final result = await Get.to(() => const CreatePasswordScreen());
+        if (result == true) {
+          setState(() => isLocked = true);
+          Get.snackbar("Security", "Master password set and note locked.");
+        }
+        return;
+      }
+
+      // Case 2: Toggle off (requires password)
+      if (isLocked) {
+        _showUnlockDialog(masterPass);
+      }
+      // Case 3: Toggle on
+      else {
+        setState(() => isLocked = true);
+        Get.snackbar("Locked", "Note is now protected.");
+      }
+    } catch (e) {
+      Get.snackbar("Error", "Could not access security settings.");
+    }
+  }
+
+  // void _showUnlockDialog(String correctPass) {
+  //   final passController = TextEditingController();
+  //   Get.defaultDialog(
+  //     title: "Unlock Note",
+  //     content: TextField(controller: passController, obscureText: true, decoration: const InputDecoration(hintText: "Master Password")),
+  //     confirm: ElevatedButton(
+  //       onPressed: () {
+  //         if (passController.text == correctPass) {
+  //           setState(() => isLocked = false);
+  //           Get.back();
+  //         } else {
+  //           Get.snackbar("Error", "Wrong Password", backgroundColor: Colors.red, colorText: Colors.white);
+  //         }
+  //       },
+  //       child: const Text("Unlock"),
+  //     ),
+  //   );
+  // }
+  void _showUnlockDialog(String correctPass) {
+    final passController = TextEditingController();
+
+    showConfirmDeleteDialog(
+      context: context,
+      title: "Unlock Note",
+      subTitle: "Enter Master Password",
+      confirmText: "Unlock",
+      controller: passController,
+      obscureText: true,
+      hintText: "Master Password",
+      onConfirm: () {
+        if (passController.text == correctPass) {
+          setState(() => isLocked = false);
+        } else {
+          Get.snackbar(
+            "Error",
+            "Wrong Password",
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
+      },
+    );
+  }
+
   void _saveNote() async {
     // Prevent saving empty notes
     if (titleController.text.trim().isEmpty && contentController.text.trim().isEmpty) {
@@ -242,6 +290,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final noteData = {
       "title": titleController.text,
       "subtitle": contentController.text,
+      "isLocked": isLocked,
       "folderKey": currentFolderKey,
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
       "isPinned": widget.existingNote?['isPinned'] ?? false,
@@ -314,6 +363,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
+          if (isLocked) Icon(Icons.lock, color: AppColor().primaryColor, size: 18),
           Obx(() => _actionButton(
                 asset: 'assets/images/undo.png',
                 isEnabled: noteController.undoStack.length > 1,
@@ -338,6 +388,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             onSelected: (value) => _handleMenuSelection(value, context),
             itemBuilder: (context) => [
               buildPopupItem(context, 'Share', Icons.share_outlined),
+              buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock),
               buildPopupItem(context, 'Move Note', Icons.folder_outlined),
               buildPopupItem(context, 'Delete', Icons.delete_outline, color: Colors.red),
             ],
@@ -557,10 +608,15 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  // --- MENU HANDLER ---
   void _handleMenuSelection(String value, BuildContext context) async {
     switch (value) {
       case 'Share':
         _shareNote();
+        break;
+      case 'Lock Note':
+      case 'Unlock Note':
+        _handleLockToggle();
         break;
       case 'Move Note':
         _showMoveFolderSheet();
@@ -572,12 +628,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           subTitle: 'Are you sure you want to delete this note?',
           onConfirm: () async {
             final noteBox = Hive.box('student_notes');
-
-            if (widget.isEditing && widget.noteKey != null) {
-              await noteBox.delete(widget.noteKey);
-              Get.back();
-            }
-            Get.close(2);
+            await noteBox.delete(widget.noteKey);
           },
         );
         break;

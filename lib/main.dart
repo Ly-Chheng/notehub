@@ -39,6 +39,7 @@ Future<void> main() async {
   await Hive.openBox('student_notes');
   await Hive.openBox('folders_box');
   await Hive.openBox('timer_box');
+  await Hive.openBox('settings_box');
 
   runApp(const MyApp());
 }

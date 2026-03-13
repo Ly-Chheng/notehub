@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
@@ -12,14 +13,14 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  // 1. Initialize Controllers
   final TextEditingController _currentPassController = TextEditingController();
   final TextEditingController _newPassController = TextEditingController();
   final TextEditingController _confirmPassController = TextEditingController();
   final TextEditingController _hintController = TextEditingController();
   final TextEditingController _answerController = TextEditingController();
 
-  // Visibility states
+  final Box settingsBox = Hive.box('settings_box');
+
   bool _obscureCurrent = true;
   bool _obscureNew = true;
   bool _obscureConfirm = true;
@@ -31,7 +32,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     "In which city were you born?",
   ];
 
-  // 2. Cleanup
   @override
   void dispose() {
     _currentPassController.dispose();
@@ -40,6 +40,53 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     _hintController.dispose();
     _answerController.dispose();
     super.dispose();
+  }
+
+  // --- CHANGE PASSWORD LOGIC ---
+  void _saveNewPassword() async {
+    String currentInput = _currentPassController.text.trim();
+    String newPass = _newPassController.text.trim();
+    String confirmPass = _confirmPassController.text.trim();
+    String? storedPass = settingsBox.get('master_password');
+
+    // 1. Basic Validation
+    if (currentInput.isEmpty || newPass.isEmpty || confirmPass.isEmpty) {
+      Get.snackbar("Error", "Please fill in all password fields", backgroundColor: Colors.red, colorText: Colors.white);
+      return;
+    }
+
+    // 2. Verify Current Password
+    if (storedPass != null && currentInput != storedPass) {
+      Get.snackbar("Error", "Current password is incorrect", backgroundColor: Colors.red, colorText: Colors.white);
+      return;
+    }
+
+    // 3. Match New Passwords
+    if (newPass != confirmPass) {
+      Get.snackbar("Error", "New passwords do not match", backgroundColor: Colors.red, colorText: Colors.white);
+      return;
+    }
+
+    // // 4. Password Length Check
+    // if (newPass.length < 4) {
+    //   Get.snackbar("Error", "Password must be at least 4 characters", backgroundColor: Colors.red, colorText: Colors.white);
+    //   return;
+    // }
+
+    // 5. Save Password & Hint
+    await settingsBox.put('master_password', newPass);
+    if (_hintController.text.isNotEmpty) {
+      await settingsBox.put('password_hint', _hintController.text.trim());
+    }
+
+    // 6. Optional: Update Security Question
+    if (_selectedQuestion != null && _answerController.text.isNotEmpty) {
+      await settingsBox.put('security_question', _selectedQuestion);
+      await settingsBox.put('security_answer', _answerController.text.trim().toLowerCase());
+    }
+
+    Get.back();
+    Get.snackbar("Success", "Password updated successfully", backgroundColor: Colors.green, colorText: Colors.white);
   }
 
   @override
@@ -53,15 +100,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
-            onPressed: () {
-              // 3. Simple Validation Example
-              if (_newPassController.text != _confirmPassController.text) {
-                Get.snackbar("Error", "New passwords do not match", snackPosition: SnackPosition.BOTTOM);
-              } else {
-                // Success logic
-                Get.back();
-              }
-            },
+            onPressed: _saveNewPassword, // Trigger logic
             child: Text("Save",
                 style: TextStyle(
                   color: AppColor().primaryColor,
@@ -78,36 +117,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             const SizedBox(height: 10),
             Text("Change Password", style: TextStyle(fontSize: context.isPhone ? 18 : 24, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            Text("Update the password to protect your notes.",
-                style: TextStyle(
-                  fontSize: context.isPhone ? 15 : 17,
-                )),
+            Text("Update the password to protect your notes.", textAlign: TextAlign.center, style: TextStyle(fontSize: context.isPhone ? 15 : 17)),
             const SizedBox(height: 30),
-
-            // Password Fields with Controllers passed to your reusable widget
             customTextField("Current Password", _obscureCurrent, () {
               setState(() => _obscureCurrent = !_obscureCurrent);
             }, controller: _currentPassController),
-
             const SizedBox(height: 15),
-
             customTextField("New Password", _obscureNew, () {
               setState(() => _obscureNew = !_obscureNew);
             }, controller: _newPassController),
-
             const SizedBox(height: 15),
-
             customTextField("Confirm New Password", _obscureConfirm, () {
               setState(() => _obscureConfirm = !_obscureConfirm);
             }, controller: _confirmPassController),
-
             const SizedBox(height: 15),
-
-            // Standard Fields with Controllers
             buildStandardField("New Hint", trailing: "Optional", controller: _hintController),
-
             const SizedBox(height: 30),
-
             _buildSecurityHeader(),
             const SizedBox(height: 12),
             _buildDropdown(),
@@ -124,17 +149,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text("Security Question Verification",
-            style: TextStyle(
-              fontSize: context.isPhone ? 16 : 18,
-              fontFamily: 'EN-REGULAR',
-            )),
-        Text("Optional",
-            style: TextStyle(
-              color: Colors.grey,
-              fontSize: context.isPhone ? 14 : 16,
-              fontFamily: 'EN-REGULAR',
-            )),
+        Text("Security Question Verification", style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR')),
+        Text("Optional", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 14 : 16, fontFamily: 'EN-REGULAR')),
       ],
     );
   }
@@ -150,12 +166,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         child: DropdownButton<String>(
           value: _selectedQuestion,
           dropdownColor: Colors.white,
-          hint: Text("Select question",
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: context.isPhone ? 14 : 18,
-                fontFamily: 'EN-REGULAR',
-              )),
+          hint: Text("Select question", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 14 : 18, fontFamily: 'EN-REGULAR')),
           isExpanded: true,
           icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
           items: _questions.map((String q) {
@@ -165,7 +176,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     style: TextStyle(
                       fontSize: context.isPhone ? 16 : 18,
                       fontFamily: 'EN-REGULAR',
-                      color: AppColor().black,
+                      color: Colors.black,
                     )));
           }).toList(),
           onChanged: (val) => setState(() => _selectedQuestion = val),

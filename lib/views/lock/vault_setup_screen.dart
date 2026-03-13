@@ -5,14 +5,14 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
-class CreatePasswordScreen extends StatefulWidget {
-  const CreatePasswordScreen({super.key});
+class VaultSetupScreen extends StatefulWidget {
+  const VaultSetupScreen({super.key});
 
   @override
-  State<CreatePasswordScreen> createState() => _CreatePasswordScreenState();
+  State<VaultSetupScreen> createState() => _VaultSetupScreenState();
 }
 
-class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
+class _VaultSetupScreenState extends State<VaultSetupScreen> {
   final _newPassController = TextEditingController();
   final _confirmPassController = TextEditingController();
   final _hintController = TextEditingController();
@@ -37,14 +37,15 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     super.dispose();
   }
 
-  Future<void> _handleCreate() async {
+  Future<void> _handleCreateVaultLock() async {
+    // Basic Validation
     if (_newPassController.text.isEmpty || _selectedQuestion == null || _answerController.text.isEmpty) {
-      Get.snackbar("Error", "Please fill all required fields", backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar("Required", "Please complete all security fields", backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
     if (_newPassController.text != _confirmPassController.text) {
-      Get.snackbar("Error", "Passwords do not match", backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar("Mismatch", "Passwords do not match", backgroundColor: Colors.red, colorText: Colors.white);
       return;
     }
 
@@ -55,22 +56,25 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     await settingsBox.put('security_answer', _answerController.text);
     await settingsBox.put('hint', _hintController.text);
 
-    Get.back(result: true); // Return true to indicate success
-    Get.snackbar("Success", "Security Password Created", backgroundColor: Colors.green, colorText: Colors.white);
+    // Enable the global lock flag
+    await settingsBox.put('is_vault_locked', true);
+
+    Get.back(result: true);
+    Get.snackbar("Vault Active", "All notes are now protected", backgroundColor: Colors.green, colorText: Colors.white);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: customAppBar(
-        title: "Back",
+        title: "Security",
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
-            onPressed: _handleCreate,
-            child: Text("Create", style: TextStyle(fontSize: 18, color: AppColor().primaryColor)),
+            onPressed: _handleCreateVaultLock,
+            child: Text("Enable", style: TextStyle(fontSize: 18, color: AppColor().primaryColor, fontFamily: 'EN-BOLD')),
           )
         ],
       ),
@@ -81,38 +85,37 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
           children: [
             const SizedBox(height: 20),
             Center(
-              child: Text("Setup Lock",
-                  style: TextStyle(
-                    fontSize: context.isPhone ? 18 : 24,
-                    fontFamily: 'EN-BOLD',
-                  )),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              "Create a secure password to protect your personal notes.",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.black54,
-                fontSize: 14,
-                fontFamily: 'EN-REGULAR',
+              child: Column(
+                children: [
+                  Icon(Icons.local_activity, size: 60, color: AppColor().primaryColor),
+                  const SizedBox(height: 10),
+                  Text("Notes Vault",
+                      style: TextStyle(
+                        fontSize: context.isPhone ? 22 : 26,
+                        fontFamily: 'EN-BOLD',
+                      )),
+                ],
               ),
             ),
-            const SizedBox(height: 10),
-            customTextField("New Password", _obscureNew, () => setState(() => _obscureNew = !_obscureNew), controller: _newPassController),
+            const SizedBox(height: 20),
+            const Text(
+              "Set a master password. This will be required to view or edit any of your saved notes.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black54, fontSize: 14, fontFamily: 'EN-REGULAR'),
+            ),
+            const SizedBox(height: 30),
+            customTextField("Master Password", _obscureNew, () => setState(() => _obscureNew = !_obscureNew), controller: _newPassController),
             const SizedBox(height: 15),
-            customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
+            customTextField("Confirm Master Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
             const SizedBox(height: 15),
             buildStandardField("Hint (Optional)", controller: _hintController),
-            const SizedBox(height: 30),
-            const Text("Security Question Verification",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontFamily: 'EN-REGULAR',
-                )),
+            const SizedBox(height: 35),
+            const Text("Recovery Question", style: TextStyle(fontSize: 16, fontFamily: 'EN-BOLD')),
             const SizedBox(height: 10),
             _buildDropdown(),
             const SizedBox(height: 15),
             buildStandardField("Security Answer", controller: _answerController),
+            const SizedBox(height: 40),
           ],
         ),
       ),
@@ -122,12 +125,11 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   Widget _buildDropdown() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15),
-      decoration: BoxDecoration(color: const Color(0xFFECECEC), borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: const Color(0xFFF5F5F5), borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade300)),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _selectedQuestion,
-          dropdownColor: Colors.white,
-          hint: const Text("Select Question"),
+          hint: const Text("Select Recovery Question"),
           isExpanded: true,
           items: _questions.map((q) => DropdownMenuItem(value: q, child: Text(q))).toList(),
           onChanged: (val) => setState(() => _selectedQuestion = val),

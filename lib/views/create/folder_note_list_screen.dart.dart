@@ -8,6 +8,7 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/delete_confirmation_sheet.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 
 class FolderNoteListScreen extends StatefulWidget {
@@ -32,6 +33,40 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   bool isSearching = false;
   String searchQuery = "";
   final TextEditingController searchController = TextEditingController();
+
+  // --- NEW: UNIVERSAL PASSWORD VERIFICATION ---
+  void _verifyAndExecute({required bool isLocked, required VoidCallback onVerified, String title = "Security Check"}) {
+    if (!isLocked) {
+      onVerified();
+      return;
+    }
+
+    final TextEditingController passController = TextEditingController();
+    final Box settingsBox = Hive.box('settings_box');
+    String? masterPassword = settingsBox.get('master_password');
+
+    showConfirmDeleteDialog(
+      context: context,
+      title: title,
+      subTitle: "Verification required for this locked note.",
+      confirmText: "Unlock",
+      controller: passController,
+      obscureText: true,
+      hintText: "Master Password",
+      onConfirm: () {
+        if (passController.text == masterPassword) {
+          onVerified();
+        } else {
+          Get.snackbar(
+            "Error",
+            "Incorrect Password",
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+          );
+        }
+      },
+    );
+  }
 
   String _getDateHeader(String dateStr) {
     try {
@@ -266,6 +301,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   }
 
   Widget _buildSlidableNote(dynamic noteKey, dynamic note) {
+    bool isLocked = note['isLocked'] ?? false; // Check lock status
     bool isPinned = note['isPinned'] ?? false;
     bool isSelected = selectedKeys.contains(noteKey);
 
@@ -302,14 +338,24 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               borderRadius: const BorderRadius.horizontal(left: Radius.circular(10)),
             ),
             SlidableAction(
-              onPressed: (context) => _showMoveNotesSheet(singleNoteKey: noteKey),
+              // onPressed: (context) => _showMoveNotesSheet(singleNoteKey: noteKey),
+              onPressed: (context) => _verifyAndExecute(
+                isLocked: isLocked,
+                title: "Move Locked Note",
+                onVerified: () => _showMoveNotesSheet(singleNoteKey: noteKey),
+              ),
               backgroundColor: Colors.blue,
               foregroundColor: Colors.white,
               icon: Icons.folder,
               label: 'Folder',
             ),
             SlidableAction(
-              onPressed: (context) => noteBox.delete(noteKey),
+              // onPressed: (context) => noteBox.delete(noteKey),
+              onPressed: (context) => _verifyAndExecute(
+                isLocked: isLocked,
+                title: "Delete Locked Note",
+                onVerified: () => noteBox.delete(noteKey),
+              ),
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
               icon: Icons.delete,
@@ -319,6 +365,24 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           ],
         ),
         child: InkWell(
+          // onTap: () {
+          //   if (isSelectionMode) {
+          //     setState(() {
+          //       if (isSelected) {
+          //         selectedKeys.remove(noteKey);
+          //       } else {
+          //         selectedKeys.add(noteKey);
+          //       }
+          //     });
+          //   } else {
+          //     Get.to(() => CreateNoteScreen(
+          //           isEditing: true,
+          //           noteKey: noteKey,
+          //           existingNote: note,
+          //           folderKey: widget.folderKey,
+          //         ));
+          //   }
+          // },
           onTap: () {
             if (isSelectionMode) {
               setState(() {
@@ -329,87 +393,113 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 }
               });
             } else {
-              Get.to(() => CreateNoteScreen(
-                    isEditing: true,
-                    noteKey: noteKey,
-                    existingNote: note,
-                    folderKey: widget.folderKey,
-                  ));
+              // VERIFY LOCK BEFORE OPENING EDITOR
+              _verifyAndExecute(
+                isLocked: isLocked,
+                onVerified: () {
+                  Get.to(() => CreateNoteScreen(
+                        isEditing: true,
+                        noteKey: noteKey,
+                        existingNote: note,
+                        folderKey: widget.folderKey,
+                      ));
+                },
+              );
             }
           },
           child: Container(
-            padding: const EdgeInsets.all(15),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(15),
               border: isSelected ? Border.all(color: AppColor().primaryColor, width: 1) : null,
             ),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (isSelectionMode)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 15),
-                    child: Icon(
-                      isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                      color: AppColor().primaryColor,
-                    ),
-                  ),
-                if (isPinned && !isSelectionMode)
-                  const Padding(
-                    padding: EdgeInsets.only(right: 10),
-                    child: Icon(Icons.push_pin, color: Colors.orange, size: 20),
-                  ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        note['title']?.isEmpty == true ? "Untitled" : note['title'],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: context.isPhone ? 18 : 20, fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    // SHOW LOCK ICON
+                    if (isLocked)
+                      Icon(
+                        Icons.lock,
+                        color: AppColor().primaryColor,
+                        size: 15,
                       ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    if (isPinned && !isSelectionMode)
+                      const Padding(
+                        padding: EdgeInsets.only(right: 10),
+                        child: Icon(Icons.push_pin, color: Colors.orange, size: 15),
+                      ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    if (isSelectionMode)
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Text(
-                          note['subtitle'] ?? "",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: context.isPhone ? 14 : 16,
-                            color: noteColor,
-                            fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
-                            fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
-                            decoration: TextDecoration.combine([
-                              if (noteIsUnderlined) TextDecoration.underline,
-                              if (noteIsStrikethrough) TextDecoration.lineThrough,
-                            ]),
+                        padding: const EdgeInsets.only(right: 15),
+                        child: Icon(
+                          isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                          color: AppColor().primaryColor,
+                        ),
+                      ),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            note['title']?.isEmpty == true ? "Untitled" : note['title'],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(fontSize: context.isPhone ? 18 : 20, fontWeight: FontWeight.bold),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            child: Text(
+                              note['subtitle'] ?? "",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: context.isPhone ? 14 : 16,
+                                color: noteColor,
+                                fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
+                                fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
+                                decoration: TextDecoration.combine([
+                                  if (noteIsUnderlined) TextDecoration.underline,
+                                  if (noteIsStrikethrough) TextDecoration.lineThrough,
+                                ]),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // --- IMAGE PREVIEW THUMBNAIL (Right side) ---
+                    if (imagePaths != null && imagePaths.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            File(imagePaths[0]), // Displays the first image taken
+                            width: context.isPhone ? 70 : 100,
+                            height: context.isPhone ? 70 : 100,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              width: context.isPhone ? 70 : 100,
+                              height: context.isPhone ? 70 : 100,
+                              color: Colors.grey[200],
+                              child: Icon(Icons.broken_image, size: context.isPhone ? 24 : 30),
+                            ),
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                  ],
                 ),
-                // --- IMAGE PREVIEW THUMBNAIL (Right side) ---
-                if (imagePaths != null && imagePaths.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        File(imagePaths[0]), // Displays the first image taken
-                        width: context.isPhone ? 70 : 100,
-                        height: context.isPhone ? 70 : 100,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          width: context.isPhone ? 70 : 100,
-                          height: context.isPhone ? 70 : 100,
-                          color: Colors.grey[200],
-                          child: Icon(Icons.broken_image, size: context.isPhone ? 24 : 30),
-                        ),
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),
