@@ -35,7 +35,7 @@ Future<void> main() async {
   // 2. Initialize Hive properly
   await Hive.initFlutter();
 
-  // 3. Open Boxes as Generic (No <Models>)
+  // 3. Open Boxes as Generic
   await Hive.openBox('student_notes');
   await Hive.openBox('folders_box');
   await Hive.openBox('timer_box');

@@ -17,8 +17,6 @@ class TimerComponent extends StatelessWidget {
     return ValueListenableBuilder(
         valueListenable: controller.timerBox.listenable(),
         builder: (context, Box box, _) {
-          // final allKeys = box.keys.where((k) => box.get(k)['type'] == 'timer').toList();
-          // if (allKeys.isEmpty) return const Center(child: Text("No Timers"));
           final allKeys = box.keys.where((k) {
             final data = box.get(k);
             // CHECK: Ensure data is actually a Map before accessing keys

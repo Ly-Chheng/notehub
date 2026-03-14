@@ -21,7 +21,6 @@ class AboutScreen extends StatelessWidget {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            // --- APP LOGO SECTION ---
             Center(
               child: Container(
                 height: 120,
@@ -31,7 +30,7 @@ class AboutScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
+                      color: const Color(0x0D000000),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -54,20 +53,13 @@ class AboutScreen extends StatelessWidget {
               "Student Note",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-            const Text(
-              "Version 1.0.0",
-              style: TextStyle(color: Colors.grey, fontSize: 14),
-            ),
             const SizedBox(height: 40),
-
-            // --- INFO GROUP ---
             _buildAboutContainer(context, [
               _buildAboutTile(Icons.language, "Website", "www.beltei.edu.kh"),
               _buildAboutTile(Icons.email_outlined, "Support", "info@beltei.edu.kh"),
               _buildAboutTile(Icons.policy_outlined, "Privacy Policy", "Read here"),
               _buildAboutTile(Icons.verified_user_outlined, "Terms of Service", "Read here", isLast: true),
             ]),
-
             const SizedBox(height: 40),
             const Text(
               "Developed by BELTEI Students\n© 2026 BELTEI Group. All rights reserved.",
@@ -80,14 +72,11 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  // --- HELPER WIDGETS ---
-
   Widget _buildAboutContainer(BuildContext context, List<Widget> children) {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: Colors.black.withOpacity(0.05)),
       ),
       child: Column(children: children),
     );
@@ -114,7 +103,7 @@ class AboutScreen extends StatelessWidget {
             height: 1,
             indent: 55,
             endIndent: 15,
-            color: Colors.grey.withOpacity(0.1),
+            color: const Color(0x1A9E9E9E),
           ),
       ],
     );

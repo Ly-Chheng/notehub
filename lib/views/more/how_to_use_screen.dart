@@ -30,7 +30,6 @@ class HowToUseScreen extends StatelessWidget {
             style: TextStyle(fontSize: 16, fontFamily: 'EN-REGULAR', color: Colors.grey),
           ),
           const SizedBox(height: 30),
-
           _buildStepCard(
             context,
             stepNumber: "1",
@@ -63,38 +62,12 @@ class HowToUseScreen extends StatelessWidget {
             icon: Icons.timer_outlined,
             iconColor: Colors.green,
           ),
-
-          const SizedBox(height: 20),
-          // Footer Contact Button
-          Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: AppColor().primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.help_center_outlined,
-                  color: AppColor().primaryColor,
-                ),
-                const SizedBox(width: 15),
-                const Expanded(
-                  child: Text(
-                    "Still need help? Contact our student support team.",
-                    style: TextStyle(fontSize: 14, fontFamily: 'EN-REGULAR'),
-                  ),
-                ),
-              ],
-            ),
-          ),
           const SizedBox(height: 40),
         ],
       ),
     );
   }
 
-  // --- STEP CARD BUILDER ---
   Widget _buildStepCard(
     BuildContext context, {
     required String stepNumber,
@@ -109,28 +82,19 @@ class HowToUseScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 5),
-          ),
-        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Circular Icon
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
+              color: Colors.blue.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: iconColor, size: 28),
           ),
           const SizedBox(width: 20),
-          // Text Content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

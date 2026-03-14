@@ -15,12 +15,12 @@ void showMediaSheet({
     try {
       final XFile? file = await picker.pickImage(
         source: source,
-        imageQuality: 70, // Optimize for performance
+        imageQuality: 70, 
       );
 
       if (file != null && context.mounted) {
         onImageSelected(File(file.path));
-        Navigator.pop(context); // Close sheet after picking
+        Navigator.pop(context); 
       }
     } catch (e) {
       debugPrint("Error picking image: $e");

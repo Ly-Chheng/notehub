@@ -51,7 +51,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   bool isLocked = false;
 
-  List<Map<String, dynamic>> drawingLayers = []; // Multi-Layer Drawing State
+  List<Map<String, dynamic>> drawingLayers = [];
 
   List<File> selectedImages = [];
   int _lastTextLength = 0;
@@ -162,7 +162,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         initialLayers: drawingLayers,
         onSave: (String? filePath, List<Map<String, dynamic>> layers) {
           setState(() {
-            drawingLayers = layers; // This is now a type-safe List<Map<String, dynamic>>
+            drawingLayers = layers;
             selectedImages.removeWhere((file) => file.path.contains('draw_'));
             if (filePath != null) selectedImages.add(File(filePath));
           });
@@ -234,24 +234,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
-  // void _showUnlockDialog(String correctPass) {
-  //   final passController = TextEditingController();
-  //   Get.defaultDialog(
-  //     title: "Unlock Note",
-  //     content: TextField(controller: passController, obscureText: true, decoration: const InputDecoration(hintText: "Master Password")),
-  //     confirm: ElevatedButton(
-  //       onPressed: () {
-  //         if (passController.text == correctPass) {
-  //           setState(() => isLocked = false);
-  //           Get.back();
-  //         } else {
-  //           Get.snackbar("Error", "Wrong Password", backgroundColor: Colors.red, colorText: Colors.white);
-  //         }
-  //       },
-  //       child: const Text("Unlock"),
-  //     ),
-  //   );
-  // }
   void _showUnlockDialog(String correctPass) {
     final passController = TextEditingController();
 
@@ -307,7 +289,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "drawingLayers": drawingLayers,
     };
 
-    Get.back(); // Close screen
+    Get.back();
 
     if (widget.isEditing && widget.noteKey != null) {
       await noteBox.put(widget.noteKey, noteData);
@@ -320,7 +302,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     Get.back();
   }
 
-  // --- FORMATTING HELPERS ---
+  //  FORMATTING HELPERS
   void _insertBulletPoint() {
     final text = contentController.text;
     final selection = contentController.selection;
@@ -396,7 +378,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         ],
       ),
       body: CustomPaint(
-        painter: NotebookPainter(type: selectedPaperType, lineColor: Colors.grey.withOpacity(0.2)),
+        painter: NotebookPainter(
+          type: selectedPaperType,
+          lineColor: const Color(0x339E9E9E),
+        ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
           child: SingleChildScrollView(
@@ -443,7 +428,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                                   child: GestureDetector(
                                     onTap: () {
                                       setState(() {
-                                        // Remove from the master list using the specific file object
                                         selectedImages.remove(file);
                                       });
                                     },
@@ -466,7 +450,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   maxLines: null,
                   style: TextStyle(
                     fontSize: context.isPhone ? 16 : 18,
-                    height: 1.78, // Aligns with 32.0 spacing in painter
+                    height: 1.78,
                     color: selectedColor,
                     fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
                     fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
@@ -485,7 +469,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     },
                     onAddRow: () {
                       setState(() {
-                        // Add a new row with the same number of columns as existing rows
                         int currentCols = tableData[0].length;
                         tableData.add(List.generate(currentCols, (_) => ""));
                       });
@@ -608,7 +591,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  // --- MENU HANDLER ---
+  // MENU HANDLER
   void _handleMenuSelection(String value, BuildContext context) async {
     switch (value) {
       case 'Share':
@@ -638,7 +621,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   void _showPaperStyleSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => SingleChildScrollView(
         child: Column(

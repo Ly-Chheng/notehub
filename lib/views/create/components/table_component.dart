@@ -41,7 +41,6 @@ class EditableTableComponent extends StatelessWidget {
             },
             border: TableBorder.all(color: Colors.black12, width: 1),
             children: [
-              // --- TOP HEADER: COLUMN ACTIONS ---
               TableRow(
                 children: [
                   ...List.generate(
@@ -53,11 +52,10 @@ class EditableTableComponent extends StatelessWidget {
                       color: Colors.grey.shade400,
                     ),
                   ),
-                  const SizedBox.shrink(), // Corner space
+                  const SizedBox.shrink(), 
                 ],
               ),
 
-              // --- DATA ROWS ---
               ...tableData.asMap().entries.map((rowEntry) {
                 int rowIndex = rowEntry.key;
                 return TableRow(
@@ -83,7 +81,6 @@ class EditableTableComponent extends StatelessWidget {
                       );
                     }).toList(),
 
-                    // LEFT-SIDE ROW ACTION (iPhone style remove)
                     _headerCell(
                       context,
                       icon: Icons.remove_circle_outline,
@@ -96,7 +93,6 @@ class EditableTableComponent extends StatelessWidget {
             ],
           ),
 
-          // --- BOTTOM iOS STYLE TOOLBAR ---
           Container(
             padding: const EdgeInsets.symmetric(vertical: 4),
             decoration: BoxDecoration(

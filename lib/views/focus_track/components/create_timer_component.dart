@@ -60,31 +60,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     secController.animateToItem(s, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
   }
 
-  // // Saves a new preset button to Hive
-  // void _saveToCustomPresets() async {
-  //   final box = Hive.box('timer_box');
-  //   int totalSec = (selectedHours * 3600) + (selectedMinutes * 60) + selectedSeconds;
-
-  //   if (totalSec <= 0) return;
-
-  //   // Type-safe list retrieval
-  //   final List rawList = box.get('user_presets', defaultValue: []);
-  //   List customPresets = List.from(rawList);
-
-  //   String label = "${selectedHours > 0 ? '${selectedHours}h ' : ''}${selectedMinutes}m";
-  //   if (selectedHours == 0 && selectedMinutes == 0) label = "${selectedSeconds}s";
-
-  //   Map<String, dynamic> newPreset = {"label": label, "h": selectedHours, "m": selectedMinutes, "s": selectedSeconds};
-
-  //   if (!customPresets.any((p) => (p as Map)['label'] == label)) {
-  //     customPresets.add(newPreset);
-  //     await box.put('user_presets', customPresets);
-  //     setState(() {});
-  //     Get.snackbar("Success", "Preset saved", snackPosition: SnackPosition.BOTTOM);
-  //   }
-  // }
-
-  //
   // --- BOTTOM SHEET FOR QUICK PRESETS ---
   void _showAddPresetSheet(BuildContext context) {
     int tempH = 1;
@@ -142,15 +117,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     );
   }
 
-  // Widget _buildSheetPicker(int count, String unit, ValueChanged<int> onSelect) {
-  //   return Expanded(
-  //     child: CupertinoPicker(
-  //       itemExtent: 40,
-  //       onSelectedItemChanged: onSelect,
-  //       children: List.generate(count, (i) => Center(child: Text("$i$unit", style: const TextStyle(fontSize: 18)))),
-  //     ),
-  //   );
-  // }
   Widget _buildSheetPicker(int max, String label, Function(int) onChanged, {int initial = 0}) {
     return Expanded(
       child: CupertinoPicker(
@@ -270,24 +236,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
             _buildPickerSection(),
             const SizedBox(height: 30),
             _buildLabelRow(),
-            //const SizedBox(height: 30),
-            // Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   children: [
-            //     _buildSectionTitle("Quick Presets"),
-            //     TextButton(
-            //         onPressed: _saveToCustomPresets,
-            //         child: const Text(
-            //           "+",
-            //           style: TextStyle(
-            //             fontSize: 20,
-            //           ),
-            //         )),
-            //   ],
-            // ),
-            // _buildPresetsSection(),
-            // const SizedBox(height: 10),
-            // _buildCustomPresetsSection(),
             const SizedBox(height: 30),
             _buildPresetHeader(),
             _buildAllPresets(),
@@ -355,27 +303,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       ),
     );
   }
-
-  // Widget _buildPresetsSection() {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 20),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         // Minute Presets Row
-  //         Row(
-  //           children: [
-  //             Expanded(child: _presetButton("10 m", () => _setPreset(0, 10, 0))),
-  //             const SizedBox(width: 10),
-  //             Expanded(child: _presetButton("30 m", () => _setPreset(0, 30, 0))),
-  //             const SizedBox(width: 10),
-  //             Expanded(child: _presetButton("50 m", () => _setPreset(0, 50, 0))),
-  //           ],
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   //
   Widget _buildPresetHeader() {
@@ -483,32 +410,4 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       ),
     );
   }
-
-  // Widget _buildCustomPresetsSection() {
-  //   final box = Hive.box('timer_box');
-  //   List customPresets = box.get('user_presets', defaultValue: []);
-
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 20),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Wrap(
-  //           spacing: 8,
-  //           runSpacing: 8,
-  //           children: customPresets
-  //               .map((p) => SizedBox(
-  //                     width: (MediaQuery.of(context).size.width - 56) / 3,
-  //                     child: _presetButton(p['label'], () => _setPreset(p['h'], p['m'], p['s']), isCustom: true, onLongPress: () {
-  //                       customPresets.remove(p);
-  //                       box.put('user_presets', customPresets);
-  //                       setState(() {});
-  //                     }),
-  //                   ))
-  //               .toList(),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 }

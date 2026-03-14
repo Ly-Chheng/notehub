@@ -17,7 +17,6 @@ void showDeleteConfirmationSheet(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Drag Handle
             Container(
               width: 40,
               height: 4,
@@ -27,8 +26,6 @@ void showDeleteConfirmationSheet(
                 borderRadius: BorderRadius.circular(10),
               ),
             ),
-
-            // Cancel Button
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton(
@@ -43,10 +40,7 @@ void showDeleteConfirmationSheet(
                 ),
               ),
             ),
-
             const SizedBox(height: 10),
-
-            // Message
             const Text(
               "Are you sure you want to delete selected note(s)?",
               textAlign: TextAlign.center,
@@ -55,19 +49,15 @@ void showDeleteConfirmationSheet(
                 fontFamily: 'EN-REGULAR',
               ),
             ),
-
             const SizedBox(height: 25),
-
-            // Delete Button
             CustomButton(
               text: "Delete",
               backgroundColor: Colors.red,
               onPressed: () {
-                Navigator.pop(context); // Close bottom sheet
-                onConfirm(); // Run delete logic
+                Navigator.pop(context);
+                onConfirm();
               },
             ),
-
             const SizedBox(height: 10),
           ],
         ),

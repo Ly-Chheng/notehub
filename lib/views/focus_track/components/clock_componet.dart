@@ -18,21 +18,15 @@ class ClockScreen extends StatelessWidget {
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.swap_horiz),
-        //     onPressed: controller.toggleClockType,
-        //   ),
-        // ],
       ),
       body: Center(
         child: Obx(() {
           return controller.isAnalog.value
               ? Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
                       width: 300,
                       height: 300,
                       child: CustomPaint(
@@ -41,8 +35,8 @@ class ClockScreen extends StatelessWidget {
                     ),
                     SizedBox(height: 60),
                     DigitalClock(dateTime: controller.dateTime.value),
-                ],
-              )
+                  ],
+                )
               : DigitalClock(dateTime: controller.dateTime.value);
         }),
       ),

@@ -5,7 +5,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/views/create/folder_note_list_screen.dart.dart';
-import 'package:project_structure/widgets/sheet_header.dart';
+import 'package:project_structure/views/home/components/create_folder_component.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -17,8 +18,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final Box folderBox = Hive.box('folders_box');
   final String defaultFolderName = "My Note";
-
-  // 1. Define the note box at the top of your _MyHomePageState
+  final Box settingsBox = Hive.box('settings_box');
   final Box noteBox = Hive.box('student_notes');
 
   @override
@@ -35,6 +35,15 @@ class _MyHomePageState extends State<MyHomePage> {
         "colorValue": Colors.orange.value,
         "isPinned": false,
       });
+    }
+  }
+
+  //   LOGIC BLOCK: CLEAN UP NOTES WHEN FOLDER IS DELETED
+  void _deleteNotesInFolder(dynamic folderKey) {
+    final notesToDelete = noteBox.toMap().entries.where((entry) => entry.value['folderKey'] == folderKey).map((entry) => entry.key).toList();
+
+    for (var key in notesToDelete) {
+      noteBox.delete(key);
     }
   }
 
@@ -81,7 +90,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.circular(12),
                         child: Slidable(
                             enabled: !isDefault,
-                            // START ACTION (Swipe Right to Pin)
                             startActionPane: ActionPane(
                               motion: const BehindMotion(),
                               children: [
@@ -98,19 +106,29 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ],
                             ),
-                            // END ACTION (Swipe Left to Edit/Delete)
                             endActionPane: ActionPane(
                               motion: const DrawerMotion(),
                               children: [
                                 SlidableAction(
-                                  onPressed: (c) => _showFolderSheet(context, folderKey: folderKey, existingData: folderData),
+                                  onPressed: (c) => showFolderSheet(context, folderKey: folderKey, existingData: folderData),
                                   backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
                                   icon: Icons.edit,
                                   label: 'Edit',
                                 ),
                                 SlidableAction(
-                                  onPressed: (c) => folderBox.delete(folderKey),
+                                  onPressed: (c) {
+                                    // Check if folder contains locked notes
+                                    bool hasLockedNotes = noteBox.values.any((n) => n['folderKey'] == folderKey && (n['isLocked'] ?? false));
+
+                                    _verifyAndExecute(
+                                      isLocked: hasLockedNotes,
+                                      title: "Delete Protected Folder",
+                                      onVerified: () {
+                                        folderBox.delete(folderKey);
+                                        _deleteNotesInFolder(folderKey);
+                                      },
+                                    );
+                                  },
                                   backgroundColor: Colors.red,
                                   foregroundColor: Colors.white,
                                   icon: Icons.delete,
@@ -136,9 +154,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                     if (isPinned) Icon(Icons.push_pin, size: context.isPhone ? 14 : 16, color: Colors.orange),
                                   ],
                                 ),
-                                // --- UPDATED TRAILING SECTION ---
+                                //   UPDATED TRAILING SECTION
                                 trailing: SizedBox(
-                                  width: 60, // Give it enough width for the number + arrow
+                                  width: 60,
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
@@ -146,9 +164,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       ValueListenableBuilder(
                                         valueListenable: noteBox.listenable(),
                                         builder: (context, Box box, _) {
-                                          // Count notes where folderKey matches this folder's key
                                           int noteCount = box.values.where((note) => note['folderKey'] == folderKey).length;
-
                                           return Text(
                                             "$noteCount",
                                             style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR'),
@@ -193,77 +209,31 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // CREATE & EDIT SHEET (iPhone Style)
-  void _showFolderSheet(BuildContext context, {dynamic folderKey, dynamic existingData}) {
-    TextEditingController folderController = TextEditingController(
-      text: existingData != null ? existingData['title'] : "",
-    );
+  void _verifyAndExecute({required bool isLocked, required VoidCallback onVerified, String title = "Security Check"}) {
+    if (!isLocked) {
+      onVerified();
+      return;
+    }
 
-    showModalBottomSheet(
+    final TextEditingController passController = TextEditingController();
+    String? masterPassword = settingsBox.get('master_password');
+
+    showConfirmDeleteDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      builder: (context) => Container(
-        decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          top: 20,
-          left: 20,
-          right: 20,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SheetHeader(
-                  title: existingData == null ? "New Folder" : "Rename Folder",
-                ),
-                // TextButton(onPressed: () => Get.back(), child: const Text("Cancel", style: TextStyle(color: Colors.red, fontFamily: 'EN-ENGINEER', fontSize: 16))),
-                // Text(existingData == null ? "New Folder" : "Rename Folder", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'EN-ENGINEER')),
-                TextButton(
-                  onPressed: () {
-                    String name = folderController.text.trim();
-                    if (name.isNotEmpty) {
-                      final data = {
-                        "title": name,
-                        "colorValue": existingData != null ? existingData['colorValue'] : Colors.blue.value,
-                        "isPinned": existingData?['isPinned'] ?? false,
-                      };
-
-                      if (existingData != null) {
-                        folderBox.put(folderKey, data);
-                      } else {
-                        folderBox.add(data);
-                      }
-                      Get.back();
-                    }
-                  },
-                  child: Text("Save",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: AppColor().primaryColor,
-                        fontFamily: 'EN-ENGINEER',
-                      )),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: folderController,
-              autofocus: true,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: const Color(0xFFF2F2F7),
-                hintText: "Enter Name",
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
-              ),
-            ),
-            const SizedBox(height: 30),
-          ],
-        ),
-      ),
+      title: title,
+      subTitle: "Please enter your password to proceed.",
+      confirmText: "Unlock",
+      controller: passController,
+      obscureText: true,
+      hintText: "Master Password",
+      onConfirm: () {
+        if (passController.text == masterPassword) {
+          Get.back();
+          onVerified();
+        } else {
+          Get.snackbar("Error", "Incorrect Password", backgroundColor: Colors.red, colorText: Colors.white);
+        }
+      },
     );
   }
 }

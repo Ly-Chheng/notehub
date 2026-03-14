@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 Widget customTextField(String hint, bool obscure, VoidCallback toggle, {TextEditingController? controller}) {
   return Container(
     decoration: BoxDecoration(
-      color: const Color(0xFFECECEC),
+      color: Colors.grey.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
     ),
     child: TextField(
@@ -32,7 +32,7 @@ Widget buildStandardField(
 }) {
   return Container(
     decoration: BoxDecoration(
-      color: const Color(0xFFECECEC),
+      color: Colors.grey.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
     ),
     child: TextField(

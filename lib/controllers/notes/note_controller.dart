@@ -5,27 +5,23 @@ import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 
 class NoteController extends GetxController {
-  // Observable stacks for Undo/Redo
   var undoStack = <String>[].obs;
   var redoStack = <String>[].obs;
   bool isUndoRedoAction = false;
 
-  // Initialize the stack with the starting text
   void initializeHistory(String initialText) {
     undoStack.clear();
     redoStack.clear();
     undoStack.add(initialText);
   }
 
-  // Record a new state
   void recordChange(String text) {
     if (isUndoRedoAction) return;
 
-    // Only record if the text is different from the last snapshot
     if (undoStack.isEmpty || undoStack.last != text) {
-      if (undoStack.length > 50) undoStack.removeAt(0); // Limit memory
+      if (undoStack.length > 50) undoStack.removeAt(0);
       undoStack.add(text);
-      redoStack.clear(); // New manual typing clears the Redo path
+      redoStack.clear();
     }
   }
 
@@ -62,7 +58,6 @@ class NoteController extends GetxController {
 
     try {
       if (selectedImages.isNotEmpty) {
-        // Map File paths to XFile for the share_plus package
         final List<XFile> filesToShare = selectedImages.map((file) => XFile(file.path)).toList();
 
         await Share.shareXFiles(filesToShare, text: fullText);

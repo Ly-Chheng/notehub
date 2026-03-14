@@ -48,7 +48,7 @@ class StopwatchScreen extends StatelessWidget {
               child: CircularProgressIndicator(
                 value: (controller.milliseconds.value % 60000) / 60000,
                 strokeWidth: context.isPhone ? 10 : 12,
-                backgroundColor: Colors.grey.withOpacity(0.1),
+                backgroundColor: const Color(0x1A9E9E9E),
                 strokeCap: StrokeCap.round,
                 valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4D7CFF)),
               ),

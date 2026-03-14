@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
-import 'package:project_structure/views/create/components/test.dart';
 import 'package:project_structure/views/focus_track/components/clock_componet.dart';
-import 'package:project_structure/views/lock/vault_setup_screen.dart';
+import 'package:project_structure/views/lock/removeLock_screen.dart';
 import 'package:project_structure/views/lock/change_password_screen.dart';
 import 'package:project_structure/views/lock/forget_password_screen.dart';
-import 'package:project_structure/views/lock/lock_verification_screen.dart';
-import 'package:project_structure/views/lock/reset_password_screen.dart';
+import 'package:project_structure/views/more/about_screen.dart';
 import 'package:project_structure/views/more/how_to_use_screen.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
 import 'package:project_structure/views/more/widgets/notification.dart';
@@ -33,10 +31,9 @@ class _MoreScreenState extends State<MoreScreen> {
           scrollDirection: Axis.vertical,
           child: Column(
             children: [
-              // First Group: General Settings
               _buildSectionContainer([
                 _buildMenuTile(Icons.info_outline, "About", onTap: () {
-                  Get.to(CreateNoteScreen());
+                  Get.to(AboutScreen());
                 }),
                 _buildMenuTile(Icons.timer_outlined, "Clock", onTap: () {
                   Get.to(() => ClockScreen());
@@ -46,12 +43,8 @@ class _MoreScreenState extends State<MoreScreen> {
                 _buildMenuTile(Icons.help_outline, "How to use", onTap: () {
                   Get.to(HowToUseScreen());
                 }),
-                _buildMenuTile(Icons.share_outlined, "Share App", onTap: () {
-                  Get.to(LockVerificationScreen());
-                }, isLast: true),
+                _buildMenuTile(Icons.share_outlined, "Share App", onTap: () {}, isLast: true),
               ]),
-
-              // Second Group: Security
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 60),
                 child: _buildSectionContainer([
@@ -59,18 +52,13 @@ class _MoreScreenState extends State<MoreScreen> {
                     Get.to(() => const ChangePasswordScreen());
                   }),
                   _buildMenuTile(Icons.history, "Reset Password", onTap: () {
-                    Get.to(() => const ResetPasswordScreen());
+                    Get.to(() => const RemoveLockScreen());
                   }),
                   _buildMenuTile(Icons.lock_reset, "Forget Password", onTap: () {
                     Get.to(() => const ForgetPasswordScreen());
                   }, isLast: true),
-                  _buildMenuTile(Icons.lock, "Unlock", onTap: () {
-                    Get.to(() => const VaultSetupScreen());
-                  }),
                 ]),
               ),
-
-              // Footer
               Text(
                 "Copyright © 2026 BELTEI Student Note App.\nVersion 1.0.0",
                 textAlign: TextAlign.center,
@@ -83,7 +71,6 @@ class _MoreScreenState extends State<MoreScreen> {
     );
   }
 
-  // Wrapper for the white cards
   Widget _buildSectionContainer(List<Widget> children) {
     return Container(
       decoration: BoxDecoration(

@@ -34,7 +34,14 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   String searchQuery = "";
   final TextEditingController searchController = TextEditingController();
 
-  // --- NEW: UNIVERSAL PASSWORD VERIFICATION ---
+  bool _anySelectedNoteIsLocked() {
+    return selectedKeys.any((key) {
+      final note = noteBox.get(key);
+      return note != null && (note['isLocked'] ?? false);
+    });
+  }
+
+  // UNIVERSAL PASSWORD VERIFICATION
   void _verifyAndExecute({required bool isLocked, required VoidCallback onVerified, String title = "Security Check"}) {
     if (!isLocked) {
       onVerified();
@@ -80,9 +87,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       } else if (noteDate.isAtSameMomentAs(yesterday)) {
         return "Yesterday";
       } else if (noteDate.year == now.year) {
-        return DateFormat('MMMM d').format(noteDate); // e.g., "March 11"
+        return DateFormat('MMMM d').format(noteDate);
       } else {
-        return DateFormat('MMMM d, y').format(noteDate); // e.g., "March 11, 2025"
+        return DateFormat('MMMM d, y').format(noteDate);
       }
     } catch (e) {
       return "Earlier";
@@ -94,7 +101,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: widget.folderName, // Fixed: Use dynamic folder name
+        title: widget.folderName,
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
@@ -271,7 +278,17 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   children: [
                     IconButton(
                       icon: Icon(Icons.folder, color: AppColor().primaryColor),
-                      onPressed: selectedKeys.isEmpty ? null : _showMoveNotesSheet,
+                      // onPressed: selectedKeys.isEmpty ? null : _showMoveNotesSheet,
+                      onPressed: selectedKeys.isEmpty
+                          ? null
+                          : () {
+                              // Check if security is needed
+                              _verifyAndExecute(
+                                isLocked: _anySelectedNoteIsLocked(),
+                                title: "Move Protected Notes",
+                                onVerified: () => _showMoveNotesSheet(),
+                              );
+                            },
                     ),
                     const Spacer(),
                     Text(
@@ -284,10 +301,20 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       onPressed: selectedKeys.isEmpty
                           ? null
                           : () {
-                              showDeleteConfirmationSheet(
-                                context,
-                                () {
-                                  _deleteSelectedNotes();
+                              // showDeleteConfirmationSheet(
+                              //   context,
+                              //   () {
+                              //     _deleteSelectedNotes();
+                              //   },
+                              // );
+                              _verifyAndExecute(
+                                isLocked: _anySelectedNoteIsLocked(),
+                                title: "Delete Protected Notes",
+                                onVerified: () {
+                                  showDeleteConfirmationSheet(
+                                    context,
+                                    () => _deleteSelectedNotes(),
+                                  );
                                 },
                               );
                             },

@@ -45,13 +45,13 @@ class TimerController extends GetxController {
   void toggleTimer(dynamic key) {
     if (activeTimerKeys.contains(key)) {
       activeTimerKeys.remove(key);
-      _updateHiveSeconds(key, runningSeconds[key]!); // Save pause state
+      _updateHiveSeconds(key, runningSeconds[key]!); 
     } else {
       // If restarting a finished timer
       if ((runningSeconds[key] ?? 0) <= 0) {
         final data = timerBox.get(key);
         runningSeconds[key] = data['totalSeconds'];
-        _updateHiveSeconds(key, data['totalSeconds']); // <--- THIS MOVES IT IN HIVE
+        _updateHiveSeconds(key, data['totalSeconds']); 
       }
       activeTimerKeys.add(key);
     }

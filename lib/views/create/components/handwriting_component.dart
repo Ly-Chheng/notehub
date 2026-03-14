@@ -163,9 +163,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
           const SizedBox(height: 5),
           Row(
             children: [
-              // _toolBtn("Pen", !isEraser && currentWidth == 4.0, () => _updateBrush(width: 4.0)),
-              // _toolBtn("Thin", !isEraser && currentWidth == 1.0, () => _updateBrush(width: 1.0)),
-              // _toolBtn("Eraser", isEraser, () => _updateBrush(eraser: true)),
               _toolBtn(
                 "Pen",
                 !isEraser && currentWidth == 2.0,
@@ -239,8 +236,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
     );
   }
 
-  // Widget _toolBtn(String label, bool sel, VoidCallback tap) =>
-  //     TextButton(onPressed: tap, child: Text(label, style: TextStyle(color: sel ? AppColor().primaryColor : Colors.grey, fontWeight: sel ? FontWeight.bold : FontWeight.normal)));
   Widget _toolBtn(String label, bool sel, VoidCallback tap, {String? imagePath, IconData? icon}) {
     return InkWell(
       onTap: tap,
@@ -250,7 +245,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Render Image asset if provided
             if (imagePath != null)
               Image.asset(
                 imagePath,
