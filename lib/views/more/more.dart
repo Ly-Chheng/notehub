@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
 import 'package:project_structure/views/focus_track/components/clock_componet.dart';
-import 'package:project_structure/views/lock/removeLock_screen.dart';
+import 'package:project_structure/views/lock/remove_lock_screen.dart';
 import 'package:project_structure/views/lock/change_password_screen.dart';
 import 'package:project_structure/views/lock/forget_password_screen.dart';
 import 'package:project_structure/views/more/about_screen.dart';
