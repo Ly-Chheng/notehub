@@ -16,7 +16,6 @@ class _LockVerificationScreenState extends State<LockVerificationScreen> {
 
   bool _obscureNew = true;
 
-  // 2. Dispose them to free up memory
   @override
   void dispose() {
     _passController.dispose();
@@ -28,7 +27,7 @@ class _LockVerificationScreenState extends State<LockVerificationScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: "Folder",
         titleColor: AppColor().primaryColor,
         context: context,
@@ -63,7 +62,6 @@ class _LockVerificationScreenState extends State<LockVerificationScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-             
             Padding(
               padding: const EdgeInsets.only(top: 40, bottom: 20),
               child: Icon(
@@ -83,8 +81,6 @@ class _LockVerificationScreenState extends State<LockVerificationScreen> {
               style: TextStyle(fontSize: 15, color: Colors.black87, height: 1.4),
             ),
             const SizedBox(height: 60),
-
-            // Security Question Section
             Align(
               alignment: Alignment.centerLeft,
               child: Column(

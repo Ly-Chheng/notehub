@@ -13,17 +13,14 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  // Safe initialization: Check if already registered, otherwise Put it.
   final LockController _lockController = Get.isRegistered<LockController>() ? Get.find<LockController>() : Get.put(LockController());
 
-  // Controllers for text fields
   final TextEditingController _currentPassController = TextEditingController();
   final TextEditingController _newPassController = TextEditingController();
   final TextEditingController _confirmPassController = TextEditingController();
   final TextEditingController _hintController = TextEditingController();
   final TextEditingController _answerController = TextEditingController();
 
-  // Visibility states
   bool _obscureCurrent = true;
   bool _obscureNew = true;
   bool _obscureConfirm = true;
@@ -57,7 +54,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              // Call the controller method with gathered data
               _lockController.handleChangePassword(
                 currentInput: _currentPassController.text,
                 newPass: _newPassController.text,
@@ -110,12 +106,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
             const SizedBox(height: 15),
 
-            // Hint Field
             buildStandardField("New Hint", trailing: "Optional", controller: _hintController),
 
             const SizedBox(height: 30),
 
-            // Security Question Section
             _buildSecurityHeader(),
             const SizedBox(height: 12),
             _buildDropdown(),

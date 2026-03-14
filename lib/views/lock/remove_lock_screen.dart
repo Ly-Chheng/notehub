@@ -13,7 +13,6 @@ class RemoveLockScreen extends StatefulWidget {
 }
 
 class _RemoveLockScreenState extends State<RemoveLockScreen> {
-  // Find or Put controller
   final LockController _lockController = Get.isRegistered<LockController>() ? Get.find<LockController>() : Get.put(LockController());
 
   final TextEditingController _currentPassController = TextEditingController();
@@ -27,7 +26,6 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
   @override
   void initState() {
     super.initState();
-    // Load question for the UI
     storedQuestion = _lockController.settingsBox.get('security_question');
   }
 

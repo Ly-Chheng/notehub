@@ -13,15 +13,15 @@ class ResetPasswordScreen extends StatefulWidget {
 }
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
-  // Controllers
+
   final TextEditingController _currentPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController = TextEditingController();
 
-  // Access the settings box
+
   final Box settingsBox = Hive.box('settings_box');
 
-  // Visibility states
+
   bool _obscureCurrent = true;
   bool _obscureNew = true;
   bool _obscureConfirm = true;
@@ -34,7 +34,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
     super.dispose();
   }
 
-  // --- RESET LOGIC ---
+
   void _handleResetPassword() async {
     String currentPass = _currentPasswordController.text.trim();
     String newPass = _newPasswordController.text.trim();

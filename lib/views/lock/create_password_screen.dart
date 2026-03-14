@@ -13,7 +13,6 @@ class CreatePasswordScreen extends StatefulWidget {
 }
 
 class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
-  // Initialize Controller
   final LockController _controller = Get.put(LockController());
 
   final _newPassController = TextEditingController();

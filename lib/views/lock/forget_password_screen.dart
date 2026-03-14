@@ -13,7 +13,6 @@ class ForgetPasswordScreen extends StatefulWidget {
 }
 
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
-  // Use this logic to ensure the controller is always available
   final LockController _controller = Get.isRegistered<LockController>() ? Get.find<LockController>() : Get.put(LockController());
   final TextEditingController _answerController = TextEditingController();
 
