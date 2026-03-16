@@ -42,7 +42,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   }
 
   // UNIVERSAL PASSWORD VERIFICATION
-  void _verifyAndExecute({required bool isLocked, required VoidCallback onVerified, String title = "Security Check"}) {
+  void _verifyAndExecute({required bool isLocked, required VoidCallback onVerified, String title = "This note is locked."}) {
     if (!isLocked) {
       onVerified();
       return;
@@ -107,7 +107,20 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         leadingColor: AppColor().primaryColor,
         actions: [
           PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
+            icon: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: AppColor().primaryColor,
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Icon(
+                Icons.more_vert_outlined,
+                color: AppColor().primaryColor,
+                size: 20,
+              ),
+            ),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             offset: const Offset(0, 50),
             color: Theme.of(context).cardColor,
@@ -172,6 +185,80 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             ),
 
             /// NOTES LIST
+            // Expanded(
+            //   child: ValueListenableBuilder(
+            //     valueListenable: noteBox.listenable(),
+            //     builder: (context, Box box, _) {
+            //       // 1. Get notes for THIS folder
+            //       List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
+
+            //       /// SEARCH FILTER
+            //       if (searchQuery.isNotEmpty) {
+            //         notesList = notesList.where((entry) {
+            //           final title = (entry.value['title'] ?? "").toString().toLowerCase();
+            //           final content = (entry.value['subtitle'] ?? "").toString().toLowerCase();
+
+            //           return title.contains(searchQuery) || content.contains(searchQuery);
+            //         }).toList();
+            //       }
+
+            //       notesList.sort((a, b) {
+            //         bool aPinned = a.value['isPinned'] ?? false;
+            //         bool bPinned = b.value['isPinned'] ?? false;
+
+            //         if (aPinned != bPinned) {
+            //           return aPinned ? -1 : 1;
+            //         }
+
+            //         return b.key.compareTo(a.key);
+            //       });
+
+            //       if (notesList.isEmpty) {
+            //         return CustomNoData(
+            //           message: searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
+            //         );
+            //       }
+
+            //       /// LIST BUILDER WITH DATE HEADERS
+            //       return ListView.builder(
+            //         itemCount: notesList.length,
+            //         itemBuilder: (context, index) {
+            //           final entry = notesList[index];
+            //           final noteKey = entry.key;
+            //           final noteData = entry.value;
+
+            //           // 4. GROUPING LOGIC
+            //           String currentHeader = _getDateHeader(noteData['date'] ?? "");
+            //           String? prevHeader;
+            //           if (index > 0) {
+            //             prevHeader = _getDateHeader(notesList[index - 1].value['date'] ?? "");
+            //           }
+
+            //           bool showHeader = currentHeader != prevHeader;
+
+            //           return Column(
+            //             crossAxisAlignment: CrossAxisAlignment.start,
+            //             children: [
+            //               if (showHeader)
+            //                 Padding(
+            //                   padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
+            //                   child: Text(
+            //                     currentHeader,
+            //                     style: TextStyle(
+            //                       fontSize: 14,
+            //                       fontWeight: FontWeight.bold,
+            //                       color: Colors.grey[600],
+            //                     ),
+            //                   ),
+            //                 ),
+            //               _buildSlidableNote(noteKey, noteData),
+            //             ],
+            //           );
+            //         },
+            //       );
+            //     },
+            //   ),
+            // ),
             Expanded(
               child: ValueListenableBuilder(
                 valueListenable: noteBox.listenable(),
@@ -184,32 +271,17 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     notesList = notesList.where((entry) {
                       final title = (entry.value['title'] ?? "").toString().toLowerCase();
                       final content = (entry.value['subtitle'] ?? "").toString().toLowerCase();
-
                       return title.contains(searchQuery) || content.contains(searchQuery);
                     }).toList();
                   }
 
-                  // 3. SORT: Pinned first
-                  // notesList.sort((a, b) {
-                  //   bool aPinned = a.value['isPinned'] ?? false;
-                  //   bool bPinned = b.value['isPinned'] ?? false;
-                  //   if (aPinned && !bPinned) return -1;
-                  //   if (!aPinned && bPinned) return 1;
-                  //   return 0;
-                  // });
+                  // 2. SPLIT: Create two separate lists
+                  List<MapEntry<dynamic, dynamic>> pinnedNotes = notesList.where((e) => e.value['isPinned'] == true).toList();
+                  List<MapEntry<dynamic, dynamic>> unpinnedNotes = notesList.where((e) => e.value['isPinned'] != true).toList();
 
-                  // 3. SORT: Pinned first, then by Date (Newest first)
-                  notesList.sort((a, b) {
-                    bool aPinned = a.value['isPinned'] ?? false;
-                    bool bPinned = b.value['isPinned'] ?? false;
-                    if (aPinned && !bPinned) return -1;
-                    if (!aPinned && bPinned) return 1;
-
-                    // Secondary sort by date
-                    DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.value['date'] ?? "01/01/2000");
-                    DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.value['date'] ?? "01/01/2000");
-                    return dateB.compareTo(dateA);
-                  });
+                  // 3. SORT: Newest at the top (Highest Hive Key)
+                  pinnedNotes.sort((a, b) => b.key.compareTo(a.key));
+                  unpinnedNotes.sort((a, b) => b.key.compareTo(a.key));
 
                   if (notesList.isEmpty) {
                     return CustomNoData(
@@ -217,42 +289,66 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     );
                   }
 
-                  /// LIST BUILDER WITH DATE HEADERS
-                  return ListView.builder(
-                    itemCount: notesList.length,
-                    itemBuilder: (context, index) {
-                      final entry = notesList[index];
-                      final noteKey = entry.key; // The unique Hive ID
-                      final noteData = entry.value;
-
-                      // 4. GROUPING LOGIC
-                      String currentHeader = _getDateHeader(noteData['date'] ?? "");
-                      String? prevHeader;
-                      if (index > 0) {
-                        prevHeader = _getDateHeader(notesList[index - 1].value['date'] ?? "");
-                      }
-
-                      bool showHeader = currentHeader != prevHeader;
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          if (showHeader)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
-                              child: Text(
-                                currentHeader,
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
+                  return ListView(
+                    children: [
+                      /// PINNED SECTION BLOCK
+                      if (pinnedNotes.isNotEmpty) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5),
+                          child: Text(
+                            "Pinned",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor().primaryColor, // Matching your theme
                             ),
-                          _buildSlidableNote(noteKey, noteData),
-                        ],
-                      );
-                    },
+                          ),
+                        ),
+                        ...pinnedNotes.map((entry) => _buildSlidableNote(entry.key, entry.value)).toList(),
+                      ],
+
+                      /// UNPINNED SECTION WITH DATE HEADERS
+                      if (unpinnedNotes.isNotEmpty) ...[
+                        ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(), // Main ListView handles scrolling
+                          itemCount: unpinnedNotes.length,
+                          itemBuilder: (context, index) {
+                            final entry = unpinnedNotes[index];
+                            final noteKey = entry.key;
+                            final noteData = entry.value;
+
+                            // Grouping Logic for Unpinned Notes
+                            String currentHeader = _getDateHeader(noteData['date'] ?? "");
+                            String? prevHeader;
+                            if (index > 0) {
+                              prevHeader = _getDateHeader(unpinnedNotes[index - 1].value['date'] ?? "");
+                            }
+
+                            bool showHeader = currentHeader != prevHeader;
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                if (showHeader)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
+                                    child: Text(
+                                      currentHeader,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ),
+                                _buildSlidableNote(noteKey, noteData),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
+                    ],
                   );
                 },
               ),
@@ -277,7 +373,11 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(Icons.folder, color: AppColor().primaryColor),
+                      icon: Icon(
+                        Icons.folder,
+                        color: AppColor().primaryColor,
+                        size: 24,
+                      ),
                       // onPressed: selectedKeys.isEmpty ? null : _showMoveNotesSheet,
                       onPressed: selectedKeys.isEmpty
                           ? null
@@ -293,20 +393,18 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     const Spacer(),
                     Text(
                       "${selectedKeys.length} selected",
-                      style: const TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 11, fontFamily: 'EN-ENGULAR'),
                     ),
                     const Spacer(),
                     IconButton(
-                      icon: Icon(Icons.delete, color: Colors.red),
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.red,
+                        size: 24,
+                      ),
                       onPressed: selectedKeys.isEmpty
                           ? null
                           : () {
-                              // showDeleteConfirmationSheet(
-                              //   context,
-                              //   () {
-                              //     _deleteSelectedNotes();
-                              //   },
-                              // );
                               _verifyAndExecute(
                                 isLocked: _anySelectedNoteIsLocked(),
                                 title: "Delete Protected Notes",
@@ -328,7 +426,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   }
 
   Widget _buildSlidableNote(dynamic noteKey, dynamic note) {
-    bool isLocked = note['isLocked'] ?? false; // Check lock status
+    bool isLocked = note['isLocked'] ?? false; 
     bool isPinned = note['isPinned'] ?? false;
     bool isSelected = selectedKeys.contains(noteKey);
 
@@ -340,18 +438,20 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     Color noteColor = colorValue != null ? Color(colorValue) : Colors.black;
     final bgColor = Color(note['bgColorValue'] ?? 0xFFFFFFFF);
 
-    // Image Data
     List<dynamic>? imagePaths = note['images'];
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
+      padding: const EdgeInsets.only(bottom: 20),
       child: Slidable(
         key: ValueKey(noteKey),
-        enabled: !isSelectionMode, // Disable slide when selecting
+        enabled: !isSelectionMode,
         endActionPane: ActionPane(
           motion: const ScrollMotion(),
           extentRatio: 0.6,
           children: [
+            SizedBox(
+              width: 10,
+            ),
             SlidableAction(
               onPressed: (context) {
                 final updated = Map<String, dynamic>.from(note);
@@ -365,7 +465,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               borderRadius: const BorderRadius.horizontal(left: Radius.circular(10)),
             ),
             SlidableAction(
-              // onPressed: (context) => _showMoveNotesSheet(singleNoteKey: noteKey),
               onPressed: (context) => _verifyAndExecute(
                 isLocked: isLocked,
                 title: "Move Locked Note",
@@ -377,7 +476,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               label: 'Folder',
             ),
             SlidableAction(
-              // onPressed: (context) => noteBox.delete(noteKey),
               onPressed: (context) => _verifyAndExecute(
                 isLocked: isLocked,
                 title: "Delete Locked Note",
@@ -392,24 +490,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           ],
         ),
         child: InkWell(
-          // onTap: () {
-          //   if (isSelectionMode) {
-          //     setState(() {
-          //       if (isSelected) {
-          //         selectedKeys.remove(noteKey);
-          //       } else {
-          //         selectedKeys.add(noteKey);
-          //       }
-          //     });
-          //   } else {
-          //     Get.to(() => CreateNoteScreen(
-          //           isEditing: true,
-          //           noteKey: noteKey,
-          //           existingNote: note,
-          //           folderKey: widget.folderKey,
-          //         ));
-          //   }
-          // },
           onTap: () {
             if (isSelectionMode) {
               setState(() {
@@ -420,7 +500,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 }
               });
             } else {
-              // VERIFY LOCK BEFORE OPENING EDITOR
               _verifyAndExecute(
                 isLocked: isLocked,
                 onVerified: () {
@@ -435,98 +514,122 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             }
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             decoration: BoxDecoration(
               color: bgColor,
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(13),
               border: isSelected ? Border.all(color: AppColor().primaryColor, width: 1) : null,
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    // SHOW LOCK ICON
-                    if (isLocked)
-                      Icon(
-                        Icons.lock,
-                        color: AppColor().primaryColor,
-                        size: 15,
-                      ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    if (isPinned && !isSelectionMode)
-                      const Padding(
-                        padding: EdgeInsets.only(right: 10),
-                        child: Icon(Icons.push_pin, color: Colors.orange, size: 15),
-                      ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    if (isSelectionMode)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 15),
-                        child: Icon(
-                          isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                          color: AppColor().primaryColor,
-                        ),
-                      ),
-
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            note['title']?.isEmpty == true ? "Untitled" : note['title'],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(fontSize: context.isPhone ? 18 : 20, fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (isLocked)
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: AppColor().primaryColor.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Text(
-                              note['subtitle'] ?? "",
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: context.isPhone ? 14 : 16,
-                                color: noteColor,
-                                fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
-                                fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
-                                decoration: TextDecoration.combine([
-                                  if (noteIsUnderlined) TextDecoration.underline,
-                                  if (noteIsStrikethrough) TextDecoration.lineThrough,
-                                ]),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // --- IMAGE PREVIEW THUMBNAIL (Right side) ---
-                    if (imagePaths != null && imagePaths.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 10),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(imagePaths[0]), // Displays the first image taken
-                            width: context.isPhone ? 70 : 100,
-                            height: context.isPhone ? 70 : 100,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
-                              width: context.isPhone ? 70 : 100,
-                              height: context.isPhone ? 70 : 100,
-                              color: Colors.grey[200],
-                              child: Icon(Icons.broken_image, size: context.isPhone ? 24 : 30),
-                            ),
+                          child: Icon(
+                            Icons.lock_outline,
+                            color: AppColor().primaryColor,
+                            size: 16,
                           ),
                         ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                // if (isPinned && !isSelectionMode)
+                                //   const Padding(
+                                //     padding: EdgeInsets.only(right: 10),
+                                //     child: Icon(Icons.push_pin, color: Colors.orange, size: 15),
+                                //   ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                if (isSelectionMode)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 15),
+                                    child: Icon(
+                                      isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                                      color: AppColor().primaryColor,
+                                    ),
+                                  ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          note['title']?.isEmpty == true ? "" : note['title'],
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontSize: context.isPhone ? 18 : 20,
+                                            fontFamily: 'EN-BOLD',
+                                            color: noteColor,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 4),
+                                      child: Text(
+                                        note['subtitle'] ?? "",
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontSize: context.isPhone ? 14 : 16,
+                                          color: noteColor,
+                                          fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
+                                          fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
+                                          decoration: TextDecoration.combine([
+                                            if (noteIsUnderlined) TextDecoration.underline,
+                                            if (noteIsStrikethrough) TextDecoration.lineThrough,
+                                          ]),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                  ],
+                    ],
+                  ),
                 ),
+                // --- IMAGE PREVIEW THUMBNAIL (Right side) ---
+                if (imagePaths != null && imagePaths.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.file(
+                        File(imagePaths[0]),
+                        width: context.isPhone ? 70 : 100,
+                        height: context.isPhone ? 70 : 100,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: context.isPhone ? 70 : 100,
+                          height: context.isPhone ? 70 : 100,
+                          color: Colors.grey[200],
+                          child: Icon(Icons.broken_image, size: context.isPhone ? 24 : 30),
+                        ),
+                      ),
+                    ),
+                  ),
+                SizedBox(
+                  width: 15,
+                )
               ],
             ),
           ),
@@ -570,7 +673,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     }
   }
 
-  // Add dynamic? singleNoteKey as a parameter
   void _showMoveNotesSheet({dynamic singleNoteKey}) {
     final folderBox = Hive.box('folders_box');
     final List<MapEntry<dynamic, dynamic>> folders = folderBox.toMap().entries.where((entry) => entry.key != widget.folderKey).toList();

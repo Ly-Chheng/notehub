@@ -13,7 +13,7 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  final LockController _lockController = Get.isRegistered<LockController>() ? Get.find<LockController>() : Get.put(LockController());
+  final LockController _lockController = Get.put(LockController());
 
   final TextEditingController _currentPassController = TextEditingController();
   final TextEditingController _newPassController = TextEditingController();
@@ -66,7 +66,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             child: Text("Save",
                 style: TextStyle(
                   color: AppColor().primaryColor,
-                  fontSize: context.isPhone ? 20 : 22,
+                  fontSize: context.isPhone ? 18 : 20,
                   fontFamily: 'EN-SEMIBOLD',
                 )),
           ),
@@ -151,7 +151,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
           value: _selectedQuestion,
-          dropdownColor: Colors.white,
+          dropdownColor: Theme.of(context).cardColor,
           hint: Text("Select question",
               style: TextStyle(
                 color: Colors.grey,
@@ -167,7 +167,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     style: TextStyle(
                       fontSize: context.isPhone ? 16 : 18,
                       fontFamily: 'EN-REGULAR',
-                      color: Colors.black,
                     )));
           }).toList(),
           onChanged: (val) => setState(() => _selectedQuestion = val),

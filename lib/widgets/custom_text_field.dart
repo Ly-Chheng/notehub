@@ -1,21 +1,32 @@
 import 'package:flutter/material.dart';
 
-Widget customTextField(String hint, bool obscure, VoidCallback toggle, {TextEditingController? controller}) {
+
+Widget customTextField(
+  String hint,
+  bool obscure,
+  VoidCallback toggle, {
+  TextEditingController? controller,
+  String? Function(String?)? validator,
+}) {
   return Container(
     decoration: BoxDecoration(
       color: Colors.grey.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
     ),
-    child: TextField(
+    child: TextFormField(
       controller: controller,
       obscureText: obscure,
+      validator: validator,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.grey),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: InputBorder.none,
         suffixIcon: IconButton(
-          icon: Icon(obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: Colors.grey),
+          icon: Icon(
+            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+            color: Colors.grey,
+          ),
           onPressed: toggle,
         ),
       ),

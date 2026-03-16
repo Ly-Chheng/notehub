@@ -57,9 +57,6 @@ void showPaletteSheet({
                     const Color(0xFFAED581),
                     const Color(0xFF81D4FA),
                     const Color(0xFFFFF176),
-                    const Color(0xFFFF8A65),
-                    const Color(0xFF4DB6AC),
-                    const Color(0xFFFF7043),
                   ].map((color) {
                     // Check if this specific circle is the active one
                     bool isActive = selectedColor.value == color.value;

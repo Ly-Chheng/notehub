@@ -86,22 +86,22 @@ class LockController extends GetxController {
     required String userAnswer,
     required String? storedAnswer,
   }) {
-    if (userAnswer.isEmpty) {
-      _showError("Please enter your answer");
+    if (storedAnswer == null || storedAnswer.isEmpty) {
+      _showError("No password found. Please set a password first.");
       return;
     }
 
-    if (storedAnswer == null) {
-      _showError("Recovery data missing on this device");
+    if (userAnswer.isEmpty) {
+      _showError("Please enter your recovery answer.");
       return;
     }
 
     if (userAnswer.trim().toLowerCase() == storedAnswer.toLowerCase()) {
       _showSuccess("Identity Verified");
-      // Use off to prevent going back to the answer screen
+
       Get.off(() => const CreatePasswordScreen());
     } else {
-      _showError("Incorrect answer. Try again.");
+      _showError("Incorrect answer. Please try again.");
     }
   }
 
@@ -111,53 +111,54 @@ class LockController extends GetxController {
     required String userAnswer,
   }) async {
     String? storedPass = settingsBox.get('master_password');
-    String? storedAnswer = settingsBox.get('security_answer');
+    final Box noteBox = Hive.box('student_notes');
 
-    // Check if password exists in database at all
     if (storedPass == null || storedPass.isEmpty) {
       _showError("No password exists to remove.");
       return;
     }
 
-    if (currentInput.isEmpty || confirmPass.isEmpty || userAnswer.isEmpty) {
-      _showError("Please fill in all fields");
+    if (currentInput.isEmpty || confirmPass.isEmpty) {
+      _showError("Please enter your password in both fields");
       return;
     }
 
-    //Confirm Input Match (Typo protection)
-    if (currentInput != confirmPass) {
-      _showError("Confirm password does not match");
-      return;
-    }
-
-    // Verify against stored Password
     if (currentInput != storedPass) {
-      _showError("Current password is wrong");
-      return; // STOPS HERE (Prevents 'Success' message)
-    }
-
-    // Verify against stored Security Answer
-    if (storedAnswer != null && userAnswer.toLowerCase() != storedAnswer.toLowerCase()) {
-      _showError("Security answer is incorrect");
+      _showError("Current password is incorrect");
       return;
     }
 
-    // SUCCESS: If code reaches here, all data is correct
+    if (currentInput != confirmPass) {
+      _showError("Confirmation password does not match");
+      return;
+    }
+
     try {
+      int unlockCount = 0;
+      for (var key in noteBox.keys) {
+        final note = noteBox.get(key);
+        if (note != null && (note['isLocked'] ?? false)) {
+          final updatedNote = Map<String, dynamic>.from(note);
+          updatedNote['isLocked'] = false; // Auto-unlock protected data
+          await noteBox.put(key, updatedNote);
+          unlockCount++;
+        }
+      }
+
+      // 5. Final Wipe: Remove all security keys from Hive
       await settingsBox.delete('master_password');
       await settingsBox.delete('security_question');
       await settingsBox.delete('security_answer');
       await settingsBox.delete('password_hint');
 
       Get.back();
-      _showSuccess("All locks removed successfully");
+      _showSuccess(unlockCount > 0 ? "Locks removed and $unlockCount notes unlocked." : "All security locks removed.");
       update();
     } catch (e) {
-      _showError("Failed to delete security data");
+      _showError("Failed to complete removal process");
     }
   }
 
-  ///   UTILS
   void _showError(String message) {
     Get.snackbar("Error", message, backgroundColor: Colors.red, colorText: Colors.white, snackPosition: SnackPosition.BOTTOM);
   }

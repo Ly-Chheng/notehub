@@ -143,7 +143,7 @@ Future<void> showConfirmDeleteDialog({
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
             ),
-            backgroundColor: Colors.white,
+            backgroundColor: Theme.of(context).cardColor,
 
             /// TITLE
             title: Text(
@@ -151,7 +151,6 @@ Future<void> showConfirmDeleteDialog({
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: context.isPhone ? 18 : 20,
-                color: AppColor().black,
                 fontFamily: 'EN-BOLD',
                 fontWeight: FontWeight.bold,
               ),
@@ -166,7 +165,6 @@ Future<void> showConfirmDeleteDialog({
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: context.isPhone ? 16 : 18,
-                    color: AppColor().black,
                     fontFamily: 'EN-REGULAR',
                   ),
                 ),

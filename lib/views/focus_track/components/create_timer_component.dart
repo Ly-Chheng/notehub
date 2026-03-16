@@ -87,9 +87,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
                   decoration: BoxDecoration(color: Colors.grey.withOpacity(0.05), borderRadius: BorderRadius.circular(15)),
                   child: Row(
                     children: [
-                      // _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v)),
-                      // _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v)),
-                      // _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v)),
                       _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
                       _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v), initial: tempM),
                       _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v), initial: tempS),
@@ -158,7 +155,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         backgroundColor: Colors.orangeAccent,
         colorText: Colors.white,
       );
-      return; // Stop execution: Do not save the duplicate
+      return; 
     }
 
     // 3. Generate Label

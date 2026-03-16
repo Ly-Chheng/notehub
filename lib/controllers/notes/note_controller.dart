@@ -112,10 +112,3 @@ class NoteController extends GetxController {
   }
 }
 
-// contentController.addListener(() {
-//   noteController.handleAutoNumbering(
-//     controller: contentController,
-//     lastTextLength: _lastTextLength,
-//     updateLastLength: (value) => _lastTextLength = value,
-//   );
-// });

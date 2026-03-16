@@ -48,7 +48,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
               answer: _answerController.text,
               hint: _hintController.text,
             ),
-            child: Text("Create", style: TextStyle(fontSize: 18, color: AppColor().primaryColor, fontWeight: FontWeight.bold)),
+            child: Text("Create", style: TextStyle(fontSize: 18, color: AppColor().primaryColor, fontFamily: 'EN-REGULAR')),
           )
         ],
       ),
@@ -95,7 +95,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: _selectedQuestion,
-              dropdownColor: Colors.white,
+              dropdownColor: Theme.of(context).cardColor,
               hint: Text("Select Security Question", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 14 : 18, fontFamily: 'EN-REGULAR')),
               isExpanded: true,
               items: _questions
@@ -105,7 +105,6 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                           style: TextStyle(
                             fontSize: context.isPhone ? 16 : 18,
                             fontFamily: 'EN-REGULAR',
-                            color: Colors.black,
                           ))))
                   .toList(),
               onChanged: (val) => setState(() => _selectedQuestion = val),

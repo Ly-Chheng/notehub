@@ -13,78 +13,96 @@ class ForgetPasswordScreen extends StatefulWidget {
 }
 
 class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
-  final LockController _controller = Get.isRegistered<LockController>() ? Get.find<LockController>() : Get.put(LockController());
+  final LockController _controller = Get.put(LockController());
+
   final TextEditingController _answerController = TextEditingController();
 
   String? storedQuestion;
   String? storedAnswer;
-  bool hasSecuritySetup = false;
 
   @override
   void initState() {
     super.initState();
+    // Retrieve values from Hive via the controller
     storedAnswer = _controller.settingsBox.get('security_answer');
     storedQuestion = _controller.settingsBox.get('security_question');
-    if (storedAnswer != null && storedAnswer!.isNotEmpty) {
-      hasSecuritySetup = true;
-    }
+  }
+
+  @override
+  void dispose() {
+    _answerController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         title: "Back",
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
-          if (hasSecuritySetup)
-            TextButton(
-              onPressed: () => _controller.handleForgetPasswordVerify(
-                userAnswer: _answerController.text,
+          TextButton(
+            onPressed: () {
+              // 1. Guard Check: If no security setup exists
+              if (storedAnswer == null || storedAnswer!.isEmpty) {
+                Get.snackbar(
+                  "Notice",
+                  "No password found. Please set a password first.",
+                  backgroundColor: Colors.blue,
+                  colorText: Colors.white,
+                  snackPosition: SnackPosition.BOTTOM,
+                );
+                return; // Stop execution
+              }
+
+              // 2. Proceed to verification logic in controller
+              _controller.handleForgetPasswordVerify(
+                userAnswer: _answerController.text.trim(),
                 storedAnswer: storedAnswer,
-              ),
-              child: Text("Submit", style: TextStyle(color: AppColor().primaryColor, fontSize: 18)),
+              );
+            },
+            child: Text("Submit",
+                style: TextStyle(
+                  color: AppColor().primaryColor,
+                  fontSize: 18,
+                )),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            const Text("Forget Password", style: TextStyle(fontSize: 24, fontFamily: 'EN-BOLD')),
+            const SizedBox(height: 10),
+            const Text(
+              "Verify your identity using your security question to reset your password.",
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey, height: 1.5, fontFamily: 'EN-REGULAR'),
             ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: hasSecuritySetup ? _buildQuestionUI() : _buildNoDataUI(),
-      ),
-    );
-  }
+            const SizedBox(height: 40),
 
-  Widget _buildQuestionUI() {
-    return Column(
-      children: [
-        Text("Forget Password", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-        Text(
-          "Please answer your security question to verify your identity.",
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: context.isPhone ? 16 : 20, fontFamily: 'EN-REGULAR', height: 1.4),
-        ),
-        const SizedBox(height: 40),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Text(storedQuestion ?? "", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-        ),
-        const SizedBox(height: 15),
-        buildStandardField("Enter your answer", controller: _answerController),
-      ],
-    );
-  }
+            // Question Display
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(storedQuestion ?? "Security setup not found.", style: const TextStyle(fontSize: 16, fontFamily: 'EN-REGULAR')),
+                ],
+              ),
+            ),
 
-  Widget _buildNoDataUI() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.lock_reset, size: 80, color: Colors.grey),
-          const SizedBox(height: 20),
-          Text("No Security Question Found", style: TextStyle(color: Colors.grey[600], fontSize: 16)),
-        ],
+            const SizedBox(height: 10),
+
+            // Answer Input Field
+            buildStandardField("Enter your answer", controller: _answerController),
+          ],
+        ),
       ),
     );
   }

@@ -35,9 +35,6 @@ class _MoreScreenState extends State<MoreScreen> {
                 _buildMenuTile(Icons.info_outline, "About", onTap: () {
                   Get.to(AboutScreen());
                 }),
-                _buildMenuTile(Icons.timer_outlined, "Clock", onTap: () {
-                  Get.to(() => ClockScreen());
-                }),
                 DarkModeView(),
                 NotificationView(),
                 _buildMenuTile(Icons.help_outline, "How to use", onTap: () {

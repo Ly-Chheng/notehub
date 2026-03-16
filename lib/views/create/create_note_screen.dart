@@ -70,7 +70,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
     contentController = TextEditingController(text: widget.existingNote?['subtitle'] ?? "");
     _lastTextLength = contentController.text.length;
-    noteController.initializeHistory(contentController.text); // Initialize the history with current content
+    noteController.initializeHistory(contentController.text); 
 
     // Load existing styles and background if editing
     if (widget.isEditing && widget.existingNote != null) {
@@ -134,7 +134,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       if (lines.length > 1) {
         String previousLine = lines[lines.length - 2].trimLeft();
 
-        RegExp regExp = RegExp(r'^(\d+)\.\s'); // Check for "1. " pattern
+        RegExp regExp = RegExp(r'^(\d+)\.\s'); 
         Match? match = regExp.firstMatch(previousLine);
 
         if (match != null) {
@@ -142,7 +142,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           String nextNumberPrefix = "${lastNumber + 1}. ";
           _insertTextAtEnd(nextNumberPrefix);
         }
-        // Check for Bullet pattern
         else if (previousLine.startsWith('•')) {
           _insertTextAtEnd("• ");
         } else if (previousLine.startsWith('-')) {
@@ -200,7 +199,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  // --- LOCK LOGIC ---
   Future<void> _handleLockToggle() async {
     try {
       if (!Hive.isBoxOpen('settings_box')) {
@@ -302,7 +300,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     Get.back();
   }
 
-  //  FORMATTING HELPERS
+  //  FORMATTING
   void _insertBulletPoint() {
     final text = contentController.text;
     final selection = contentController.selection;
@@ -345,7 +343,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
-          if (isLocked) Icon(Icons.lock, color: AppColor().primaryColor, size: 18),
+          if (isLocked) Icon(Icons.lock_outline, color: AppColor().primaryColor, size: 20),
           Obx(() => _actionButton(
                 asset: 'assets/images/undo.png',
                 isEnabled: noteController.undoStack.length > 1,
@@ -363,14 +361,27 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 },
               )),
           PopupMenuButton<String>(
-            icon: Icon(Icons.more_vert_outlined, color: AppColor().primaryColor),
+            icon: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: AppColor().primaryColor,
+                  width: 1,
+                ),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Icon(
+                Icons.more_vert_outlined,
+                color: AppColor().primaryColor,
+                size: 20,
+              ),
+            ),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
             offset: const Offset(0, 50),
             color: Theme.of(context).cardColor,
             onSelected: (value) => _handleMenuSelection(value, context),
             itemBuilder: (context) => [
               buildPopupItem(context, 'Share', Icons.share_outlined),
-              buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock),
+              buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),
               buildPopupItem(context, 'Move Note', Icons.folder_outlined),
               buildPopupItem(context, 'Delete', Icons.delete_outline, color: Colors.red),
             ],
@@ -395,10 +406,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 if (selectedImages.isNotEmpty)
                   Builder(
                     builder: (context) {
-                      // 1. Filter the list to only include actual photos, NOT drawings
                       final photoFiles = selectedImages.where((file) => !file.path.contains('draw_')).toList();
-
-                      // 2. If after filtering there are no photos, show nothing
                       if (photoFiles.isEmpty) return const SizedBox();
 
                       return SizedBox(
@@ -591,7 +599,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  // MENU HANDLER
   void _handleMenuSelection(String value, BuildContext context) async {
     switch (value) {
       case 'Share':

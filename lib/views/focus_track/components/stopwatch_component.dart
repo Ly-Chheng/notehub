@@ -146,7 +146,6 @@ class StopwatchScreen extends StatelessWidget {
           boxShadow: isDisabled ? [] : const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))],
         ),
         child: Icon(icon,
-            // If disabled, color is gray; otherwise black87
             color: isDisabled ? Colors.grey : Colors.black87,
             size: 20),
       ),

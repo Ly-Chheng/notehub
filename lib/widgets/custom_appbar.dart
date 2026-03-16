@@ -23,7 +23,7 @@ customAppBar({
       style: TextStyle(
         // color: titleColor ?? Colors.black,
         color: titleColor,
-        fontSize: 20,
+        fontSize: 18,
         fontFamily: 'EN-BOLD',
       ),
     ),
