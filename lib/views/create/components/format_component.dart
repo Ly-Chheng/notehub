@@ -19,7 +19,7 @@ void showFormatSheet({
 }) {
   showModalBottomSheet(
     context: context,
-    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    backgroundColor: Theme.of(context).cardColor,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (context) => StatefulBuilder(builder: (context, setSheetState) {
       return Padding(
@@ -37,7 +37,7 @@ void showFormatSheet({
                 Expanded(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Padding(
@@ -78,7 +78,7 @@ void showFormatSheet({
                 const SizedBox(width: 10),
                 Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
@@ -109,7 +109,7 @@ void showFormatSheet({
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(15),
               ),
               child: SingleChildScrollView(
@@ -142,7 +142,7 @@ void showFormatSheet({
                         padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: CircleAvatar(
                           backgroundColor: color,
-                          radius: 20,
+                          radius: 15,
                           child: selectedColor == color ? const Icon(Icons.check, color: Colors.white, size: 20) : null,
                         ),
                       ),
@@ -169,7 +169,7 @@ Widget _formatToggle(IconData icon, bool isActive, VoidCallback onTap) {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: isActive ? Colors.blue : Colors.grey.shade300),
       ),
-      child: Icon(icon, color: isActive ? Colors.blue : Colors.black54),
+      child: Icon(icon, color: isActive ? Colors.blue : Colors.grey),
     ),
   );
 }

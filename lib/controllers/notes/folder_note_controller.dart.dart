@@ -29,9 +29,7 @@ class FolderNoteController extends GetxController {
 
   // The "Source of Truth" for the UI list
   void refreshNotes() {
-    List<MapEntry<dynamic, dynamic>> notes = noteBox.toMap().entries
-        .where((entry) => entry.value['folderKey'] == folderKey)
-        .toList();
+    List<MapEntry<dynamic, dynamic>> notes = noteBox.toMap().entries.where((entry) => entry.value['folderKey'] == folderKey).toList();
 
     if (searchQuery.value.isNotEmpty) {
       notes = notes.where((entry) {
@@ -113,7 +111,7 @@ class FolderNoteController extends GetxController {
     final TextEditingController passController = TextEditingController();
     String? masterPassword = settingsBox.get('master_password');
 
-    showConfirmDeleteDialog(
+    showConfirmDialog(
       context: Get.context!,
       title: title,
       subTitle: "Verification required for protected content.",

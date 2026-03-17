@@ -72,7 +72,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             const SizedBox(height: 15),
             customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
             const SizedBox(height: 15),
-            buildStandardField("Hint (Optional)", controller: _hintController),
+            buildStandardField("Hint", trailing: "Optional", controller: _hintController),
             const SizedBox(height: 30),
             _buildDropdown(),
             const SizedBox(height: 15),

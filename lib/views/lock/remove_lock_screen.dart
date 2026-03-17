@@ -58,9 +58,11 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           children: [
-            const SizedBox(height: 10),
             // const Text("Security Verification", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            const Text("Reset Password", style: TextStyle(fontSize: 22, fontFamily: 'EN-BOLD')), //the mean Security Verification
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: const Text("Reset Password", style: TextStyle(fontSize: 22, fontFamily: 'EN-BOLD')),
+            ), //the mean Security Verification
             const Text("Please enter your current password to remove all protection.", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.grey, fontFamily: 'EN-REGULAR')),
 
             const SizedBox(height: 30),

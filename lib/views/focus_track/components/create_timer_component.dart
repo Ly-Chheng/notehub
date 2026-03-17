@@ -5,6 +5,8 @@ import 'package:hive/hive.dart';
 import 'package:project_structure/controllers/focus_track/timer_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_button.dart';
+import 'package:project_structure/widgets/sheet_header.dart';
 
 class CreateTimerScreen extends StatefulWidget {
   final bool isEditing;
@@ -69,18 +71,18 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
         return StatefulBuilder(builder: (context, setSheetState) {
           return Padding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+            padding: EdgeInsetsGeometry.all(15),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10))),
-                const SizedBox(height: 20),
-                const Text("Add Quick Preset", style: TextStyle(fontSize: 18, fontFamily: 'EN-BOLD')),
+                SheetHeader(
+                  title: "Add Quick Preset",
+                ),
                 const SizedBox(height: 20),
                 Container(
                   height: 150,
@@ -94,18 +96,16 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
                   ),
                 ),
                 const SizedBox(height: 25),
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: AppColor().primaryColor, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
-                    onPressed: () {
-                      _finalizePresetSave(tempH, tempM, tempS);
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Save Preset", style: TextStyle(color: Colors.white, fontSize: 16, fontFamily: 'EN-BOLD')),
-                  ),
-                ),
+                CustomButton(
+                  text: "Save Preset",
+                  backgroundColor: AppColor().primaryColor,
+                  textColor: Colors.white,
+                  borderRadius: 12,
+                  onPressed: () {
+                    _finalizePresetSave(tempH, tempM, tempS);
+                    Navigator.pop(context);
+                  },
+                )
               ],
             ),
           );
@@ -155,7 +155,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         backgroundColor: Colors.orangeAccent,
         colorText: Colors.white,
       );
-      return; 
+      return;
     }
 
     // 3. Generate Label
@@ -171,7 +171,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     await box.put('user_presets', customPresets);
 
     setState(() {});
-    Get.snackbar("Success", "New preset added", snackPosition: SnackPosition.BOTTOM);
   }
   //
 

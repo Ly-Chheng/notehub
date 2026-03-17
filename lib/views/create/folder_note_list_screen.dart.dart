@@ -10,6 +10,7 @@ import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
+import 'package:project_structure/widgets/sheet_header.dart';
 
 class FolderNoteListScreen extends StatefulWidget {
   final dynamic folderKey;
@@ -52,7 +53,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     final Box settingsBox = Hive.box('settings_box');
     String? masterPassword = settingsBox.get('master_password');
 
-    showConfirmDeleteDialog(
+    showConfirmDialog(
       context: context,
       title: title,
       subTitle: "Verification required for this locked note.",
@@ -382,7 +383,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       onPressed: selectedKeys.isEmpty
                           ? null
                           : () {
-                              // Check if security is needed
                               _verifyAndExecute(
                                 isLocked: _anySelectedNoteIsLocked(),
                                 title: "Move Protected Notes",
@@ -426,7 +426,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   }
 
   Widget _buildSlidableNote(dynamic noteKey, dynamic note) {
-    bool isLocked = note['isLocked'] ?? false; 
+    bool isLocked = note['isLocked'] ?? false;
     bool isPinned = note['isPinned'] ?? false;
     bool isSelected = selectedKeys.contains(noteKey);
 
@@ -574,7 +574,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                           style: TextStyle(
                                             fontSize: context.isPhone ? 18 : 20,
                                             fontFamily: 'EN-BOLD',
-                                            color: noteColor,
                                           ),
                                         ),
                                       ],
@@ -610,17 +609,17 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 // --- IMAGE PREVIEW THUMBNAIL (Right side) ---
                 if (imagePaths != null && imagePaths.isNotEmpty)
                   Padding(
-                    padding: const EdgeInsets.only(left: 10),
+                    padding: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: Image.file(
                         File(imagePaths[0]),
-                        width: context.isPhone ? 70 : 100,
-                        height: context.isPhone ? 70 : 100,
+                        width: context.isPhone ? 60 : 90,
+                        height: context.isPhone ? 60 : 90,
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => Container(
-                          width: context.isPhone ? 70 : 100,
-                          height: context.isPhone ? 70 : 100,
+                          width: context.isPhone ? 60 : 90,
+                          height: context.isPhone ? 60 : 90,
                           color: Colors.grey[200],
                           child: Icon(Icons.broken_image, size: context.isPhone ? 24 : 30),
                         ),
@@ -679,36 +678,15 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Container(
         padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10)),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text("Cancel",
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontSize: context.isPhone ? 16 : 18,
-                          fontFamily: 'EN-REGULAR',
-                        ))),
-                Text("Move to Folder",
-                    style: TextStyle(
-                      fontSize: context.isPhone ? 16 : 18,
-                      fontFamily: 'EN-BOLD',
-                    )),
-              ],
+            SheetHeader(
+              title: "Move to Folder",
             ),
             const SizedBox(height: 20),
             if (folders.isEmpty)
@@ -746,8 +724,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         isSelectionMode = false;
                         selectedKeys.clear();
                       });
-
-                      Get.snackbar("Success", "Moved to ${folder.value['title']}", snackPosition: SnackPosition.BOTTOM, colorText: Colors.white);
                     },
                   );
                 },

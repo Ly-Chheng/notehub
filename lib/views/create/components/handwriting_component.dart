@@ -161,62 +161,64 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
             ),
           ),
           const SizedBox(height: 5),
-          Row(
-            children: [
-              _toolBtn(
-                "Pen",
-                !isEraser && currentWidth == 2.0,
-                () => _updateBrush(width: 2.0),
-                imagePath: 'assets/images/pen.png',
-              ),
-              _toolBtn(
-                "Thin",
-                !isEraser && currentWidth == 1.0,
-                () => _updateBrush(width: 1.0),
-                imagePath: 'assets/images/pencle.png',
-              ),
-              _toolBtn(
-                "Highlighter",
-                !isEraser && currentWidth == 20.0,
-                () => _updateBrush(width: 20.0),
-                imagePath: 'assets/images/highlighter.png',
-              ),
-              _toolBtn(
-                "Eraser",
-                isEraser,
-                () => _updateBrush(eraser: true),
-                imagePath: 'assets/images/easer.png',
-              ),
-              const Spacer(),
-              IconButton(
-                  icon: const Icon(Icons.undo),
-                  onPressed: () {
-                    setState(() {
-                      if (_activeController.isNotEmpty) {
-                        _activeController.undo();
-                      } else if (_layers.isNotEmpty) {
-                        _activeController = _layers.removeLast();
-                      }
-                    });
-                  }),
-              IconButton(
-                  icon: const Icon(Icons.redo_outlined),
-                  onPressed: () {
-                    setState(() {
-                      if (_activeController.isNotEmpty) {
-                        _activeController.redo();
-                      } else if (_layers.isNotEmpty) {
-                        _activeController = _layers.removeLast();
-                      }
-                    });
-                  }),
-              IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () => setState(() {
-                        _layers.clear();
-                        _activeController.clear();
-                      })),
-            ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _toolBtn(
+                  "Pen",
+                  !isEraser && currentWidth == 2.0,
+                  () => _updateBrush(width: 2.0),
+                  imagePath: 'assets/images/pen.png',
+                ),
+                _toolBtn(
+                  "Thin",
+                  !isEraser && currentWidth == 1.0,
+                  () => _updateBrush(width: 1.0),
+                  imagePath: 'assets/images/pencle.png',
+                ),
+                _toolBtn(
+                  "Highlighter",
+                  !isEraser && currentWidth == 20.0,
+                  () => _updateBrush(width: 20.0),
+                  imagePath: 'assets/images/highlighter.png',
+                ),
+                _toolBtn(
+                  "Eraser",
+                  isEraser,
+                  () => _updateBrush(eraser: true),
+                  imagePath: 'assets/images/easer.png',
+                ),
+                IconButton(
+                    icon: const Icon(Icons.undo),
+                    onPressed: () {
+                      setState(() {
+                        if (_activeController.isNotEmpty) {
+                          _activeController.undo();
+                        } else if (_layers.isNotEmpty) {
+                          _activeController = _layers.removeLast();
+                        }
+                      });
+                    }),
+                IconButton(
+                    icon: const Icon(Icons.redo_outlined),
+                    onPressed: () {
+                      setState(() {
+                        if (_activeController.isNotEmpty) {
+                          _activeController.redo();
+                        } else if (_layers.isNotEmpty) {
+                          _activeController = _layers.removeLast();
+                        }
+                      });
+                    }),
+                IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => setState(() {
+                          _layers.clear();
+                          _activeController.clear();
+                        })),
+              ],
+            ),
           ),
         ],
       ),
@@ -248,27 +250,15 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
             if (imagePath != null)
               Image.asset(
                 imagePath,
-                width: 35,
-                height: 35,
-                // color: sel ? AppColor().primaryColor : Colors.grey,
+                width: sel ? 55 : 30,
+                height: sel ? 55 : 30,
                 colorBlendMode: BlendMode.srcIn,
               )
-            // Otherwise render Icon if provided
             else if (icon != null)
               Icon(
                 icon,
                 size: 24,
-                // color: sel ? AppColor().primaryColor : Colors.grey,
               ),
-            //const SizedBox(height: 4),
-            // Text(
-            //   label,
-            //   style: TextStyle(
-            //     fontSize: 10,
-            //     color: sel ? AppColor().primaryColor : Colors.grey,
-            //     fontWeight: sel ? FontWeight.bold : FontWeight.normal,
-            //   ),
-            // ),
           ],
         ),
       ),

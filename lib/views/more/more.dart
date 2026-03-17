@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
-import 'package:project_structure/views/focus_track/components/clock_componet.dart';
 import 'package:project_structure/views/lock/remove_lock_screen.dart';
 import 'package:project_structure/views/lock/change_password_screen.dart';
 import 'package:project_structure/views/lock/forget_password_screen.dart';
@@ -57,7 +56,7 @@ class _MoreScreenState extends State<MoreScreen> {
                 ]),
               ),
               Text(
-                "Copyright © 2026 BELTEI Student Note App.\nVersion 1.0.0",
+                "Copyright © 2026 Student Note App.\nVersion 1.0.0 (0)",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 12 : 14, height: 1.5),
               ),

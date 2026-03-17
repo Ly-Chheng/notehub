@@ -16,7 +16,6 @@ class LockController extends GetxController {
   }) async {
     String? storedPass = settingsBox.get('master_password');
 
-    // If user never created a password
     if (storedPass == null || storedPass.isEmpty) {
       _showError("No password found. Please create a password first.");
       return;
@@ -145,7 +144,6 @@ class LockController extends GetxController {
         }
       }
 
-      // 5. Final Wipe: Remove all security keys from Hive
       await settingsBox.delete('master_password');
       await settingsBox.delete('security_question');
       await settingsBox.delete('security_answer');

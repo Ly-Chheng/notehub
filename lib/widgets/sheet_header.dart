@@ -25,7 +25,7 @@ class SheetHeader extends StatelessWidget {
           height: 4,
           margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: Theme.of(context).scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(10),
           ),
         ),

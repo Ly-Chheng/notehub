@@ -19,7 +19,6 @@ class TimerComponent extends StatelessWidget {
         builder: (context, Box box, _) {
           final allKeys = box.keys.where((k) {
             final data = box.get(k);
-            // CHECK: Ensure data is actually a Map before accessing keys
             if (data is Map) {
               return data['type'] == 'timer';
             }
@@ -33,7 +32,6 @@ class TimerComponent extends StatelessWidget {
             return const Center(child: Text("No Timers"));
           }
 
-          // 1. IMPROVED FILTERING:
           // A timer is "Running" if Hive says it has time OR if the Controller has it active.
           final activeKeys = allKeys.where((k) {
             int rem = box.get(k)['remainingSeconds'] ?? 0;

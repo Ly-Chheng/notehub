@@ -76,14 +76,17 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: [
-            const SizedBox(height: 10),
-            Text("Change Password",
-                style: TextStyle(
-                  fontSize: context.isPhone ? 18 : 24,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'EN-BOLD',
-                )),
-            const SizedBox(height: 10),
+            
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: Text("Change Password",
+                  style: TextStyle(
+                    fontSize: context.isPhone ? 18 : 24,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'EN-BOLD',
+                  )),
+            ),
+            
             Text("Update the password to protect your notes.", textAlign: TextAlign.center, style: TextStyle(fontSize: context.isPhone ? 15 : 17, color: Colors.grey)),
             const SizedBox(height: 30),
 

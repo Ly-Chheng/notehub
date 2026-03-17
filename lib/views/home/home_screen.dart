@@ -218,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final TextEditingController passController = TextEditingController();
     String? masterPassword = settingsBox.get('master_password');
 
-    showConfirmDeleteDialog(
+    showConfirmDialog(
       context: context,
       title: title,
       subTitle: "Please enter your password to proceed.",

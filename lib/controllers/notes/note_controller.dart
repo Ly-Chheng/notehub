@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 
@@ -110,5 +111,38 @@ class NoteController extends GetxController {
       TextPosition(offset: controller.text.length),
     );
   }
-}
 
+  Future<void> deleteNote({
+    required dynamic noteKey,
+    required List<File> images,
+    VoidCallback? onSuccess,
+  }) async {
+    try {
+      // 1. Clean up local files (Images/Drawings) to save storage
+      for (var file in images) {
+        if (await file.exists()) {
+          await file.delete();
+        }
+      }
+
+      // 2. Remove entry from Hive
+      final noteBox = Hive.box('student_notes');
+      await noteBox.delete(noteKey);
+
+      // 3. Execute callback (like navigation)
+      if (onSuccess != null) {
+        onSuccess();
+      }
+
+      Get.snackbar(
+        "Deleted",
+        "Note and attachments removed successfully.",
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.redAccent,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar("Error", "Could not delete note: $e");
+    }
+  }
+}

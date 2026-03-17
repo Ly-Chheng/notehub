@@ -60,12 +60,6 @@ class AboutScreen extends StatelessWidget {
               _buildAboutTile(Icons.policy_outlined, "Privacy Policy", "Read here"),
               _buildAboutTile(Icons.verified_user_outlined, "Terms of Service", "Read here", isLast: true),
             ]),
-            const SizedBox(height: 40),
-            const Text(
-              "Developed by BELTEI Students\n© 2026 BELTEI Group. All rights reserved.",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey, fontSize: 12, height: 1.6, fontFamily: 'EN-ENGULAR'),
-            ),
           ],
         ),
       ),

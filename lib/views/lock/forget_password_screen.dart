@@ -76,15 +76,17 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
         child: Column(
           children: [
-            const SizedBox(height: 20),
-            const Text("Forget Password", style: TextStyle(fontSize: 24, fontFamily: 'EN-BOLD')),
-            const SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              child: const Text("Forget Password", style: TextStyle(fontSize: 24, fontFamily: 'EN-BOLD')),
+            ),
+
             const Text(
               "Verify your identity using your security question to reset your password.",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey, height: 1.5, fontFamily: 'EN-REGULAR'),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
 
             // Question Display
             Align(

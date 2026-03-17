@@ -8,10 +8,10 @@ void showPaletteSheet({
 }) {
   showModalBottomSheet(
     context: context,
-    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    backgroundColor: Theme.of(context).cardColor,
+    //isScrollControlled: true,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (context) => SizedBox(
-      height: MediaQuery.of(context).size.height * 0.9,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -20,7 +20,7 @@ void showPaletteSheet({
             SheetHeader(
               title: "Note Background",
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
             Expanded(
               child: SingleChildScrollView(
                 child: Wrap(
@@ -44,7 +44,6 @@ void showPaletteSheet({
                     const Color(0xFFECEFF1),
                     const Color(0xFFD7CCC8),
                     const Color(0xFFFFCDD2),
-                    // More colors
                     const Color(0xFFB2EBF2),
                     const Color(0xFFC8E6C9),
                     const Color(0xFFFFF59D),
@@ -55,8 +54,6 @@ void showPaletteSheet({
                     const Color(0xFFB39DDB),
                     const Color(0xFFFFAB91),
                     const Color(0xFFAED581),
-                    const Color(0xFF81D4FA),
-                    const Color(0xFFFFF176),
                   ].map((color) {
                     // Check if this specific circle is the active one
                     bool isActive = selectedColor.value == color.value;
@@ -86,7 +83,6 @@ void showPaletteSheet({
                 ),
               ),
             ),
-            const SizedBox(height: 20),
           ],
         ),
       ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/bottom_navigation/navigationbar_controller.dart';
-import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_navigationbar.dart';
@@ -28,7 +27,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Exit confirmation dialog
         final shouldExit = await showDialog<bool>(
           context: context,
           builder: (context) {
@@ -129,18 +127,16 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
             if (controller.selectedIndex == 1)
               GestureDetector(
                 onTap: () {
-                  Get.to(() => const CreateTimerScreen());
+                  Get.toNamed('/createTimer');
                 },
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: const Color(0xFF4D7CFF).withValues(alpha: 0.3),
-                    ),
+                    border: Border.all(color: Colors.black),
                   ),
-                  child: Icon(Icons.add, color: Color(0xFF4D7CFF), size: context.isPhone ? 20 : 25),
+                  child: Icon(Icons.add, color: Colors.black, size: context.isPhone ? 20 : 25),
                 ),
               ),
             SizedBox(width: 10),

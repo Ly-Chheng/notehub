@@ -70,7 +70,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
     contentController = TextEditingController(text: widget.existingNote?['subtitle'] ?? "");
     _lastTextLength = contentController.text.length;
-    noteController.initializeHistory(contentController.text); 
+    noteController.initializeHistory(contentController.text);
 
     // Load existing styles and background if editing
     if (widget.isEditing && widget.existingNote != null) {
@@ -83,7 +83,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       selectedPaperType = PaperType.values[paperIndex];
       isLocked = widget.existingNote?['isLocked'] ?? false;
 
-      currentFolderKey = widget.existingNote?['folderKey'] ?? widget.folderKey; // If editing, use the folder key saved in the note data
+      currentFolderKey = widget.existingNote?['folderKey'] ?? widget.folderKey;
 
       // Load Images from Hive (Strings to Files)
       List<dynamic>? imagePaths = widget.existingNote?['images'];
@@ -134,15 +134,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       if (lines.length > 1) {
         String previousLine = lines[lines.length - 2].trimLeft();
 
-        RegExp regExp = RegExp(r'^(\d+)\.\s'); 
+        RegExp regExp = RegExp(r'^(\d+)\.\s');
         Match? match = regExp.firstMatch(previousLine);
 
         if (match != null) {
           int lastNumber = int.parse(match.group(1)!);
           String nextNumberPrefix = "${lastNumber + 1}. ";
           _insertTextAtEnd(nextNumberPrefix);
-        }
-        else if (previousLine.startsWith('•')) {
+        } else if (previousLine.startsWith('•')) {
           _insertTextAtEnd("• ");
         } else if (previousLine.startsWith('-')) {
           _insertTextAtEnd("- ");
@@ -235,7 +234,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   void _showUnlockDialog(String correctPass) {
     final passController = TextEditingController();
 
-    showConfirmDeleteDialog(
+    showConfirmDialog(
       context: context,
       title: "Unlock Note",
       subTitle: "Enter Master Password",
@@ -612,15 +611,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         _showMoveFolderSheet();
         break;
       case 'Delete':
-        await showConfirmDeleteDialog(
-          context: context,
-          title: 'Delete Note',
-          subTitle: 'Are you sure you want to delete this note?',
-          onConfirm: () async {
-            final noteBox = Hive.box('student_notes');
-            await noteBox.delete(widget.noteKey);
-          },
-        );
+        await _deleteCurrentNote();
         break;
     }
   }
@@ -628,7 +619,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   void _showPaperStyleSheet() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => SingleChildScrollView(
         child: Column(
@@ -657,7 +648,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Container(
         padding: const EdgeInsets.all(20),
@@ -684,7 +675,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     onTap: () {
                       setState(() => currentFolderKey = folder.key);
                       Navigator.pop(context);
-                      Get.snackbar("Success", "Note will be saved to $folderTitle", snackPosition: SnackPosition.BOTTOM);
                     },
                   );
                 },
@@ -693,6 +683,26 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _deleteCurrentNote() async {
+    await showConfirmDialog(
+      context: context,
+      title: 'Delete Note',
+      subTitle: 'Are you sure you want to delete this note and all its attachments?',
+      confirmText: "Delete",
+      onConfirm: () {
+        // Delegate logic to controller
+        noteController.deleteNote(
+          noteKey: widget.noteKey,
+          images: selectedImages,
+          onSuccess: () {
+            if (Get.isOverlaysOpen) Get.back();
+            Get.back();
+          },
+        );
+      },
     );
   }
 
