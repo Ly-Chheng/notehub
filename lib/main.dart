@@ -40,6 +40,7 @@ Future<void> main() async {
   await Hive.openBox('folders_box');
   await Hive.openBox('timer_box');
   await Hive.openBox('settings_box');
+  await Hive.openBox('recently_deleted');
 
   runApp(const MyApp());
 }

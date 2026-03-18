@@ -26,7 +26,6 @@ class NoteController extends GetxController {
     }
   }
 
-  // Undo Logic
   String? undo() {
     if (undoStack.length > 1) {
       isUndoRedoAction = true;
@@ -37,7 +36,6 @@ class NoteController extends GetxController {
     return null;
   }
 
-  // Redo Logic
   String? redo() {
     if (redoStack.isNotEmpty) {
       isUndoRedoAction = true;
@@ -75,43 +73,6 @@ class NoteController extends GetxController {
     }
   }
 
-  void handleAutoNumbering({
-    required TextEditingController controller,
-    required int lastTextLength,
-    required Function(int) updateLastLength,
-  }) {
-    final text = controller.text;
-
-    if (text.length > lastTextLength && text.endsWith('\n')) {
-      List<String> lines = text.split('\n');
-
-      if (lines.length > 1) {
-        String previousLine = lines[lines.length - 2].trimLeft();
-
-        RegExp regExp = RegExp(r'^(\d+)\.\s');
-        Match? match = regExp.firstMatch(previousLine);
-
-        if (match != null) {
-          int lastNumber = int.parse(match.group(1)!);
-          _insertText(controller, "${lastNumber + 1}. ");
-        } else if (previousLine.startsWith('•')) {
-          _insertText(controller, "• ");
-        } else if (previousLine.startsWith('-')) {
-          _insertText(controller, "- ");
-        }
-      }
-    }
-
-    updateLastLength(text.length);
-  }
-
-  void _insertText(TextEditingController controller, String insertion) {
-    controller.text = controller.text + insertion;
-    controller.selection = TextSelection.fromPosition(
-      TextPosition(offset: controller.text.length),
-    );
-  }
-
   Future<void> deleteNote({
     required dynamic noteKey,
     required List<File> images,
@@ -133,14 +94,6 @@ class NoteController extends GetxController {
       if (onSuccess != null) {
         onSuccess();
       }
-
-      Get.snackbar(
-        "Deleted",
-        "Note and attachments removed successfully.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.redAccent,
-        colorText: Colors.white,
-      );
     } catch (e) {
       Get.snackbar("Error", "Could not delete note: $e");
     }

@@ -109,13 +109,15 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   showFolderSheet(context);
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(2),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(6),
                     border: Border.all(width: 1),
                   ),
-                  child: const Icon(Icons.add, size: 20),
+                  child: Icon(
+                    Icons.add,
+                    size: context.isPhone ? 24 : 25,
+                  ),
                 ),
               ),
               SizedBox(
@@ -130,13 +132,12 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   Get.toNamed('/createTimer');
                 },
                 child: Container(
-                  padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.black),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(width: 1),
                   ),
-                  child: Icon(Icons.add, color: Colors.black, size: context.isPhone ? 20 : 25),
+                  child: Icon(Icons.add, size: context.isPhone ? 24 : 25),
                 ),
               ),
             SizedBox(width: 10),

@@ -115,14 +115,22 @@ class TimerComponent extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(data['title'] ?? "Timer", style: TextStyle(color: isFinished ? Colors.grey : Colors.black, fontSize: 14, fontFamily: 'EN-REGULAR')),
+                        Text(data['title'] ?? "Timer",
+                            style: TextStyle(
+                                // color: isFinished ? Colors.grey : Colors.black,
+                                fontSize: 14,
+                                fontFamily: 'EN-REGULAR')),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
                               fontSize: 32,
-                              color: isFinished ? Colors.white : Colors.black,
+                              //color: isFinished ? Colors.white : Colors.black,
                               fontFamily: 'EN-REGULAR',
                             )),
-                        Text("${controller.formatToHMS(data['totalSeconds'])} total", style: TextStyle(color: isFinished ? Colors.grey : Colors.black54, fontSize: 12, fontFamily: 'EN-REGULAR')),
+                        Text("${controller.formatToHMS(data['totalSeconds'])} total",
+                            style: TextStyle(
+                                // color: isFinished ? Colors.grey : Colors.black54,
+                                fontSize: 12,
+                                fontFamily: 'EN-REGULAR')),
                       ],
                     ),
                   ),

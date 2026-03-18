@@ -6,6 +6,7 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/views/create/folder_note_list_screen.dart.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
+import 'package:project_structure/views/home/components/recently_deleted_screen.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -20,6 +21,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final String defaultFolderName = "My Note";
   final Box settingsBox = Hive.box('settings_box');
   final Box noteBox = Hive.box('student_notes');
+  final Box trashBox = Hive.box('recently_deleted');
 
   @override
   void initState() {
@@ -38,12 +40,16 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  //   LOGIC BLOCK: CLEAN UP NOTES WHEN FOLDER IS DELETED
-  void _deleteNotesInFolder(dynamic folderKey) {
-    final notesToDelete = noteBox.toMap().entries.where((entry) => entry.value['folderKey'] == folderKey).map((entry) => entry.key).toList();
+  // Logic: Move notes to trash when their parent folder is deleted
+  void _moveFolderNotesToTrash(dynamic folderKey) {
+    final notesToMove = noteBox.toMap().entries.where((entry) => entry.value['folderKey'] == folderKey).toList();
 
-    for (var key in notesToDelete) {
-      noteBox.delete(key);
+    for (var entry in notesToMove) {
+      trashBox.put(entry.key, {
+        ...Map<String, dynamic>.from(entry.value),
+        'deletedAt': DateTime.now().toIso8601String(),
+      });
+      noteBox.delete(entry.key);
     }
   }
 
@@ -77,8 +83,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 });
 
                 return ListView.builder(
-                  itemCount: folders.length,
+                  // itemCount: folders.length,
+                  // itemBuilder: (context, index) {
+                  
+                  // Increase itemCount by 1 to include the Recently Deleted tile
+                  itemCount: folders.length + 1,
                   itemBuilder: (context, index) {
+                    if (index == folders.length) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            color: Theme.of(context).cardColor,
+                            child: _buildRecentlyDeletedTile(context),
+                          ),
+                        ),
+                      );
+                    }
+
                     final folderKey = folders[index].key;
                     final folderData = folders[index].value;
                     bool isDefault = folderData['title'] == defaultFolderName;
@@ -117,15 +140,25 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                                 SlidableAction(
                                   onPressed: (c) {
-                                    // Check if folder contains locked notes
                                     bool hasLockedNotes = noteBox.values.any((n) => n['folderKey'] == folderKey && (n['isLocked'] ?? false));
 
+                                    // _verifyAndExecute(
+                                    //   isLocked: hasLockedNotes,
+                                    //   title: "Delete Protected Folder",
+                                    //   onVerified: () {
+                                    //     folderBox.delete(folderKey);
+                                    //     _deleteNotesInFolder(folderKey);
+                                    //   },
+                                    // );
                                     _verifyAndExecute(
                                       isLocked: hasLockedNotes,
                                       title: "Delete Protected Folder",
                                       onVerified: () {
+                                        // FIRST: Move all notes to trash box
+                                        _moveFolderNotesToTrash(folderKey);
+
+                                        // SECOND: Delete the actual folder
                                         folderBox.delete(folderKey);
-                                        _deleteNotesInFolder(folderKey);
                                       },
                                     );
                                   },
@@ -206,6 +239,18 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         child: Icon(Icons.add, size: context.isPhone ? 30 : 33, color: Colors.white),
       ),
+    );
+  }
+
+  Widget _buildRecentlyDeletedTile(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.delete, color: Colors.red),
+      title: Text("Recently Deleted", style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR')),
+      trailing: ValueListenableBuilder(
+        valueListenable: trashBox.listenable(),
+        builder: (context, Box tBox, _) => Text("${tBox.length}", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR')),
+      ),
+      onTap: () => Get.to(() => RecentlyDeletedScreen()),
     );
   }
 

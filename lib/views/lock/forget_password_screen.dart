@@ -51,7 +51,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 Get.snackbar(
                   "Notice",
                   "No password found. Please set a password first.",
-                  backgroundColor: Colors.blue,
+                  backgroundColor: Colors.red,
                   colorText: Colors.white,
                   snackPosition: SnackPosition.BOTTOM,
                 );

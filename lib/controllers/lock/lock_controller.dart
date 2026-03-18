@@ -158,7 +158,7 @@ class LockController extends GetxController {
   }
 
   void _showError(String message) {
-    Get.snackbar("Error", message, backgroundColor: Colors.red, colorText: Colors.white, snackPosition: SnackPosition.BOTTOM);
+    Get.snackbar("Notice", message, backgroundColor: Colors.red, colorText: Colors.white, snackPosition: SnackPosition.BOTTOM);
   }
 
   void _showSuccess(String message) {

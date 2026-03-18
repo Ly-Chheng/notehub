@@ -21,7 +21,6 @@ customAppBar({
       title,
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
-        // color: titleColor ?? Colors.black,
         color: titleColor,
         fontSize: 18,
         fontFamily: 'EN-BOLD',

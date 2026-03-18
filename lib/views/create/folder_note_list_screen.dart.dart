@@ -28,6 +28,7 @@ class FolderNoteListScreen extends StatefulWidget {
 
 class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   final Box noteBox = Hive.box('student_notes');
+  final Box trashBox = Hive.box('recently_deleted');
   bool isSelectionMode = false;
   Set<dynamic> selectedKeys = {}; // Store Hive keys, not indexes
 
@@ -186,80 +187,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             ),
 
             /// NOTES LIST
-            // Expanded(
-            //   child: ValueListenableBuilder(
-            //     valueListenable: noteBox.listenable(),
-            //     builder: (context, Box box, _) {
-            //       // 1. Get notes for THIS folder
-            //       List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
-
-            //       /// SEARCH FILTER
-            //       if (searchQuery.isNotEmpty) {
-            //         notesList = notesList.where((entry) {
-            //           final title = (entry.value['title'] ?? "").toString().toLowerCase();
-            //           final content = (entry.value['subtitle'] ?? "").toString().toLowerCase();
-
-            //           return title.contains(searchQuery) || content.contains(searchQuery);
-            //         }).toList();
-            //       }
-
-            //       notesList.sort((a, b) {
-            //         bool aPinned = a.value['isPinned'] ?? false;
-            //         bool bPinned = b.value['isPinned'] ?? false;
-
-            //         if (aPinned != bPinned) {
-            //           return aPinned ? -1 : 1;
-            //         }
-
-            //         return b.key.compareTo(a.key);
-            //       });
-
-            //       if (notesList.isEmpty) {
-            //         return CustomNoData(
-            //           message: searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
-            //         );
-            //       }
-
-            //       /// LIST BUILDER WITH DATE HEADERS
-            //       return ListView.builder(
-            //         itemCount: notesList.length,
-            //         itemBuilder: (context, index) {
-            //           final entry = notesList[index];
-            //           final noteKey = entry.key;
-            //           final noteData = entry.value;
-
-            //           // 4. GROUPING LOGIC
-            //           String currentHeader = _getDateHeader(noteData['date'] ?? "");
-            //           String? prevHeader;
-            //           if (index > 0) {
-            //             prevHeader = _getDateHeader(notesList[index - 1].value['date'] ?? "");
-            //           }
-
-            //           bool showHeader = currentHeader != prevHeader;
-
-            //           return Column(
-            //             crossAxisAlignment: CrossAxisAlignment.start,
-            //             children: [
-            //               if (showHeader)
-            //                 Padding(
-            //                   padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
-            //                   child: Text(
-            //                     currentHeader,
-            //                     style: TextStyle(
-            //                       fontSize: 14,
-            //                       fontWeight: FontWeight.bold,
-            //                       color: Colors.grey[600],
-            //                     ),
-            //                   ),
-            //                 ),
-            //               _buildSlidableNote(noteKey, noteData),
-            //             ],
-            //           );
-            //         },
-            //       );
-            //     },
-            //   ),
-            // ),
             Expanded(
               child: ValueListenableBuilder(
                 valueListenable: noteBox.listenable(),
@@ -301,7 +228,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
-                              color: AppColor().primaryColor, // Matching your theme
+                              color: AppColor().primaryColor,
                             ),
                           ),
                         ),
@@ -393,7 +320,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     const Spacer(),
                     Text(
                       "${selectedKeys.length} selected",
-                      style: const TextStyle(fontSize: 11, fontFamily: 'EN-ENGULAR'),
+                      style: const TextStyle(fontSize: 12, fontFamily: 'EN-ENGULAR'),
                     ),
                     const Spacer(),
                     IconButton(
@@ -429,7 +356,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     bool isLocked = note['isLocked'] ?? false;
     bool isPinned = note['isPinned'] ?? false;
     bool isSelected = selectedKeys.contains(noteKey);
-
     bool noteIsBold = note['isBold'] ?? false;
     bool noteIsItalic = note['isItalic'] ?? false;
     bool noteIsUnderlined = note['isUnderlined'] ?? false;
@@ -476,10 +402,24 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               label: 'Folder',
             ),
             SlidableAction(
+              // onPressed: (context) => _verifyAndExecute(
+              //   isLocked: isLocked,
+              //   title: "Delete Locked Note",
+              //   onVerified: () => noteBox.delete(noteKey),
+              // ),
               onPressed: (context) => _verifyAndExecute(
                 isLocked: isLocked,
                 title: "Delete Locked Note",
-                onVerified: () => noteBox.delete(noteKey),
+                onVerified: () {
+                  final noteData = noteBox.get(noteKey);
+                  if (noteData != null) {
+                    trashBox.put(noteKey, {
+                      ...Map<String, dynamic>.from(noteData),
+                      'deletedAt': DateTime.now().toIso8601String(),
+                    });
+                    noteBox.delete(noteKey);
+                  }
+                },
               ),
               backgroundColor: Colors.red,
               foregroundColor: Colors.white,
@@ -545,15 +485,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                           children: [
                             Row(
                               children: [
-                                // if (isPinned && !isSelectionMode)
-                                //   const Padding(
-                                //     padding: EdgeInsets.only(right: 10),
-                                //     child: Icon(Icons.push_pin, color: Colors.orange, size: 15),
-                                //   ),
-                              ],
-                            ),
-                            Row(
-                              children: [
                                 if (isSelectionMode)
                                   Padding(
                                     padding: const EdgeInsets.only(right: 15),
@@ -562,41 +493,43 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                       color: AppColor().primaryColor,
                                     ),
                                   ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Text(
-                                          note['title']?.isEmpty == true ? "" : note['title'],
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            note['title']?.isEmpty == true ? "" : note['title'],
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: context.isPhone ? 18 : 20,
+                                              fontFamily: 'EN-BOLD',
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 4),
+                                        child: Text(
+                                          note['subtitle'] ?? "",
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
-                                            fontSize: context.isPhone ? 18 : 20,
-                                            fontFamily: 'EN-BOLD',
+                                            fontSize: context.isPhone ? 14 : 16,
+                                            color: noteColor,
+                                            fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
+                                            fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
+                                            decoration: TextDecoration.combine([
+                                              if (noteIsUnderlined) TextDecoration.underline,
+                                              if (noteIsStrikethrough) TextDecoration.lineThrough,
+                                            ]),
                                           ),
                                         ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 4),
-                                      child: Text(
-                                        note['subtitle'] ?? "",
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontSize: context.isPhone ? 14 : 16,
-                                          color: noteColor,
-                                          fontWeight: noteIsBold ? FontWeight.bold : FontWeight.normal,
-                                          fontStyle: noteIsItalic ? FontStyle.italic : FontStyle.normal,
-                                          decoration: TextDecoration.combine([
-                                            if (noteIsUnderlined) TextDecoration.underline,
-                                            if (noteIsStrikethrough) TextDecoration.lineThrough,
-                                          ]),
-                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -637,9 +570,26 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     );
   }
 
+  // void _deleteSelectedNotes() {
+  //   for (var key in selectedKeys) {
+  //     noteBox.delete(key);
+  //   }
+  //   setState(() {
+  //     selectedKeys.clear();
+  //     isSelectionMode = false;
+  //   });
+  // }
   void _deleteSelectedNotes() {
+    final Box trashBox = Hive.box('recently_deleted');
     for (var key in selectedKeys) {
-      noteBox.delete(key);
+      final noteData = noteBox.get(key);
+      if (noteData != null) {
+        trashBox.put(key, {
+          ...Map<String, dynamic>.from(noteData),
+          'deletedAt': DateTime.now().toIso8601String(),
+        });
+        noteBox.delete(key);
+      }
     }
     setState(() {
       selectedKeys.clear();

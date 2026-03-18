@@ -100,7 +100,7 @@ Widget customNavigationBar({
             ),
           ],
           borderRadius: BorderRadius.circular(29)),
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
