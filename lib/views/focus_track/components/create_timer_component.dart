@@ -6,6 +6,7 @@ import 'package:project_structure/controllers/focus_track/timer_controller.dart'
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_button.dart';
+import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
 class CreateTimerScreen extends StatefulWidget {
@@ -62,7 +63,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     secController.animateToItem(s, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
   }
 
-  // --- BOTTOM SHEET FOR QUICK PRESETS ---
   void _showAddPresetSheet(BuildContext context) {
     int tempH = 1;
     int tempM = 3;
@@ -151,8 +151,8 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       Get.snackbar(
         "Already Exists",
         "This time is already in your presets.",
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orangeAccent,
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
         colorText: Colors.white,
       );
       return;
@@ -172,7 +172,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
 
     setState(() {});
   }
-  //
 
   void _saveTimer() async {
     final box = Hive.box('timer_box');
@@ -228,7 +227,10 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionTitle("Duration"),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: customHeader("Duration"),
+            ),
             _buildPickerSection(),
             const SizedBox(height: 30),
             _buildLabelRow(),
@@ -300,14 +302,13 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     );
   }
 
-  //
   Widget _buildPresetHeader() {
     return Padding(
       padding: const EdgeInsets.only(left: 24, right: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text("Quick Presets", style: TextStyle(fontSize: 16, fontFamily: 'EN-BOLD')),
+          customHeader("Quick Presets"),
           IconButton(
             onPressed: () => _showAddPresetSheet(context),
             icon: Icon(Icons.add_circle_outline, color: AppColor().primaryColor, size: 28),
@@ -375,34 +376,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           border: Border.all(color: isCustom ? Colors.blueGrey.withOpacity(0.2) : AppColor().primaryColor.withOpacity(0.2)),
         ),
         child: Text(text, style: TextStyle(color: isCustom ? Colors.blueGrey : AppColor().primaryColor, fontWeight: FontWeight.bold, fontSize: 13)),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(
-    String title, {
-    IconData? icon,
-    VoidCallback? onIconTap,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-              fontFamily: 'EN-BOLD',
-              letterSpacing: 0.5,
-            ),
-          ),
-          if (icon != null)
-            IconButton(
-              icon: Icon(icon, size: 20),
-              onPressed: onIconTap,
-            ),
-        ],
       ),
     );
   }

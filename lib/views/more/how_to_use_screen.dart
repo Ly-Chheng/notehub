@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_header.dart';
 
 class HowToUseScreen extends StatelessWidget {
   const HowToUseScreen({super.key});
@@ -110,9 +111,8 @@ class HowToUseScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
+                customHeader(
                   title,
-                  style: const TextStyle(fontSize: 18, fontFamily: 'EN-BOLD'),
                 ),
                 const SizedBox(height: 8),
                 Text(

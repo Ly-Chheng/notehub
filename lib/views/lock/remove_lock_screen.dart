@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
 class RemoveLockScreen extends StatefulWidget {
@@ -55,14 +56,10 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
         child: Column(
           children: [
-            // const Text("Security Verification", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: const Text("Reset Password", style: TextStyle(fontSize: 22, fontFamily: 'EN-BOLD')),
-            ), //the mean Security Verification
+            Center(child: customHeader("Reset Password")), //the mean Security Verification
             const Text("Please enter your current password to remove all protection.", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.grey, fontFamily: 'EN-REGULAR')),
 
             const SizedBox(height: 30),

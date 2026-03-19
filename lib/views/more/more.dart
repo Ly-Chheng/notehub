@@ -47,7 +47,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   _buildMenuTile(Icons.lock_outline, "Change Password", onTap: () {
                     Get.to(() => const ChangePasswordScreen());
                   }),
-                  _buildMenuTile(Icons.history, "Reset Password", onTap: () {
+                  _buildMenuTile(Icons.sync_lock_outlined, "Reset Password", onTap: () {
                     Get.to(() => const RemoveLockScreen());
                   }),
                   _buildMenuTile(Icons.lock_reset, "Forget Password", onTap: () {

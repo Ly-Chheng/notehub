@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
 class CreatePasswordScreen extends StatefulWidget {
@@ -53,11 +54,11 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 20),
         child: Column(
           children: [
-            const SizedBox(height: 20),
-            Text("Setup Lock", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            
+            Center(child: customHeader("Setup Lock")),
             Text(
               "Create a secure password to protect your personal notes.",
               textAlign: TextAlign.center,

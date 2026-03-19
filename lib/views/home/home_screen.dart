@@ -8,6 +8,8 @@ import 'package:project_structure/views/create/folder_note_list_screen.dart.dart
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/views/home/components/recently_deleted_screen.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/custom_header.dart';
+import 'package:project_structure/widgets/custom_list_folder.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -61,8 +63,8 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: Text("Folders", style: TextStyle(fontSize: 18, fontFamily: 'EN-BOLD')),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            child: customHeader("Folders"),
           ),
           Expanded(
             child: ValueListenableBuilder(
@@ -85,8 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 return ListView.builder(
                   // itemCount: folders.length,
                   // itemBuilder: (context, index) {
-                  
-                  // Increase itemCount by 1 to include the Recently Deleted tile
+
                   itemCount: folders.length + 1,
                   itemBuilder: (context, index) {
                     if (index == folders.length) {
@@ -96,7 +97,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           borderRadius: BorderRadius.circular(12),
                           child: Container(
                             color: Theme.of(context).cardColor,
-                            child: _buildRecentlyDeletedTile(context),
+                            child: CustomListFolder(
+                              title: "Recently Deleted",
+                              icon: Icons.delete,
+                              iconColor: Colors.red,
+                              listenable: trashBox.listenable(),
+                              onTap: () => Get.to(() => RecentlyDeletedScreen()),
+                            ),
                           ),
                         ),
                       );
@@ -141,15 +148,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 SlidableAction(
                                   onPressed: (c) {
                                     bool hasLockedNotes = noteBox.values.any((n) => n['folderKey'] == folderKey && (n['isLocked'] ?? false));
-
-                                    // _verifyAndExecute(
-                                    //   isLocked: hasLockedNotes,
-                                    //   title: "Delete Protected Folder",
-                                    //   onVerified: () {
-                                    //     folderBox.delete(folderKey);
-                                    //     _deleteNotesInFolder(folderKey);
-                                    //   },
-                                    // );
                                     _verifyAndExecute(
                                       isLocked: hasLockedNotes,
                                       title: "Delete Protected Folder",
@@ -180,10 +178,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 title: Row(
                                   children: [
                                     if (isPinned) const SizedBox(width: 5),
-                                    Text(folderData['title'],
-                                        style: TextStyle(
-                                          fontSize: context.isPhone ? 18 : 20,
-                                        )),
+                                    Text(folderData['title'], style: TextStyle(fontSize: context.isPhone ? 18 : 20, fontFamily: 'EN-REGULAR')),
                                     if (isPinned) Icon(Icons.push_pin, size: context.isPhone ? 14 : 16, color: Colors.orange),
                                   ],
                                 ),
@@ -193,7 +188,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
-                                      // The Note Count
                                       ValueListenableBuilder(
                                         valueListenable: noteBox.listenable(),
                                         builder: (context, Box box, _) {
@@ -239,18 +233,6 @@ class _MyHomePageState extends State<MyHomePage> {
         },
         child: Icon(Icons.add, size: context.isPhone ? 30 : 33, color: Colors.white),
       ),
-    );
-  }
-
-  Widget _buildRecentlyDeletedTile(BuildContext context) {
-    return ListTile(
-      leading: const Icon(Icons.delete, color: Colors.red),
-      title: Text("Recently Deleted", style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR')),
-      trailing: ValueListenableBuilder(
-        valueListenable: trashBox.listenable(),
-        builder: (context, Box tBox, _) => Text("${tBox.length}", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR')),
-      ),
-      onTap: () => Get.to(() => RecentlyDeletedScreen()),
     );
   }
 

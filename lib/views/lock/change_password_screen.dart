@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -73,46 +74,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
         child: Column(
           children: [
-            
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: Text("Change Password",
-                  style: TextStyle(
-                    fontSize: context.isPhone ? 18 : 24,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'EN-BOLD',
-                  )),
-            ),
-            
+            Center(child: customHeader("Change Password")),
             Text("Update the password to protect your notes.", textAlign: TextAlign.center, style: TextStyle(fontSize: context.isPhone ? 15 : 17, color: Colors.grey)),
             const SizedBox(height: 30),
-
-            // Password Fields
             customTextField("Current Password", _obscureCurrent, () {
               setState(() => _obscureCurrent = !_obscureCurrent);
             }, controller: _currentPassController),
-
             const SizedBox(height: 15),
-
             customTextField("New Password", _obscureNew, () {
               setState(() => _obscureNew = !_obscureNew);
             }, controller: _newPassController),
-
             const SizedBox(height: 15),
-
             customTextField("Confirm New Password", _obscureConfirm, () {
               setState(() => _obscureConfirm = !_obscureConfirm);
             }, controller: _confirmPassController),
-
             const SizedBox(height: 15),
-
             buildStandardField("New Hint", trailing: "Optional", controller: _hintController),
-
             const SizedBox(height: 30),
-
             _buildSecurityHeader(),
             const SizedBox(height: 12),
             _buildDropdown(),

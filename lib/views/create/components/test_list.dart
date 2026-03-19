@@ -11,6 +11,8 @@ import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
+import 'dart:convert';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class FolderNoteListScreen extends StatefulWidget {
   final dynamic folderKey;
@@ -30,7 +32,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   final Box noteBox = Hive.box('student_notes');
   final Box trashBox = Hive.box('recently_deleted');
   bool isSelectionMode = false;
-  Set<dynamic> selectedKeys = {};
+  Set<dynamic> selectedKeys = {}; // Store Hive keys, not indexes
 
   bool isSearching = false;
   String searchQuery = "";
@@ -43,6 +45,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     });
   }
 
+  // UNIVERSAL PASSWORD VERIFICATION
   void _verifyAndExecute({required bool isLocked, required VoidCallback onVerified, String title = "This note is locked."}) {
     if (!isLocked) {
       onVerified();
@@ -94,6 +97,19 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       }
     } catch (e) {
       return "Earlier";
+    }
+  }
+
+  String _getPlainTextFromNote(String? subtitleJson) {
+    if (subtitleJson == null || subtitleJson.isEmpty) return "";
+
+    try {
+      // Parse JSON directly into a Quill Document
+      final document = quill.Document.fromJson(jsonDecode(subtitleJson));
+      return document.toPlainText().trim();
+    } catch (e) {
+      // Fallback for old plain text
+      return subtitleJson;
     }
   }
 
@@ -238,7 +254,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       if (unpinnedNotes.isNotEmpty) ...[
                         ListView.builder(
                           shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
+                          physics: const NeverScrollableScrollPhysics(), // Main ListView handles scrolling
                           itemCount: unpinnedNotes.length,
                           itemBuilder: (context, index) {
                             final entry = unpinnedNotes[index];
@@ -356,6 +372,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     bool isPinned = note['isPinned'] ?? false;
     bool isSelected = selectedKeys.contains(noteKey);
     final bgColor = Color(note['bgColorValue'] ?? 0xFFFFFFFF);
+
     List<dynamic>? imagePaths = note['images'];
 
     return Padding(
@@ -507,12 +524,11 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                       Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 4),
                                         child: Text(
-                                          note['subtitle'] ?? "",
+                                          _getPlainTextFromNote(note['subtitle']),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontSize: context.isPhone ? 14 : 16,
-                                            fontFamily: 'EN-REGULAR',
                                           ),
                                         ),
                                       ),

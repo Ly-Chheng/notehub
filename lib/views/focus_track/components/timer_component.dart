@@ -6,6 +6,7 @@ import 'package:project_structure/controllers/focus_track/timer_controller.dart'
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 import 'package:project_structure/views/focus_track/components/timer_detail_screen.dart';
+import 'package:project_structure/widgets/custom_header.dart';
 
 class TimerComponent extends StatelessWidget {
   const TimerComponent({super.key});
@@ -57,11 +58,17 @@ class TimerComponent extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 10),
             children: [
               if (activeKeys.isNotEmpty) ...[
-                const _CategoryHeader(title: "Running"),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: customHeader("Running"),
+                ),
                 ...activeKeys.map((key) => _buildTimerTile(context, controller, key, box.get(key))),
               ],
               if (recentKeys.isNotEmpty) ...[
-                const _CategoryHeader(title: "Recents"),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: customHeader("Recents"),
+                ),
                 ...recentKeys.map((key) => _buildTimerTile(context, controller, key, box.get(key))),
               ],
             ],
@@ -117,18 +124,18 @@ class TimerComponent extends StatelessWidget {
                       children: [
                         Text(data['title'] ?? "Timer",
                             style: TextStyle(
-                                // color: isFinished ? Colors.grey : Colors.black,
+                                color: isFinished ? Colors.grey : Colors.black,
                                 fontSize: 14,
                                 fontFamily: 'EN-REGULAR')),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
                               fontSize: 32,
-                              //color: isFinished ? Colors.white : Colors.black,
+                              color: isFinished ? Colors.white : Colors.black,
                               fontFamily: 'EN-REGULAR',
                             )),
                         Text("${controller.formatToHMS(data['totalSeconds'])} total",
                             style: TextStyle(
-                                // color: isFinished ? Colors.grey : Colors.black54,
+                                color: isFinished ? Colors.grey : Colors.black54,
                                 fontSize: 12,
                                 fontFamily: 'EN-REGULAR')),
                       ],
@@ -164,22 +171,6 @@ class TimerComponent extends StatelessWidget {
           Icon(isFinished ? Icons.refresh : (isRunning ? Icons.pause : Icons.play_arrow), color: isFinished ? Colors.white : AppColor().primaryColor, size: 30),
         ],
       ),
-    );
-  }
-}
-
-class _CategoryHeader extends StatelessWidget {
-  final String title;
-  const _CategoryHeader({required this.title});
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 15, top: 20, bottom: 5),
-      child: Text(title,
-          style: const TextStyle(
-            fontSize: 18,
-            fontFamily: 'EN-BOLD',
-          )),
     );
   }
 }

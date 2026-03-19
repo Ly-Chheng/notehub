@@ -80,7 +80,7 @@ flutter:
     - family: EN-REGULAR
       fonts:
         - asset: assets/fonts/Roboto-Regular.ttf
-    - family: KEN-SEMIBOLD
+    - family: EN-SEMIBOLD
       fonts:
         - asset: assets/fonts/Roboto-SemiBold.ttf
     - family: EN-BOLD

@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:project_structure/controllers/home/home_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
 class RecentlyDeletedScreen extends StatelessWidget {
@@ -68,11 +69,8 @@ class RecentlyDeletedScreen extends StatelessWidget {
             valueListenable: controller.trashBox.listenable(),
             builder: (context, Box box, _) {
               if (box.isEmpty) {
-                return const Center(
-                  child: Text(
-                    "No recently deleted notes",
-                    style: TextStyle(color: Colors.grey, fontFamily: 'EN-REGULAR'),
-                  ),
+                return CustomNoData(
+                  message: "No recently deleted notes",
                 );
               }
 
@@ -145,6 +143,8 @@ class RecentlyDeletedScreen extends StatelessWidget {
                               : null,
                           title: Text(
                             data['title'] ?? "Untitled Note",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: context.isPhone ? 18 : 20,
                               fontFamily: 'EN-BOLD',

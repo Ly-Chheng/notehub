@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_header.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -48,11 +49,7 @@ class AboutScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-            const Text(
-              "Student Note",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
+            Center(child: customHeader("Student Note")),
             const SizedBox(height: 40),
             _buildAboutContainer(context, [
               _buildAboutTile(Icons.language, "Website", "www.beltei.edu.kh"),
