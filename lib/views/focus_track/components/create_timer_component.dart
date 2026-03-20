@@ -57,7 +57,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       selectedMinutes = m;
       selectedSeconds = s;
     });
-    // Animate the wheels to the preset position
+
     hourController.animateToItem(h, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     minController.animateToItem(m, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
     secController.animateToItem(s, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
@@ -332,7 +332,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           _fixedPresetItem("30 m", 0, 30, 0),
           _fixedPresetItem("50 m", 0, 50, 0),
           ...rawList.map((p) {
-            final Map data = p as Map; // Crucial Cast
+            final Map data = p as Map;
             return SizedBox(
               width: (MediaQuery.of(context).size.width - 60) / 3,
               child: _presetButton(
@@ -359,8 +359,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       child: _presetButton(text, () => _setPreset(h, m, s)),
     );
   }
-
-  //
 
   Widget _presetButton(String text, VoidCallback onTap, {bool isCustom = false, VoidCallback? onLongPress}) {
     return InkWell(

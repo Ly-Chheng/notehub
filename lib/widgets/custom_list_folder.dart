@@ -48,15 +48,3 @@ class CustomListFolder extends StatelessWidget {
     );
   }
 }
-  // Widget _buildRecentlyDeletedTile(BuildContext context) {
-  //   return ListTile(
-  //     leading: const Icon(Icons.delete, color: Colors.red),
-  //     title: Text("Recently Deleted", style: TextStyle(fontSize: context.isPhone ? 18 : 20, fontFamily: 'EN-REGULAR')),
-  //     trailing: ValueListenableBuilder(
-  //       valueListenable: trashBox.listenable(),
-  //       builder: (context, Box tBox, _) => Text("${tBox.length}", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR')),
-  //     ),
-  //     onTap: () => Get.to(() => RecentlyDeletedScreen()),
-  //   );
-  // }
-  // child: _buildRecentlyDeletedTile(context),

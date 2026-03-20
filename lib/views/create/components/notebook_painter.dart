@@ -10,7 +10,7 @@ class NotebookPainter extends CustomPainter {
   NotebookPainter({
     required this.type,
     this.lineColor = const Color(0xFFE0E0E0),
-    this.marginColor = const Color(0xFFFFCDD2),  
+    this.marginColor = const Color(0xFFFFCDD2),
   });
 
   @override
@@ -28,7 +28,6 @@ class NotebookPainter extends CustomPainter {
     double spacing = 32.0;
     bool hasVerticalMargin = false;
 
-    // 1. Handle Dot Style separately
     if (type == PaperType.dots) {
       const double dotSpacing = 28.0;
       for (double x = dotSpacing; x < size.width; x += dotSpacing) {
@@ -39,7 +38,6 @@ class NotebookPainter extends CustomPainter {
       return;
     }
 
-    // 2. Configure Spacing and Margins for Lines/Grids
     switch (type) {
       case PaperType.lines:
         spacing = 32.0;

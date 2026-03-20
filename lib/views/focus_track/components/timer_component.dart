@@ -27,22 +27,18 @@ class TimerComponent extends StatelessWidget {
           }).toList();
 
           if (allKeys.isEmpty) {
-            // Use microtask to wait until the current frame is done building
             Future.microtask(() => Get.to(() => const CreateTimerScreen()));
 
             return const Center(child: Text("No Timers"));
           }
 
-          // A timer is "Running" if Hive says it has time OR if the Controller has it active.
           final activeKeys = allKeys.where((k) {
             int rem = box.get(k)['remainingSeconds'] ?? 0;
             bool isCurrentlyRunning = controller.activeTimerKeys.contains(k);
 
-            // If it's running in memory, it MUST jump to the "Running" section
             return rem > 0 || isCurrentlyRunning;
           }).toList();
 
-          // A timer is "Recent" ONLY if it is at 0 AND it is not active in the controller.
           final recentKeys = allKeys.where((k) {
             int rem = box.get(k)['remainingSeconds'] ?? 0;
             bool isCurrentlyRunning = controller.activeTimerKeys.contains(k);
@@ -50,7 +46,6 @@ class TimerComponent extends StatelessWidget {
             return rem <= 0 && !isCurrentlyRunning;
           }).toList();
 
-          // 2. SORTING (Keep your existing sorting logic)
           activeKeys.sort((a, b) => (box.get(b)['createdAt'] ?? '').compareTo(box.get(a)['createdAt'] ?? ''));
           recentKeys.sort((a, b) => (box.get(b)['completedAt'] ?? '').compareTo(box.get(a)['completedAt'] ?? ''));
 
@@ -122,22 +117,14 @@ class TimerComponent extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(data['title'] ?? "Timer",
-                            style: TextStyle(
-                                color: isFinished ? Colors.grey : Colors.black,
-                                fontSize: 14,
-                                fontFamily: 'EN-REGULAR')),
+                        Text(data['title'] ?? "Timer", style: TextStyle(color: isFinished ? Colors.grey : Colors.black, fontSize: 14, fontFamily: 'EN-REGULAR')),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
                               fontSize: 32,
                               color: isFinished ? Colors.white : Colors.black,
                               fontFamily: 'EN-REGULAR',
                             )),
-                        Text("${controller.formatToHMS(data['totalSeconds'])} total",
-                            style: TextStyle(
-                                color: isFinished ? Colors.grey : Colors.black54,
-                                fontSize: 12,
-                                fontFamily: 'EN-REGULAR')),
+                        Text("${controller.formatToHMS(data['totalSeconds'])} total", style: TextStyle(color: isFinished ? Colors.grey : Colors.black54, fontSize: 12, fontFamily: 'EN-REGULAR')),
                       ],
                     ),
                   ),

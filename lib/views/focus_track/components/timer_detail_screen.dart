@@ -46,15 +46,12 @@ class TimerDetailScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Cancel Button with X icon
                 _actionButton(
                   const Icon(Icons.close, color: Colors.white, size: 30),
                   Colors.grey[800]!,
                   Colors.white,
                   () => Get.back(),
                 ),
-
-                // Play/Pause Button with dynamic icons
                 _actionButton(
                   Icon(
                     isRunning ? Icons.pause : Icons.play_arrow,
@@ -84,7 +81,7 @@ class TimerDetailScreen extends StatelessWidget {
           color: bg,
         ),
         alignment: Alignment.center,
-        child: icon, 
+        child: icon,
       ),
     );
   }

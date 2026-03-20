@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 Widget customTextField(
   String hint,
   bool obscure,
@@ -34,7 +33,6 @@ Widget customTextField(
   );
 }
 
-// STANDARD TEXT FIELD
 Widget buildStandardField(
   String hint, {
   String? trailing,

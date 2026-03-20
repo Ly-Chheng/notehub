@@ -2,10 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 
 class NoteController extends GetxController {
+  final Box noteBox = Hive.box('student_notes');
+  final Box trashBox = Hive.box('recently_deleted');
+
   var undoStack = <String>[].obs;
   var redoStack = <String>[].obs;
   bool isUndoRedoAction = false;
@@ -47,27 +51,64 @@ class NoteController extends GetxController {
     return null;
   }
 
+  // Future<void> shareNote({
+  //   required String title,
+  //   required String content,
+  //   required List<File> selectedImages,
+  // }) async {
+  //   final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
+
+  //   final String shareContent = content.trim().isEmpty ? "(No content)" : content.trim();
+
+  //   final String fullText = "$shareTitle\n\n$shareContent";
+
+  //   try {
+  //     if (selectedImages.isNotEmpty) {
+  //       final files = selectedImages.where((file) => file.existsSync()).map((file) => XFile(file.path)).toList();
+
+  //       if (files.isNotEmpty) {
+  //         await Share.shareXFiles(files, text: fullText);
+  //       } else {
+  //         await Share.share(fullText);
+  //       }
+  //     } else {
+  //       await Share.share(fullText);
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar(
+  //       "Error",
+  //       "Could not share note",
+  //       snackPosition: SnackPosition.BOTTOM,
+  //     );
+  //   }
+  // }
+
   Future<void> shareNote({
     required String title,
     required String content,
     required List<File> selectedImages,
   }) async {
-    final String shareTitle = title.isEmpty ? "Untitled Note" : title;
-    final String fullText = "$shareTitle\n\n$content";
+    final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
+    final String shareContent = content.trim().isEmpty ? "(No content)" : content.trim();
+    final String fullText = "$shareTitle\n\n$shareContent";
 
     try {
-      if (selectedImages.isNotEmpty) {
-        final List<XFile> filesToShare = selectedImages.map((file) => XFile(file.path)).toList();
+      List<XFile> files = selectedImages.where((file) => file.existsSync()).map((file) => XFile(file.path)).toList();
 
-        await Share.shareXFiles(filesToShare, text: fullText);
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File('${tempDir.path}/note_content.txt');
+      await tempFile.writeAsString(fullText);
+      files.add(XFile(tempFile.path));
+
+      if (files.isNotEmpty) {
+        await Share.shareXFiles(files);
       } else {
-        // Share text only
         await Share.share(fullText);
       }
     } catch (e) {
       Get.snackbar(
         "Error",
-        "Could not share note: $e",
+        "Could not share note",
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -75,27 +116,26 @@ class NoteController extends GetxController {
 
   Future<void> deleteNote({
     required dynamic noteKey,
-    required List<File> images,
+    required Map? noteData,
     VoidCallback? onSuccess,
   }) async {
     try {
-      // 1. Clean up local files (Images/Drawings) to save storage
-      for (var file in images) {
-        if (await file.exists()) {
-          await file.delete();
-        }
-      }
-
-      // 2. Remove entry from Hive
       final noteBox = Hive.box('student_notes');
-      await noteBox.delete(noteKey);
+      final trashBox = Hive.box('recently_deleted');
 
-      // 3. Execute callback (like navigation)
-      if (onSuccess != null) {
-        onSuccess();
+      if (noteKey != null && noteData != null) {
+        // Prepare data for Trash (Add the deleted timestamp)
+        final Map<String, dynamic> deletedData = Map<String, dynamic>.from(noteData);
+        deletedData['deletedAt'] = DateTime.now().toIso8601String();
+
+        await trashBox.put(noteKey, deletedData);
+
+        await noteBox.delete(noteKey);
       }
+
+      if (onSuccess != null) onSuccess();
     } catch (e) {
-      Get.snackbar("Error", "Could not delete note: $e");
+      Get.snackbar("Error", "Could not move to trash: $e");
     }
   }
 }

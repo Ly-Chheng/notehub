@@ -143,7 +143,7 @@ void showFormatSheet({
                         child: CircleAvatar(
                           backgroundColor: color,
                           radius: 15,
-                          child: selectedColor == color ? const Icon(Icons.check, color: Colors.white, size: 20) : null,
+                          //child: selectedColor == color ? const Icon(Icons.check, color: Colors.white, size: 20) : null,
                         ),
                       ),
                     );

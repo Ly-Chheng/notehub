@@ -29,8 +29,6 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: _buildToggleSwitch(context),
             ),
-
-            /// Screen content
             Expanded(child: screens[selectedIndex]),
           ],
         ),
@@ -43,7 +41,6 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
     return Container(
       height: context.isPhone ? 45 : 60,
       decoration: BoxDecoration(
-        // color: const Color(0xFFE8EBF6),
         color: Colors.grey.withOpacity(0.1),
         borderRadius: BorderRadius.circular(
           context.isPhone ? 25 : 45,

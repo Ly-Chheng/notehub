@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:convert';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
@@ -48,13 +50,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Color selectedColor = Colors.black;
   Color noteBgColor = Colors.white;
   PaperType selectedPaperType = PaperType.none;
+  late QuillController _quillController;
 
   bool isLocked = false;
 
   List<Map<String, dynamic>> drawingLayers = [];
 
   List<File> selectedImages = [];
-  int _lastTextLength = 0;
   dynamic currentFolderKey;
   bool showTable = false;
 
@@ -68,30 +70,37 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     super.initState();
     currentFolderKey = widget.folderKey;
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
-    contentController = TextEditingController(text: widget.existingNote?['subtitle'] ?? "");
-    _lastTextLength = contentController.text.length;
-    noteController.initializeHistory(contentController.text);
 
-    // Load existing styles and background if editing
+    // Initialize Quill with formatted JSON or plain text fallback
+    if (widget.isEditing && widget.existingNote?['subtitle'] != null) {
+      try {
+        var content = jsonDecode(widget.existingNote!['subtitle']);
+        _quillController = QuillController(
+          document: Document.fromJson(content),
+          selection: const TextSelection.collapsed(offset: 0),
+        );
+      } catch (e) {
+        _quillController = QuillController(
+          document: Document()..insert(0, widget.existingNote!['subtitle']),
+          selection: const TextSelection.collapsed(offset: 0),
+        );
+      }
+    } else {
+      _quillController = QuillController.basic();
+    }
+
+    // Load extra metadata
     if (widget.isEditing && widget.existingNote != null) {
-      isBold = widget.existingNote?['isBold'] ?? false;
-      isItalic = widget.existingNote?['isItalic'] ?? false;
-      isUnderlined = widget.existingNote?['isUnderlined'] ?? false;
-      isStrikethrough = widget.existingNote?['isStrikethrough'] ?? false;
       noteBgColor = Color(widget.existingNote?['bgColorValue'] ?? 0xFFFFFFFF);
-      int paperIndex = widget.existingNote?['paperTypeIndex'] ?? 0;
-      selectedPaperType = PaperType.values[paperIndex];
+      selectedPaperType = PaperType.values[widget.existingNote?['paperTypeIndex'] ?? 0];
       isLocked = widget.existingNote?['isLocked'] ?? false;
-
       currentFolderKey = widget.existingNote?['folderKey'] ?? widget.folderKey;
 
-      // Load Images from Hive (Strings to Files)
       List<dynamic>? imagePaths = widget.existingNote?['images'];
       if (imagePaths != null) {
         selectedImages = imagePaths.map((path) => File(path)).toList();
       }
 
-      // Load Table Data
       showTable = widget.existingNote?['showTable'] ?? false;
       if (widget.existingNote?['tableData'] != null) {
         tableData = List<List<String>>.from(
@@ -99,56 +108,18 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         );
       }
 
-      int? colorVal = widget.existingNote?['colorValue'];
-      if (colorVal != null) selectedColor = Color(colorVal);
-
-      // Load Multi-Layer Drawing Data with strict casting
       if (widget.existingNote?['drawingLayers'] != null) {
         final List<dynamic> rawLayers = widget.existingNote?['drawingLayers'];
         drawingLayers = rawLayers.map((item) => Map<String, dynamic>.from(item as Map)).toList();
       }
     }
-
-    contentController.addListener(_handleAutoNumbering);
-
-    // Listen for changes to record them in the controller
-    contentController.addListener(() {
-      noteController.recordChange(contentController.text);
-    });
   }
 
   @override
   void dispose() {
-    contentController.removeListener(_handleAutoNumbering);
-    contentController.dispose();
+    _quillController.dispose();
     titleController.dispose();
     super.dispose();
-  }
-
-  void _handleAutoNumbering() {
-    final text = contentController.text;
-
-    if (text.length > _lastTextLength && text.endsWith('\n')) {
-      List<String> lines = text.split('\n');
-
-      if (lines.length > 1) {
-        String previousLine = lines[lines.length - 2].trimLeft();
-
-        RegExp regExp = RegExp(r'^(\d+)\.\s');
-        Match? match = regExp.firstMatch(previousLine);
-
-        if (match != null) {
-          int lastNumber = int.parse(match.group(1)!);
-          String nextNumberPrefix = "${lastNumber + 1}. ";
-          _insertTextAtEnd(nextNumberPrefix);
-        } else if (previousLine.startsWith('•')) {
-          _insertTextAtEnd("• ");
-        } else if (previousLine.startsWith('-')) {
-          _insertTextAtEnd("- ");
-        }
-      }
-    }
-    _lastTextLength = text.length;
   }
 
   void _openHandwriting() {
@@ -181,23 +152,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  void _insertTextAtEnd(String insertion) {
-    contentController.text = contentController.text + insertion;
-    contentController.selection = TextSelection.fromPosition(
-      TextPosition(offset: contentController.text.length),
-    );
-  }
-
-  void _insertDashList() {
-    final text = contentController.text;
-    final selection = contentController.selection;
-    final String insertion = (text.isEmpty || text.endsWith('\n')) ? "- " : "\n- ";
-    contentController.text = text.replaceRange(selection.start, selection.end, insertion);
-    contentController.selection = TextSelection.fromPosition(
-      TextPosition(offset: selection.start + insertion.length),
-    );
-  }
-
   Future<void> _handleLockToggle() async {
     try {
       if (!Hive.isBoxOpen('settings_box')) {
@@ -207,7 +161,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       final settingsBox = Hive.box('settings_box');
       String? masterPass = settingsBox.get('master_password');
 
-      // Case 1: Set new password if none exists
+      // Set new password if none exists
       if (masterPass == null) {
         final result = await Get.to(() => const CreatePasswordScreen());
         if (result == true) {
@@ -217,11 +171,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         return;
       }
 
-      // Case 2: Toggle off (requires password)
+      // Toggle off (requires password)
       if (isLocked) {
         _showUnlockDialog(masterPass);
       }
-      // Case 3: Toggle on
+      // Toggle on
       else {
         setState(() => isLocked = true);
         Get.snackbar("Locked", "Note is now protected.");
@@ -258,25 +212,23 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   void _saveNote() async {
-    // Prevent saving empty notes
-    if (titleController.text.trim().isEmpty && contentController.text.trim().isEmpty) {
+    if (titleController.text.trim().isEmpty && _quillController.document.isEmpty()) {
       Get.back();
       return;
     }
 
     final noteBox = Hive.box('student_notes');
 
+    // Save document as Delta JSON string to preserve bold/colors per character
+    final contentJson = jsonEncode(_quillController.document.toDelta().toJson());
+
     final noteData = {
       "title": titleController.text,
-      "subtitle": contentController.text,
+      "subtitle": contentJson,
       "isLocked": isLocked,
       "folderKey": currentFolderKey,
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
       "isPinned": widget.existingNote?['isPinned'] ?? false,
-      "isBold": isBold,
-      "isItalic": isItalic,
-      "isUnderlined": isUnderlined,
-      "isStrikethrough": isStrikethrough,
       "colorValue": selectedColor.value,
       "bgColorValue": noteBgColor.value,
       "images": selectedImages.map((file) => file.path).toList(),
@@ -286,48 +238,29 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "drawingLayers": drawingLayers,
     };
 
-    Get.back();
-
     if (widget.isEditing && widget.noteKey != null) {
       await noteBox.put(widget.noteKey, noteData);
-      Get.snackbar("Updated", "Note saved successfully", backgroundColor: Colors.green, colorText: Colors.white, snackPosition: SnackPosition.TOP);
     } else {
       await noteBox.add(noteData);
-      Get.snackbar("Success", "Note created", backgroundColor: AppColor().primaryColor, colorText: Colors.white, snackPosition: SnackPosition.TOP);
     }
-
     Get.back();
-  }
-
-  //  FORMATTING
-  void _insertBulletPoint() {
-    final text = contentController.text;
-    final selection = contentController.selection;
-    final String insertion = (text.isEmpty || text.endsWith('\n')) ? "• " : "\n• ";
-    contentController.text = text.replaceRange(selection.start, selection.end, insertion);
-    contentController.selection = TextSelection.fromPosition(TextPosition(offset: selection.start + insertion.length));
-  }
-
-  void _insertNumberedList() {
-    final text = contentController.text;
-    final selection = contentController.selection;
-    final String insertion = (text.isEmpty || text.endsWith('\n')) ? "1. " : "\n1. ";
-    contentController.text = text.replaceRange(selection.start, selection.end, insertion);
-    contentController.selection = TextSelection.fromPosition(TextPosition(offset: selection.start + insertion.length));
   }
 
   void _shareNote() {
+    final plainText = _quillController.document
+        .toPlainText()
+        .replaceAll('\n', '\n') // keep line breaks
+        .trim();
+
+    if (titleController.text.trim().isEmpty && plainText.isEmpty) {
+      Get.snackbar("Warning", "Nothing to share");
+      return;
+    }
+
     noteController.shareNote(
       title: titleController.text,
-      content: contentController.text,
+      content: plainText,
       selectedImages: selectedImages,
-    );
-  }
-
-  void _setText(String text) {
-    contentController.text = text;
-    contentController.selection = TextSelection.fromPosition(
-      TextPosition(offset: text.length),
     );
   }
 
@@ -343,22 +276,30 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         leadingColor: AppColor().primaryColor,
         actions: [
           if (isLocked) Icon(Icons.lock_outline, color: AppColor().primaryColor, size: 20),
-          Obx(() => _actionButton(
-                asset: 'assets/images/undo.png',
-                isEnabled: noteController.undoStack.length > 1,
-                onTap: () {
-                  final text = noteController.undo();
-                  if (text != null) _setText(text);
-                },
-              )),
-          Obx(() => _actionButton(
-                asset: 'assets/images/redo.png',
-                isEnabled: noteController.redoStack.isNotEmpty,
-                onTap: () {
-                  final text = noteController.redo();
-                  if (text != null) _setText(text);
-                },
-              )),
+          AnimatedBuilder(
+            animation: _quillController,
+            builder: (context, _) => _actionButton(
+              asset: 'assets/images/undo.png',
+              isEnabled: _quillController.hasUndo,
+              onTap: () {
+                if (_quillController.hasUndo) {
+                  _quillController.undo();
+                }
+              },
+            ),
+          ),
+          AnimatedBuilder(
+            animation: _quillController,
+            builder: (context, _) => _actionButton(
+              asset: 'assets/images/redo.png',
+              isEnabled: _quillController.hasRedo,
+              onTap: () {
+                if (_quillController.hasRedo) {
+                  _quillController.redo();
+                }
+              },
+            ),
+          ),
           PopupMenuButton<String>(
             icon: Container(
               decoration: BoxDecoration(
@@ -394,130 +335,128 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
-          child: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: titleController,
-                  decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
-                  style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
-                ),
-                if (selectedImages.isNotEmpty)
-                  Builder(
-                    builder: (context) {
-                      final photoFiles = selectedImages.where((file) => !file.path.contains('draw_')).toList();
-                      if (photoFiles.isEmpty) return const SizedBox();
+          child: Column(
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
+                style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
+              ),
+              if (selectedImages.isNotEmpty)
+                Builder(
+                  builder: (context) {
+                    final photoFiles = selectedImages.where((file) => !file.path.contains('draw_')).toList();
+                    if (photoFiles.isEmpty) return const SizedBox();
 
-                      return SizedBox(
-                        height: context.isPhone ? 120 : 150,
-                        child: ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          scrollDirection: Axis.horizontal,
-                          itemCount: photoFiles.length,
-                          itemBuilder: (context, index) {
-                            final file = photoFiles[index];
-                            return Stack(
-                              children: [
-                                Container(
-                                  margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
-                                  width: context.isPhone ? 100 : 130,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    image: DecorationImage(
-                                      image: FileImage(file),
-                                      fit: BoxFit.cover,
-                                    ),
+                    return SizedBox(
+                      height: context.isPhone ? 120 : 150,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        scrollDirection: Axis.horizontal,
+                        itemCount: photoFiles.length,
+                        itemBuilder: (context, index) {
+                          final file = photoFiles[index];
+                          return Stack(
+                            children: [
+                              Container(
+                                margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
+                                width: context.isPhone ? 100 : 130,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  image: DecorationImage(
+                                    image: FileImage(file),
+                                    fit: BoxFit.cover,
                                   ),
                                 ),
-                                Positioned(
-                                  right: 2,
-                                  top: 2,
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      setState(() {
-                                        selectedImages.remove(file);
-                                      });
-                                    },
-                                    child: CircleAvatar(
-                                      radius: context.isPhone ? 13 : 16,
-                                      backgroundColor: Colors.red,
-                                      child: Icon(Icons.close, size: context.isPhone ? 20 : 24, color: Colors.white),
-                                    ),
+                              ),
+                              Positioned(
+                                right: 2,
+                                top: 2,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedImages.remove(file);
+                                    });
+                                  },
+                                  child: CircleAvatar(
+                                    radius: context.isPhone ? 13 : 16,
+                                    backgroundColor: Colors.red,
+                                    child: Icon(Icons.close, size: context.isPhone ? 20 : 24, color: Colors.white),
                                   ),
                                 ),
-                              ],
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                TextField(
-                  controller: contentController,
-                  maxLines: null,
-                  style: TextStyle(
-                    fontSize: context.isPhone ? 16 : 18,
-                    height: 1.78,
-                    color: selectedColor,
-                    fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-                    fontStyle: isItalic ? FontStyle.italic : FontStyle.normal,
-                    decoration: TextDecoration.combine([
-                      if (isUnderlined) TextDecoration.underline,
-                      if (isStrikethrough) TextDecoration.lineThrough,
-                    ]),
-                  ),
-                  decoration: const InputDecoration(hintText: 'Content...', border: InputBorder.none),
+                              ),
+                            ],
+                          );
+                        },
+                      ),
+                    );
+                  },
                 ),
-                if (showTable)
-                  EditableTableComponent(
-                    tableData: tableData,
-                    onCellChanged: (rowIndex, colIndex, value) {
-                      tableData[rowIndex][colIndex] = value;
-                    },
-                    onAddRow: () {
-                      setState(() {
-                        int currentCols = tableData[0].length;
-                        tableData.add(List.generate(currentCols, (_) => ""));
-                      });
-                    },
-                    onRemoveRow: (index) {
-                      setState(() {
-                        if (tableData.length > 1) {
-                          tableData.removeAt(index);
-                        } else {
-                          showTable = false;
-                        }
-                      });
-                    },
-                    onAddColumn: () {
-                      setState(() {
-                        for (var row in tableData) {
-                          row.add("");
-                        }
-                      });
-                    },
-                    onRemoveColumn: (colIndex) {
-                      setState(() {
-                        if (tableData[0].length > 1) {
-                          for (var row in tableData) {
-                            row.removeAt(colIndex);
-                          }
-                        } else {
-                          Get.snackbar("Warning", "Table must have at least one column");
-                        }
-                      });
-                    },
-                    onDeleteTable: () {
-                      setState(() {
-                        showTable = false;
-                        tableData = [
-                          ["", ""]
-                        ];
-                      });
-                    },
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
                   ),
-              ],
-            ),
+                  child: QuillEditor(
+                    controller: _quillController,
+                    scrollController: ScrollController(),
+                    focusNode: FocusNode(),
+                    config: QuillEditorConfig(
+                      placeholder: "Start typing...",
+                      padding: EdgeInsets.zero,
+                    ),
+                  ),
+                ),
+              ),
+              if (showTable)
+                EditableTableComponent(
+                  tableData: tableData,
+                  onCellChanged: (rowIndex, colIndex, value) {
+                    tableData[rowIndex][colIndex] = value;
+                  },
+                  onAddRow: () {
+                    setState(() {
+                      int currentCols = tableData[0].length;
+                      tableData.add(List.generate(currentCols, (_) => ""));
+                    });
+                  },
+                  onRemoveRow: (index) {
+                    setState(() {
+                      if (tableData.length > 1) {
+                        tableData.removeAt(index);
+                      } else {
+                        showTable = false;
+                      }
+                    });
+                  },
+                  onAddColumn: () {
+                    setState(() {
+                      for (var row in tableData) {
+                        row.add("");
+                      }
+                    });
+                  },
+                  onRemoveColumn: (colIndex) {
+                    setState(() {
+                      if (tableData[0].length > 1) {
+                        for (var row in tableData) {
+                          row.removeAt(colIndex);
+                        }
+                      } else {
+                        Get.snackbar("Warning", "Table must have at least one column");
+                      }
+                    });
+                  },
+                  onDeleteTable: () {
+                    setState(() {
+                      showTable = false;
+                      tableData = [
+                        ["", ""]
+                      ];
+                    });
+                  },
+                ),
+            ],
           ),
         ),
       ),
@@ -556,19 +495,22 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                       _bottomIcon(Icons.text_fields, () {
                         showFormatSheet(
                           context: context,
-                          isBold: isBold,
-                          isItalic: isItalic,
-                          isUnderlined: isUnderlined,
-                          isStrikethrough: isStrikethrough,
-                          selectedColor: selectedColor,
-                          onBoldChanged: (val) => setState(() => isBold = val),
-                          onItalicChanged: (val) => setState(() => isItalic = val),
-                          onUnderlineChanged: (val) => setState(() => isUnderlined = val),
-                          onStrikethroughChanged: (val) => setState(() => isStrikethrough = val),
-                          onColorChanged: (val) => setState(() => selectedColor = val),
-                          onBulletPressed: _insertBulletPoint,
-                          onNumberedPressed: _insertNumberedList,
-                          onHyphenPressed: _insertDashList,
+                          isBold: _quillController.getSelectionStyle().attributes.containsKey(Attribute.bold.key),
+                          isItalic: _quillController.getSelectionStyle().attributes.containsKey(Attribute.italic.key),
+                          isUnderlined: _quillController.getSelectionStyle().attributes.containsKey(Attribute.underline.key),
+                          isStrikethrough: _quillController.getSelectionStyle().attributes.containsKey(Attribute.strikeThrough.key),
+                          selectedColor: Colors.black,
+                          onBoldChanged: (val) => _quillController.formatSelection(val ? Attribute.bold : Attribute.clone(Attribute.bold, null)),
+                          onItalicChanged: (val) => _quillController.formatSelection(val ? Attribute.italic : Attribute.clone(Attribute.italic, null)),
+                          onUnderlineChanged: (val) => _quillController.formatSelection(val ? Attribute.underline : Attribute.clone(Attribute.underline, null)),
+                          onStrikethroughChanged: (val) => _quillController.formatSelection(val ? Attribute.strikeThrough : Attribute.clone(Attribute.strikeThrough, null)),
+                          onColorChanged: (color) {
+                            final hex = '#${color.value.toRadixString(16).substring(2)}';
+                            _quillController.formatSelection(ColorAttribute(hex));
+                          },
+                          onBulletPressed: () => _quillController.formatSelection(Attribute.ul),
+                          onNumberedPressed: () => _quillController.formatSelection(Attribute.ol),
+                          onHyphenPressed: () => _quillController.formatSelection(Attribute.blockQuote),
                         );
                       }),
                       _bottomIcon(Icons.palette_outlined, () {
@@ -693,10 +635,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       subTitle: 'Are you sure you want to delete this note and all its attachments?',
       confirmText: "Delete",
       onConfirm: () {
-        // Delegate logic to controller
         noteController.deleteNote(
           noteKey: widget.noteKey,
-          images: selectedImages,
+          noteData: widget.existingNote,
           onSuccess: () {
             if (Get.isOverlaysOpen) Get.back();
             Get.back();
@@ -729,5 +670,3 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 }
-
-

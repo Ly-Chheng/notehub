@@ -48,7 +48,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             onPressed: () {
               if (storedAnswer == null || storedAnswer!.isEmpty) {
                 Get.snackbar(
-                  "Notice",
+                  "Error",
                   "No password found. Please set a password first.",
                   backgroundColor: Colors.red,
                   colorText: Colors.white,

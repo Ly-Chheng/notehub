@@ -3,14 +3,14 @@ class Folder {
   int colorValue;
   bool isDefault;
   int count;
-  bool isPinned; // NEW
+  bool isPinned;
 
   Folder({
     required this.title,
     required this.colorValue,
     this.isDefault = false,
     this.count = 0,
-    this.isPinned = false, // default false
+    this.isPinned = false, 
   });
 
   Map<String, dynamic> toMap() {

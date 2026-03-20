@@ -157,7 +157,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: [Colors.black, Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple].map((c) => _colorCircle(c)).toList(),
+              children: [Colors.black, Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple, Colors.amber, Colors.pink].map((c) => _colorCircle(c)).toList(),
             ),
           ),
           const SizedBox(height: 5),

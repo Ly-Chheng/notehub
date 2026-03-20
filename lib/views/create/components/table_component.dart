@@ -52,10 +52,9 @@ class EditableTableComponent extends StatelessWidget {
                       color: Colors.grey.shade400,
                     ),
                   ),
-                  const SizedBox.shrink(), 
+                  const SizedBox.shrink(),
                 ],
               ),
-
               ...tableData.asMap().entries.map((rowEntry) {
                 int rowIndex = rowEntry.key;
                 return TableRow(
@@ -71,7 +70,7 @@ class EditableTableComponent extends StatelessWidget {
                               TextPosition(offset: tableData[rowIndex][colIndex].length),
                             ),
                           onChanged: (value) => onCellChanged(rowIndex, colIndex, value),
-                          maxLines: null, // Allow expanding height like iPhone notes
+                          maxLines: null,
                           style: TextStyle(
                             fontSize: context.isPhone ? 16 : 18,
                             fontFamily: 'EN-REGULAR',
@@ -80,7 +79,6 @@ class EditableTableComponent extends StatelessWidget {
                         ),
                       );
                     }).toList(),
-
                     _headerCell(
                       context,
                       icon: Icons.remove_circle_outline,
@@ -92,7 +90,6 @@ class EditableTableComponent extends StatelessWidget {
               }).toList(),
             ],
           ),
-
           Container(
             padding: const EdgeInsets.symmetric(vertical: 4),
             decoration: BoxDecoration(

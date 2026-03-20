@@ -72,7 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context, Box box, _) {
                 List<MapEntry<dynamic, dynamic>> folders = box.toMap().entries.toList();
 
-                // iPhone Sort: 1. Default Folder, 2. Pinned Folders, 3. Rest
                 folders.sort((a, b) {
                   if (a.value['title'] == defaultFolderName) return -1;
                   if (b.value['title'] == defaultFolderName) return 1;
@@ -91,21 +90,30 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemCount: folders.length + 1,
                   itemBuilder: (context, index) {
                     if (index == folders.length) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            color: Theme.of(context).cardColor,
-                            child: CustomListFolder(
-                              title: "Recently Deleted",
-                              icon: Icons.delete,
-                              iconColor: Colors.red,
-                              listenable: trashBox.listenable(),
-                              onTap: () => Get.to(() => RecentlyDeletedScreen()),
+                      return ValueListenableBuilder(
+                        valueListenable: trashBox.listenable(),
+                        builder: (context, Box box, _) {
+                          if (box.isEmpty) {
+                            return const SizedBox.shrink();
+                          }
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(12),
+                              child: Container(
+                                color: Theme.of(context).cardColor,
+                                child: CustomListFolder(
+                                  title: "Recently Deleted",
+                                  icon: Icons.delete,
+                                  iconColor: Colors.red,
+                                  listenable: trashBox.listenable(),
+                                  onTap: () => Get.to(() => const RecentlyDeletedScreen()),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       );
                     }
 
@@ -182,7 +190,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     if (isPinned) Icon(Icons.push_pin, size: context.isPhone ? 14 : 16, color: Colors.orange),
                                   ],
                                 ),
-                                //   UPDATED TRAILING SECTION
                                 trailing: SizedBox(
                                   width: 60,
                                   child: Row(

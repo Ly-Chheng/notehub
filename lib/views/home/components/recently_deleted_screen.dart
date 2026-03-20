@@ -77,7 +77,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
               final entries = box.toMap().entries.toList();
 
               return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 itemCount: entries.length,
                 itemBuilder: (context, index) {
                   final key = entries[index].key;
@@ -85,7 +85,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                   final isSelected = controller.selectedKeys.contains(key);
 
                   return Container(
-                    margin: const EdgeInsets.symmetric(vertical: 5),
+                    margin: const EdgeInsets.only(bottom: 20),
                     child: Slidable(
                       key: ValueKey(key),
                       enabled: !controller.isSelectionMode.value,

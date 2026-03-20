@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -11,6 +12,7 @@ import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class FolderNoteListScreen extends StatefulWidget {
   final dynamic folderKey;
@@ -97,6 +99,19 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     }
   }
 
+  String _getPlainTextFromNote(String? subtitleJson) {
+    if (subtitleJson == null || subtitleJson.isEmpty) return "";
+
+    try {
+      // Parse JSON directly into a Quill Document
+      final document = quill.Document.fromJson(jsonDecode(subtitleJson));
+      return document.toPlainText().trim();
+    } catch (e) {
+      // Fallback for old plain text
+      return subtitleJson;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,7 +156,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         ),
         child: Column(
           children: [
-            /// SEARCH BAR
             TextFormField(
               controller: searchController,
               style: TextStyle(fontSize: context.isPhone ? 16 : 18),
@@ -234,7 +248,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         ...pinnedNotes.map((entry) => _buildSlidableNote(entry.key, entry.value)).toList(),
                       ],
 
-                      /// UNPINNED SECTION WITH DATE HEADERS
                       if (unpinnedNotes.isNotEmpty) ...[
                         ListView.builder(
                           shrinkWrap: true,
@@ -283,8 +296,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           ],
         ),
       ),
-
-      /// ADD NOTE BUTTON
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColor().primaryColor,
         foregroundColor: Colors.white,
@@ -367,9 +378,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           motion: const ScrollMotion(),
           extentRatio: 0.6,
           children: [
-            SizedBox(
-              width: 10,
-            ),
             SlidableAction(
               onPressed: (context) {
                 final updated = Map<String, dynamic>.from(note);
@@ -507,12 +515,11 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                       Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 4),
                                         child: Text(
-                                          note['subtitle'] ?? "",
+                                          _getPlainTextFromNote(note['subtitle']),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
                                             fontSize: context.isPhone ? 14 : 16,
-                                            fontFamily: 'EN-REGULAR',
                                           ),
                                         ),
                                       ),
@@ -645,7 +652,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       style: TextStyle(fontSize: context.isPhone ? 14 : 16),
                     ),
                     onTap: () async {
-                      // Determine if we are moving one note or the selection
                       List<dynamic> keysToMove = singleNoteKey != null ? [singleNoteKey] : selectedKeys.toList();
 
                       for (var noteKey in keysToMove) {
