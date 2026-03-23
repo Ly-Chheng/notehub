@@ -120,11 +120,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   ),
                 ),
               ),
-              SizedBox(
-                width: 5,
-              )
             ],
-
             // Index 1 → Time icon
             if (controller.selectedIndex == 1)
               GestureDetector(
@@ -141,7 +137,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                 ),
               ),
             SizedBox(width: 10),
-
             // Index 2 → no icon (empty)
           ],
         ),

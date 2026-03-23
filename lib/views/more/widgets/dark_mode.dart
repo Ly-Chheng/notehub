@@ -18,7 +18,7 @@ class DarkModeView extends GetView<DarkModeController> {
       //   borderRadius: BorderRadius.circular(8),
       // ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
         child: Column(
           children: [
             Row(

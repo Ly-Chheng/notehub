@@ -284,7 +284,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
               color: Colors.grey.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Text("Label", style: TextStyle(fontSize: 16, fontFamily: 'EN-BOLD')),
+            child: Text("Label", style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-BOLD')),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -311,7 +311,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           customHeader("Quick Presets"),
           IconButton(
             onPressed: () => _showAddPresetSheet(context),
-            icon: Icon(Icons.add_circle_outline, color: AppColor().primaryColor, size: 28),
+            icon: Icon(Icons.add_circle_outline, color: AppColor().primaryColor, size: context.isPhone ? 25 : 28),
           ),
         ],
       ),
@@ -369,11 +369,13 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: isCustom ? Colors.blueGrey.withOpacity(0.1) : AppColor().primaryColor.withOpacity(0.1),
+          // color: isCustom ? Colors.blueGrey.withOpacity(0.1) : AppColor().primaryColor.withOpacity(0.1),
+          // borderRadius: BorderRadius.circular(10),
+          color: Colors.blueGrey.withOpacity(0.1),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: isCustom ? Colors.blueGrey.withOpacity(0.2) : AppColor().primaryColor.withOpacity(0.2)),
+          border: Border.all(color: Colors.blueGrey.withOpacity(0.2)),
         ),
-        child: Text(text, style: TextStyle(color: isCustom ? Colors.blueGrey : AppColor().primaryColor, fontWeight: FontWeight.bold, fontSize: 13)),
+        child: Text(text, style: TextStyle(color: Colors.blueGrey, fontFamily: 'EN-REGULAR', fontSize: context.isPhone ? 12 : 14)),
       ),
     );
   }

@@ -14,11 +14,13 @@ class StopwatchScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
             child: Column(
               children: [
                 _buildTimerDisplay(context),
-                const SizedBox(height: 30),
+                SizedBox(
+                  height: context.isPhone ? 30 : 40,
+                ),
                 _buildLapList(),
                 const SizedBox(height: 30),
                 Padding(
@@ -83,7 +85,6 @@ class StopwatchScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              // const Divider(height: 20),
               Expanded(
                 child: ListView.builder(
                   itemCount: controller.laps.length,
@@ -114,9 +115,7 @@ class StopwatchScreen extends StatelessWidget {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // 1. REFRESH: Gray/Disabled if at 00:00:00 OR if currently Running
           _roundButton(Icons.refresh, (isAtZero || isRunning) ? null : controller.resetStopwatch, context),
-
           GestureDetector(
             onTap: controller.startStopwatch,
             child: Icon(
@@ -125,8 +124,6 @@ class StopwatchScreen extends StatelessWidget {
               color: const Color(0xFF4D7CFF),
             ),
           ),
-
-          // 2. FLAG: Gray/Disabled if at 00:00:00 OR if NOT Running
           _roundButton(Icons.flag_outlined, (isAtZero || !isRunning) ? null : controller.addLap, context),
         ],
       );
@@ -139,15 +136,17 @@ class StopwatchScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(5),
+        padding: EdgeInsets.all(context.isPhone ? 5 : 8),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           shape: BoxShape.circle,
           boxShadow: isDisabled ? [] : const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))],
         ),
-        child: Icon(icon,
-            color: isDisabled ? Colors.grey : Colors.black87,
-            size: 20),
+        child: Icon(
+          icon,
+          color: isDisabled ? Colors.grey : Colors.black87,
+          size: context.isPhone ? 20 : 24,
+        ),
       ),
     );
   }

@@ -35,19 +35,22 @@ class TimerDetailScreen extends StatelessWidget {
                 alignment: Alignment.center,
                 children: [
                   SizedBox(
-                      width: 280,
-                      height: 280,
-                      child: CircularProgressIndicator(value: progress, strokeWidth: 10, valueColor: AlwaysStoppedAnimation(AppColor().primaryColor), backgroundColor: Colors.grey.shade300)),
-                  Text(controller.formatTime(currentSec), style: TextStyle(fontSize: 55, fontFamily: 'EN-REGULAR', color: Theme.of(context).textTheme.bodyLarge!.color)),
+                      width: context.isPhone ? 280 : 330,
+                      height: context.isPhone ? 280 : 330,
+                      child: CircularProgressIndicator(
+                          value: progress, strokeWidth: context.isPhone ? 10 : 12, valueColor: AlwaysStoppedAnimation(AppColor().primaryColor), backgroundColor: Colors.grey.shade300)),
+                  Text(controller.formatTime(currentSec), style: TextStyle(fontSize: context.isPhone ? 50 : 55, fontFamily: 'EN-REGULAR', color: Theme.of(context).textTheme.bodyLarge!.color)),
                 ],
               ),
             ),
-            const SizedBox(height: 100),
+            SizedBox(
+              height: context.isPhone ? 100 : 120,
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _actionButton(
-                  const Icon(Icons.close, color: Colors.white, size: 30),
+                  Icon(Icons.close, color: Colors.white, size: context.isPhone ? 30 : 35),
                   Colors.grey[800]!,
                   Colors.white,
                   () => Get.back(),
@@ -56,7 +59,7 @@ class TimerDetailScreen extends StatelessWidget {
                   Icon(
                     isRunning ? Icons.pause : Icons.play_arrow,
                     color: isRunning ? AppColor().primaryColor : Colors.green,
-                    size: 35,
+                    size: context.isPhone ? 35 : 40,
                   ),
                   isRunning ? AppColor().primaryColor.withOpacity(0.2) : Colors.green.withOpacity(0.2),
                   isRunning ? AppColor().primaryColor : Colors.green,
@@ -74,8 +77,8 @@ class TimerDetailScreen extends StatelessWidget {
     return GestureDetector(
       onTap: tap,
       child: Container(
-        width: 80,
-        height: 80,
+        width: 70,
+        height: 70,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           color: bg,

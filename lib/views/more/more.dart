@@ -56,7 +56,7 @@ class _MoreScreenState extends State<MoreScreen> {
                 ]),
               ),
               Text(
-                "Copyright © 2026 Student Note App.\nVersion 1.0.0 (0)",
+                "Copyright © 2026 Student Note App.\nVersion 1.0.0 (1)",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 12 : 14, height: 1.5),
               ),
