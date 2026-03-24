@@ -16,6 +16,12 @@ void showFormatSheet({
   required VoidCallback onBulletPressed,
   required VoidCallback onNumberedPressed,
   required VoidCallback onHyphenPressed,
+  required bool isLeftAligned,
+  required bool isCenterAligned,
+  required bool isRightAligned,
+  required VoidCallback onLeftAlignPressed,
+  required VoidCallback onCenterAlignPressed,
+  required VoidCallback onRightAlignPressed,
 }) {
   showModalBottomSheet(
     context: context,
@@ -41,7 +47,7 @@ void showFormatSheet({
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
@@ -51,23 +57,32 @@ void showFormatSheet({
                               onBoldChanged(isBold);
                               setSheetState(() {});
                             }),
-                            const SizedBox(width: 20),
                             _formatToggle(Icons.format_italic, isItalic, () {
                               isItalic = !isItalic;
                               onItalicChanged(isItalic);
                               setSheetState(() {});
                             }),
-                            const SizedBox(width: 20),
                             _formatToggle(Icons.format_underlined, isUnderlined, () {
                               isUnderlined = !isUnderlined;
                               onUnderlineChanged(isUnderlined);
                               setSheetState(() {});
                             }),
-                            const SizedBox(width: 20),
                             _formatToggle(Icons.format_strikethrough, isStrikethrough, () {
                               isStrikethrough = !isStrikethrough;
                               onStrikethroughChanged(isStrikethrough);
                               setSheetState(() {});
+                            }),
+                            _formatToggle(Icons.format_align_left, isLeftAligned, () {
+                              onLeftAlignPressed();
+                              Navigator.pop(context);
+                            }),
+                            _formatToggle(Icons.format_align_center, isCenterAligned, () {
+                              onCenterAlignPressed();
+                              Navigator.pop(context);
+                            }),
+                            _formatToggle(Icons.format_align_right, isRightAligned, () {
+                              onRightAlignPressed();
+                              Navigator.pop(context);
                             }),
                           ],
                         ),
@@ -82,19 +97,17 @@ void showFormatSheet({
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                     child: Row(
                       children: [
                         _formatToggle(Icons.format_list_bulleted, false, () {
                           onBulletPressed();
                           Navigator.pop(context);
                         }),
-                        const SizedBox(width: 20),
                         _formatToggle(Icons.format_line_spacing_rounded, false, () {
                           onHyphenPressed();
                           Navigator.pop(context);
                         }),
-                        const SizedBox(width: 20),
                         _formatToggle(Icons.format_list_numbered, false, () {
                           onNumberedPressed();
                           Navigator.pop(context);
@@ -105,7 +118,7 @@ void showFormatSheet({
                 ),
               ],
             ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 15),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               decoration: BoxDecoration(
@@ -151,7 +164,7 @@ void showFormatSheet({
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 10),
           ],
         ),
       );
@@ -162,14 +175,17 @@ void showFormatSheet({
 Widget _formatToggle(IconData icon, bool isActive, VoidCallback onTap) {
   return InkWell(
     onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.all(5),
-      decoration: BoxDecoration(
-        color: isActive ? Colors.blue.withOpacity(0.1) : Colors.transparent,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: isActive ? Colors.blue : Colors.grey.shade300),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 7),
+      child: Container(
+        padding: const EdgeInsets.all(5),
+        decoration: BoxDecoration(
+          color: isActive ? Colors.blue.withOpacity(0.1) : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: isActive ? Colors.blue : Colors.grey.shade300),
+        ),
+        child: Icon(icon, color: isActive ? Colors.blue : Colors.grey,size: 23,),
       ),
-      child: Icon(icon, color: isActive ? Colors.blue : Colors.grey),
     ),
   );
 }

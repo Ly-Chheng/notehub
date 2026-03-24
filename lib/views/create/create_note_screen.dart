@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
+
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/background_component.dart';
@@ -115,6 +118,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
+  // PERMANENT STORAGE HELPER
+  Future<File> _moveFileToPermanentStorage(File sourceFile) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final String fileName = "${DateTime.now().millisecondsSinceEpoch}${p.extension(sourceFile.path)}";
+    final String newPath = p.join(directory.path, fileName);
+    return await sourceFile.copy(newPath);
+  }
+
   @override
   void dispose() {
     _quillController.dispose();
@@ -171,12 +182,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         return;
       }
 
-      // Toggle off (requires password)
       if (isLocked) {
         _showUnlockDialog(masterPass);
-      }
-      // Toggle on
-      else {
+      } else {
         setState(() => isLocked = true);
         Get.snackbar("Locked", "Note is now protected.");
       }
@@ -328,72 +336,27 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           ),
         ],
       ),
-      body: CustomPaint(
-        painter: NotebookPainter(
-          type: selectedPaperType,
-          lineColor: const Color(0x339E9E9E),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
-          child: Column(
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
-                style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
-              ),
-              if (selectedImages.isNotEmpty)
-                Builder(
-                  builder: (context) {
-                    final photoFiles = selectedImages.where((file) => !file.path.contains('draw_')).toList();
-                    if (photoFiles.isEmpty) return const SizedBox();
-
-                    return SizedBox(
-                      height: context.isPhone ? 120 : 150,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        scrollDirection: Axis.horizontal,
-                        itemCount: photoFiles.length,
-                        itemBuilder: (context, index) {
-                          final file = photoFiles[index];
-                          return Stack(
-                            children: [
-                              Container(
-                                margin: const EdgeInsets.only(right: 12, top: 10, left: 10),
-                                width: context.isPhone ? 100 : 130,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  image: DecorationImage(
-                                    image: FileImage(file),
-                                    fit: BoxFit.cover,
-                                  ),
-                                ),
-                              ),
-                              Positioned(
-                                right: 2,
-                                top: 2,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedImages.remove(file);
-                                    });
-                                  },
-                                  child: CircleAvatar(
-                                    radius: context.isPhone ? 13 : 16,
-                                    backgroundColor: Colors.red,
-                                    child: Icon(Icons.close, size: context.isPhone ? 20 : 24, color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      ),
-                    );
-                  },
+      body: SingleChildScrollView(
+        child: CustomPaint(
+          painter: NotebookPainter(
+            type: selectedPaperType,
+            lineColor: const Color(0x339E9E9E),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
+                  maxLines: null,
+                  decoration: const InputDecoration(hintText: 'Title', border: InputBorder.none),
+                  style: TextStyle(fontSize: context.isPhone ? 24 : 28, fontWeight: FontWeight.bold),
                 ),
-              Expanded(
-                child: Padding(
+                if (selectedImages.isNotEmpty) _buildImagePreview(),
+                SizedBox(
+                  height: 20,
+                ),
+                Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 4,
                   ),
@@ -407,62 +370,134 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     ),
                   ),
                 ),
-              ),
-              if (showTable)
-                EditableTableComponent(
-                  tableData: tableData,
-                  onCellChanged: (rowIndex, colIndex, value) {
-                    tableData[rowIndex][colIndex] = value;
-                  },
-                  onAddRow: () {
-                    setState(() {
-                      int currentCols = tableData[0].length;
-                      tableData.add(List.generate(currentCols, (_) => ""));
-                    });
-                  },
-                  onRemoveRow: (index) {
-                    setState(() {
-                      if (tableData.length > 1) {
-                        tableData.removeAt(index);
-                      } else {
-                        showTable = false;
-                      }
-                    });
-                  },
-                  onAddColumn: () {
-                    setState(() {
-                      for (var row in tableData) {
-                        row.add("");
-                      }
-                    });
-                  },
-                  onRemoveColumn: (colIndex) {
-                    setState(() {
-                      if (tableData[0].length > 1) {
-                        for (var row in tableData) {
-                          row.removeAt(colIndex);
+                if (showTable)
+                  EditableTableComponent(
+                    tableData: tableData,
+                    onCellChanged: (rowIndex, colIndex, value) {
+                      tableData[rowIndex][colIndex] = value;
+                    },
+                    onAddRow: () {
+                      setState(() {
+                        int currentCols = tableData[0].length;
+                        tableData.add(List.generate(currentCols, (_) => ""));
+                      });
+                    },
+                    onRemoveRow: (index) {
+                      setState(() {
+                        if (tableData.length > 1) {
+                          tableData.removeAt(index);
+                        } else {
+                          showTable = false;
                         }
-                      } else {
-                        Get.snackbar("Warning", "Table must have at least one column");
-                      }
-                    });
-                  },
-                  onDeleteTable: () {
-                    setState(() {
-                      showTable = false;
-                      tableData = [
-                        ["", ""]
-                      ];
-                    });
-                  },
-                ),
-            ],
+                      });
+                    },
+                    onAddColumn: () {
+                      setState(() {
+                        for (var row in tableData) {
+                          row.add("");
+                        }
+                      });
+                    },
+                    onRemoveColumn: (colIndex) {
+                      setState(() {
+                        if (tableData[0].length > 1) {
+                          for (var row in tableData) {
+                            row.removeAt(colIndex);
+                          }
+                        } else {
+                          Get.snackbar("Warning", "Table must have at least one column");
+                        }
+                      });
+                    },
+                    onDeleteTable: () {
+                      setState(() {
+                        showTable = false;
+                        tableData = [
+                          ["", ""]
+                        ];
+                      });
+                    },
+                  ),
+              ],
+            ),
           ),
         ),
       ),
       bottomNavigationBar: _buildBottomToolbar(),
     );
   }
+
+  Widget _buildImagePreview() {
+    return SizedBox(
+      height: 120,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: selectedImages.length,
+        itemBuilder: (context, index) => Stack(
+          children: [
+            Container(
+              margin: const EdgeInsets.all(8),
+              width: 100,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                image: DecorationImage(image: FileImage(selectedImages[index]), fit: BoxFit.cover),
+              ),
+            ),
+            Positioned(
+              right: 0,
+              child: IconButton(icon: const Icon(Icons.cancel, color: Colors.red), onPressed: () => setState(() => selectedImages.removeAt(index))),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget _buildImagePreview() {
+  //   // 1. Filter the list so we only see actual photos
+  //   final photoFiles = selectedImages.where((file) => !file.path.contains('draw_')).toList();
+
+  //   // 2. If there are no photos, don't show an empty gap
+  //   if (photoFiles.isEmpty) return const SizedBox.shrink();
+
+  //   return SizedBox(
+  //     height: context.isPhone ? 120 : 150,
+  //     child: ListView.builder(
+  //       scrollDirection: Axis.horizontal,
+  //       itemCount: photoFiles.length,
+  //       itemBuilder: (context, index) {
+  //         final file = photoFiles[index];
+  //         return Stack(
+  //           children: [
+  //             Container(
+  //               margin: const EdgeInsets.only(right: 5, top: 5),
+  //               width: 100,
+  //               decoration: BoxDecoration(
+  //                 borderRadius: BorderRadius.circular(12),
+  //                 image: DecorationImage(
+  //                   image: FileImage(file),
+  //                   fit: BoxFit.cover,
+  //                 ),
+  //               ),
+  //             ),
+  //             Positioned(
+  //               right: 0,
+  //               top: 0,
+  //               child: GestureDetector(
+  //                 onTap: () => setState(() => selectedImages.remove(file)),
+  //                 child: const CircleAvatar(
+  //                   radius: 12,
+  //                   backgroundColor: Colors.red,
+  //                   child: Icon(Icons.close, size: 16, color: Colors.white),
+  //                 ),
+  //               ),
+  //             ),
+  //           ],
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildBottomToolbar() {
     return SafeArea(
@@ -487,14 +522,27 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                       _bottomIcon(Icons.image_outlined, () {
                         showMediaSheet(
                           context: context,
-                          onImageSelected: (File image) {
-                            setState(() => selectedImages.add(image));
+                          onImageSelected: (File tempImage) async {
+                            // MOVE TO PERMANENT BEFORE UPDATING STATE
+                            File permanentFile = await _moveFileToPermanentStorage(tempImage);
+                            setState(() => selectedImages.add(permanentFile));
                           },
                         );
                       }),
                       _bottomIcon(Icons.text_fields, () {
+                        final selectionStyle = _quillController.getSelectionStyle();
+
+                        final alignAttr = selectionStyle.attributes[Attribute.align.key];
+
+                        final bool isLeft = alignAttr == null || alignAttr.value == 'left';
+                        final bool isCenter = alignAttr?.value == 'center';
+                        final bool isRight = alignAttr?.value == 'right';
+
                         showFormatSheet(
                           context: context,
+                          isLeftAligned: isLeft,
+                          isCenterAligned: isCenter,
+                          isRightAligned: isRight,
                           isBold: _quillController.getSelectionStyle().attributes.containsKey(Attribute.bold.key),
                           isItalic: _quillController.getSelectionStyle().attributes.containsKey(Attribute.italic.key),
                           isUnderlined: _quillController.getSelectionStyle().attributes.containsKey(Attribute.underline.key),
@@ -504,6 +552,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           onItalicChanged: (val) => _quillController.formatSelection(val ? Attribute.italic : Attribute.clone(Attribute.italic, null)),
                           onUnderlineChanged: (val) => _quillController.formatSelection(val ? Attribute.underline : Attribute.clone(Attribute.underline, null)),
                           onStrikethroughChanged: (val) => _quillController.formatSelection(val ? Attribute.strikeThrough : Attribute.clone(Attribute.strikeThrough, null)),
+                          onLeftAlignPressed: () => _quillController.formatSelection(Attribute.leftAlignment),
+                          onCenterAlignPressed: () => _quillController.formatSelection(Attribute.centerAlignment),
+                          onRightAlignPressed: () => _quillController.formatSelection(Attribute.rightAlignment),
                           onColorChanged: (color) {
                             final hex = '#${color.value.toRadixString(16).substring(2)}';
                             _quillController.formatSelection(ColorAttribute(hex));
@@ -524,7 +575,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                         setState(() => showTable = !showTable);
                       }),
                       _bottomIcon(Icons.mode_outlined, _openHandwriting),
-                      _bottomIcon(Icons.grid_3x3, _showPaperStyleSheet),
+                     // _bottomIcon(Icons.grid_3x3, _showPaperStyleSheet),
                     ],
                   ),
                 ),
@@ -612,7 +663,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
                   return ListTile(
                     leading: Icon(Icons.folder, color: isSelected ? AppColor().primaryColor : Colors.grey),
-                    title: Text(folderTitle),
+                    title: Text(folderTitle, maxLines: 1, overflow: TextOverflow.ellipsis),
                     trailing: isSelected ? Icon(Icons.check, color: AppColor().primaryColor) : null,
                     onTap: () {
                       setState(() => currentFolderKey = folder.key);

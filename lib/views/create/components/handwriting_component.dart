@@ -127,7 +127,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
       child: Column(
         children: [
           const SizedBox(height: 20),
-          SheetHeader(title: "Handwriting", saveText: "Done", onSave: _saveAndExit),
+          SheetHeader(title: "Handwriting", saveText: "Save", onSave: _saveAndExit),
           Expanded(
             child: RepaintBoundary(
               key: _repaintKey,

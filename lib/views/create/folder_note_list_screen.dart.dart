@@ -402,11 +402,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               label: 'Folder',
             ),
             SlidableAction(
-              // onPressed: (context) => _verifyAndExecute(
-              //   isLocked: isLocked,
-              //   title: "Delete Locked Note",
-              //   onVerified: () => noteBox.delete(noteKey),
-              // ),
               onPressed: (context) => _verifyAndExecute(
                 isLocked: isLocked,
                 title: "Delete Locked Note",
@@ -534,7 +529,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     ],
                   ),
                 ),
-                // --- IMAGE PREVIEW THUMBNAIL (Right side) ---
                 if (imagePaths != null && imagePaths.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
@@ -565,15 +559,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     );
   }
 
-  // void _deleteSelectedNotes() {
-  //   for (var key in selectedKeys) {
-  //     noteBox.delete(key);
-  //   }
-  //   setState(() {
-  //     selectedKeys.clear();
-  //     isSelectionMode = false;
-  //   });
-  // }
   void _deleteSelectedNotes() {
     final Box trashBox = Hive.box('recently_deleted');
     for (var key in selectedKeys) {
@@ -649,6 +634,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     leading: Icon(Icons.folder, size: context.isPhone ? 24 : 30, color: Color(folder.value['colorValue'] ?? Colors.blue.value)),
                     title: Text(
                       folder.value['title'] ?? "Unnamed Folder",
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(fontSize: context.isPhone ? 14 : 16),
                     ),
                     onTap: () async {

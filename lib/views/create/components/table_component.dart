@@ -37,7 +37,7 @@ class EditableTableComponent extends StatelessWidget {
           Table(
             columnWidths: {
               for (var i = 0; i < columnCount; i++) i: const FlexColumnWidth(),
-              columnCount: const FixedColumnWidth(35), // Side actions
+              columnCount: const FixedColumnWidth(35),
             },
             border: TableBorder.all(color: Colors.black12, width: 1),
             children: [
@@ -47,9 +47,9 @@ class EditableTableComponent extends StatelessWidget {
                     columnCount,
                     (index) => _headerCell(
                       context,
-                      icon: Icons.horizontal_rule_rounded,
+                      icon: Icons.remove_circle_outline,
                       onTap: () => onRemoveColumn(index),
-                      color: Colors.grey.shade400,
+                      color: Colors.red.shade400,
                     ),
                   ),
                   const SizedBox.shrink(),

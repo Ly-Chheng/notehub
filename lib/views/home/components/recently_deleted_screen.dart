@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -11,6 +13,17 @@ import 'package:project_structure/widgets/sheet_header.dart';
 
 class RecentlyDeletedScreen extends StatelessWidget {
   const RecentlyDeletedScreen({super.key});
+
+  String _getPlainTextFromNote(String? subtitleJson) {
+    if (subtitleJson == null || subtitleJson.isEmpty) return "";
+
+    try {
+      final document = quill.Document.fromJson(jsonDecode(subtitleJson));
+      return document.toPlainText().trim();
+    } catch (e) {
+      return subtitleJson;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -93,14 +106,6 @@ class RecentlyDeletedScreen extends StatelessWidget {
                         motion: const DrawerMotion(),
                         extentRatio: 0.5,
                         children: [
-                          // SlidableAction(
-                          //   onPressed: (context) => controller.restoreNote(key, data),
-                          //   backgroundColor: Colors.green,
-                          //   foregroundColor: Colors.white,
-                          //   icon: Icons.restore,
-                          //   label: 'Restore',
-                          //   borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
-                          // ),
                           SlidableAction(
                             onPressed: (context) => _showFolderPicker(context, controller, noteKey: key),
                             backgroundColor: Colors.blue,
@@ -142,12 +147,13 @@ class RecentlyDeletedScreen extends StatelessWidget {
                                 )
                               : null,
                           title: Text(
-                            data['title'] ?? "Untitled Note",
+                            // data['title'] ?? "Untitled Note",
+                            (data['title'] != null && data['title'].toString().trim().isNotEmpty) ? data['title'] : _getPlainTextFromNote(data['subtitle']),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: context.isPhone ? 18 : 20,
-                              fontFamily: 'EN-BOLD',
+                              fontFamily: 'EN-REGULAR',
                             ),
                           ),
                           subtitle: Text(

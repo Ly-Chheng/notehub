@@ -9,11 +9,10 @@ void showPaletteSheet({
   showModalBottomSheet(
     context: context,
     backgroundColor: Theme.of(context).cardColor,
-    //isScrollControlled: true,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (context) => SizedBox(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(10),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -24,8 +23,8 @@ void showPaletteSheet({
             Expanded(
               child: SingleChildScrollView(
                 child: Wrap(
-                  spacing: 15,
-                  runSpacing: 15,
+                  spacing: 5,
+                  runSpacing: 5,
                   children: [
                     Colors.white,
                     const Color(0xFFFFF9C4),
@@ -51,9 +50,6 @@ void showPaletteSheet({
                     const Color(0xFFFFCCBC),
                     const Color(0xFFD1F2EB),
                     const Color(0xFFE6EE9C),
-                    const Color(0xFFB39DDB),
-                    const Color(0xFFFFAB91),
-                    const Color(0xFFAED581),
                   ].map((color) {
                     // Check if this specific circle is the active one
                     bool isActive = selectedColor.value == color.value;

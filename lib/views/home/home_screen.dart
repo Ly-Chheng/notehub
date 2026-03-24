@@ -86,7 +86,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 return ListView.builder(
                   // itemCount: folders.length,
                   // itemBuilder: (context, index) {
-
                   itemCount: folders.length + 1,
                   itemBuilder: (context, index) {
                     if (index == folders.length) {
@@ -186,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 title: Row(
                                   children: [
                                     if (isPinned) const SizedBox(width: 5),
-                                    Text(folderData['title'], style: TextStyle(fontSize: context.isPhone ? 18 : 20, fontFamily: 'EN-REGULAR')),
+                                    Expanded(child: Text(folderData['title'], maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: context.isPhone ? 18 : 20, fontFamily: 'EN-REGULAR'))),
                                     if (isPinned) Icon(Icons.push_pin, size: context.isPhone ? 14 : 16, color: Colors.orange),
                                   ],
                                 ),
