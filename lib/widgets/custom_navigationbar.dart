@@ -44,7 +44,7 @@ Widget customNavigationBar({
                     currentIndex == 0 ? 'assets/images/home_active.png' : 'assets/images/home.png',
                     width: iconSize,
                     height: iconSize,
-                    color: currentIndex == 0 ? activeColor : inactiveColor,
+                    //color: currentIndex == 0 ? activeColor : inactiveColor,
                   ),
                 ),
               ],

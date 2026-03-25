@@ -22,7 +22,7 @@ customAppBar({
       overflow: TextOverflow.ellipsis,
       style: TextStyle(
         color: titleColor,
-        fontSize: 18,
+        fontSize: 20,
         fontFamily: 'EN-BOLD',
       ),
     ),

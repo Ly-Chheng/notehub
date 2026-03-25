@@ -56,6 +56,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           TextButton(
             onPressed: () {
               _lockController.handleChangePassword(
+                context: context,
                 currentInput: _currentPassController.text,
                 newPass: _newPassController.text,
                 confirmPass: _confirmPassController.text,

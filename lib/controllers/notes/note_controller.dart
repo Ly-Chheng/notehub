@@ -10,78 +10,25 @@ class NoteController extends GetxController {
   final Box noteBox = Hive.box('student_notes');
   final Box trashBox = Hive.box('recently_deleted');
 
-  var undoStack = <String>[].obs;
-  var redoStack = <String>[].obs;
-  bool isUndoRedoAction = false;
-
-  void initializeHistory(String initialText) {
-    undoStack.clear();
-    redoStack.clear();
-    undoStack.add(initialText);
-  }
-
-  void recordChange(String text) {
-    if (isUndoRedoAction) return;
-
-    if (undoStack.isEmpty || undoStack.last != text) {
-      if (undoStack.length > 50) undoStack.removeAt(0);
-      undoStack.add(text);
-      redoStack.clear();
+  // Moves one or more notes to a new folder
+  Future<void> moveNotesToFolder({
+    required List<dynamic> keysToMove,
+    required dynamic targetFolderKey,
+  }) async {
+    try {
+      for (var noteKey in keysToMove) {
+        final noteData = noteBox.get(noteKey);
+        if (noteData != null) {
+          final updatedNote = Map<String, dynamic>.from(noteData);
+          updatedNote['folderKey'] = targetFolderKey;
+          await noteBox.put(noteKey, updatedNote);
+        }
+      }
+      update(); 
+    } catch (e) {
+      Get.snackbar("Error", "Failed to move notes", backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
-
-  String? undo() {
-    if (undoStack.length > 1) {
-      isUndoRedoAction = true;
-      redoStack.add(undoStack.removeLast());
-      isUndoRedoAction = false;
-      return undoStack.last;
-    }
-    return null;
-  }
-
-  String? redo() {
-    if (redoStack.isNotEmpty) {
-      isUndoRedoAction = true;
-      String redoneText = redoStack.removeLast();
-      undoStack.add(redoneText);
-      isUndoRedoAction = false;
-      return redoneText;
-    }
-    return null;
-  }
-
-  // Future<void> shareNote({
-  //   required String title,
-  //   required String content,
-  //   required List<File> selectedImages,
-  // }) async {
-  //   final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
-
-  //   final String shareContent = content.trim().isEmpty ? "(No content)" : content.trim();
-
-  //   final String fullText = "$shareTitle\n\n$shareContent";
-
-  //   try {
-  //     if (selectedImages.isNotEmpty) {
-  //       final files = selectedImages.where((file) => file.existsSync()).map((file) => XFile(file.path)).toList();
-
-  //       if (files.isNotEmpty) {
-  //         await Share.shareXFiles(files, text: fullText);
-  //       } else {
-  //         await Share.share(fullText);
-  //       }
-  //     } else {
-  //       await Share.share(fullText);
-  //     }
-  //   } catch (e) {
-  //     Get.snackbar(
-  //       "Error",
-  //       "Could not share note",
-  //       snackPosition: SnackPosition.BOTTOM,
-  //     );
-  //   }
-  // }
 
   Future<void> shareNote({
     required String title,
@@ -124,7 +71,6 @@ class NoteController extends GetxController {
       final trashBox = Hive.box('recently_deleted');
 
       if (noteKey != null && noteData != null) {
-        // Prepare data for Trash (Add the deleted timestamp)
         final Map<String, dynamic> deletedData = Map<String, dynamic>.from(noteData);
         deletedData['deletedAt'] = DateTime.now().toIso8601String();
 

@@ -75,38 +75,40 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
         return StatefulBuilder(builder: (context, setSheetState) {
-          return Padding(
-            padding: EdgeInsetsGeometry.all(15),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SheetHeader(
-                  title: "Add Quick Preset",
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  height: 150,
-                  decoration: BoxDecoration(color: Colors.grey.withOpacity(0.05), borderRadius: BorderRadius.circular(15)),
-                  child: Row(
-                    children: [
-                      _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
-                      _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v), initial: tempM),
-                      _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v), initial: tempS),
-                    ],
+          return SafeArea(
+            child: Padding(
+              padding: EdgeInsetsGeometry.all(15),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SheetHeader(
+                    title: "Add Quick Preset",
                   ),
-                ),
-                const SizedBox(height: 25),
-                CustomButton(
-                  text: "Save Preset",
-                  backgroundColor: AppColor().primaryColor,
-                  textColor: Colors.white,
-                  borderRadius: 12,
-                  onPressed: () {
-                    _finalizePresetSave(tempH, tempM, tempS);
-                    Navigator.pop(context);
-                  },
-                )
-              ],
+                  const SizedBox(height: 20),
+                  Container(
+                    height: 150,
+                    decoration: BoxDecoration(color: Colors.grey.withOpacity(0.05), borderRadius: BorderRadius.circular(15)),
+                    child: Row(
+                      children: [
+                        _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
+                        _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v), initial: tempM),
+                        _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v), initial: tempS),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 25),
+                  CustomButton(
+                    text: "Save Preset",
+                    backgroundColor: AppColor().primaryColor,
+                    textColor: Colors.white,
+                    borderRadius: 12,
+                    onPressed: () {
+                      _finalizePresetSave(tempH, tempM, tempS);
+                      Navigator.pop(context);
+                    },
+                  )
+                ],
+              ),
             ),
           );
         });

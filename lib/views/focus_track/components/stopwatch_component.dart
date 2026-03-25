@@ -120,7 +120,7 @@ class StopwatchScreen extends StatelessWidget {
             onTap: controller.startStopwatch,
             child: Icon(
               isRunning ? Icons.stop_circle : Icons.play_circle_filled,
-              size: context.isPhone ? 55 : 90,
+              size: context.isPhone ? 60 : 90,
               color: const Color(0xFF4D7CFF),
             ),
           ),
@@ -136,7 +136,7 @@ class StopwatchScreen extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(context.isPhone ? 5 : 8),
+        padding: EdgeInsets.all(context.isPhone ? 8 : 10),
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           shape: BoxShape.circle,
@@ -145,7 +145,7 @@ class StopwatchScreen extends StatelessWidget {
         child: Icon(
           icon,
           color: isDisabled ? Colors.grey : Colors.black87,
-          size: context.isPhone ? 20 : 24,
+          size: context.isPhone ? 24 : 30,
         ),
       ),
     );

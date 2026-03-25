@@ -9,8 +9,44 @@ class HomeController extends GetxController {
   final Box trashBox = Hive.box('recently_deleted');
   final Box settingsBox = Hive.box('settings_box');
 
+  final String defaultFolderName = "My Note";
+
   var isSelectionMode = false.obs;
   var selectedKeys = <dynamic>{}.obs;
+
+  // Logic moved from initState
+  void ensureDefaultFolder() {
+    bool exists = folderBox.values.any((f) => f['title'] == defaultFolderName);
+    if (!exists) {
+      folderBox.add({
+        "title": defaultFolderName,
+        "colorValue": Colors.orange.value,
+        "isPinned": false,
+      });
+    }
+  }
+
+  // Sorting logic
+  List<MapEntry<dynamic, dynamic>> getSortedFolders(List<MapEntry<dynamic, dynamic>> entries) {
+    return entries
+      ..sort((a, b) {
+        if (a.value['title'] == defaultFolderName) return -1;
+        if (b.value['title'] == defaultFolderName) return 1;
+
+        bool aPinned = a.value['isPinned'] ?? false;
+        bool bPinned = b.value['isPinned'] ?? false;
+        if (aPinned && !bPinned) return -1;
+        if (!aPinned && bPinned) return 1;
+        return 0;
+      });
+  }
+
+  // Folder Actions
+  void togglePin(dynamic key, dynamic data) {
+    final updated = Map<String, dynamic>.from(data);
+    updated['isPinned'] = !(data['isPinned'] ?? false);
+    folderBox.put(key, updated);
+  }
 
   void deleteFolder(dynamic folderKey) {
     _moveFolderNotesToTrash(folderKey);
@@ -18,8 +54,7 @@ class HomeController extends GetxController {
   }
 
   void _moveFolderNotesToTrash(dynamic folderKey) {
-    final notesToMove = noteBox.toMap().entries.where((entry) => entry.value['folderKey'] == folderKey).toList();
-
+    final notesToMove = noteBox.toMap().entries.where((e) => e.value['folderKey'] == folderKey).toList();
     for (var entry in notesToMove) {
       trashBox.put(entry.key, {
         ...Map<String, dynamic>.from(entry.value),
@@ -29,8 +64,65 @@ class HomeController extends GetxController {
     }
   }
 
+  // Security Verification
+  void verifyAndExecute({
+    required BuildContext context,
+    required bool isLocked,
+    required VoidCallback onVerified,
+    String title = "Security Check",
+  }) {
+    if (!isLocked) {
+      onVerified();
+      return;
+    }
+
+    final TextEditingController passController = TextEditingController();
+    String? masterPassword = settingsBox.get('master_password');
+
+    showConfirmDialog(
+      context: context,
+      title: title,
+      subTitle: "Please enter your password to proceed.",
+      confirmText: "Unlock",
+      controller: passController,
+      obscureText: true,
+      hintText: "Master Password",
+      onConfirm: () {
+        if (passController.text == masterPassword) {
+          Get.back();
+          onVerified();
+        } else {
+          Get.snackbar("Error", "Incorrect Password", backgroundColor: Colors.red, colorText: Colors.white);
+        }
+      },
+    );
+  }
+
+  dynamic getDefaultFolderKey() {
+    try {
+      return folderBox.toMap().entries.firstWhere((e) => e.value['title'] == defaultFolderName).key;
+    } catch (e) {
+      return null;
+    }
+  }
+
   void permanentDelete(dynamic key) {
     trashBox.delete(key);
+  }
+
+  void deleteWapDialog(BuildContext context, Set<dynamic> keysToDelete) {
+    if (keysToDelete.isEmpty) return;
+
+    showConfirmDialog(
+      context: context,
+      title: "Delete Permanently?",
+      subTitle: "Are you sure you want to delete ${keysToDelete.length} item(s) forever? This action cannot be undone.",
+      onConfirm: () {
+        for (var key in keysToDelete) {
+          trashBox.delete(key);
+        }
+      },
+    );
   }
 
   void toggleSelectionMode() {
@@ -46,22 +138,6 @@ class HomeController extends GetxController {
     } else {
       selectedKeys.add(key);
     }
-  }
-
-  void restoreSelected() {
-    if (selectedKeys.isEmpty) return;
-
-    for (var key in selectedKeys) {
-      final data = trashBox.get(key);
-      if (data != null) {
-        final restoredData = Map<String, dynamic>.from(data);
-        restoredData.remove('deletedAt');
-        noteBox.put(key, restoredData);
-        trashBox.delete(key);
-      }
-    }
-
-    toggleSelectionMode();
   }
 
   void deleteSelectedPermanently(BuildContext context) {

@@ -2,11 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 
 class LockController extends GetxController {
   final Box settingsBox = Hive.box('settings_box');
 
+  Future<void> _showDialog(
+    BuildContext context, {
+    required String title,
+    required String message,
+  }) async {
+    await showConfirmDialog(
+      context: context,
+      title: title,
+      subTitle: message,
+      confirmText: "OK",
+      onConfirm: () {},
+    );
+  }
+
   Future<void> handleChangePassword({
+    required BuildContext context,
     required String currentInput,
     required String newPass,
     required String confirmPass,
@@ -17,22 +33,38 @@ class LockController extends GetxController {
     String? storedPass = settingsBox.get('master_password');
 
     if (storedPass == null || storedPass.isEmpty) {
-      _showError("No password found. Please create a password first.");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "No password found. Please create one first.",
+      );
       return;
     }
 
     if (currentInput.isEmpty || newPass.isEmpty || confirmPass.isEmpty) {
-      _showError("Please fill in all password fields");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "Please fill all password fields",
+      );
       return;
     }
 
     if (currentInput != storedPass) {
-      _showError("Current password is incorrect");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "Current password is incorrect",
+      );
       return;
     }
 
     if (newPass != confirmPass) {
-      _showError("New passwords do not match");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "New passwords do not match",
+      );
       return;
     }
 
@@ -50,8 +82,8 @@ class LockController extends GetxController {
     }
   }
 
-  /// HANDLE CREATE / UPDATE SECURITY SETUP
   Future<void> handleCreatePassword({
+    required BuildContext context,
     required String password,
     required String confirmPassword,
     required String? question,
@@ -59,12 +91,20 @@ class LockController extends GetxController {
     required String hint,
   }) async {
     if (password.isEmpty || question == null || answer.isEmpty) {
-      _showError("Please fill all required fields");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "Please fill all required fields",
+      );
       return;
     }
 
     if (password != confirmPassword) {
-      _showError("Passwords do not match");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "Passwords do not match",
+      );
       return;
     }
 
@@ -82,16 +122,26 @@ class LockController extends GetxController {
   }
 
   void handleForgetPasswordVerify({
+    required BuildContext context,
     required String userAnswer,
     required String? storedAnswer,
-  }) {
+  }) async {
     if (storedAnswer == null || storedAnswer.isEmpty) {
-      _showError("No password found. Please set a password first.");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "No password found. Please set one first.",
+      );
+
       return;
     }
 
     if (userAnswer.isEmpty) {
-      _showError("Please enter your recovery answer.");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "Please enter your recovery answer",
+      );
       return;
     }
 
@@ -100,11 +150,16 @@ class LockController extends GetxController {
 
       Get.off(() => const CreatePasswordScreen());
     } else {
-      _showError("Incorrect answer. Please try again.");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "Incorrect answer. Try again.",
+      );
     }
   }
 
   Future<void> handleRemoveAllLock({
+    required BuildContext context,
     required String currentInput,
     required String confirmPass,
     required String userAnswer,
@@ -113,22 +168,38 @@ class LockController extends GetxController {
     final Box noteBox = Hive.box('student_notes');
 
     if (storedPass == null || storedPass.isEmpty) {
-      _showError("No password exists to remove.");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "No password exists to remove.",
+      );
       return;
     }
 
     if (currentInput.isEmpty || confirmPass.isEmpty) {
-      _showError("Please enter your password in both fields");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "Please enter password in both fields",
+      );
       return;
     }
 
     if (currentInput != storedPass) {
-      _showError("Current password is incorrect");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "Current password is incorrect",
+      );
       return;
     }
 
     if (currentInput != confirmPass) {
-      _showError("Confirmation password does not match");
+      await _showDialog(
+        context,
+        title: "Error",
+        message: "Confirmation password does not match",
+      );
       return;
     }
 

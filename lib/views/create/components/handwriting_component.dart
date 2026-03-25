@@ -31,6 +31,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
   double currentWidth = 2.0;
   bool isEraser = false;
   final Color canvasBgColor = const Color(0xFFF9F9F9);
+  bool showColorPalette = false; // NEW: toggle color palette
 
   @override
   void initState() {
@@ -150,77 +151,114 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
   }
 
   Widget _buildBottomActions() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      child: Column(
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [Colors.black, Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple, Colors.amber, Colors.pink].map((c) => _colorCircle(c)).toList(),
-            ),
-          ),
-          const SizedBox(height: 5),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                _toolBtn(
-                  "Pen",
-                  !isEraser && currentWidth == 2.0,
-                  () => _updateBrush(width: 2.0),
-                  imagePath: 'assets/images/pen.png',
+    final colors = [
+      Colors.black,
+      Colors.red,
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.amber,
+      Colors.pink,
+    ];
+
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Column(
+          children: [
+            // SingleChildScrollView(
+            //   scrollDirection: Axis.horizontal,
+            //   child: Row(
+            //     children: [Colors.black, Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple, Colors.amber, Colors.pink].map((c) => _colorCircle(c)).toList(),
+            //   ),
+            // ),
+            
+            // Show color palette if toggled
+            if (showColorPalette) ...[
+              const SizedBox(height: 8),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: colors.map((c) => _colorCircle(c)).toList(),
                 ),
-                _toolBtn(
-                  "Thin",
-                  !isEraser && currentWidth == 1.0,
-                  () => _updateBrush(width: 1.0),
-                  imagePath: 'assets/images/pencle.png',
-                ),
-                _toolBtn(
-                  "Highlighter",
-                  !isEraser && currentWidth == 20.0,
-                  () => _updateBrush(width: 20.0),
-                  imagePath: 'assets/images/highlighter.png',
-                ),
-                _toolBtn(
-                  "Eraser",
-                  isEraser,
-                  () => _updateBrush(eraser: true),
-                  imagePath: 'assets/images/easer.png',
-                ),
-                IconButton(
-                    icon: const Icon(Icons.undo),
-                    onPressed: () {
+              ),
+            ],
+            const SizedBox(height: 5),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _toolBtn(
+                    "Pen",
+                    !isEraser && currentWidth == 2.0,
+                    () => _updateBrush(width: 2.0),
+                    imagePath: 'assets/images/pen.png',
+                  ),
+                  _toolBtn(
+                    "Thin",
+                    !isEraser && currentWidth == 1.0,
+                    () => _updateBrush(width: 1.0),
+                    imagePath: 'assets/images/pencle.png',
+                  ),
+                  _toolBtn(
+                    "Highlighter",
+                    !isEraser && currentWidth == 20.0,
+                    () => _updateBrush(width: 20.0),
+                    imagePath: 'assets/images/highlighter.png',
+                  ),
+                  _toolBtn(
+                    "Eraser",
+                    isEraser,
+                    () => _updateBrush(eraser: true),
+                    imagePath: 'assets/images/easer.png',
+                  ),
+                  InkWell(
+                    onTap: () {
                       setState(() {
-                        if (_activeController.isNotEmpty) {
-                          _activeController.undo();
-                        } else if (_layers.isNotEmpty) {
-                          _activeController = _layers.removeLast();
-                        }
+                        showColorPalette = !showColorPalette;
                       });
-                    }),
-                IconButton(
-                    icon: const Icon(Icons.redo_outlined),
-                    onPressed: () {
-                      setState(() {
-                        if (_activeController.isNotEmpty) {
-                          _activeController.redo();
-                        } else if (_layers.isNotEmpty) {
-                          _activeController = _layers.removeLast();
-                        }
-                      });
-                    }),
-                IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => setState(() {
-                          _layers.clear();
-                          _activeController.clear();
-                        })),
-              ],
+                    },
+                    borderRadius: BorderRadius.circular(8),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(Icons.color_lens, size: showColorPalette ? 20 : 20,color: Colors.green,),
+                    ),
+                  ),
+                  IconButton(
+                      icon: const Icon(Icons.undo),
+                      onPressed: () {
+                        setState(() {
+                          if (_activeController.isNotEmpty) {
+                            _activeController.undo();
+                          } else if (_layers.isNotEmpty) {
+                            _activeController = _layers.removeLast();
+                          }
+                        });
+                      }),
+                  IconButton(
+                      icon: const Icon(Icons.redo_outlined),
+                      onPressed: () {
+                        setState(() {
+                          if (_activeController.isNotEmpty) {
+                            _activeController.redo();
+                          } else if (_layers.isNotEmpty) {
+                            _activeController = _layers.removeLast();
+                          }
+                        });
+                      }),
+                  IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => setState(() {
+                            _layers.clear();
+                            _activeController.clear();
+                          })),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

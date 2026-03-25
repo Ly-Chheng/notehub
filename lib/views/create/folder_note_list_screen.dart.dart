@@ -5,6 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/delete_confirmation_sheet.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
@@ -29,6 +30,7 @@ class FolderNoteListScreen extends StatefulWidget {
 }
 
 class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
+  final NoteController controller = Get.put(NoteController());
   final Box noteBox = Hive.box('student_notes');
   final Box trashBox = Hive.box('recently_deleted');
   bool isSelectionMode = false;
@@ -107,7 +109,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       final document = quill.Document.fromJson(jsonDecode(subtitleJson));
       return document.toPlainText().trim();
     } catch (e) {
-      // Fallback for old plain text
       return subtitleJson;
     }
   }
@@ -150,150 +151,144 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
-        ),
-        child: Column(
-          children: [
-            TextFormField(
-              controller: searchController,
-              style: TextStyle(fontSize: context.isPhone ? 16 : 18),
-              textInputAction: TextInputAction.search,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Theme.of(context).cardColor,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColor().primaryColor, width: 1),
-                ),
-                hintText: "Search",
-                hintStyle: const TextStyle(color: Colors.grey),
-                prefixIcon: Icon(Icons.search, color: AppColor().primaryColor),
-                suffixIcon: searchQuery.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, size: 20),
-                        onPressed: () {
-                          searchController.clear();
-                          setState(() {
-                            searchQuery = "";
-                          });
-                        },
-                      )
-                    : null,
-              ),
-              onChanged: (value) {
-                setState(() {
-                  searchQuery = value.trim().toLowerCase();
-                });
-              },
-            ),
-            SizedBox(
-              height: 20,
-            ),
-
-            /// NOTES LIST
-            Expanded(
-              child: ValueListenableBuilder(
-                valueListenable: noteBox.listenable(),
-                builder: (context, Box box, _) {
-                  // 1. Get notes for THIS folder
-                  List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
-
-                  /// SEARCH FILTER
-                  if (searchQuery.isNotEmpty) {
-                    notesList = notesList.where((entry) {
-                      final title = (entry.value['title'] ?? "").toString().toLowerCase();
-                      final content = (entry.value['subtitle'] ?? "").toString().toLowerCase();
-                      return title.contains(searchQuery) || content.contains(searchQuery);
-                    }).toList();
-                  }
-
-                  // 2. SPLIT: Create two separate lists
-                  List<MapEntry<dynamic, dynamic>> pinnedNotes = notesList.where((e) => e.value['isPinned'] == true).toList();
-                  List<MapEntry<dynamic, dynamic>> unpinnedNotes = notesList.where((e) => e.value['isPinned'] != true).toList();
-
-                  // 3. SORT: Newest at the top (Highest Hive Key)
-                  pinnedNotes.sort((a, b) => b.key.compareTo(a.key));
-                  unpinnedNotes.sort((a, b) => b.key.compareTo(a.key));
-
-                  if (notesList.isEmpty) {
-                    return CustomNoData(
-                      message: searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
-                    );
-                  }
-
-                  return ListView(
-                    children: [
-                      /// PINNED SECTION BLOCK
-                      if (pinnedNotes.isNotEmpty) ...[
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5),
-                          child: Text(
-                            "Pinned",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: AppColor().primaryColor,
-                            ),
-                          ),
-                        ),
-                        ...pinnedNotes.map((entry) => _buildSlidableNote(entry.key, entry.value)).toList(),
-                      ],
-
-                      if (unpinnedNotes.isNotEmpty) ...[
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: unpinnedNotes.length,
-                          itemBuilder: (context, index) {
-                            final entry = unpinnedNotes[index];
-                            final noteKey = entry.key;
-                            final noteData = entry.value;
-
-                            // Grouping Logic for Unpinned Notes
-                            String currentHeader = _getDateHeader(noteData['date'] ?? "");
-                            String? prevHeader;
-                            if (index > 0) {
-                              prevHeader = _getDateHeader(unpinnedNotes[index - 1].value['date'] ?? "");
-                            }
-
-                            bool showHeader = currentHeader != prevHeader;
-
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (showHeader)
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
-                                    child: Text(
-                                      currentHeader,
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                  ),
-                                _buildSlidableNote(noteKey, noteData),
-                              ],
-                            );
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+          ),
+          child: Column(
+            children: [
+              TextFormField(
+                controller: searchController,
+                style: TextStyle(fontSize: context.isPhone ? 16 : 18),
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Theme.of(context).cardColor,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 10,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: AppColor().primaryColor, width: 1),
+                  ),
+                  hintText: "Search",
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  prefixIcon: Icon(Icons.search, color: AppColor().primaryColor),
+                  suffixIcon: searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 20),
+                          onPressed: () {
+                            searchController.clear();
+                            setState(() {
+                              searchQuery = "";
+                            });
                           },
-                        ),
-                      ],
-                    ],
-                  );
+                        )
+                      : null,
+                ),
+                onChanged: (value) {
+                  setState(() {
+                    searchQuery = value.trim().toLowerCase();
+                  });
                 },
               ),
-            ),
-          ],
+              SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: ValueListenableBuilder(
+                  valueListenable: noteBox.listenable(),
+                  builder: (context, Box box, _) {
+                    List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
+        
+                    if (searchQuery.isNotEmpty) {
+                      notesList = notesList.where((entry) {
+                        final title = (entry.value['title'] ?? "").toString().toLowerCase();
+                        final content = (entry.value['subtitle'] ?? "").toString().toLowerCase();
+                        return title.contains(searchQuery) || content.contains(searchQuery);
+                      }).toList();
+                    }
+        
+                    List<MapEntry<dynamic, dynamic>> pinnedNotes = notesList.where((e) => e.value['isPinned'] == true).toList();
+                    List<MapEntry<dynamic, dynamic>> unpinnedNotes = notesList.where((e) => e.value['isPinned'] != true).toList();
+        
+                    pinnedNotes.sort((a, b) => b.key.compareTo(a.key));
+                    unpinnedNotes.sort((a, b) => b.key.compareTo(a.key));
+        
+                    if (notesList.isEmpty) {
+                      return CustomNoData(
+                        message: searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
+                      );
+                    }
+        
+                    return ListView(
+                      children: [
+                        if (pinnedNotes.isNotEmpty) ...[
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5),
+                            child: Text(
+                              "Pinned",
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: AppColor().primaryColor,
+                              ),
+                            ),
+                          ),
+                          ...pinnedNotes.map((entry) => _buildSlidableNote(entry.key, entry.value)).toList(),
+                        ],
+                        if (unpinnedNotes.isNotEmpty) ...[
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: unpinnedNotes.length,
+                            itemBuilder: (context, index) {
+                              final entry = unpinnedNotes[index];
+                              final noteKey = entry.key;
+                              final noteData = entry.value;
+        
+                              // Grouping Logic for Unpinned Notes
+                              String currentHeader = _getDateHeader(noteData['date'] ?? "");
+                              String? prevHeader;
+                              if (index > 0) {
+                                prevHeader = _getDateHeader(unpinnedNotes[index - 1].value['date'] ?? "");
+                              }
+        
+                              bool showHeader = currentHeader != prevHeader;
+        
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (showHeader)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
+                                      child: Text(
+                                        currentHeader,
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'EN-BOLD',
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ),
+                                  _buildSlidableNote(noteKey, noteData),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -316,7 +311,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         color: AppColor().primaryColor,
                         size: 24,
                       ),
-                      // onPressed: selectedKeys.isEmpty ? null : _showMoveNotesSheet,
                       onPressed: selectedKeys.isEmpty
                           ? null
                           : () {
@@ -396,7 +390,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 title: "Move Locked Note",
                 onVerified: () => _showMoveNotesSheet(singleNoteKey: noteKey),
               ),
-              backgroundColor: Colors.blue,
+              backgroundColor: AppColor().primaryColor,
               foregroundColor: Colors.white,
               icon: Icons.folder,
               label: 'Folder',
@@ -604,25 +598,21 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
   void _showMoveNotesSheet({dynamic singleNoteKey}) {
     final folderBox = Hive.box('folders_box');
-    final List<MapEntry<dynamic, dynamic>> folders = folderBox.toMap().entries.where((entry) => entry.key != widget.folderKey).toList();
+    final folders = folderBox.toMap().entries.where((e) => e.key != widget.folderKey).toList();
 
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Container(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        padding: const EdgeInsets.all(20),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SheetHeader(
-              title: "Move to Folder",
-            ),
-            const SizedBox(height: 20),
+            const SheetHeader(title: "Move to Folder"),
             if (folders.isEmpty)
-              const Padding(
-                padding: EdgeInsets.all(20.0),
-                child: Text("No other folders found"),
+              CustomNoData(
+                message: "No other folders found",
               ),
             Flexible(
               child: ListView.builder(
@@ -631,25 +621,13 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 itemBuilder: (context, index) {
                   final folder = folders[index];
                   return ListTile(
-                    leading: Icon(Icons.folder, size: context.isPhone ? 24 : 30, color: Color(folder.value['colorValue'] ?? Colors.blue.value)),
-                    title: Text(
-                      folder.value['title'] ?? "Unnamed Folder",
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: context.isPhone ? 14 : 16),
-                    ),
+                    leading: Icon(Icons.folder, color: Color(folder.value['colorValue'] ?? Colors.blue.value)),
+                    title: Text(folder.value['title'] ?? ""),
                     onTap: () async {
-                      List<dynamic> keysToMove = singleNoteKey != null ? [singleNoteKey] : selectedKeys.toList();
-
-                      for (var noteKey in keysToMove) {
-                        final noteData = noteBox.get(noteKey);
-                        if (noteData != null) {
-                          final updatedNote = Map<String, dynamic>.from(noteData);
-                          updatedNote['folderKey'] = folder.key;
-                          await noteBox.put(noteKey, updatedNote);
-                        }
-                      }
-
+                      await controller.moveNotesToFolder(
+                        keysToMove: singleNoteKey != null ? [singleNoteKey] : selectedKeys.toList(),
+                        targetFolderKey: folder.key,
+                      );
                       Navigator.pop(context);
                       setState(() {
                         isSelectionMode = false;

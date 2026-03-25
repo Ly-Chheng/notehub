@@ -34,41 +34,43 @@ void showMediaSheet({
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (context) => SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SheetHeader(
-              title: "Add Media",
-            ),
-            const SizedBox(height: 20),
-            ListTile(
-              leading: Icon(
-                Icons.camera_alt_outlined,
-                color: AppColor().primaryColor,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SheetHeader(
+                title: "Add Media",
               ),
-              title: Text("Take a Photo",
-                  style: TextStyle(
-                    fontSize: context.isPhone ? 16 : 18,
-                    fontFamily: 'EN-REGULAR',
-                  )),
-              onTap: () => pick(ImageSource.camera),
-            ),
-            ListTile(
-              leading: Icon(
-                Icons.image_outlined,
-                color: AppColor().primaryColor,
+              const SizedBox(height: 20),
+              ListTile(
+                leading: Icon(
+                  Icons.camera_alt_outlined,
+                  color: AppColor().primaryColor,
+                ),
+                title: Text("Take a Photo",
+                    style: TextStyle(
+                      fontSize: context.isPhone ? 16 : 18,
+                      fontFamily: 'EN-REGULAR',
+                    )),
+                onTap: () => pick(ImageSource.camera),
               ),
-              title: Text("Select from Gallery",
-                  style: TextStyle(
-                    fontSize: context.isPhone ? 16 : 18,
-                    fontFamily: 'EN-REGULAR',
-                  )),
-              onTap: () => pick(ImageSource.gallery),
-            ),
-            const SizedBox(height: 10),
-          ],
+              ListTile(
+                leading: Icon(
+                  Icons.image_outlined,
+                  color: AppColor().primaryColor,
+                ),
+                title: Text("Select from Gallery",
+                    style: TextStyle(
+                      fontSize: context.isPhone ? 16 : 18,
+                      fontFamily: 'EN-REGULAR',
+                    )),
+                onTap: () => pick(ImageSource.gallery),
+              ),
+              const SizedBox(height: 10),
+            ],
+          ),
         ),
       ),
     ),

@@ -18,53 +18,56 @@ class HowToUseScreen extends StatelessWidget {
         leadingColor: AppColor().primaryColor,
         actions: [],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(20.0),
-        children: [
-          const Text(
-            "Welcome to Student Note!",
-            style: TextStyle(fontSize: 24, fontFamily: 'EN-BOLD'),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            "Follow these simple steps to master your notes.",
-            style: TextStyle(fontSize: 16, fontFamily: 'EN-REGULAR', color: Colors.grey),
-          ),
-          const SizedBox(height: 30),
-          _buildStepCard(
-            context,
-            stepNumber: "1",
-            title: "Create Your First Note",
-            description: "Tap the '+' button on the home screen to start writing. You can add titles and body text easily.",
-            icon: Icons.edit_note_rounded,
-            iconColor: Colors.blue,
-          ),
-          _buildStepCard(
-            context,
-            stepNumber: "2",
-            title: "Organize with Folders",
-            description: "Swipe left on any note to move it to a specific folder like 'Homework' or 'Exams'.",
-            icon: Icons.folder_copy_rounded,
-            iconColor: Colors.orange,
-          ),
-          _buildStepCard(
-            context,
-            stepNumber: "3",
-            title: "Secure Your Content",
-            description: "Use the 'Lock' feature in the note menu to protect sensitive information with a password.",
-            icon: Icons.lock_person_rounded,
-            iconColor: Colors.redAccent,
-          ),
-          _buildStepCard(
-            context,
-            stepNumber: "4",
-            title: "Focus with Stopwatch",
-            description: "Use the built-in stopwatch to track your study sessions and stay productive.",
-            icon: Icons.timer_outlined,
-            iconColor: Colors.green,
-          ),
-          const SizedBox(height: 40),
-        ],
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+        child: ListView(
+          children: [
+            const SizedBox(height: 10),
+            const Text(
+              "Welcome to Student Note!",
+              style: TextStyle(fontSize: 28, fontFamily: 'EN-BOLD'),
+            ),
+            const SizedBox(height: 6),
+            const Text(
+              "Follow these simple steps to master your notes.",
+              style: TextStyle(fontSize: 16, fontFamily: 'EN-REGULAR', color: Colors.grey),
+            ),
+            const SizedBox(height: 30),
+            _buildStepCard(
+              context,
+              stepNumber: "1",
+              title: "Create Your First Note",
+              description: "Tap the '+' button on the home screen to start writing. Add titles and body text easily.",
+              icon: Icons.edit_note_rounded,
+              iconColor: Colors.blue,
+            ),
+            _buildStepCard(
+              context,
+              stepNumber: "2",
+              title: "Organize with Folders",
+              description: "Swipe left on any note to move it to a specific folder like 'Homework' or 'Exams'.",
+              icon: Icons.folder_copy_rounded,
+              iconColor: Colors.orange,
+            ),
+            _buildStepCard(
+              context,
+              stepNumber: "3",
+              title: "Secure Your Content",
+              description: "Use the 'Lock' feature in the note menu to protect sensitive information with a password.",
+              icon: Icons.lock_person_rounded,
+              iconColor: Colors.redAccent,
+            ),
+            _buildStepCard(
+              context,
+              stepNumber: "4",
+              title: "Focus with Stopwatch",
+              description: "Use the built-in stopwatch to track your study sessions and stay productive.",
+              icon: Icons.timer_outlined,
+              iconColor: Colors.green,
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }
@@ -78,22 +81,34 @@ class HowToUseScreen extends StatelessWidget {
     required Color iconColor,
   }) {
     return Container(
-      margin: EdgeInsets.only(bottom: 20),
-      padding: EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(25),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            offset: const Offset(0, 5),
+            blurRadius: 15,
+          ),
+        ],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Gradient Circle Icon
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
-              color: Colors.blue.withValues(alpha: 0.1),
               shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [iconColor.withOpacity(0.3), iconColor.withOpacity(0.8)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
-            child: Icon(icon, color: iconColor, size: 28),
+            child: Icon(icon, color: Colors.white, size: 28),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -105,19 +120,22 @@ class HowToUseScreen extends StatelessWidget {
                   style: TextStyle(
                     color: iconColor,
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                    fontSize: 13,
                     letterSpacing: 1.2,
                     fontFamily: 'EN-MEDIUM',
                   ),
                 ),
                 const SizedBox(height: 4),
-                customHeader(
-                  title,
-                ),
-                const SizedBox(height: 8),
+                customHeader(title),
+                const SizedBox(height: 6),
                 Text(
                   description,
-                  style: const TextStyle(color: Colors.grey, height: 1.4, fontFamily: 'EN-REGULAR'),
+                  style: TextStyle(
+                    color: Colors.grey[700],
+                    fontSize: 14,
+                    height: 1.5,
+                    fontFamily: 'EN-REGULAR',
+                  ),
                 ),
               ],
             ),

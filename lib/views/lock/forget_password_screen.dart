@@ -46,19 +46,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              if (storedAnswer == null || storedAnswer!.isEmpty) {
-                Get.snackbar(
-                  "Error",
-                  "No password found. Please set a password first.",
-                  backgroundColor: Colors.red,
-                  colorText: Colors.white,
-                  snackPosition: SnackPosition.TOP,
-                );
-                return;
-              }
-
-              //Proceed to verification logic in controller
               _controller.handleForgetPasswordVerify(
+                context: context,
                 userAnswer: _answerController.text.trim(),
                 storedAnswer: storedAnswer,
               );

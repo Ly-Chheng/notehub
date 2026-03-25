@@ -343,7 +343,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             lineColor: const Color(0x339E9E9E),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Column(
               children: [
                 TextField(

@@ -32,7 +32,6 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Check for locked notes to display the warning
     final bool hasLockedNotes = Hive.box('student_notes').values.any((n) => n['isLocked'] == true);
 
     return Scaffold(
@@ -46,9 +45,10 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
           TextButton(
             onPressed: () {
               _lockController.handleRemoveAllLock(
+                context: context,
                 currentInput: _currentPassController.text.trim(),
                 confirmPass: _confirmPassController.text.trim(),
-                userAnswer: "", // Not used in this version
+                userAnswer: "",
               );
             },
             child: Text("Save", style: TextStyle(color: AppColor().primaryColor, fontSize: 18, fontFamily: 'EN-REGULAR')),
@@ -87,7 +87,6 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
                 ),
               ),
 
-            // The Two Required Password Fields
             customTextField("Current Password", _obscureCurrent, () => setState(() => _obscureCurrent = !_obscureCurrent), controller: _currentPassController),
             const SizedBox(height: 15),
             customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),

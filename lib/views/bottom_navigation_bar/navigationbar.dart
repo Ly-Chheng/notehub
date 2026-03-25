@@ -143,10 +143,12 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
         body: Center(
           child: controller.screenWidget[controller.selectedIndex],
         ),
-        bottomNavigationBar: customNavigationBar(
-          context: context,
-          currentIndex: controller.selectedIndex,
-          onTap: _onItemTapped,
+        bottomNavigationBar: SafeArea(
+          child: customNavigationBar(
+            context: context,
+            currentIndex: controller.selectedIndex,
+            onTap: _onItemTapped,
+          ),
         ),
       ),
     );

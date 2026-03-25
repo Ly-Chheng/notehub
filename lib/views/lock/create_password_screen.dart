@@ -43,6 +43,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         actions: [
           TextButton(
             onPressed: () => _controller.handleCreatePassword(
+              context: context,
               password: _newPassController.text,
               confirmPassword: _confirmPassController.text,
               question: _selectedQuestion,
@@ -55,10 +56,9 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24,vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: Column(
             children: [
-              
               Center(child: customHeader("Setup Lock")),
               Text(
                 "Create a secure password to protect your personal notes.",

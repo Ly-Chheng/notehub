@@ -108,14 +108,17 @@ class RecentlyDeletedScreen extends StatelessWidget {
                         children: [
                           SlidableAction(
                             onPressed: (context) => _showFolderPicker(context, controller, noteKey: key),
-                            backgroundColor: Colors.blue,
+                            backgroundColor: AppColor().primaryColor,
                             foregroundColor: Colors.white,
                             icon: Icons.folder,
                             label: 'Move',
                             borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
                           ),
                           SlidableAction(
-                            onPressed: (context) => controller.permanentDelete(key),
+                            // onPressed: (context) => controller.permanentDelete(key),
+                            onPressed: (context) {
+                              controller.deleteWapDialog(context, {key});
+                            },
                             backgroundColor: Colors.red,
                             foregroundColor: Colors.white,
                             icon: Icons.delete,
@@ -181,10 +184,6 @@ class RecentlyDeletedScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Row(
                       children: [
-                        // IconButton(
-                        //   icon: const Icon(Icons.restore_page, color: Colors.green, size: 28),
-                        //   onPressed: controller.selectedKeys.isEmpty ? null : () => controller.restoreSelected(),
-                        // ),
                         IconButton(
                           icon: Icon(Icons.folder, color: AppColor().primaryColor, size: 28),
                           onPressed: controller.selectedKeys.isEmpty ? null : () => _showFolderPicker(context, controller),
@@ -238,13 +237,15 @@ class RecentlyDeletedScreen extends StatelessWidget {
 
                       return ListTile(
                         leading: Icon(Icons.folder, color: Color(folderData['colorValue'])),
-                        title: Text(folderData['title']),
+                        title: Text(
+                          folderData['title'],
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         onTap: () {
                           if (noteKey != null) {
-                            // If we swiped a single note
                             controller.moveSingleNoteToFolder(noteKey, folderKey);
                           } else {
-                            // If we are in Selection Mode
                             controller.moveSelectedToFolder(folderKey);
                           }
                         },
