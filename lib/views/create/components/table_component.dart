@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/cupertino.dart';
 
-class EditableTableComponent extends StatelessWidget {
+class EditableTableComponent extends StatefulWidget {
   final List<List<String>> tableData;
   final Function(int rowIndex, int colIndex, String value) onCellChanged;
   final VoidCallback onAddRow;
@@ -22,115 +21,239 @@ class EditableTableComponent extends StatelessWidget {
   });
 
   @override
+  State<EditableTableComponent> createState() => _EditableTableComponentState();
+}
+
+class _EditableTableComponentState extends State<EditableTableComponent> {
+  late List<List<FocusNode>> _focusNodes;
+
+  @override
+  void initState() {
+    super.initState();
+    _initFocusNodes();
+  }
+
+  void _initFocusNodes() {
+    _focusNodes = List.generate(
+      widget.tableData.length,
+      (r) => List.generate(
+        widget.tableData.isNotEmpty ? widget.tableData[0].length : 0,
+        (c) => FocusNode(),
+      ),
+    );
+  }
+
+  @override
+  void didUpdateWidget(EditableTableComponent oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.tableData.length != _focusNodes.length || (widget.tableData.isNotEmpty && _focusNodes.isNotEmpty && widget.tableData[0].length != _focusNodes[0].length)) {
+      _initFocusNodes();
+    }
+  }
+
+  @override
+  void dispose() {
+    for (var row in _focusNodes) {
+      for (var node in row) {
+        node.dispose();
+      }
+    }
+    super.dispose();
+  }
+
+  void _showAddMenu(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: const Text(
+          'Table Options',
+          style: TextStyle(
+            fontSize: 14,
+            fontFamily: 'EN-REGULAR',
+          ),
+        ),
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              widget.onAddRow();
+            },
+            child: const Text(
+              'Add Row',
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'EN-REGULAR',
+              ),
+            ),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              widget.onAddColumn();
+            },
+            child: const Text(
+              'Add Column',
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'EN-REGULAR',
+              ),
+            ),
+          ),
+          CupertinoActionSheetAction(
+            isDestructiveAction: true,
+            onPressed: () {
+              Navigator.pop(context);
+              widget.onDeleteTable();
+            },
+            child: const Text(
+              'Delete Table',
+              style: TextStyle(
+                fontSize: 16,
+                fontFamily: 'EN-REGULAR',
+              ),
+            ),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () => Navigator.pop(context),
+          child: const Text(
+            'Cancel',
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: 'EN-BOLD',
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    int columnCount = tableData.isNotEmpty ? tableData[0].length : 0;
+    int columnCount = widget.tableData.isNotEmpty ? widget.tableData[0].length : 0;
 
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 15),
+      margin: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.transparent,
-        border: Border.all(color: Colors.grey.shade400, width: 1),
-        borderRadius: BorderRadius.circular(10),
+        color: CupertinoColors.systemBackground.resolveFrom(context),
+        border: Border.all(color: CupertinoColors.separator.resolveFrom(context), width: 0.5),
+        borderRadius: BorderRadius.circular(4),
       ),
       child: Column(
         children: [
           Table(
             columnWidths: {
               for (var i = 0; i < columnCount; i++) i: const FlexColumnWidth(),
-              columnCount: const FixedColumnWidth(35),
+              columnCount: const FixedColumnWidth(40),
             },
-            border: TableBorder.all(color: Colors.black12, width: 1),
+            border: TableBorder(
+              horizontalInside: BorderSide(color: CupertinoColors.separator.resolveFrom(context), width: 0.5),
+              verticalInside: BorderSide(color: CupertinoColors.separator.resolveFrom(context), width: 0.5),
+            ),
             children: [
+              // Header Row
               TableRow(
+                decoration: BoxDecoration(color: CupertinoColors.tertiarySystemFill.resolveFrom(context)),
                 children: [
                   ...List.generate(
                     columnCount,
-                    (index) => _headerCell(
-                      context,
-                      icon: Icons.remove_circle_outline,
-                      onTap: () => onRemoveColumn(index),
-                      color: Colors.red.shade400,
-                    ),
+                    (index) => _deleteHeader(onTap: () => widget.onRemoveColumn(index)),
                   ),
-                  const SizedBox.shrink(),
+                  CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => _showAddMenu(context),
+                    child: const Icon(CupertinoIcons.plus_circle_fill, color: CupertinoColors.activeGreen, size: 22),
+                  ),
                 ],
               ),
-              ...tableData.asMap().entries.map((rowEntry) {
+              // Data Rows
+              ...widget.tableData.asMap().entries.map((rowEntry) {
                 int rowIndex = rowEntry.key;
                 return TableRow(
                   children: [
                     ...rowEntry.value.asMap().entries.map((colEntry) {
                       int colIndex = colEntry.key;
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        child: TextField(
-                          key: ValueKey('cell_$rowIndex\_$colIndex'),
-                          controller: TextEditingController(text: tableData[rowIndex][colIndex])
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        child: CupertinoTextField(
+                          focusNode: _focusNodes[rowIndex][colIndex],
+                          controller: TextEditingController(text: widget.tableData[rowIndex][colIndex])
                             ..selection = TextSelection.fromPosition(
-                              TextPosition(offset: tableData[rowIndex][colIndex].length),
+                              TextPosition(offset: widget.tableData[rowIndex][colIndex].length),
                             ),
-                          onChanged: (value) => onCellChanged(rowIndex, colIndex, value),
+                          onChanged: (value) => widget.onCellChanged(rowIndex, colIndex, value),
+
+                          // --- AUTO HEIGHT LOGIC ---
                           maxLines: null,
+                          keyboardType: TextInputType.multiline,
+                          textInputAction: TextInputAction.newline,
+
+                          placeholder: "...",
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+                          decoration: null,
                           style: TextStyle(
-                            fontSize: context.isPhone ? 16 : 18,
-                            fontFamily: 'EN-REGULAR',
+                            fontSize: 16,
+                            color: CupertinoColors.label.resolveFrom(context),
                           ),
-                          decoration: const InputDecoration(border: InputBorder.none),
                         ),
                       );
                     }).toList(),
-                    _headerCell(
-                      context,
-                      icon: Icons.remove_circle_outline,
-                      onTap: () => onRemoveRow(rowIndex),
-                      color: Colors.red.shade300,
+                    GestureDetector(
+                      onTap: () => widget.onRemoveRow(rowIndex),
+                      child: Container(
+                        height: 45,
+                        alignment: Alignment.center,
+                        child: const Icon(CupertinoIcons.minus_circle_fill, color: CupertinoColors.destructiveRed, size: 20),
+                      ),
                     ),
                   ],
                 );
               }).toList(),
             ],
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _textActionButton(context, "Add Row", onAddRow),
-                _textActionButton(context, "Add Column", onAddColumn),
-                _textActionButton(context, "Delete All", onDeleteTable, isDestructive: true),
-              ],
-            ),
-          )
+          // Bottom Bar
+          // Container(
+          //   padding: const EdgeInsets.symmetric(vertical: 4),
+          //   decoration: BoxDecoration(
+          //     border: Border(top: BorderSide(color: CupertinoColors.separator.resolveFrom(context), width: 0.5)),
+          //   ),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //     children: [
+          //       _iosActionButton(CupertinoIcons.add, "Row", widget.onAddRow),
+          //       _iosActionButton(CupertinoIcons.trash, "Clear All", widget.onDeleteTable, isDestructive: true),
+          //     ],
+          //   ),
+          // )
         ],
       ),
     );
   }
 
-  Widget _headerCell(BuildContext context, {required IconData icon, required VoidCallback onTap, required Color color}) {
-    return InkWell(
+  Widget _deleteHeader({required VoidCallback onTap}) {
+    return GestureDetector(
       onTap: onTap,
       child: Container(
         height: 40,
         alignment: Alignment.center,
-        child: Icon(icon, size: 18, color: color),
+        child: const Icon(CupertinoIcons.minus_circle, size: 18, color: CupertinoColors.systemGrey),
       ),
     );
   }
 
-  Widget _textActionButton(BuildContext context, String text, VoidCallback onTap, {bool isDestructive = false}) {
-    return TextButton(
+  Widget _iosActionButton(IconData icon, String label, VoidCallback onTap, {bool isDestructive = false}) {
+    final color = isDestructive ? CupertinoColors.destructiveRed : CupertinoColors.activeBlue;
+    return CupertinoButton(
+      padding: EdgeInsets.zero,
       onPressed: onTap,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 12,
-          color: isDestructive ? Colors.red : Colors.blueAccent,
-          fontFamily: 'EN-REGULAR',
-        ),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 4),
+          Text(label, style: TextStyle(fontSize: 14, color: color)),
+        ],
       ),
     );
   }

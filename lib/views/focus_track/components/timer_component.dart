@@ -29,7 +29,9 @@ class TimerComponent extends StatelessWidget {
           if (allKeys.isEmpty) {
             Future.microtask(() => Get.to(() => const CreateTimerScreen()));
 
-            return const Center(child: Text("No Timers"));
+            return Center(
+              child: Text("No timer"),
+            );
           }
 
           final activeKeys = allKeys.where((k) {
@@ -107,7 +109,7 @@ class TimerComponent extends StatelessWidget {
           child: GestureDetector(
             onTap: () => Get.to(() => TimerDetailScreen(timerKey: key, data: data)),
             child: Container(
-              padding: const EdgeInsets.all(15),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               decoration: BoxDecoration(
                 color: isFinished ? Colors.black : Theme.of(context).cardColor,
               ),
@@ -117,10 +119,13 @@ class TimerComponent extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(data['title'] ?? "Timer", style: TextStyle(color: isFinished ? Colors.grey : Colors.black, fontSize: context.isPhone ? 14 : 16, fontFamily: 'EN-REGULAR')),
+                        Text(data['title'] ?? "Timer",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: isFinished ? Colors.grey : Colors.black, fontSize: context.isPhone ? 14 : 16, fontFamily: 'EN-REGULAR')),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
-                              fontSize: context.isPhone ? 32 : 35,
+                              fontSize: context.isPhone ? 28 : 32,
                               color: isFinished ? Colors.white : Colors.black,
                               fontFamily: 'EN-REGULAR',
                             )),
@@ -146,8 +151,8 @@ class TimerComponent extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           SizedBox(
-              width: 60,
-              height: 60,
+              width: 55,
+              height: 55,
               child: CircularProgressIndicator(
                   value: 1.0,
                   strokeWidth: 4,
@@ -155,7 +160,7 @@ class TimerComponent extends StatelessWidget {
                     Colors.grey.withOpacity(0.1),
                   ))),
           SizedBox(
-              width: 60, height: 60, child: CircularProgressIndicator(value: progress, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
+              width: 55, height: 55, child: CircularProgressIndicator(value: progress, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
           Icon(isFinished ? Icons.refresh : (isRunning ? Icons.pause : Icons.play_arrow), color: isFinished ? Colors.white : AppColor().primaryColor, size: 30),
         ],
       ),

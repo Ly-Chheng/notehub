@@ -519,7 +519,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _bottomIcon(Icons.image_outlined, () {
+                      _bottomIcon(Icons.camera_alt_outlined, () {
                         showMediaSheet(
                           context: context,
                           onImageSelected: (File tempImage) async {

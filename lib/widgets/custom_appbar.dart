@@ -16,6 +16,7 @@ customAppBar({
     elevation: 0,
     centerTitle: false,
     titleSpacing: 15,
+    scrolledUnderElevation:0,
     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
     title: Text(
       title,

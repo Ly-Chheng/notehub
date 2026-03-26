@@ -7,7 +7,6 @@ import 'package:project_structure/views/lock/forget_password_screen.dart';
 import 'package:project_structure/views/more/about_screen.dart';
 import 'package:project_structure/views/more/how_to_use_screen.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
-import 'package:project_structure/views/more/widgets/notification.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({
@@ -35,7 +34,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   Get.to(AboutScreen());
                 }),
                 DarkModeView(),
-                NotificationView(),
+                // NotificationView(),
                 _buildMenuTile(Icons.help_outline, "How to use", onTap: () {
                   Get.to(HowToUseScreen());
                 }),

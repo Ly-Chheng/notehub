@@ -86,7 +86,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
                   ),
                   const SizedBox(height: 20),
                   Container(
-                    height: 150,
+                    height: context.isPhone ? 180 : 250,
                     decoration: BoxDecoration(color: Colors.grey.withOpacity(0.05), borderRadius: BorderRadius.circular(15)),
                     child: Row(
                       children: [

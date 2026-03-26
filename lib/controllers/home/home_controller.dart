@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 
 class HomeController extends GetxController {
@@ -64,7 +65,6 @@ class HomeController extends GetxController {
     }
   }
 
-  // Security Verification
   void verifyAndExecute({
     required BuildContext context,
     required bool isLocked,
@@ -79,14 +79,18 @@ class HomeController extends GetxController {
     final TextEditingController passController = TextEditingController();
     String? masterPassword = settingsBox.get('master_password');
 
+    if (masterPassword == null) {
+      Get.snackbar("Security", "Please set a master password first.");
+      onVerified(); // Or redirect to CreatePasswordScreen
+      return;
+    }
+
     showConfirmDialog(
       context: context,
       title: title,
-      subTitle: "Please enter your password to proceed.",
-      confirmText: "Unlock",
+      subTitle: "Enter password to unlock this folder.",
       controller: passController,
       obscureText: true,
-      hintText: "Master Password",
       onConfirm: () {
         if (passController.text == masterPassword) {
           Get.back();
@@ -96,6 +100,17 @@ class HomeController extends GetxController {
         }
       },
     );
+  }
+
+  // FOLDER LOCK LOGIC
+  void toggleFolderLock(dynamic key, dynamic data) {
+    final updated = Map<String, dynamic>.from(data);
+    bool currentlyLocked = data['isLocked'] ?? false;
+
+    updated['isLocked'] = !currentlyLocked;
+    folderBox.put(key, updated);
+
+    update();
   }
 
   dynamic getDefaultFolderKey() {
@@ -155,14 +170,6 @@ class HomeController extends GetxController {
         toggleSelectionMode();
       },
     );
-  }
-
-  void restoreNote(dynamic key, dynamic data) {
-    final restoredData = Map<String, dynamic>.from(data);
-    restoredData.remove('deletedAt'); // Clean metadata
-
-    noteBox.put(key, restoredData);
-    trashBox.delete(key);
   }
 
   // For Bulk Move (Selection Mode)

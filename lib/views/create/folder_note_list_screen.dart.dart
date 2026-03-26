@@ -205,7 +205,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   valueListenable: noteBox.listenable(),
                   builder: (context, Box box, _) {
                     List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
-        
+
                     if (searchQuery.isNotEmpty) {
                       notesList = notesList.where((entry) {
                         final title = (entry.value['title'] ?? "").toString().toLowerCase();
@@ -213,19 +213,19 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         return title.contains(searchQuery) || content.contains(searchQuery);
                       }).toList();
                     }
-        
+
                     List<MapEntry<dynamic, dynamic>> pinnedNotes = notesList.where((e) => e.value['isPinned'] == true).toList();
                     List<MapEntry<dynamic, dynamic>> unpinnedNotes = notesList.where((e) => e.value['isPinned'] != true).toList();
-        
+
                     pinnedNotes.sort((a, b) => b.key.compareTo(a.key));
                     unpinnedNotes.sort((a, b) => b.key.compareTo(a.key));
-        
+
                     if (notesList.isEmpty) {
                       return CustomNoData(
                         message: searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
                       );
                     }
-        
+
                     return ListView(
                       children: [
                         if (pinnedNotes.isNotEmpty) ...[
@@ -251,16 +251,16 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                               final entry = unpinnedNotes[index];
                               final noteKey = entry.key;
                               final noteData = entry.value;
-        
+
                               // Grouping Logic for Unpinned Notes
                               String currentHeader = _getDateHeader(noteData['date'] ?? "");
                               String? prevHeader;
                               if (index > 0) {
                                 prevHeader = _getDateHeader(unpinnedNotes[index - 1].value['date'] ?? "");
                               }
-        
+
                               bool showHeader = currentHeader != prevHeader;
-        
+
                               return Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -530,12 +530,12 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       borderRadius: BorderRadius.circular(8),
                       child: Image.file(
                         File(imagePaths[0]),
-                        width: context.isPhone ? 60 : 90,
-                        height: context.isPhone ? 60 : 90,
+                        width: context.isPhone ? 50 : 80,
+                        height: context.isPhone ? 50 : 80,
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => Container(
-                          width: context.isPhone ? 60 : 90,
-                          height: context.isPhone ? 60 : 90,
+                          width: context.isPhone ? 50 : 80,
+                          height: context.isPhone ? 50 : 80,
                           color: Colors.grey[200],
                           child: Icon(Icons.broken_image, size: context.isPhone ? 24 : 30),
                         ),

@@ -164,7 +164,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
 
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 5),
         child: Column(
           children: [
             // SingleChildScrollView(
@@ -173,10 +173,9 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
             //     children: [Colors.black, Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple, Colors.amber, Colors.pink].map((c) => _colorCircle(c)).toList(),
             //   ),
             // ),
-            
+
             // Show color palette if toggled
             if (showColorPalette) ...[
-              const SizedBox(height: 8),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -223,7 +222,11 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                     child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 5),
                       padding: const EdgeInsets.all(6),
-                      child: Icon(Icons.color_lens, size: showColorPalette ? 20 : 20,color: Colors.green,),
+                      child: Icon(
+                        Icons.color_lens,
+                        size: showColorPalette ? 24 : 24,
+                        color: Colors.green,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -271,7 +274,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
         margin: const EdgeInsets.symmetric(horizontal: 5),
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: isSelected ? AppColor().primaryColor : Colors.transparent, width: 1)),
-        child: CircleAvatar(radius: 12, backgroundColor: color),
+        child: CircleAvatar(radius: 15, backgroundColor: color),
       ),
     );
   }
@@ -280,25 +283,22 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
     return InkWell(
       onTap: tap,
       borderRadius: BorderRadius.circular(8),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (imagePath != null)
-              Image.asset(
-                imagePath,
-                width: sel ? 55 : 30,
-                height: sel ? 55 : 30,
-                colorBlendMode: BlendMode.srcIn,
-              )
-            else if (icon != null)
-              Icon(
-                icon,
-                size: 24,
-              ),
-          ],
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (imagePath != null)
+            Image.asset(
+              imagePath,
+              width: sel ? 70 : 45,
+              height: sel ? 70 : 45,
+              colorBlendMode: BlendMode.srcIn,
+            )
+          else if (icon != null)
+            Icon(
+              icon,
+              size: 24,
+            ),
+        ],
       ),
     );
   }

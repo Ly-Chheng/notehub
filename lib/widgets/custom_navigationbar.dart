@@ -17,7 +17,7 @@ Widget customNavigationBar({
   final Color inactiveColor = unselectedItemColor ?? Colors.grey.shade700;
 
   return Padding(
-    padding: const EdgeInsets.only(left: 25, right: 25, bottom: 25),
+    padding: const EdgeInsets.only(left: 35, right: 35, bottom: 10),
     child: Container(
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
@@ -27,12 +27,11 @@ Widget customNavigationBar({
               blurRadius: 10,
             ),
           ],
-          borderRadius: BorderRadius.circular(29)),
-      padding: const EdgeInsets.symmetric(vertical: 8),
+          borderRadius: BorderRadius.circular(30)),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // Home Tab
           GestureDetector(
             onTap: () => onTap?.call(0),
             child: Column(
@@ -44,13 +43,12 @@ Widget customNavigationBar({
                     currentIndex == 0 ? 'assets/images/home_active.png' : 'assets/images/home.png',
                     width: iconSize,
                     height: iconSize,
-                    //color: currentIndex == 0 ? activeColor : inactiveColor,
+                    color: currentIndex == 0 ? activeColor : inactiveColor,
                   ),
                 ),
               ],
             ),
           ),
-          // Timer Tab
           GestureDetector(
             onTap: () => onTap?.call(1),
             child: Column(
@@ -68,7 +66,6 @@ Widget customNavigationBar({
               ],
             ),
           ),
-          // More Tab (with optional badge)
           GestureDetector(
             onTap: () => onTap?.call(2),
             child: Stack(

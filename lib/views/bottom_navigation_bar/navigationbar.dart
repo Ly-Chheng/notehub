@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/bottom_navigation/navigationbar_controller.dart';
+import 'package:project_structure/views/focus_track/focus_track_screen.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_navigationbar.dart';
@@ -16,10 +17,15 @@ class BottomNavigationBarScreen extends StatefulWidget {
 class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
   final controller = Get.put(BottomNavigationBarController());
   bool isGrid = false;
+  int focusSubIndex = 0;
 
   void _onItemTapped(int index) {
     setState(() {
       controller.selectedIndex = index;
+
+      if (index != 1) {
+        focusSubIndex = 0;
+      }
     });
   }
 
@@ -121,12 +127,11 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                 ),
               ),
             ],
-            // Index 1 → Time icon
-            if (controller.selectedIndex == 1)
+
+            // Index 1 → Focus Track Tab
+            if (controller.selectedIndex == 1 && focusSubIndex == 1)
               GestureDetector(
-                onTap: () {
-                  Get.toNamed('/createTimer');
-                },
+                onTap: () => Get.toNamed('/createTimer'),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
@@ -136,12 +141,20 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   child: Icon(Icons.add, size: context.isPhone ? 24 : 25),
                 ),
               ),
-            SizedBox(width: 10),
-            // Index 2 → no icon (empty)
+            SizedBox(width: 15),
           ],
         ),
         body: Center(
-          child: controller.screenWidget[controller.selectedIndex],
+          // child: controller.screenWidget[controller.selectedIndex],
+          child: controller.selectedIndex == 1
+              ? FocusTrackScreen(
+                  onToggleChanged: (index) {
+                    setState(() {
+                      focusSubIndex = index;
+                    });
+                  },
+                )
+              : controller.screenWidget[controller.selectedIndex],
         ),
         bottomNavigationBar: SafeArea(
           child: customNavigationBar(
