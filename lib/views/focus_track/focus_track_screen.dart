@@ -39,7 +39,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _buildToggleSwitch(context),
             ),
             Expanded(child: screens[selectedIndex]),
@@ -67,7 +67,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
               margin: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(context.isPhone ? 20 : 40),
               ),
             ),
           ),
@@ -83,9 +83,10 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
   }
 
   Widget _toggleItem(String label, int index) {
+    final Color activeColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
     return Expanded(
       child: GestureDetector(
-        onTap: () => _handleToggle(index), // Trigger the update
+        onTap: () => _handleToggle(index),
         child: Container(
           alignment: Alignment.center,
           color: Colors.transparent,
@@ -93,7 +94,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
             label,
             style: TextStyle(
               fontFamily: 'EN-SEMIBOLD',
-              color: selectedIndex == index ? Colors.black : Colors.grey,
+              color: selectedIndex == index ? activeColor : Colors.grey,
               fontSize: context.isPhone ? 16 : 18,
             ),
           ),

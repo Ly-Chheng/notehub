@@ -7,6 +7,7 @@ import 'package:project_structure/views/lock/forget_password_screen.dart';
 import 'package:project_structure/views/more/about_screen.dart';
 import 'package:project_structure/views/more/how_to_use_screen.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
+import 'package:share_plus/share_plus.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({
@@ -19,6 +20,12 @@ class MoreScreen extends StatefulWidget {
 
 class _MoreScreenState extends State<MoreScreen> {
   final controller = Get.put(DarkModeController());
+
+  void _shareApp() {
+    Share.share(
+      "Check out Student Note App!\n\nDownload now:\nhttps://play.google.com/store/apps/details?id=com.yourapp.id",
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +45,12 @@ class _MoreScreenState extends State<MoreScreen> {
                 _buildMenuTile(Icons.help_outline, "How to use", onTap: () {
                   Get.to(HowToUseScreen());
                 }),
-                _buildMenuTile(Icons.share_outlined, "Share App", onTap: () {}, isLast: true),
+                _buildMenuTile(
+                  Icons.share_outlined,
+                  "Share App",
+                  onTap: _shareApp,
+                  isLast: true,
+                ),
               ]),
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 60),

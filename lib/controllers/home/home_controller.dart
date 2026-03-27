@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 
 class HomeController extends GetxController {

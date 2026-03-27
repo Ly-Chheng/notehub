@@ -14,14 +14,17 @@ class StopwatchScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
             child: Column(
               children: [
+                SizedBox(
+                  height: context.isPhone ? 30 : 40,
+                ),
                 _buildTimerDisplay(context),
                 SizedBox(
                   height: context.isPhone ? 30 : 40,
                 ),
-                _buildLapList(),
+                _buildLapList(context),
                 const SizedBox(height: 30),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 50),
@@ -67,20 +70,28 @@ class StopwatchScreen extends StatelessWidget {
         ));
   }
 
-  Widget _buildLapList() {
+  Widget _buildLapList(BuildContext context) {
     return SizedBox(
-      height: 150,
+      height: context.isPhone ? 150 : 220,
       child: Obx(() => Column(
             children: [
               Container(
                 decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1), borderRadius: BorderRadius.circular(5)),
                 child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: const Row(
+                  padding: EdgeInsets.all(context.isPhone ? 8 : 14),
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Lap", style: TextStyle(fontFamily: 'EN-REGULAR', fontSize: 16)),
-                      Text("Lap Time", style: TextStyle(fontFamily: 'EN-REGULAR', fontSize: 16)),
+                      Text("Lap",
+                          style: TextStyle(
+                            fontFamily: 'EN-REGULAR',
+                            fontSize: context.isPhone ? 16 : 18,
+                          )),
+                      Text("Lap Time",
+                          style: TextStyle(
+                            fontFamily: 'EN-REGULAR',
+                            fontSize: context.isPhone ? 16 : 18,
+                          )),
                     ],
                   ),
                 ),

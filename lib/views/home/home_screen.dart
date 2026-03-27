@@ -82,7 +82,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     bool isLocked = folderData['isLocked'] ?? false; // New variable
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: context.isPhone ? 8 : 12,
+                      ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Slidable(
@@ -149,56 +152,67 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                           child: Container(
                             color: Theme.of(context).cardColor,
-                            child: ListTile(
-                              leading: Icon(Icons.folder, color: Color(folderData['colorValue']), size: 30),
-                              title: Row(
-                                children: [
-                                  if (isLocked)
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
-                                      child: Icon(Icons.lock, size: 17, color: AppColor().primaryColor),
-                                    ),
-                                  Expanded(
-                                      child: Text(
-                                          // folderData['title'],
-                                          isLocked && folderData['title'].length > 3 ? "${folderData['title'].substring(0, 3)}..." : folderData['title'],
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(fontSize: context.isPhone ? 18 : 20))),
-                                  if (isPinned) const Icon(Icons.push_pin, size: 17, color: Colors.orange),
-                                ],
+                            child: Padding(
+                              padding: EdgeInsets.all(
+                                context.isPhone ? 2 : 8,
                               ),
-                              trailing: ValueListenableBuilder(
-                                valueListenable: controller.noteBox.listenable(),
-                                builder: (context, Box nBox, _) {
-                                  int count = nBox.values.where((n) => n['folderKey'] == folderKey).length;
-                                  return Text("$count", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR'));
+                              child: ListTile(
+                                leading: Icon(
+                                  Icons.folder,
+                                  color: Color(folderData['colorValue']),
+                                  size: context.isPhone ? 30 : 35,
+                                ),
+                                title: Row(
+                                  children: [
+                                    if (isLocked)
+                                      Padding(
+                                        padding: EdgeInsets.only(
+                                          right: context.isPhone ? 6 : 10,
+                                        ),
+                                        child: Icon(Icons.lock, size: 17, color: AppColor().primaryColor),
+                                      ),
+                                    Expanded(
+                                        child: Text(
+                                            // folderData['title'],
+                                            isLocked && folderData['title'].length > 3 ? "${folderData['title'].substring(0, 3)}..." : folderData['title'],
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(fontSize: context.isPhone ? 18 : 20))),
+                                    if (isPinned) const Icon(Icons.push_pin, size: 17, color: Colors.orange),
+                                  ],
+                                ),
+                                trailing: ValueListenableBuilder(
+                                  valueListenable: controller.noteBox.listenable(),
+                                  builder: (context, Box nBox, _) {
+                                    int count = nBox.values.where((n) => n['folderKey'] == folderKey).length;
+                                    return Text("$count", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR'));
+                                  },
+                                ),
+                                // onTap: () => Get.to(() => FolderNoteListScreen(
+                                //       folderKey: folderKey,
+                                //       folderName: folderData['title'],
+                                //     )),
+                                onTap: () {
+                                  // 1. Get the current lock status from the folder data
+                                  final bool isFolderLocked = folderData['isLocked'] ?? false;
+
+                                  // 2. Use the controller to verify security
+                                  controller.verifyAndExecute(
+                                    context: context,
+                                    isLocked: isFolderLocked,
+                                    title: "Locked Folder",
+                                    onVerified: () {
+                                      // 3. This block only runs if:
+                                      //    - The folder is NOT locked OR
+                                      //    - The user entered the correct Master Password
+                                      Get.to(() => FolderNoteListScreen(
+                                            folderKey: folderKey,
+                                            folderName: folderData['title'],
+                                          ));
+                                    },
+                                  );
                                 },
                               ),
-                              // onTap: () => Get.to(() => FolderNoteListScreen(
-                              //       folderKey: folderKey,
-                              //       folderName: folderData['title'],
-                              //     )),
-                              onTap: () {
-                                // 1. Get the current lock status from the folder data
-                                final bool isFolderLocked = folderData['isLocked'] ?? false;
-
-                                // 2. Use the controller to verify security
-                                controller.verifyAndExecute(
-                                  context: context,
-                                  isLocked: isFolderLocked,
-                                  title: "Locked Folder",
-                                  onVerified: () {
-                                    // 3. This block only runs if:
-                                    //    - The folder is NOT locked OR
-                                    //    - The user entered the correct Master Password
-                                    Get.to(() => FolderNoteListScreen(
-                                          folderKey: folderKey,
-                                          folderName: folderData['title'],
-                                        ));
-                                  },
-                                );
-                              },
                             ),
                           ),
                         ),
@@ -217,7 +231,11 @@ class _MyHomePageState extends State<MyHomePage> {
           final defaultKey = controller.getDefaultFolderKey();
           Get.to(() => CreateNoteScreen(folderKey: defaultKey));
         },
-        child: const Icon(Icons.add, color: Colors.white, size: 30),
+        child: Icon(
+          Icons.add,
+          color: Colors.white,
+          size: context.isPhone ? 30 : 35,
+        ),
       ),
     );
   }

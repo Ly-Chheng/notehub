@@ -197,9 +197,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   });
                 },
               ),
-              SizedBox(
-                height: 20,
-              ),
+             
               Expanded(
                 child: ValueListenableBuilder(
                   valueListenable: noteBox.listenable(),
@@ -360,8 +358,11 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     bool isLocked = note['isLocked'] ?? false;
     bool isPinned = note['isPinned'] ?? false;
     bool isSelected = selectedKeys.contains(noteKey);
-    final bgColor = Color(note['bgColorValue'] ?? 0xFFFFFFFF);
+    // final bgColor = Color(note['bgColorValue'] ?? 0xFFFFFFFF);
     List<dynamic>? imagePaths = note['images'];
+
+    final dynamic savedColor = note['bgColorValue'];
+    final Color noteBgColor = (savedColor == null || savedColor == 0xFFFFFFFF) ? Theme.of(context).cardColor : Color(savedColor);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -444,8 +445,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           },
           child: Container(
             decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: BorderRadius.circular(13),
+              color: noteBgColor,
+              borderRadius: BorderRadius.circular(10),
               border: isSelected ? Border.all(color: AppColor().primaryColor, width: 1) : null,
             ),
             child: Row(
@@ -495,6 +496,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                 fontSize: context.isPhone ? 18 : 20,
+                                                color: Theme.of(context).colorScheme.onSurface,
                                                 fontFamily: 'EN-BOLD',
                                               ),
                                             ),
@@ -508,7 +510,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
+                                            color: Theme.of(context).colorScheme.onSurface,
                                             fontSize: context.isPhone ? 14 : 16,
+                                            fontFamily: 'EN-BOLD',
                                           ),
                                         ),
                                       ),

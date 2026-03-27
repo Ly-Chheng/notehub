@@ -11,13 +11,13 @@ Widget customNavigationBar({
   final void Function(int)? onTap,
   final int chatBadgeCount = 0,
 }) {
-  final double iconSize = context.isPhone ? 26 : 30;
-  final double timerIconSize = context.isPhone ? 29 : 32;
+  final double iconSize = context.isPhone ? 26 : 32;
+  final double timerIconSize = context.isPhone ? 29 : 34;
   final Color activeColor = selectedItemColor ?? AppColor().primaryColor;
   final Color inactiveColor = unselectedItemColor ?? Colors.grey.shade700;
 
   return Padding(
-    padding: const EdgeInsets.only(left: 35, right: 35, bottom: 10),
+    padding: EdgeInsets.only(left: context.isPhone ? 35 : 45, right: context.isPhone ? 35 : 45, bottom: 10),
     child: Container(
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
@@ -27,8 +27,10 @@ Widget customNavigationBar({
               blurRadius: 10,
             ),
           ],
-          borderRadius: BorderRadius.circular(30)),
-      padding: const EdgeInsets.symmetric(vertical: 6),
+          borderRadius: BorderRadius.circular(context.isPhone ? 35 : 50)),
+      padding: EdgeInsets.symmetric(
+        vertical: context.isPhone ? 6 : 10,
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -38,7 +40,9 @@ Widget customNavigationBar({
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: EdgeInsets.all(
+                    context.isPhone ? 6 : 10,
+                  ),
                   child: Image.asset(
                     currentIndex == 0 ? 'assets/images/home_active.png' : 'assets/images/home.png',
                     width: iconSize,
@@ -55,7 +59,9 @@ Widget customNavigationBar({
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: EdgeInsets.all(
+                    context.isPhone ? 6 : 10,
+                  ),
                   child: Image.asset(
                     currentIndex == 1 ? 'assets/images/timer_active.png' : 'assets/images/timer.png',
                     width: timerIconSize,
@@ -72,7 +78,9 @@ Widget customNavigationBar({
               clipBehavior: Clip.none,
               children: [
                 Container(
-                  padding: const EdgeInsets.all(6),
+                  padding: EdgeInsets.all(
+                    context.isPhone ? 6 : 10,
+                  ),
                   child: Image.asset(
                     currentIndex == 2 ? 'assets/images/more_active.png' : 'assets/images/more.png',
                     width: iconSize,

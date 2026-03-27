@@ -122,19 +122,20 @@ class TimerComponent extends StatelessWidget {
                         Text(data['title'] ?? "Timer",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: isFinished ? Colors.grey : Colors.black, fontSize: context.isPhone ? 14 : 16, fontFamily: 'EN-REGULAR')),
+                            style: TextStyle(color: isFinished ? Colors.grey : Theme.of(context).colorScheme.onSurface, fontSize: context.isPhone ? 14 : 16, fontFamily: 'EN-REGULAR')),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
                               fontSize: context.isPhone ? 28 : 32,
-                              color: isFinished ? Colors.white : Colors.black,
+                              color: isFinished ? Colors.white : Theme.of(context).colorScheme.onSurface,
                               fontFamily: 'EN-REGULAR',
                             )),
                         Text("${controller.formatToHMS(data['totalSeconds'])} total",
-                            style: TextStyle(color: isFinished ? Colors.grey : Colors.black54, fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
+                            style:
+                                TextStyle(color: isFinished ? Colors.grey : Theme.of(context).colorScheme.onSurface.withOpacity(0.6), fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
                       ],
                     ),
                   ),
-                  _buildiPhoneCircle(controller, key, progress, isFinished, isRunning),
+                  _buildiPhoneCircle(controller, key, progress, isFinished, isRunning, context),
                 ],
               ),
             ),
@@ -144,15 +145,15 @@ class TimerComponent extends StatelessWidget {
     });
   }
 
-  Widget _buildiPhoneCircle(TimerController controller, dynamic key, double progress, bool isFinished, bool isRunning) {
+  Widget _buildiPhoneCircle(TimerController controller, dynamic key, double progress, bool isFinished, bool isRunning, BuildContext context) {
     return GestureDetector(
       onTap: () => controller.toggleTimer(key),
       child: Stack(
         alignment: Alignment.center,
         children: [
           SizedBox(
-              width: 55,
-              height: 55,
+              width: context.isPhone ? 55 : 65,
+              height: context.isPhone ? 55 : 65,
               child: CircularProgressIndicator(
                   value: 1.0,
                   strokeWidth: 4,
@@ -160,8 +161,14 @@ class TimerComponent extends StatelessWidget {
                     Colors.grey.withOpacity(0.1),
                   ))),
           SizedBox(
-              width: 55, height: 55, child: CircularProgressIndicator(value: progress, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
-          Icon(isFinished ? Icons.refresh : (isRunning ? Icons.pause : Icons.play_arrow), color: isFinished ? Colors.white : AppColor().primaryColor, size: 30),
+              width: context.isPhone ? 55 : 65,
+              height: context.isPhone ? 55 : 65,
+              child: CircularProgressIndicator(value: progress, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
+          Icon(
+            isFinished ? Icons.refresh : (isRunning ? Icons.pause : Icons.play_arrow),
+            color: isFinished ? Colors.white : AppColor().primaryColor,
+            size: context.isPhone ? 30 : 35,
+          ),
         ],
       ),
     );

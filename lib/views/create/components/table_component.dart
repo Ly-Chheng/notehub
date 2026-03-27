@@ -243,18 +243,18 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
     );
   }
 
-  Widget _iosActionButton(IconData icon, String label, VoidCallback onTap, {bool isDestructive = false}) {
-    final color = isDestructive ? CupertinoColors.destructiveRed : CupertinoColors.activeBlue;
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      onPressed: onTap,
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: color),
-          const SizedBox(width: 4),
-          Text(label, style: TextStyle(fontSize: 14, color: color)),
-        ],
-      ),
-    );
-  }
+  // Widget _iosActionButton(IconData icon, String label, VoidCallback onTap, {bool isDestructive = false}) {
+  //   final color = isDestructive ? CupertinoColors.destructiveRed : CupertinoColors.activeBlue;
+  //   return CupertinoButton(
+  //     padding: EdgeInsets.zero,
+  //     onPressed: onTap,
+  //     child: Row(
+  //       children: [
+  //         Icon(icon, size: 18, color: color),
+  //         const SizedBox(width: 4),
+  //         Text(label, style: TextStyle(fontSize: 14, color: color)),
+  //       ],
+  //     ),
+  //   );
+  // }
 }
