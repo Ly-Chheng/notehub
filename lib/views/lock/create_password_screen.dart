@@ -59,7 +59,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: Column(
             children: [
-              Center(child: customHeader("Setup Lock")),
+              Center(child: customHeader("Create New Password")),
               Text(
                 "Create a secure password to protect your personal notes.",
                 textAlign: TextAlign.center,

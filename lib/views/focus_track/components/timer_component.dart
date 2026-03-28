@@ -15,62 +15,65 @@ class TimerComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     final TimerController controller = Get.put(TimerController());
 
-    return ValueListenableBuilder(
-        valueListenable: controller.timerBox.listenable(),
-        builder: (context, Box box, _) {
-          final allKeys = box.keys.where((k) {
-            final data = box.get(k);
-            if (data is Map) {
-              return data['type'] == 'timer';
+    return SlidableAutoCloseBehavior(
+      closeWhenOpened: true,
+      child: ValueListenableBuilder(
+          valueListenable: controller.timerBox.listenable(),
+          builder: (context, Box box, _) {
+            final allKeys = box.keys.where((k) {
+              final data = box.get(k);
+              if (data is Map) {
+                return data['type'] == 'timer';
+              }
+              return false;
+            }).toList();
+
+            if (allKeys.isEmpty) {
+              Future.microtask(() => Get.to(() => const CreateTimerScreen()));
+
+              return Center(
+                child: Text("No timer"),
+              );
             }
-            return false;
-          }).toList();
 
-          if (allKeys.isEmpty) {
-            Future.microtask(() => Get.to(() => const CreateTimerScreen()));
+            final activeKeys = allKeys.where((k) {
+              int rem = box.get(k)['remainingSeconds'] ?? 0;
+              bool isCurrentlyRunning = controller.activeTimerKeys.contains(k);
 
-            return Center(
-              child: Text("No timer"),
+              return rem > 0 || isCurrentlyRunning;
+            }).toList();
+
+            final recentKeys = allKeys.where((k) {
+              int rem = box.get(k)['remainingSeconds'] ?? 0;
+              bool isCurrentlyRunning = controller.activeTimerKeys.contains(k);
+
+              return rem <= 0 && !isCurrentlyRunning;
+            }).toList();
+
+            activeKeys.sort((a, b) => (box.get(b)['createdAt'] ?? '').compareTo(box.get(a)['createdAt'] ?? ''));
+            recentKeys.sort((a, b) => (box.get(b)['completedAt'] ?? '').compareTo(box.get(a)['completedAt'] ?? ''));
+
+            return ListView(
+              padding: const EdgeInsets.symmetric(vertical: 10),
+              children: [
+                if (activeKeys.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: customHeader("Running"),
+                  ),
+                  ...activeKeys.map((key) => _buildTimerTile(context, controller, key, box.get(key))),
+                ],
+                if (recentKeys.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: customHeader("Recents"),
+                  ),
+                  ...recentKeys.map((key) => _buildTimerTile(context, controller, key, box.get(key))),
+                ],
+              ],
             );
-          }
-
-          final activeKeys = allKeys.where((k) {
-            int rem = box.get(k)['remainingSeconds'] ?? 0;
-            bool isCurrentlyRunning = controller.activeTimerKeys.contains(k);
-
-            return rem > 0 || isCurrentlyRunning;
-          }).toList();
-
-          final recentKeys = allKeys.where((k) {
-            int rem = box.get(k)['remainingSeconds'] ?? 0;
-            bool isCurrentlyRunning = controller.activeTimerKeys.contains(k);
-
-            return rem <= 0 && !isCurrentlyRunning;
-          }).toList();
-
-          activeKeys.sort((a, b) => (box.get(b)['createdAt'] ?? '').compareTo(box.get(a)['createdAt'] ?? ''));
-          recentKeys.sort((a, b) => (box.get(b)['completedAt'] ?? '').compareTo(box.get(a)['completedAt'] ?? ''));
-
-          return ListView(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            children: [
-              if (activeKeys.isNotEmpty) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: customHeader("Running"),
-                ),
-                ...activeKeys.map((key) => _buildTimerTile(context, controller, key, box.get(key))),
-              ],
-              if (recentKeys.isNotEmpty) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10),
-                  child: customHeader("Recents"),
-                ),
-                ...recentKeys.map((key) => _buildTimerTile(context, controller, key, box.get(key))),
-              ],
-            ],
-          );
-        });
+          }),
+    );
   }
 
   Widget _buildTimerTile(BuildContext context, TimerController controller, dynamic key, Map data) {
@@ -130,8 +133,8 @@ class TimerComponent extends StatelessWidget {
                               fontFamily: 'EN-REGULAR',
                             )),
                         Text("${controller.formatToHMS(data['totalSeconds'])} total",
-                            style:
-                                TextStyle(color: isFinished ? Colors.grey : Theme.of(context).colorScheme.onSurface.withOpacity(0.6), fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
+                            style: TextStyle(
+                                color: isFinished ? Colors.grey : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
                       ],
                     ),
                   ),
@@ -158,7 +161,7 @@ class TimerComponent extends StatelessWidget {
                   value: 1.0,
                   strokeWidth: 4,
                   valueColor: AlwaysStoppedAnimation(
-                    Colors.grey.withOpacity(0.1),
+                    Colors.grey.withValues(alpha: 0.1),
                   ))),
           SizedBox(
               width: context.isPhone ? 55 : 65,

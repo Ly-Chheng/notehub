@@ -87,7 +87,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
                   const SizedBox(height: 20),
                   Container(
                     height: context.isPhone ? 180 : 250,
-                    decoration: BoxDecoration(color: Colors.grey.withOpacity(0.05), borderRadius: BorderRadius.circular(15)),
+                    decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(15)),
                     child: Row(
                       children: [
                         _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
@@ -251,7 +251,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       height: 220,
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.05),
+        color: Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
@@ -283,7 +283,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.1),
+              color: Colors.grey.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
             child: Text("Label", style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-BOLD')),
@@ -294,7 +294,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
               controller: _labelController,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.grey.withOpacity(0.1),
+                fillColor: Colors.grey.withValues(alpha: 0.1),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
               ),
             ),
@@ -372,8 +372,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         alignment: Alignment.center,
         decoration: BoxDecoration(
           // color: isCustom ? Colors.blueGrey.withOpacity(0.1) : AppColor().primaryColor.withOpacity(0.1),
-          // borderRadius: BorderRadius.circular(10),
-          color: Colors.blueGrey.withOpacity(0.1),
+          color: Colors.blueGrey.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Colors.blueGrey.withOpacity(0.2)),
         ),

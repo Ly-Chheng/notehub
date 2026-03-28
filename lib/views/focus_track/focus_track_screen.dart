@@ -4,7 +4,6 @@ import 'package:project_structure/views/focus_track/components/timer_component.d
 import 'package:project_structure/views/focus_track/components/stopwatch_component.dart';
 
 class FocusTrackScreen extends StatefulWidget {
-  // 1. Add this callback to communicate with the parent AppBar
   final ValueChanged<int>? onToggleChanged;
   const FocusTrackScreen({super.key, this.onToggleChanged});
 
@@ -20,12 +19,11 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
     TimerComponent(),
   ];
 
-  // 2. Helper to update local UI and notify the parent screen
   void _handleToggle(int index) {
     setState(() {
       selectedIndex = index;
     });
-    // Send the index (0 or 1) back to the BottomNavigationBarScreen
+
     if (widget.onToggleChanged != null) {
       widget.onToggleChanged!(index);
     }
@@ -54,7 +52,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
     return Container(
       height: context.isPhone ? 45 : 60,
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.1),
+        color: Colors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(context.isPhone ? 25 : 45),
       ),
       child: Stack(

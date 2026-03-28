@@ -63,7 +63,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   late QuillController _quillController;
 
   bool isLocked = false;
-
+  late bool isPinned;
   List<Map<String, dynamic>> drawingLayers = [];
 
   List<File> selectedImages = [];
@@ -81,6 +81,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     isEditingMode = widget.isEditing;
     currentNoteKey = widget.noteKey;
     currentFolderKey = widget.folderKey;
+
+    isPinned = widget.existingNote?['isPinned'] ?? false;
 
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
 
@@ -156,7 +158,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "isLocked": isLocked,
       "folderKey": currentFolderKey,
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
-      "isPinned": widget.existingNote?['isPinned'] ?? false,
+      "isPinned": isPinned,
       "colorValue": AppColor().primaryColor.value,
       "bgColorValue": noteBgColor.value,
       "images": selectedImages.map((file) => file.path).toList(),
@@ -170,7 +172,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       await noteBox.put(currentNoteKey, noteData);
       debugPrint("Background Saved: Note ID $currentNoteKey");
     } else {
-      // Create new and switch to edit mode to prevent duplicates
       final newKey = await noteBox.add(noteData);
       setState(() {
         currentNoteKey = newKey;
@@ -220,18 +221,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  Widget _paperStyleTile(String title, IconData icon, PaperType type) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      trailing: selectedPaperType == type ? const Icon(Icons.check, color: Colors.blue) : null,
-      onTap: () {
-        setState(() => selectedPaperType = type);
-        Navigator.pop(context);
-      },
-    );
-  }
-
   Future<void> _handleLockToggle() async {
     try {
       if (!Hive.isBoxOpen('settings_box')) {
@@ -241,7 +230,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       final settingsBox = Hive.box('settings_box');
       String? masterPass = settingsBox.get('master_password');
 
-      // Set new password if none exists
       if (masterPass == null) {
         final result = await Get.to(() => const CreatePasswordScreen());
         if (result == true) {
@@ -304,6 +292,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  void _togglePin() {
+    setState(() {
+      isPinned = !isPinned;
+    });
+
+    _saveNote(isAuto: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -360,6 +356,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             color: Theme.of(context).cardColor,
             onSelected: (value) => _handleMenuSelection(value, context),
             itemBuilder: (context) => [
+              buildPopupItem(context, isPinned ? 'Unpin' : 'Pin', isPinned ? Icons.push_pin : Icons.push_pin_outlined),
               buildPopupItem(context, 'Share', Icons.share_outlined),
               buildPopupItem(context, 'Move Note', Icons.folder_outlined),
               buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),
@@ -491,7 +488,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               right: 0,
               child: IconButton(
                   icon: const Icon(Icons.cancel, color: Colors.red),
-                  // onPressed: () => setState(() => selectedImages.removeAt(index))
                   onPressed: () {
                     setState(() => selectedImages.removeAt(index));
                     _triggerAutoSave();
@@ -568,6 +564,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   void _handleMenuSelection(String value, BuildContext context) async {
     switch (value) {
+      case 'Pin':
+      case 'Unpin':
+        _togglePin();
+        break;
       case 'Share':
         _shareNote();
         break;
@@ -676,11 +676,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   void _showFormattingSheet() {
     final selectionStyle = _quillController.getSelectionStyle();
+    final attributes = selectionStyle.attributes;
     showFormatSheet(
       context: context,
       isLeftAligned: selectionStyle.attributes[Attribute.align.key]?.value == 'left' || selectionStyle.attributes[Attribute.align.key] == null,
       isCenterAligned: selectionStyle.attributes[Attribute.align.key]?.value == 'center',
       isRightAligned: selectionStyle.attributes[Attribute.align.key]?.value == 'right',
+      isJustifyAligned: attributes[Attribute.align.key]?.value == 'justify',
       isBold: selectionStyle.attributes.containsKey(Attribute.bold.key),
       isItalic: selectionStyle.attributes.containsKey(Attribute.italic.key),
       isUnderlined: selectionStyle.attributes.containsKey(Attribute.underline.key),
@@ -693,6 +695,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       onLeftAlignPressed: () => _quillController.formatSelection(Attribute.leftAlignment),
       onCenterAlignPressed: () => _quillController.formatSelection(Attribute.centerAlignment),
       onRightAlignPressed: () => _quillController.formatSelection(Attribute.rightAlignment),
+      onJustifyAlignPressed: () => _quillController.formatSelection(Attribute.justifyAlignment),
+      onFontSizeChanged: (String size) {
+        if (size == 'normal') {
+          _quillController.formatSelection(Attribute.clone(Attribute.size, null));
+        } else {
+          _quillController.formatSelection(SizeAttribute(size));
+        }
+      },
       onColorChanged: (color) {
         final hex = '#${color.value.toRadixString(16).substring(2)}';
         _quillController.formatSelection(ColorAttribute(hex));

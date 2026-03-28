@@ -57,19 +57,16 @@ class NotebookPainter extends CustomPainter {
         break;
     }
 
-    // 3. Draw Horizontal Lines
     for (double y = spacing; y < size.height; y += spacing) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
 
-    // 4. Draw Vertical Lines (only for grid/engineering)
     if (type == PaperType.grid || type == PaperType.engineering) {
       for (double x = spacing; x < size.width; x += spacing) {
         canvas.drawLine(Offset(x, 0), Offset(x, size.height), paint);
       }
     }
 
-    // 5. Draw Red Vertical Margin Line (Like the image you provided)
     if (hasVerticalMargin) {
       canvas.drawLine(const Offset(50, 0), Offset(50, size.height), marginPaint);
     }

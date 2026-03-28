@@ -88,7 +88,7 @@ class HowToUseScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             offset: const Offset(0, 5),
             blurRadius: 15,
           ),
@@ -103,7 +103,7 @@ class HowToUseScreen extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               gradient: LinearGradient(
-                colors: [iconColor.withOpacity(0.3), iconColor.withOpacity(0.8)],
+                colors: [iconColor.withValues(alpha: 0.3), iconColor.withValues(alpha: 0.8)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),

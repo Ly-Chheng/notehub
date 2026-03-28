@@ -135,7 +135,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
     int columnCount = widget.tableData.isNotEmpty ? widget.tableData[0].length : 0;
 
     return Container(
-      margin: const EdgeInsets.all(12),
+      margin: const EdgeInsets.symmetric(vertical: 15),
       decoration: BoxDecoration(
         color: CupertinoColors.systemBackground.resolveFrom(context),
         border: Border.all(color: CupertinoColors.separator.resolveFrom(context), width: 0.5),
@@ -153,7 +153,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
               verticalInside: BorderSide(color: CupertinoColors.separator.resolveFrom(context), width: 0.5),
             ),
             children: [
-              // Header Row
               TableRow(
                 decoration: BoxDecoration(color: CupertinoColors.tertiarySystemFill.resolveFrom(context)),
                 children: [
@@ -190,7 +189,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                           keyboardType: TextInputType.multiline,
                           textInputAction: TextInputAction.newline,
 
-                          placeholder: "...",
+                          placeholder: "",
                           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
                           decoration: null,
                           style: TextStyle(
@@ -205,7 +204,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                       child: Container(
                         height: 45,
                         alignment: Alignment.center,
-                        child: const Icon(CupertinoIcons.minus_circle_fill, color: CupertinoColors.destructiveRed, size: 20),
+                        child: const Icon(CupertinoIcons.minus_circle, color: CupertinoColors.systemGrey, size: 20),
                       ),
                     ),
                   ],
@@ -213,20 +212,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
               }).toList(),
             ],
           ),
-          // Bottom Bar
-          // Container(
-          //   padding: const EdgeInsets.symmetric(vertical: 4),
-          //   decoration: BoxDecoration(
-          //     border: Border(top: BorderSide(color: CupertinoColors.separator.resolveFrom(context), width: 0.5)),
-          //   ),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //     children: [
-          //       _iosActionButton(CupertinoIcons.add, "Row", widget.onAddRow),
-          //       _iosActionButton(CupertinoIcons.trash, "Clear All", widget.onDeleteTable, isDestructive: true),
-          //     ],
-          //   ),
-          // )
         ],
       ),
     );
@@ -238,23 +223,8 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
       child: Container(
         height: 40,
         alignment: Alignment.center,
-        child: const Icon(CupertinoIcons.minus_circle, size: 18, color: CupertinoColors.systemGrey),
+        child: const Icon(CupertinoIcons.minus_circle, size: 20, color: CupertinoColors.systemGrey),
       ),
     );
   }
-
-  // Widget _iosActionButton(IconData icon, String label, VoidCallback onTap, {bool isDestructive = false}) {
-  //   final color = isDestructive ? CupertinoColors.destructiveRed : CupertinoColors.activeBlue;
-  //   return CupertinoButton(
-  //     padding: EdgeInsets.zero,
-  //     onPressed: onTap,
-  //     child: Row(
-  //       children: [
-  //         Icon(icon, size: 18, color: color),
-  //         const SizedBox(width: 4),
-  //         Text(label, style: TextStyle(fontSize: 14, color: color)),
-  //       ],
-  //     ),
-  //   );
-  // }
 }

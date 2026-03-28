@@ -197,92 +197,94 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   });
                 },
               ),
-             
               Expanded(
-                child: ValueListenableBuilder(
-                  valueListenable: noteBox.listenable(),
-                  builder: (context, Box box, _) {
-                    List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
+                child: SlidableAutoCloseBehavior(
+                  closeWhenOpened: true,
+                  child: ValueListenableBuilder(
+                    valueListenable: noteBox.listenable(),
+                    builder: (context, Box box, _) {
+                      List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
 
-                    if (searchQuery.isNotEmpty) {
-                      notesList = notesList.where((entry) {
-                        final title = (entry.value['title'] ?? "").toString().toLowerCase();
-                        final content = (entry.value['subtitle'] ?? "").toString().toLowerCase();
-                        return title.contains(searchQuery) || content.contains(searchQuery);
-                      }).toList();
-                    }
+                      if (searchQuery.isNotEmpty) {
+                        notesList = notesList.where((entry) {
+                          final title = (entry.value['title'] ?? "").toString().toLowerCase();
+                          final content = (entry.value['subtitle'] ?? "").toString().toLowerCase();
+                          return title.contains(searchQuery) || content.contains(searchQuery);
+                        }).toList();
+                      }
 
-                    List<MapEntry<dynamic, dynamic>> pinnedNotes = notesList.where((e) => e.value['isPinned'] == true).toList();
-                    List<MapEntry<dynamic, dynamic>> unpinnedNotes = notesList.where((e) => e.value['isPinned'] != true).toList();
+                      List<MapEntry<dynamic, dynamic>> pinnedNotes = notesList.where((e) => e.value['isPinned'] == true).toList();
+                      List<MapEntry<dynamic, dynamic>> unpinnedNotes = notesList.where((e) => e.value['isPinned'] != true).toList();
 
-                    pinnedNotes.sort((a, b) => b.key.compareTo(a.key));
-                    unpinnedNotes.sort((a, b) => b.key.compareTo(a.key));
+                      pinnedNotes.sort((a, b) => b.key.compareTo(a.key));
+                      unpinnedNotes.sort((a, b) => b.key.compareTo(a.key));
 
-                    if (notesList.isEmpty) {
-                      return CustomNoData(
-                        message: searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
-                      );
-                    }
+                      if (notesList.isEmpty) {
+                        return CustomNoData(
+                          message: searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
+                        );
+                      }
 
-                    return ListView(
-                      children: [
-                        if (pinnedNotes.isNotEmpty) ...[
-                          Padding(
-                            padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5),
-                            child: Text(
-                              "Pinned",
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: AppColor().primaryColor,
+                      return ListView(
+                        children: [
+                          if (pinnedNotes.isNotEmpty) ...[
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5),
+                              child: Text(
+                                "Pinned",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColor().primaryColor,
+                                ),
                               ),
                             ),
-                          ),
-                          ...pinnedNotes.map((entry) => _buildSlidableNote(entry.key, entry.value)).toList(),
-                        ],
-                        if (unpinnedNotes.isNotEmpty) ...[
-                          ListView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            itemCount: unpinnedNotes.length,
-                            itemBuilder: (context, index) {
-                              final entry = unpinnedNotes[index];
-                              final noteKey = entry.key;
-                              final noteData = entry.value;
+                            ...pinnedNotes.map((entry) => _buildSlidableNote(entry.key, entry.value)).toList(),
+                          ],
+                          if (unpinnedNotes.isNotEmpty) ...[
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: unpinnedNotes.length,
+                              itemBuilder: (context, index) {
+                                final entry = unpinnedNotes[index];
+                                final noteKey = entry.key;
+                                final noteData = entry.value;
 
-                              // Grouping Logic for Unpinned Notes
-                              String currentHeader = _getDateHeader(noteData['date'] ?? "");
-                              String? prevHeader;
-                              if (index > 0) {
-                                prevHeader = _getDateHeader(unpinnedNotes[index - 1].value['date'] ?? "");
-                              }
+                                // Grouping Logic for Unpinned Notes
+                                String currentHeader = _getDateHeader(noteData['date'] ?? "");
+                                String? prevHeader;
+                                if (index > 0) {
+                                  prevHeader = _getDateHeader(unpinnedNotes[index - 1].value['date'] ?? "");
+                                }
 
-                              bool showHeader = currentHeader != prevHeader;
+                                bool showHeader = currentHeader != prevHeader;
 
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (showHeader)
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
-                                      child: Text(
-                                        currentHeader,
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'EN-BOLD',
-                                          color: Colors.grey[600],
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (showHeader)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
+                                        child: Text(
+                                          currentHeader,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontFamily: 'EN-BOLD',
+                                            color: Colors.grey[600],
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  _buildSlidableNote(noteKey, noteData),
-                                ],
-                              );
-                            },
-                          ),
+                                    _buildSlidableNote(noteKey, noteData),
+                                  ],
+                                );
+                              },
+                            ),
+                          ],
                         ],
-                      ],
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
@@ -512,7 +514,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                           style: TextStyle(
                                             color: Theme.of(context).colorScheme.onSurface,
                                             fontSize: context.isPhone ? 14 : 16,
-                                            fontFamily: 'EN-BOLD',
+                                            fontFamily: 'EN-REGULAR',
                                           ),
                                         ),
                                       ),

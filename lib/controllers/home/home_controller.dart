@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
@@ -13,6 +14,8 @@ class HomeController extends GetxController {
 
   var isSelectionMode = false.obs;
   var selectedKeys = <dynamic>{}.obs;
+  final ScrollController scrollController = ScrollController();
+  var isFabVisible = true.obs;
 
   // Logic moved from initState
   void ensureDefaultFolder() {
@@ -80,7 +83,7 @@ class HomeController extends GetxController {
 
     if (masterPassword == null) {
       Get.snackbar("Security", "Please set a master password first.");
-      onVerified(); // Or redirect to CreatePasswordScreen
+      onVerified();
       return;
     }
 
@@ -165,7 +168,6 @@ class HomeController extends GetxController {
         for (var key in selectedKeys) {
           trashBox.delete(key);
         }
-        // Reset selection mode
         toggleSelectionMode();
       },
     );
@@ -197,5 +199,21 @@ class HomeController extends GetxController {
       noteBox.put(key, restoredData);
       trashBox.delete(key);
     }
+  }
+
+  void listenToScroll() {
+    scrollController.addListener(() {
+      if (scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+        if (isFabVisible.value) isFabVisible.value = false;
+      } else if (scrollController.position.userScrollDirection == ScrollDirection.forward) {
+        if (!isFabVisible.value) isFabVisible.value = true;
+      }
+    });
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
   }
 }

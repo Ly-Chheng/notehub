@@ -78,102 +78,104 @@ class RecentlyDeletedScreen extends StatelessWidget {
               ),
             ],
           ),
-          body: ValueListenableBuilder(
-            valueListenable: controller.trashBox.listenable(),
-            builder: (context, Box box, _) {
-              if (box.isEmpty) {
-                return CustomNoData(
-                  message: "No recently deleted notes",
-                );
-              }
-
-              final entries = box.toMap().entries.toList();
-
-              return ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                itemCount: entries.length,
-                itemBuilder: (context, index) {
-                  final key = entries[index].key;
-                  final data = entries[index].value;
-                  final isSelected = controller.selectedKeys.contains(key);
-
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 20),
-                    child: Slidable(
-                      key: ValueKey(key),
-                      enabled: !controller.isSelectionMode.value,
-                      endActionPane: ActionPane(
-                        motion: const DrawerMotion(),
-                        extentRatio: 0.5,
-                        children: [
-                          SlidableAction(
-                            onPressed: (context) => _showFolderPicker(context, controller, noteKey: key),
-                            backgroundColor: AppColor().primaryColor,
-                            foregroundColor: Colors.white,
-                            icon: Icons.folder,
-                            label: 'Move',
-                            borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
-                          ),
-                          SlidableAction(
-                            // onPressed: (context) => controller.permanentDelete(key),
-                            onPressed: (context) {
-                              controller.deleteWapDialog(context, {key});
-                            },
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                            icon: Icons.delete,
-                            label: 'Delete',
-                            borderRadius: const BorderRadius.horizontal(
-                              right: Radius.circular(12),
-                            ),
-                          ),
-                        ],
-                      ),
-                      child: Card(
-                        elevation: 0,
-                        margin: EdgeInsets.zero,
-                        color: Theme.of(context).cardColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: isSelected ? BorderSide(color: AppColor().primaryColor, width: 1.5) : BorderSide.none,
-                        ),
-                        child: ListTile(
-                          onTap: () {
-                            if (controller.isSelectionMode.value) {
-                              controller.toggleSelection(key);
-                            }
-                          },
-                          leading: controller.isSelectionMode.value
-                              ? Icon(
-                                  isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                                  color: AppColor().primaryColor,
-                                )
-                              : null,
-                          title: Text(
-                            // data['title'] ?? "Untitled Note",
-                            (data['title'] != null && data['title'].toString().trim().isNotEmpty) ? data['title'] : _getPlainTextFromNote(data['subtitle']),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: context.isPhone ? 18 : 20,
-                              fontFamily: 'EN-REGULAR',
-                            ),
-                          ),
-                          subtitle: Text(
-                            data['deletedAt'] != null ? DateFormat('MM-dd-yyyy / hh:mm a').format(DateTime.parse(data['deletedAt'])) : "Unknown",
-                            style: TextStyle(
-                              fontSize: context.isPhone ? 14 : 16,
-                              fontFamily: 'EN-REGULAR',
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
+          body: SlidableAutoCloseBehavior(
+            closeWhenOpened: true,
+            child: ValueListenableBuilder(
+              valueListenable: controller.trashBox.listenable(),
+              builder: (context, Box box, _) {
+                if (box.isEmpty) {
+                  return CustomNoData(
+                    message: "No recently deleted notes",
                   );
-                },
-              );
-            },
+                }
+
+                final entries = box.toMap().entries.toList();
+
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                  itemCount: entries.length,
+                  itemBuilder: (context, index) {
+                    final key = entries[index].key;
+                    final data = entries[index].value;
+                    final isSelected = controller.selectedKeys.contains(key);
+
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 20),
+                      child: Slidable(
+                        key: ValueKey(key),
+                        enabled: !controller.isSelectionMode.value,
+                        endActionPane: ActionPane(
+                          motion: const DrawerMotion(),
+                          extentRatio: 0.5,
+                          children: [
+                            SlidableAction(
+                              onPressed: (context) => _showFolderPicker(context, controller, noteKey: key),
+                              backgroundColor: AppColor().primaryColor,
+                              foregroundColor: Colors.white,
+                              icon: Icons.folder,
+                              label: 'Move',
+                              borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
+                            ),
+                            SlidableAction(
+                              onPressed: (context) {
+                                controller.deleteWapDialog(context, {key});
+                              },
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                              icon: Icons.delete,
+                              label: 'Delete',
+                              borderRadius: const BorderRadius.horizontal(
+                                right: Radius.circular(12),
+                              ),
+                            ),
+                          ],
+                        ),
+                        child: Card(
+                          elevation: 0,
+                          margin: EdgeInsets.zero,
+                          color: Theme.of(context).cardColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: isSelected ? BorderSide(color: AppColor().primaryColor, width: 1.5) : BorderSide.none,
+                          ),
+                          child: ListTile(
+                            onTap: () {
+                              if (controller.isSelectionMode.value) {
+                                controller.toggleSelection(key);
+                              }
+                            },
+                            leading: controller.isSelectionMode.value
+                                ? Icon(
+                                    isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                                    color: AppColor().primaryColor,
+                                  )
+                                : null,
+                            title: Text(
+                              // data['title'] ?? "Untitled Note",
+                              (data['title'] != null && data['title'].toString().trim().isNotEmpty) ? data['title'] : _getPlainTextFromNote(data['subtitle']),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: context.isPhone ? 18 : 20,
+                                fontFamily: 'EN-REGULAR',
+                              ),
+                            ),
+                            subtitle: Text(
+                              data['deletedAt'] != null ? DateFormat('MM-dd-yyyy / hh:mm a').format(DateTime.parse(data['deletedAt'])) : "Unknown",
+                              style: TextStyle(
+                                fontSize: context.isPhone ? 14 : 16,
+                                fontFamily: 'EN-REGULAR',
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
           bottomNavigationBar: controller.isSelectionMode.value
               ? BottomAppBar(

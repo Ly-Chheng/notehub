@@ -61,7 +61,7 @@ class TimerDetailScreen extends StatelessWidget {
                     color: isRunning ? AppColor().primaryColor : Colors.green,
                     size: context.isPhone ? 35 : 40,
                   ),
-                  isRunning ? AppColor().primaryColor.withOpacity(0.2) : Colors.green.withOpacity(0.2),
+                  isRunning ? AppColor().primaryColor.withValues(alpha: 0.2) : Colors.green.withValues(alpha: 0.2),
                   isRunning ? AppColor().primaryColor : Colors.green,
                   () => controller.toggleTimer(timerKey),
                 ),

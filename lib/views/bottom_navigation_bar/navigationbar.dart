@@ -108,7 +108,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
           title: controller.listTitle[controller.selectedIndex],
           context: context,
           actions: [
-            // Index 0 → Grid + Add icons
             if (controller.selectedIndex == 0) ...[
               GestureDetector(
                 onTap: () {
@@ -127,8 +126,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                 ),
               ),
             ],
-
-            // Index 1 → Focus Track Tab
             if (controller.selectedIndex == 1 && focusSubIndex == 1)
               GestureDetector(
                 onTap: () => Get.toNamed('/createTimer'),
