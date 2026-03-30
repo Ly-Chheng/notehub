@@ -14,6 +14,7 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/background_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/handwriting_component.dart';
+import 'package:project_structure/views/create/components/image_detail_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/views/create/components/notebook_painter.dart';
 import 'package:project_structure/views/create/components/table_component.dart';
@@ -58,7 +59,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   bool isUnderlined = false;
   bool isStrikethrough = false;
   Color selectedColor = Colors.black;
-  Color noteBgColor = Colors.white;
+  // Color noteBgColor = Colors.white;
+  Color? noteBgColor;
   PaperType selectedPaperType = PaperType.none;
   late QuillController _quillController;
 
@@ -85,6 +87,16 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     isPinned = widget.existingNote?['isPinned'] ?? false;
 
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
+
+    // 1. Handle Background Color Logic
+    if (isEditingMode && widget.existingNote != null) {
+      // If bgColorValue exists in Hive, use it. If not, it stays null.
+      final int? savedBgColor = widget.existingNote?['bgColorValue'];
+      noteBgColor = savedBgColor != null ? Color(savedBgColor) : null;
+    } else {
+      // New note defaults to null (System Theme)
+      noteBgColor = null;
+    }
 
     // Initialize Quill
     if (isEditingMode && widget.existingNote?['subtitle'] != null) {
@@ -160,7 +172,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
       "isPinned": isPinned,
       "colorValue": AppColor().primaryColor.value,
-      "bgColorValue": noteBgColor.value,
+      // "bgColorValue": noteBgColor.value,
+      "bgColorValue": noteBgColor?.value,
       "images": selectedImages.map((file) => file.path).toList(),
       "showTable": showTable,
       "tableData": tableData,
@@ -302,8 +315,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final Color effectiveBg = noteBgColor ?? Theme.of(context).scaffoldBackgroundColor;
     return Scaffold(
-      backgroundColor: noteBgColor,
+      backgroundColor: effectiveBg,
       resizeToAvoidBottomInset: true,
       appBar: customAppBar(
         title: widget.isEditing ? "Edit Note" : "Create Note",
@@ -360,7 +374,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               buildPopupItem(context, 'Share', Icons.share_outlined),
               buildPopupItem(context, 'Move Note', Icons.folder_outlined),
               buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),
-              buildPopupItem(context, 'Auto-Save', isAutoSaveEnabled ? Icons.sync : Icons.sync_disabled),
               buildPopupItem(context, 'Delete', Icons.delete_outline, color: Colors.red),
             ],
           ),
@@ -373,7 +386,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             lineColor: const Color(0x339E9E9E),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Column(
               children: [
                 TextField(
@@ -476,12 +489,17 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         itemCount: selectedImages.length,
         itemBuilder: (context, index) => Stack(
           children: [
-            Container(
-              margin: const EdgeInsets.all(8),
-              width: 100,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                image: DecorationImage(image: FileImage(selectedImages[index]), fit: BoxFit.cover),
+            GestureDetector(
+              onTap: () {
+                Get.to(() => ImageDetailScreen(imageFile: selectedImages[index]));
+              },
+              child: Container(
+                margin: const EdgeInsets.all(8),
+                width: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  image: DecorationImage(image: FileImage(selectedImages[index]), fit: BoxFit.cover),
+                ),
               ),
             ),
             Positioned(
@@ -512,48 +530,66 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _bottomIcon(Icons.camera_alt_outlined, () {
-                        showMediaSheet(
-                          context: context,
-                          onImageSelected: (File tempImage) async {
-                            // MOVE TO PERMANENT BEFORE UPDATING STATE
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    // _bottomIcon(Icons.camera_alt_outlined, () {
+                    //   showMediaSheet(
+                    //     context: context,
+                    //     onImageSelected: (File tempImage) async {
+                    //       File permanentFile = await _moveFileToPermanentStorage(tempImage);
+                    //       setState(() => selectedImages.add(permanentFile));
+                    //       _triggerAutoSave();
+                    //     },
+                    //   );
+                    // }),
+                    _bottomIcon(Icons.camera_alt_outlined, () {
+                      // Check if the limit has already been reached
+                      if (selectedImages.length >= 3) {
+                        return;
+                      }
+
+                      showMediaSheet(
+                        context: context,
+                        onImageSelected: (File tempImage) async {
+                          if (selectedImages.length < 3) {
                             File permanentFile = await _moveFileToPermanentStorage(tempImage);
                             setState(() => selectedImages.add(permanentFile));
                             _triggerAutoSave();
-                          },
-                        );
-                      }),
-                      _bottomIcon(Icons.text_fields, () {
-                        _showFormattingSheet();
-                      }),
-                      _bottomIcon(Icons.palette_outlined, () {
-                        showPaletteSheet(
-                            context: context,
-                            selectedColor: noteBgColor,
-                            onColorSelected: (color) {
-                              setState(() => noteBgColor = color);
-                              _triggerAutoSave();
-                            });
-                      }),
-                      _bottomIcon(Icons.table_chart_outlined, () {
-                        setState(() => showTable = !showTable);
-                        _triggerAutoSave();
-                      }),
-                      _bottomIcon(Icons.mode_outlined, _openHandwriting),
-                    ],
-                  ),
+                          }
+                        },
+                      );
+                    }),
+                    _bottomIcon(Icons.text_fields, () {
+                      _showFormattingSheet();
+                    }),
+                    _bottomIcon(Icons.palette_outlined, () {
+                      showPaletteSheet(
+                        context: context,
+                        // selectedColor: noteBgColor,
+                        // onColorSelected: (color) {
+                        //   setState(() => noteBgColor = color);
+                        //   _triggerAutoSave();
+                        // }
+                        selectedColor: noteBgColor ?? Theme.of(context).scaffoldBackgroundColor,
+                        onColorSelected: (Color color) {
+                          setState(() {
+                            noteBgColor = color;
+                          });
+                          _triggerAutoSave();
+                        },
+                      );
+                    }),
+                    _bottomIcon(Icons.table_chart_outlined, () {
+                      setState(() => showTable = !showTable);
+                      _triggerAutoSave();
+                    }),
+                    _bottomIcon(Icons.mode_outlined, _openHandwriting),
+                  ],
                 ),
-              ),
-              IconButton(
-                icon: Icon(Icons.send, color: AppColor().primaryColor, size: context.isPhone ? 24 : 30),
-                onPressed: () => _saveNote(isAuto: false),
               ),
             ],
           ),
@@ -570,10 +606,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         break;
       case 'Share':
         _shareNote();
-        break;
-      case 'Auto-Save':
-        setState(() => isAutoSaveEnabled = !isAutoSaveEnabled);
-        Get.snackbar("Preference", "Auto-save is now ${isAutoSaveEnabled ? 'ON' : 'OFF'}");
         break;
       case 'Lock Note':
       case 'Unlock Note':
@@ -653,7 +685,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
     return IconButton(
-      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 20 : 30),
+      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 25 : 30),
       onPressed: onPressed,
     );
   }

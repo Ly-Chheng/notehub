@@ -1,8 +1,8 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:signature/signature.dart';
@@ -31,7 +31,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
   double currentWidth = 2.0;
   bool isEraser = false;
   final Color canvasBgColor = const Color(0xFFF9F9F9);
-  bool showColorPalette = false; // NEW: toggle color palette
+  bool showColorPalette = false;
 
   @override
   void initState() {
@@ -122,30 +122,35 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 100,
-      decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      child: Column(
-        children: [
-          const SizedBox(height: 20),
-          SheetHeader(title: "Handwriting", saveText: "Save", onSave: _saveAndExit),
-          Expanded(
-            child: RepaintBoundary(
-              key: _repaintKey,
-              child: Container(
-                margin: const EdgeInsets.only(top: 5, bottom: 5),
-                decoration: BoxDecoration(color: canvasBgColor, borderRadius: BorderRadius.circular(12)),
-                child: Stack(
-                  children: [
-                    ..._layers.map((l) => Signature(controller: l, backgroundColor: Colors.transparent)),
-                    Signature(controller: _activeController, backgroundColor: Colors.transparent),
-                  ],
+    final topPadding = MediaQuery.of(context).padding.top;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: Theme.of(context).brightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+      child: Container(
+        height: MediaQuery.of(context).size.height,
+        decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        child: Column(
+          children: [
+            SizedBox(height: topPadding),
+            SheetHeader(title: "Handwriting", saveText: "Save", onSave: _saveAndExit),
+            Expanded(
+              child: RepaintBoundary(
+                key: _repaintKey,
+                child: Container(
+                  margin: const EdgeInsets.only(top: 5, bottom: 5),
+                  decoration: BoxDecoration(color: canvasBgColor),
+                  child: Stack(
+                    children: [
+                      ..._layers.map((l) => Signature(controller: l, backgroundColor: Colors.transparent)),
+                      Signature(controller: _activeController, backgroundColor: Colors.transparent),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          _buildBottomActions(),
-        ],
+            Container(padding: EdgeInsets.only(bottom: bottomPadding), color: Theme.of(context).cardColor, child: _buildBottomActions()),
+          ],
+        ),
       ),
     );
   }
@@ -163,105 +168,94 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
     ];
 
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 5),
-        child: Column(
-          children: [
-            // SingleChildScrollView(
-            //   scrollDirection: Axis.horizontal,
-            //   child: Row(
-            //     children: [Colors.black, Colors.red, Colors.blue, Colors.green, Colors.orange, Colors.purple, Colors.amber, Colors.pink].map((c) => _colorCircle(c)).toList(),
-            //   ),
-            // ),
-
-            // Show color palette if toggled
-            if (showColorPalette) ...[
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: colors.map((c) => _colorCircle(c)).toList(),
-                ),
-              ),
-            ],
-            const SizedBox(height: 5),
+      child: Column(
+        children: [
+          if (showColorPalette) ...[
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: [
-                  _toolBtn(
-                    "Pen",
-                    !isEraser && currentWidth == 2.0,
-                    () => _updateBrush(width: 2.0),
-                    imagePath: 'assets/images/pen.png',
-                  ),
-                  _toolBtn(
-                    "Thin",
-                    !isEraser && currentWidth == 1.0,
-                    () => _updateBrush(width: 1.0),
-                    imagePath: 'assets/images/pencle.png',
-                  ),
-                  _toolBtn(
-                    "Highlighter",
-                    !isEraser && currentWidth == 20.0,
-                    () => _updateBrush(width: 20.0),
-                    imagePath: 'assets/images/highlighter.png',
-                  ),
-                  _toolBtn(
-                    "Eraser",
-                    isEraser,
-                    () => _updateBrush(eraser: true),
-                    imagePath: 'assets/images/easer.png',
-                  ),
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        showColorPalette = !showColorPalette;
-                      });
-                    },
-                    borderRadius: BorderRadius.circular(8),
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 5),
-                      padding: const EdgeInsets.all(6),
-                      child: Icon(
-                        Icons.color_lens,
-                        size: showColorPalette ? 24 : 24,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ),
-                  IconButton(
-                      icon: const Icon(Icons.undo),
-                      onPressed: () {
-                        setState(() {
-                          if (_activeController.isNotEmpty) {
-                            _activeController.undo();
-                          } else if (_layers.isNotEmpty) {
-                            _activeController = _layers.removeLast();
-                          }
-                        });
-                      }),
-                  IconButton(
-                      icon: const Icon(Icons.redo_outlined),
-                      onPressed: () {
-                        setState(() {
-                          if (_activeController.isNotEmpty) {
-                            _activeController.redo();
-                          } else if (_layers.isNotEmpty) {
-                            _activeController = _layers.removeLast();
-                          }
-                        });
-                      }),
-                  IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () => setState(() {
-                            _layers.clear();
-                            _activeController.clear();
-                          })),
-                ],
+                children: colors.map((c) => _colorCircle(c)).toList(),
               ),
             ),
           ],
-        ),
+          const SizedBox(height: 5),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _toolBtn(
+                  "Pen",
+                  !isEraser && currentWidth == 2.0,
+                  () => _updateBrush(width: 2.0),
+                  imagePath: 'assets/images/pen.png',
+                ),
+                _toolBtn(
+                  "Thin",
+                  !isEraser && currentWidth == 1.0,
+                  () => _updateBrush(width: 1.0),
+                  imagePath: 'assets/images/pencle.png',
+                ),
+                _toolBtn(
+                  "Highlighter",
+                  !isEraser && currentWidth == 20.0,
+                  () => _updateBrush(width: 20.0),
+                  imagePath: 'assets/images/highlighter.png',
+                ),
+                _toolBtn(
+                  "Eraser",
+                  isEraser,
+                  () => _updateBrush(eraser: true),
+                  imagePath: 'assets/images/easer.png',
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      showColorPalette = !showColorPalette;
+                    });
+                  },
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 5),
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(
+                      Icons.color_lens,
+                      size: showColorPalette ? 24 : 24,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+                IconButton(
+                    icon: const Icon(Icons.undo),
+                    onPressed: () {
+                      setState(() {
+                        if (_activeController.isNotEmpty) {
+                          _activeController.undo();
+                        } else if (_layers.isNotEmpty) {
+                          _activeController = _layers.removeLast();
+                        }
+                      });
+                    }),
+                IconButton(
+                    icon: const Icon(Icons.redo_outlined),
+                    onPressed: () {
+                      setState(() {
+                        if (_activeController.isNotEmpty) {
+                          _activeController.redo();
+                        } else if (_layers.isNotEmpty) {
+                          _activeController = _layers.removeLast();
+                        }
+                      });
+                    }),
+                IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () => setState(() {
+                          _layers.clear();
+                          _activeController.clear();
+                        })),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

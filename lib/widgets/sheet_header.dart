@@ -18,53 +18,58 @@ class SheetHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 40,
-          height: 4,
-          margin: const EdgeInsets.only(bottom: 10),
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            borderRadius: BorderRadius.circular(10),
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: 40,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            TextButton(
-              onPressed: onCancel ?? () => Get.back(),
-              child: const Text(
-                "Cancel",
-                style: TextStyle(
-                  color: Colors.red,
-                  fontFamily: 'EN-ENGINEER',
-                  fontSize: 16,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              TextButton(
+                onPressed: onCancel ?? () => Get.back(),
+                child: const Text(
+                  "Cancel",
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontFamily: 'EN-ENGINEER',
+                    fontSize: 16,
+                  ),
                 ),
               ),
-            ),
-            Text(
-              title,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                fontFamily: 'EN-ENGINEER',
-              ),
-            ),
-            TextButton(
-              onPressed: onSave,
-              child: Text(
-                saveText,
+              Text(
+                title,
                 style: TextStyle(
-                  color: AppColor().primaryColor,
-                  fontFamily: 'EN-ENGINEER',
                   fontSize: 16,
+                  fontFamily: 'EN-ENGINEER',
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
+              TextButton(
+                onPressed: onSave,
+                child: Text(
+                  saveText,
+                  style: TextStyle(
+                    color: AppColor().primaryColor,
+                    fontFamily: 'EN-ENGINEER',
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

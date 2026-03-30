@@ -7,10 +7,8 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/views/create/folder_note_list_screen.dart.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
-import 'package:project_structure/views/home/components/recently_deleted_screen.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_header.dart';
-import 'package:project_structure/widgets/custom_list_folder.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -50,34 +48,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     return ListView.builder(
                       controller: controller.scrollController,
-                      itemCount: folders.length + 1,
+                      itemCount: folders.length,
                       itemBuilder: (context, index) {
-                        if (index == folders.length) {
-                          return ValueListenableBuilder(
-                            valueListenable: controller.trashBox.listenable(),
-                            builder: (context, Box tBox, _) {
-                              if (tBox.isEmpty) return const SizedBox.shrink();
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(12),
-                                  child: Container(
-                                    color: Theme.of(context).cardColor,
-                                    child: CustomListFolder(
-                                      title: "Recently Deleted",
-                                      icon: Icons.delete,
-                                      iconColor: Colors.red,
-                                      listenable: controller.trashBox.listenable(),
-                                      onTap: () => Get.to(() => const RecentlyDeletedScreen()),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                        }
-
-                        // Regular Folder Item
                         final folderKey = folders[index].key;
                         final folderData = folders[index].value;
                         bool isDefault = folderData['title'] == controller.defaultFolderName;
@@ -161,7 +133,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                   child: ListTile(
                                     leading: Icon(
                                       Icons.folder,
-                                      color: Color(folderData['colorValue']),
+                                      // color: Color(folderData['colorValue']),
+                                      color: AppColor().primaryColor,
                                       size: context.isPhone ? 30 : 35,
                                     ),
                                     title: Row(
@@ -190,10 +163,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                         return Text("$count", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR'));
                                       },
                                     ),
-                                    // onTap: () => Get.to(() => FolderNoteListScreen(
-                                    //       folderKey: folderKey,
-                                    //       folderName: folderData['title'],
-                                    //     )),
                                     onTap: () {
                                       final bool isFolderLocked = folderData['isLocked'] ?? false;
 
@@ -223,19 +192,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
-        //   floatingActionButton: FloatingActionButton(
-        //     backgroundColor: AppColor().primaryColor,
-        //     onPressed: () {
-        //       final defaultKey = controller.getDefaultFolderKey();
-        //       Get.to(() => CreateNoteScreen(folderKey: defaultKey));
-        //     },
-        //     child: Icon(
-        //       Icons.add,
-        //       color: Colors.white,
-        //       size: context.isPhone ? 30 : 35,
-        //     ),
-        //   ),
-        // );
         floatingActionButton: Obx(() => AnimatedSlide(
               duration: const Duration(milliseconds: 300),
               offset: controller.isFabVisible.value ? Offset.zero : const Offset(0, 2),
