@@ -90,6 +90,7 @@ class HomeController extends GetxController {
     showConfirmDialog(
       context: context,
       title: title,
+      hintText: "Master Password",
       subTitle: "Enter password to unlock this folder.",
       controller: passController,
       obscureText: true,

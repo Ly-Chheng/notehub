@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
 void showFormatSheet({
@@ -220,7 +221,7 @@ void showFormatSheet({
               _buildContainer(
                 context,
                 SizedBox(
-                  height: 40,
+                  height: 43,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
@@ -234,24 +235,23 @@ void showFormatSheet({
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           margin: const EdgeInsets.only(right: 10),
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          height: double.infinity,
+                          alignment: Alignment.center,
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.blue : Theme.of(context).cardColor,
+                            color: isSelected ? AppColor().primaryColor : Theme.of(context).cardColor,
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(
-                              color: isSelected ? Colors.blue : Colors.grey.withValues(alpha: 0.3),
+                              color: isSelected ? AppColor().primaryColor : Colors.grey.withValues(alpha: 0.3),
                             ),
-                            boxShadow: isSelected ? [BoxShadow(color: Colors.blue.withValues(alpha: 0.3), blurRadius: 4, offset: const Offset(0, 2))] : [],
                           ),
-                          child: Center(
-                            child: Text(
-                              size,
-                              style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.grey.shade700,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                fontSize: 14,
-                                fontFamily: 'EN-REGULAR',
-                              ),
+                          child: Text(
+                            size,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.grey.shade700,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              fontSize: 14,
+                              fontFamily: 'EN-REGULAR',
                             ),
                           ),
                         ),

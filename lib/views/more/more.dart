@@ -8,7 +8,7 @@ import 'package:project_structure/views/lock/forget_password_screen.dart';
 import 'package:project_structure/views/more/about_screen.dart';
 import 'package:project_structure/views/more/how_to_use_screen.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
-import 'package:share_plus/share_plus.dart';
+// import 'package:share_plus/share_plus.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({
@@ -22,11 +22,11 @@ class MoreScreen extends StatefulWidget {
 class _MoreScreenState extends State<MoreScreen> {
   final controller = Get.put(DarkModeController());
 
-  void _shareApp() {
-    Share.share(
-      "Check out Student Note App!\n\nDownload now:\nhttps://play.google.com/store/apps/details?id=com.yourapp.id",
-    );
-  }
+  // void _shareApp() {
+  //   Share.share(
+  //     "Check out Student Note App!\n\nDownload now:\nhttps://play.google.com/store/apps/details?id=com.yourapp.id",
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _MoreScreenState extends State<MoreScreen> {
                 _buildMenuTile(
                   Icons.share_outlined,
                   "Share App",
-                  onTap: _shareApp,
+                  onTap: () {},
                   isLast: true,
                 ),
                 _buildMenuTile(
@@ -73,7 +73,7 @@ class _MoreScreenState extends State<MoreScreen> {
                 ]),
               ),
               Text(
-                "Copyright © 2026 Student Note App.\nVersion 1.0.0 (1)",
+                "Copyright © 2026 Student Note App.\nVersion 1.0.0 (2)",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 12 : 14, height: 1.5),
               ),

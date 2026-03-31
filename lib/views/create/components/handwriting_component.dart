@@ -30,8 +30,10 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
   Color currentPenColor = Colors.black;
   double currentWidth = 2.0;
   bool isEraser = false;
-  final Color canvasBgColor = const Color(0xFFF9F9F9);
   bool showColorPalette = false;
+
+  late final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+  late final canvasBgColor = isDarkMode ? const Color(0xFFF9F9F9) : const Color(0xFFF9F9F9);
 
   @override
   void initState() {
@@ -122,16 +124,16 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
 
   @override
   Widget build(BuildContext context) {
-    final topPadding = MediaQuery.of(context).padding.top;
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: Theme.of(context).brightness == Brightness.dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Container(
         height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(color: Colors.white, borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+        decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: const BorderRadius.vertical(top: Radius.circular(20))),
         child: Column(
           children: [
-            SizedBox(height: topPadding),
+            SizedBox(
+              height: 10,
+            ),
             SheetHeader(title: "Handwriting", saveText: "Save", onSave: _saveAndExit),
             Expanded(
               child: RepaintBoundary(
@@ -148,7 +150,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                 ),
               ),
             ),
-            Container(padding: EdgeInsets.only(bottom: bottomPadding), color: Theme.of(context).cardColor, child: _buildBottomActions()),
+            Container(color: Theme.of(context).cardColor, child: _buildBottomActions()),
           ],
         ),
       ),
@@ -178,7 +180,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
               ),
             ),
           ],
-          const SizedBox(height: 5),
+          const SizedBox(height: 10),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(

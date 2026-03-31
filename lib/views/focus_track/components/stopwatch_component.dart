@@ -105,8 +105,8 @@ class StopwatchScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Lap ${controller.laps.length - index}", style: TextStyle(fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
-                          Text(controller.laps[index], style: TextStyle(fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
+                          Text("Lap ${controller.laps.length - index}", style: TextStyle(fontSize: context.isPhone ? 15 : 17, fontFamily: 'EN-REGULAR')),
+                          Text(controller.laps[index], style: TextStyle(fontSize: context.isPhone ? 15 : 17, fontFamily: 'EN-REGULAR')),
                         ],
                       ),
                     );

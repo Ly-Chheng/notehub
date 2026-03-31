@@ -24,7 +24,7 @@ class NoteController extends GetxController {
           await noteBox.put(noteKey, updatedNote);
         }
       }
-      update(); 
+      update();
     } catch (e) {
       Get.snackbar("Error", "Failed to move notes", backgroundColor: Colors.red, colorText: Colors.white);
     }
@@ -36,7 +36,7 @@ class NoteController extends GetxController {
     required List<File> selectedImages,
   }) async {
     final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
-    final String shareContent = content.trim().isEmpty ? "(No content)" : content.trim();
+    final String shareContent = content.trim().isEmpty ? "No content" : content.trim();
     final String fullText = "$shareTitle\n\n$shareContent";
 
     try {

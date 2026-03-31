@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -20,6 +21,12 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+  
   // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await Firebase.initializeApp(

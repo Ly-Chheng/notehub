@@ -59,7 +59,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   bool isUnderlined = false;
   bool isStrikethrough = false;
   Color selectedColor = Colors.black;
-  // Color noteBgColor = Colors.white;
   Color? noteBgColor;
   PaperType selectedPaperType = PaperType.none;
   late QuillController _quillController;
@@ -88,13 +87,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     titleController = TextEditingController(text: widget.existingNote?['title'] ?? "");
 
-    // 1. Handle Background Color Logic
     if (isEditingMode && widget.existingNote != null) {
-      // If bgColorValue exists in Hive, use it. If not, it stays null.
       final int? savedBgColor = widget.existingNote?['bgColorValue'];
       noteBgColor = savedBgColor != null ? Color(savedBgColor) : null;
     } else {
-      // New note defaults to null (System Theme)
       noteBgColor = null;
     }
 
@@ -158,8 +154,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final String currentTitle = titleController.text.trim();
     final bool isDocEmpty = _quillController.document.isEmpty();
 
-    // Don't auto-save if everything is empty
-    if (isAuto && currentTitle.isEmpty && isDocEmpty) return;
+    final bool isTableEmpty = tableData.every((row) => row.every((cell) => cell.trim().isEmpty));
+
+    if (isAuto && currentTitle.isEmpty && isDocEmpty && (isTableEmpty || !showTable)) {
+      return;
+    }
 
     final noteBox = Hive.box('student_notes');
     final contentJson = jsonEncode(_quillController.document.toDelta().toJson());
@@ -172,7 +171,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
       "isPinned": isPinned,
       "colorValue": AppColor().primaryColor.value,
-      // "bgColorValue": noteBgColor.value,
       "bgColorValue": noteBgColor?.value,
       "images": selectedImages.map((file) => file.path).toList(),
       "showTable": showTable,
@@ -215,6 +213,29 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     return await sourceFile.copy(newPath);
   }
 
+  // Future<File> _moveFileToPermanentStorage(File sourceFile) async {
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   final String fileName = "IMG_${DateTime.now().millisecondsSinceEpoch}.jpg";
+  //   final String targetPath = p.join(directory.path, fileName);
+
+  //   XFile? compressedXFile = await FlutterImageCompress.compressAndGetFile(
+  //     sourceFile.absolute.path,
+  //     targetPath,
+  //     quality: 40,
+  //     minWidth: 800,
+  //     minHeight: 800,
+  //     rotate: 0,
+  //     format: CompressFormat.jpeg,
+  //   );
+
+  //   if (compressedXFile != null) {
+  //     return File(compressedXFile.path);
+  //   } else {
+  //     // Fallback: Copy original if compression fails
+  //     return await sourceFile.copy(targetPath);
+  //   }
+  // }
+
   void _openHandwriting() {
     showModalBottomSheet(
       context: context,
@@ -226,7 +247,15 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           setState(() {
             drawingLayers = layers;
             selectedImages.removeWhere((file) => file.path.contains('draw_'));
-            if (filePath != null) selectedImages.add(File(filePath));
+            //   if (filePath != null) selectedImages.add(File(filePath));
+
+            // If the user actually drew something and saved it
+            if (filePath != null && layers.isNotEmpty) {
+              selectedImages.add(File(filePath));
+            } else if (layers.isEmpty) {
+              // If layers are empty, the drawing is effectively deleted
+              debugPrint("Drawing cleared");
+            }
           });
           _triggerAutoSave();
         },
@@ -291,16 +320,23 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   void _shareNote() {
-    final plainText = _quillController.document.toPlainText().replaceAll('\n', '\n').trim();
+    _autoSaveTimer?.cancel();
 
-    if (titleController.text.trim().isEmpty && plainText.isEmpty) {
-      Get.snackbar("Warning", "Nothing to share");
+    final rawText = _quillController.document.toPlainText();
+    final plainText = rawText.replaceAll('\n', '').trim();
+
+    final hasTitle = titleController.text.trim().isNotEmpty;
+    final hasText = plainText.isNotEmpty;
+    final hasImages = selectedImages.isNotEmpty;
+
+    // Prevent empty share
+    if (!hasTitle && !hasText && !hasImages) {
       return;
     }
 
     noteController.shareNote(
-      title: titleController.text,
-      content: plainText,
+      title: titleController.text.trim(),
+      content: hasText ? rawText.trim() : "",
       selectedImages: selectedImages,
     );
   }
@@ -406,9 +442,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                if (selectedImages.isNotEmpty) _buildImagePreview(),
+                // if (selectedImages.isNotEmpty) _buildImagePreview(),
+                if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
+
                 SizedBox(
-                  height: 20,
+                  height: 10,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(
@@ -428,13 +466,17 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   EditableTableComponent(
                     tableData: tableData,
                     onCellChanged: (rowIndex, colIndex, value) {
+                      // 1. Update the local list
                       tableData[rowIndex][colIndex] = value;
+                      // 2. Trigger the 1-second auto-save timer
+                      _triggerAutoSave();
                     },
                     onAddRow: () {
                       setState(() {
                         int currentCols = tableData[0].length;
                         tableData.add(List.generate(currentCols, (_) => ""));
                       });
+                      _triggerAutoSave();
                     },
                     onRemoveRow: (index) {
                       setState(() {
@@ -444,6 +486,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           showTable = false;
                         }
                       });
+                      _triggerAutoSave();
                     },
                     onAddColumn: () {
                       setState(() {
@@ -451,6 +494,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           row.add("");
                         }
                       });
+                      _triggerAutoSave();
                     },
                     onRemoveColumn: (colIndex) {
                       setState(() {
@@ -458,10 +502,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           for (var row in tableData) {
                             row.removeAt(colIndex);
                           }
-                        } else {
-                          Get.snackbar("Warning", "Table must have at least one column");
                         }
                       });
+                      _triggerAutoSave();
                     },
                     onDeleteTable: () {
                       setState(() {
@@ -470,6 +513,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           ["", ""]
                         ];
                       });
+                      _triggerAutoSave();
                     },
                   ),
               ],
@@ -482,37 +526,48 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   Widget _buildImagePreview() {
+    // Filter list to show only photos (excluding drawings)
+    final photoOnlyList = selectedImages.where((file) => !file.path.contains('draw_')).toList();
+
+    if (photoOnlyList.isEmpty) return const SizedBox.shrink();
+
     return SizedBox(
       height: 120,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: selectedImages.length,
-        itemBuilder: (context, index) => Stack(
-          children: [
-            GestureDetector(
-              onTap: () {
-                Get.to(() => ImageDetailScreen(imageFile: selectedImages[index]));
-              },
-              child: Container(
-                margin: const EdgeInsets.all(8),
-                width: 100,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  image: DecorationImage(image: FileImage(selectedImages[index]), fit: BoxFit.cover),
+        itemCount: photoOnlyList.length,
+        itemBuilder: (context, index) {
+          final imageFile = photoOnlyList[index];
+          return Stack(
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Get.to(() => ImageDetailScreen(imageFile: imageFile));
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(8),
+                  width: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    image: DecorationImage(image: FileImage(imageFile), fit: BoxFit.cover),
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              right: 0,
-              child: IconButton(
+              Positioned(
+                right: 0,
+                child: IconButton(
                   icon: const Icon(Icons.cancel, color: Colors.red),
                   onPressed: () {
-                    setState(() => selectedImages.removeAt(index));
+                    setState(() {
+                      selectedImages.removeWhere((file) => file.path == imageFile.path);
+                    });
                     _triggerAutoSave();
-                  }),
-            )
-          ],
-        ),
+                  },
+                ),
+              )
+            ],
+          );
+        },
       ),
     );
   }
@@ -522,7 +577,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       child: Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Container(
-          margin: const EdgeInsets.all(15),
+          margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
           padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
@@ -536,28 +591,26 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: [
-                    // _bottomIcon(Icons.camera_alt_outlined, () {
-                    //   showMediaSheet(
-                    //     context: context,
-                    //     onImageSelected: (File tempImage) async {
-                    //       File permanentFile = await _moveFileToPermanentStorage(tempImage);
-                    //       setState(() => selectedImages.add(permanentFile));
-                    //       _triggerAutoSave();
-                    //     },
-                    //   );
-                    // }),
                     _bottomIcon(Icons.camera_alt_outlined, () {
-                      // Check if the limit has already been reached
-                      if (selectedImages.length >= 3) {
+                      // 1. Calculate how many ACTUAL photos are currently in the list
+                      final int photoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
+
+                      // 2. Check the limit (only for photos)
+                      if (photoCount >= 2) {
                         return;
                       }
 
                       showMediaSheet(
                         context: context,
                         onImageSelected: (File tempImage) async {
-                          if (selectedImages.length < 3) {
+                          // 3. Re-check inside the callback to be safe
+                          final int currentPhotoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
+
+                          if (currentPhotoCount < 2) {
                             File permanentFile = await _moveFileToPermanentStorage(tempImage);
-                            setState(() => selectedImages.add(permanentFile));
+                            setState(() {
+                              selectedImages.add(permanentFile);
+                            });
                             _triggerAutoSave();
                           }
                         },
@@ -569,11 +622,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     _bottomIcon(Icons.palette_outlined, () {
                       showPaletteSheet(
                         context: context,
-                        // selectedColor: noteBgColor,
-                        // onColorSelected: (color) {
-                        //   setState(() => noteBgColor = color);
-                        //   _triggerAutoSave();
-                        // }
                         selectedColor: noteBgColor ?? Theme.of(context).scaffoldBackgroundColor,
                         onColorSelected: (Color color) {
                           setState(() {
@@ -651,7 +699,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     title: Text(folderTitle, maxLines: 1, overflow: TextOverflow.ellipsis),
                     trailing: isSelected ? Icon(Icons.check, color: AppColor().primaryColor) : null,
                     onTap: () {
-                      setState(() => currentFolderKey = folder.key);
+                      setState(() {
+                        currentFolderKey = folder.key;
+                      });
+
+                      _saveNote(isAuto: true);
+
                       Navigator.pop(context);
                     },
                   );
