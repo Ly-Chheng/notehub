@@ -151,7 +151,6 @@ class RecentlyDeletedScreen extends StatelessWidget {
                                   )
                                 : null,
                             title: Text(
-                              // data['title'] ?? "Untitled Note",
                               (data['title'] != null && data['title'].toString().trim().isNotEmpty) ? data['title'] : _getPlainTextFromNote(data['subtitle']),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -238,7 +237,11 @@ class RecentlyDeletedScreen extends StatelessWidget {
                       final folderData = folders[index].value;
 
                       return ListTile(
-                        leading: Icon(Icons.folder, color: Color(folderData['colorValue'])),
+                        leading: Icon(
+                          Icons.folder,
+                          //color: Color(folderData['colorValue'])
+                          color: AppColor().primaryColor,
+                        ),
                         title: Text(
                           folderData['title'],
                           maxLines: 1,

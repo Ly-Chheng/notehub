@@ -133,7 +133,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                   child: ListTile(
                                     leading: Icon(
                                       Icons.folder,
-                                      // color: Color(folderData['colorValue']),
                                       color: AppColor().primaryColor,
                                       size: context.isPhone ? 30 : 35,
                                     ),
@@ -147,12 +146,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                             child: Icon(Icons.lock, size: 17, color: AppColor().primaryColor),
                                           ),
                                         Expanded(
-                                            child: Text(
-                                                // folderData['title'],
-                                                isLocked && folderData['title'].length > 3 ? "${folderData['title'].substring(0, 3)}..." : folderData['title'],
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(fontSize: context.isPhone ? 18 : 20))),
+                                            child: Text(isLocked && folderData['title'].length > 3 ? "${folderData['title'].substring(0, 3)}..." : folderData['title'],
+                                                maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: context.isPhone ? 18 : 20))),
                                         if (isPinned) const Icon(Icons.push_pin, size: 17, color: Colors.orange),
                                       ],
                                     ),

@@ -48,12 +48,8 @@ void showPaletteSheet({
                       const Color(0xFFC8E6C9),
                       const Color(0xFFFFF59D),
                       const Color(0xFFCFD8DC),
-                      const Color(0xFFFFCCBC),
-                      const Color(0xFFD1F2EB),
-                      const Color(0xFFE6EE9C),
                     ].map((color) {
                       // Check if this specific circle is the active one
-                      // bool isActive = selectedColor.value == color.value;
                       bool isActive = selectedColor == color;
 
                       return GestureDetector(

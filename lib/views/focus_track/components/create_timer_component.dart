@@ -136,14 +136,12 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   }
 
   void _finalizePresetSave(int h, int m, int s) async {
-    // 1. Guard against zero duration
     if (h == 0 && m == 0 && s == 0) return;
 
     final box = Hive.box('timer_box');
     List rawList = box.get('user_presets', defaultValue: []);
     List customPresets = List.from(rawList);
 
-    // 2. DUPLICATE CHECK: Look for an existing preset with the same H, M, and S
     bool isDuplicate = customPresets.any((p) {
       final Map data = p as Map;
       return data['h'] == h && data['m'] == m && data['s'] == s;
@@ -160,14 +158,12 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       return;
     }
 
-    // 3. Generate Label
     String label = "${h > 0 ? '${h}h ' : ''}${m > 0 ? '${m}m ' : ''}${s > 0 ? '${s}s' : ''}".trim();
 
     if (h == 0 && m == 0 && s > 0) {
       label = "${s}s";
     }
 
-    // 4. Save New Preset
     Map<String, dynamic> newPreset = {"label": label, "h": h, "m": m, "s": s};
     customPresets.add(newPreset);
     await box.put('user_presets', customPresets);
@@ -371,7 +367,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         padding: const EdgeInsets.symmetric(vertical: 12),
         alignment: Alignment.center,
         decoration: BoxDecoration(
-          // color: isCustom ? Colors.blueGrey.withOpacity(0.1) : AppColor().primaryColor.withOpacity(0.1),
           color: Colors.blueGrey.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Colors.blueGrey.withOpacity(0.2)),

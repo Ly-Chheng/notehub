@@ -8,7 +8,6 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
-
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/background_component.dart';
@@ -53,7 +52,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   late bool isEditingMode;
   late int? currentNoteKey;
 
-  // Formatting State
   bool isBold = false;
   bool isItalic = false;
   bool isUnderlined = false;
@@ -136,7 +134,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       }
     }
 
-    // CRITICAL: Both Title and Body must have the listener for Auto-Save
+    // Both Title and Body must have the listener for Auto-Save
     titleController.addListener(_triggerAutoSave);
     _quillController.addListener(_triggerAutoSave);
   }
@@ -213,29 +211,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     return await sourceFile.copy(newPath);
   }
 
-  // Future<File> _moveFileToPermanentStorage(File sourceFile) async {
-  //   final directory = await getApplicationDocumentsDirectory();
-  //   final String fileName = "IMG_${DateTime.now().millisecondsSinceEpoch}.jpg";
-  //   final String targetPath = p.join(directory.path, fileName);
-
-  //   XFile? compressedXFile = await FlutterImageCompress.compressAndGetFile(
-  //     sourceFile.absolute.path,
-  //     targetPath,
-  //     quality: 40,
-  //     minWidth: 800,
-  //     minHeight: 800,
-  //     rotate: 0,
-  //     format: CompressFormat.jpeg,
-  //   );
-
-  //   if (compressedXFile != null) {
-  //     return File(compressedXFile.path);
-  //   } else {
-  //     // Fallback: Copy original if compression fails
-  //     return await sourceFile.copy(targetPath);
-  //   }
-  // }
-
   void _openHandwriting() {
     showModalBottomSheet(
       context: context,
@@ -247,13 +222,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           setState(() {
             drawingLayers = layers;
             selectedImages.removeWhere((file) => file.path.contains('draw_'));
-            //   if (filePath != null) selectedImages.add(File(filePath));
 
-            // If the user actually drew something and saved it
             if (filePath != null && layers.isNotEmpty) {
               selectedImages.add(File(filePath));
             } else if (layers.isEmpty) {
-              // If layers are empty, the drawing is effectively deleted
               debugPrint("Drawing cleared");
             }
           });
@@ -442,9 +414,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
-                // if (selectedImages.isNotEmpty) _buildImagePreview(),
                 if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
-
                 SizedBox(
                   height: 10,
                 ),
@@ -466,9 +436,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   EditableTableComponent(
                     tableData: tableData,
                     onCellChanged: (rowIndex, colIndex, value) {
-                      // 1. Update the local list
                       tableData[rowIndex][colIndex] = value;
-                      // 2. Trigger the 1-second auto-save timer
+
                       _triggerAutoSave();
                     },
                     onAddRow: () {
@@ -526,7 +495,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   Widget _buildImagePreview() {
-    // Filter list to show only photos (excluding drawings)
     final photoOnlyList = selectedImages.where((file) => !file.path.contains('draw_')).toList();
 
     if (photoOnlyList.isEmpty) return const SizedBox.shrink();
@@ -592,10 +560,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 child: Row(
                   children: [
                     _bottomIcon(Icons.camera_alt_outlined, () {
-                      // 1. Calculate how many ACTUAL photos are currently in the list
                       final int photoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
 
-                      // 2. Check the limit (only for photos)
                       if (photoCount >= 2) {
                         return;
                       }
@@ -603,7 +569,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                       showMediaSheet(
                         context: context,
                         onImageSelected: (File tempImage) async {
-                          // 3. Re-check inside the callback to be safe
                           final int currentPhotoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
 
                           if (currentPhotoCount < 2) {
@@ -669,51 +634,54 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   void _showMoveFolderSheet() {
-    final folderBox = Hive.box('folders_box');
-    final List<MapEntry<dynamic, dynamic>> folders = folderBox.toMap().entries.toList();
+    final NoteController controller = Get.find<NoteController>();
 
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SheetHeader(
-              title: "Move to Folder",
-            ),
-            Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: folders.length,
-                itemBuilder: (context, index) {
-                  final folder = folders[index];
-                  bool isSelected = currentFolderKey == folder.key;
+      builder: (context) {
+        final folders = controller.allFolders;
 
-                  String folderTitle = folder.value['title'] ?? "Unnamed Folder";
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SheetHeader(title: "Move to Folder"),
+              Flexible(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: folders.length,
+                  itemBuilder: (context, index) {
+                    final folder = folders[index];
 
-                  return ListTile(
-                    leading: Icon(Icons.folder, color: isSelected ? AppColor().primaryColor : Colors.grey),
-                    title: Text(folderTitle, maxLines: 1, overflow: TextOverflow.ellipsis),
-                    trailing: isSelected ? Icon(Icons.check, color: AppColor().primaryColor) : null,
-                    onTap: () {
-                      setState(() {
-                        currentFolderKey = folder.key;
-                      });
+                    bool isSelected = currentFolderKey == folder.key;
+                    String folderTitle = folder.value['title'] ?? "Unnamed Folder";
 
-                      _saveNote(isAuto: true);
+                    return ListTile(
+                      leading: Icon(Icons.folder, color: isSelected ? AppColor().primaryColor :AppColor().primaryColor),
+                      title: Text(folderTitle, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      trailing: isSelected ? Icon(Icons.check, color: AppColor().primaryColor) : null,
+                      onTap: () async {
+                        setState(() {
+                          currentFolderKey = folder.key;
+                        });
 
-                      Navigator.pop(context);
-                    },
-                  );
-                },
+                        await controller.updateNoteFolder(currentNoteKey, folder.key);
+
+                        _saveNote(isAuto: true);
+
+                        if (mounted) Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 

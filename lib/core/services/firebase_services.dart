@@ -4,13 +4,12 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:project_structure/main.dart';
-import 'package:project_structure/views/home/test.dart';
+import 'package:project_structure/views/home/home_screen.dart';
 
 class FirebaseServices {
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   static const String notificationChannelId = 'com.example.project_structure';
-  final FlutterLocalNotificationsPlugin _notificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   Future<void> getInstance() async {
     await initNotification();
@@ -21,8 +20,7 @@ class FirebaseServices {
 
   Future<void> initNotification() async {
     await firebaseMessaging.requestPermission();
-    await FirebaseMessaging.instance
-        .setForegroundNotificationPresentationOptions(
+    await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
@@ -45,8 +43,7 @@ class FirebaseServices {
 
   // ! LocalNotificationsPlugin
   Future<void> initializeFlutterLocalNotificationsPlugin() async {
-    const initializationSettingsAndroid =
-        AndroidInitializationSettings('@drawable/ic_launcher');
+    const initializationSettingsAndroid = AndroidInitializationSettings('@drawable/ic_launcher');
     var initializationSettingsIos = const DarwinInitializationSettings(
       defaultPresentAlert: true,
       defaultPresentSound: true,
@@ -72,7 +69,7 @@ class FirebaseServices {
           try {
             navigatorKey.currentState?.push(
               MaterialPageRoute(
-                builder: (context) => const TestScreen(),
+                builder: (context) => const MyHomePage(),
               ),
             );
           } catch (error) {
@@ -100,7 +97,7 @@ class FirebaseServices {
       if (message.notification != null) {
         navigatorKey.currentState?.push(
           MaterialPageRoute(
-            builder: (context) => const TestScreen(),
+            builder: (context) => const MyHomePage(),
           ),
         );
       }
@@ -108,8 +105,7 @@ class FirebaseServices {
   }
 
   void _showNotification(RemoteMessage message) {
-    AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
+    AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
       notificationChannelId,
       'High Importance Notifications',
       importance: Importance.max,

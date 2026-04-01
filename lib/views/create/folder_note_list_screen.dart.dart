@@ -1,19 +1,16 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/components/delete_confirmation_sheet.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
-import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
+import 'package:project_structure/widgets/popup_lists_menu.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
-import 'package:flutter_quill/flutter_quill.dart' as quill;
 
 class FolderNoteListScreen extends StatefulWidget {
   final dynamic folderKey;
@@ -47,72 +44,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     });
   }
 
-  void _verifyAndExecute({required bool isLocked, required VoidCallback onVerified, String title = "This note is locked."}) {
-    if (!isLocked) {
-      onVerified();
-      return;
-    }
-
-    final TextEditingController passController = TextEditingController();
-    final Box settingsBox = Hive.box('settings_box');
-    String? masterPassword = settingsBox.get('master_password');
-
-    showConfirmDialog(
-      context: context,
-      title: title,
-      subTitle: "Verification required for this locked note.",
-      confirmText: "Unlock",
-      controller: passController,
-      obscureText: true,
-      hintText: "Master Password",
-      onConfirm: () {
-        if (passController.text == masterPassword) {
-          onVerified();
-        } else {
-          Get.snackbar(
-            "Error",
-            "Incorrect Password",
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
-        }
-      },
-    );
-  }
-
-  String _getDateHeader(String dateStr) {
-    try {
-      DateTime noteDate = DateFormat('dd/MM/yyyy').parse(dateStr);
-      DateTime now = DateTime.now();
-      DateTime today = DateTime(now.year, now.month, now.day);
-      DateTime yesterday = today.subtract(const Duration(days: 1));
-
-      if (noteDate.isAtSameMomentAs(today)) {
-        return "Today";
-      } else if (noteDate.isAtSameMomentAs(yesterday)) {
-        return "Yesterday";
-      } else if (noteDate.year == now.year) {
-        return DateFormat('MMMM d').format(noteDate);
-      } else {
-        return DateFormat('MMMM d, y').format(noteDate);
-      }
-    } catch (e) {
-      return "Earlier";
-    }
-  }
-
-  String _getPlainTextFromNote(String? subtitleJson) {
-    if (subtitleJson == null || subtitleJson.isEmpty) return "";
-
-    try {
-      // Parse JSON directly into a Quill Document
-      final document = quill.Document.fromJson(jsonDecode(subtitleJson));
-      return document.toPlainText().trim();
-    } catch (e) {
-      return subtitleJson;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -138,12 +69,15 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 size: 20,
               ),
             ),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
             offset: const Offset(0, 50),
             color: Theme.of(context).cardColor,
             onSelected: (value) => _handleMenuSelection(value),
             itemBuilder: (context) => [
-              _buildPopupItem(
+              buildPopupItem(
+                context,
                 isSelectionMode ? 'Cancel Selection' : 'Select Notes',
                 isSelectionMode ? Icons.check_circle_sharp : Icons.radio_button_unchecked,
               ),
@@ -158,133 +92,90 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           ),
           child: Column(
             children: [
-              TextFormField(
-                controller: searchController,
-                style: TextStyle(fontSize: context.isPhone ? 16 : 18),
-                textInputAction: TextInputAction.search,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Theme.of(context).cardColor,
-                  contentPadding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                  ),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppColor().primaryColor, width: 1),
-                  ),
-                  hintText: "Search",
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.search, color: AppColor().primaryColor),
-                  suffixIcon: searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear, size: 20),
-                          onPressed: () {
-                            searchController.clear();
-                            setState(() {
-                              searchQuery = "";
-                            });
-                          },
-                        )
-                      : null,
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    searchQuery = value.trim().toLowerCase();
-                  });
-                },
-              ),
+              _buildSearchBar(),
               Expanded(
                 child: SlidableAutoCloseBehavior(
                   closeWhenOpened: true,
                   child: ValueListenableBuilder(
-                    valueListenable: noteBox.listenable(),
-                    builder: (context, Box box, _) {
-                      List<MapEntry<dynamic, dynamic>> notesList = box.toMap().entries.where((entry) => entry.value['folderKey'] == widget.folderKey).toList();
+                      valueListenable: noteBox.listenable(),
+                      builder: (context, Box box, _) {
+                        return Obx(() {
+                          final notesList = controller.getFilteredNotes(widget.folderKey);
 
-                      if (searchQuery.isNotEmpty) {
-                        notesList = notesList.where((entry) {
-                          final title = (entry.value['title'] ?? "").toString().toLowerCase();
-                          final content = (entry.value['subtitle'] ?? "").toString().toLowerCase();
-                          return title.contains(searchQuery) || content.contains(searchQuery);
-                        }).toList();
-                      }
+                          if (notesList.isEmpty) {
+                            return CustomNoData(
+                              message: controller.searchQuery.isEmpty ? "No notes in this folder" : "No results matching '${controller.searchQuery.value}'",
+                            );
+                          }
 
-                      List<MapEntry<dynamic, dynamic>> pinnedNotes = notesList.where((e) => e.value['isPinned'] == true).toList();
-                      List<MapEntry<dynamic, dynamic>> unpinnedNotes = notesList.where((e) => e.value['isPinned'] != true).toList();
+                          final pinnedNotes = notesList.where((e) => e.value['isPinned'] == true).toList();
+                          final unpinnedNotes = notesList.where((e) => e.value['isPinned'] != true).toList();
 
-                      pinnedNotes.sort((a, b) => b.key.compareTo(a.key));
-                      unpinnedNotes.sort((a, b) => b.key.compareTo(a.key));
+                          if (notesList.isEmpty) {
+                            return CustomNoData(
+                              message: searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
+                            );
+                          }
 
-                      if (notesList.isEmpty) {
-                        return CustomNoData(
-                          message: searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
-                        );
-                      }
-
-                      return ListView(
-                        children: [
-                          if (pinnedNotes.isNotEmpty) ...[
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5),
-                              child: Text(
-                                "Pinned",
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColor().primaryColor,
+                          return ListView(
+                            children: [
+                              if (pinnedNotes.isNotEmpty) ...[
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10, bottom: 10, left: 5),
+                                  child: Text(
+                                    "Pinned",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColor().primaryColor,
+                                    ),
+                                  ),
                                 ),
-                              ),
-                            ),
-                            ...pinnedNotes.map((entry) => _buildSlidableNote(entry.key, entry.value)).toList(),
-                          ],
-                          if (unpinnedNotes.isNotEmpty) ...[
-                            ListView.builder(
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: unpinnedNotes.length,
-                              itemBuilder: (context, index) {
-                                final entry = unpinnedNotes[index];
-                                final noteKey = entry.key;
-                                final noteData = entry.value;
+                                ...pinnedNotes.map((entry) => _buildSlidableNote(entry.key, entry.value)).toList(),
+                              ],
+                              if (unpinnedNotes.isNotEmpty) ...[
+                                ListView.builder(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: unpinnedNotes.length,
+                                  itemBuilder: (context, index) {
+                                    final entry = unpinnedNotes[index];
+                                    final noteKey = entry.key;
+                                    final noteData = entry.value;
 
-                                // Grouping Logic for Unpinned Notes
-                                String currentHeader = _getDateHeader(noteData['date'] ?? "");
-                                String? prevHeader;
-                                if (index > 0) {
-                                  prevHeader = _getDateHeader(unpinnedNotes[index - 1].value['date'] ?? "");
-                                }
+                                    String currentHeader = controller.getDateHeader(noteData['date'] ?? "");
+                                    String? prevHeader;
+                                    if (index > 0) {
+                                      prevHeader = controller.getDateHeader(unpinnedNotes[index - 1].value['date'] ?? "");
+                                    }
 
-                                bool showHeader = currentHeader != prevHeader;
+                                    bool showHeader = currentHeader != prevHeader;
 
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    if (showHeader)
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
-                                        child: Text(
-                                          currentHeader,
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontFamily: 'EN-BOLD',
-                                            color: Colors.grey[600],
+                                    return Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        if (showHeader)
+                                          Padding(
+                                            padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
+                                            child: Text(
+                                              currentHeader,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontFamily: 'EN-BOLD',
+                                                color: Colors.grey[600],
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ),
-                                    _buildSlidableNote(noteKey, noteData),
-                                  ],
-                                );
-                              },
-                            ),
-                          ],
-                        ],
-                      );
-                    },
-                  ),
+                                        _buildSlidableNote(noteKey, noteData),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ],
+                            ],
+                          );
+                        });
+                      }),
                 ),
               ),
             ],
@@ -314,7 +205,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       onPressed: selectedKeys.isEmpty
                           ? null
                           : () {
-                              _verifyAndExecute(
+                              controller.verifyAndExecute(
+                                context: context,
                                 isLocked: _anySelectedNoteIsLocked(),
                                 title: "Move Protected Notes",
                                 onVerified: () => _showMoveNotesSheet(),
@@ -336,13 +228,24 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       onPressed: selectedKeys.isEmpty
                           ? null
                           : () {
-                              _verifyAndExecute(
+                              controller.verifyAndExecute(
+                                context: context,
                                 isLocked: _anySelectedNoteIsLocked(),
                                 title: "Delete Protected Notes",
                                 onVerified: () {
                                   showDeleteConfirmationSheet(
                                     context,
-                                    () => _deleteSelectedNotes(),
+                                    () {
+                                      controller.deleteSelectedNotes(
+                                        selectedKeys: selectedKeys,
+                                        onComplete: () {
+                                          setState(() {
+                                            selectedKeys.clear();
+                                            isSelectionMode = false;
+                                          });
+                                        },
+                                      );
+                                    },
                                   );
                                 },
                               );
@@ -360,7 +263,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     bool isLocked = note['isLocked'] ?? false;
     bool isPinned = note['isPinned'] ?? false;
     bool isSelected = selectedKeys.contains(noteKey);
-    // final bgColor = Color(note['bgColorValue'] ?? 0xFFFFFFFF);
     List<dynamic>? imagePaths = note['images'];
 
     final dynamic savedColor = note['bgColorValue'];
@@ -388,7 +290,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               borderRadius: const BorderRadius.horizontal(left: Radius.circular(10)),
             ),
             SlidableAction(
-              onPressed: (context) => _verifyAndExecute(
+              onPressed: (context) => controller.verifyAndExecute(
+                context: context,
                 isLocked: isLocked,
                 title: "Move Locked Note",
                 onVerified: () => _showMoveNotesSheet(singleNoteKey: noteKey),
@@ -399,7 +302,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               label: 'Folder',
             ),
             SlidableAction(
-              onPressed: (context) => _verifyAndExecute(
+              onPressed: (context) => controller.verifyAndExecute(
+                context: context,
                 isLocked: isLocked,
                 title: "Delete Locked Note",
                 onVerified: () {
@@ -432,7 +336,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 }
               });
             } else {
-              _verifyAndExecute(
+              controller.verifyAndExecute(
+                context: context,
                 isLocked: isLocked,
                 onVerified: () {
                   Get.to(() => CreateNoteScreen(
@@ -508,7 +413,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                       Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 4),
                                         child: Text(
-                                          _getPlainTextFromNote(note['subtitle']),
+                                          controller.getPlainTextFromNote(note['subtitle']),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
@@ -559,40 +464,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     );
   }
 
-  void _deleteSelectedNotes() {
-    final Box trashBox = Hive.box('recently_deleted');
-    for (var key in selectedKeys) {
-      final noteData = noteBox.get(key);
-      if (noteData != null) {
-        trashBox.put(key, {
-          ...Map<String, dynamic>.from(noteData),
-          'deletedAt': DateTime.now().toIso8601String(),
-        });
-        noteBox.delete(key);
-      }
-    }
-    setState(() {
-      selectedKeys.clear();
-      isSelectionMode = false;
-    });
-  }
-
-  PopupMenuItem<String> _buildPopupItem(String title, IconData icon) {
-    return PopupMenuItem<String>(
-      value: title,
-      child: Row(
-        children: [
-          Icon(icon, size: context.isPhone ? 20 : 24),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: TextStyle(fontSize: context.isPhone ? 14 : 16),
-          ),
-        ],
-      ),
-    );
-  }
-
   void _handleMenuSelection(String value) {
     if (value == 'Select Notes' || value == 'Cancel Selection') {
       setState(() {
@@ -604,7 +475,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
   void _showMoveNotesSheet({dynamic singleNoteKey}) {
     final folderBox = Hive.box('folders_box');
-    final folders = folderBox.toMap().entries.where((e) => e.key != widget.folderKey).toList();
+    final folders = folderBox.toMap().entries.toList();
 
     showModalBottomSheet(
       context: context,
@@ -626,14 +497,19 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 itemCount: folders.length,
                 itemBuilder: (context, index) {
                   final folder = folders[index];
+                  final bool isCurrentFolder = folder.key == widget.folderKey;
+                  String folderTitle = folder.value['title'] ?? "Unnamed Folder";
                   return ListTile(
-                    leading: Icon(Icons.folder, color: Color(folder.value['colorValue'] ?? Colors.blue.value)),
-                    title: Text(folder.value['title'] ?? ""),
+                    leading: Icon(Icons.folder, color: AppColor().primaryColor),
+                    title: Text(folderTitle, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    trailing: isCurrentFolder ? Icon(Icons.check, color: AppColor().primaryColor) : null,
                     onTap: () async {
-                      await controller.moveNotesToFolder(
-                        keysToMove: singleNoteKey != null ? [singleNoteKey] : selectedKeys.toList(),
-                        targetFolderKey: folder.key,
-                      );
+                      if (!isCurrentFolder) {
+                        await controller.moveNotesToFolder(
+                          keysToMove: singleNoteKey != null ? [singleNoteKey] : selectedKeys.toList(),
+                          targetFolderKey: folder.key,
+                        );
+                      }
                       Navigator.pop(context);
                       setState(() {
                         isSelectionMode = false;
@@ -646,6 +522,28 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return TextFormField(
+      controller: searchController,
+      onChanged: controller.updateSearchQuery,
+      decoration: InputDecoration(
+        hintText: "Search notes...",
+        prefixIcon: const Icon(Icons.search),
+        suffixIcon: Obx(() => controller.searchQuery.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.clear),
+                onPressed: () {
+                  searchController.clear();
+                  controller.updateSearchQuery("");
+                })
+            : const SizedBox.shrink()),
+        filled: true,
+        fillColor: Theme.of(context).cardColor,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
       ),
     );
   }
