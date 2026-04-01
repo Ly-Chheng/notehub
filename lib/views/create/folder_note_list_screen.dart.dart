@@ -104,7 +104,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
                           if (notesList.isEmpty) {
                             return CustomNoData(
-                              message: controller.searchQuery.isEmpty ? "No notes in this folder" : "No results matching '${controller.searchQuery.value}'",
+                              message: controller.searchQuery.isEmpty ? "No notes in this folder" : "No results matching",
                             );
                           }
 
