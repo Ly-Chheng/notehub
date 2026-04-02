@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:project_structure/controllers/focus_track/timer_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_header.dart';
@@ -282,7 +283,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
               color: Colors.grey.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Text("Label", style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-BOLD')),
+            child: Text("Label", style: text18(context)),
           ),
           const SizedBox(width: 10),
           Expanded(

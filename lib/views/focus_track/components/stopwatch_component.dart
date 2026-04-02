@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/focus_track/stopwatch_controller.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 class StopwatchScreen extends StatelessWidget {
   StopwatchScreen({super.key});
@@ -82,16 +83,8 @@ class StopwatchScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Lap",
-                          style: TextStyle(
-                            fontFamily: 'EN-REGULAR',
-                            fontSize: context.isPhone ? 16 : 18,
-                          )),
-                      Text("Lap Time",
-                          style: TextStyle(
-                            fontFamily: 'EN-REGULAR',
-                            fontSize: context.isPhone ? 16 : 18,
-                          )),
+                      Text("Lap", style: text16(context)),
+                      Text("Lap Time", style: text16(context)),
                     ],
                   ),
                 ),
@@ -105,8 +98,8 @@ class StopwatchScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Lap ${controller.laps.length - index}", style: TextStyle(fontSize: context.isPhone ? 15 : 17, fontFamily: 'EN-REGULAR')),
-                          Text(controller.laps[index], style: TextStyle(fontSize: context.isPhone ? 15 : 17, fontFamily: 'EN-REGULAR')),
+                          Text("Lap ${controller.laps.length - index}", style: text16(context)),
+                          Text(controller.laps[index], style: text16(context)),
                         ],
                       ),
                     );

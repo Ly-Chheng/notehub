@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 customAppBar({
   required String title,
@@ -16,17 +17,9 @@ customAppBar({
     elevation: 0,
     centerTitle: false,
     titleSpacing: 15,
-    scrolledUnderElevation:0,
+    scrolledUnderElevation: 0,
     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-    title: Text(
-      title,
-      overflow: TextOverflow.ellipsis,
-      style: TextStyle(
-        color: titleColor,
-        fontSize: 20,
-        fontFamily: 'EN-BOLD',
-      ),
-    ),
+    title: Text(title, overflow: TextOverflow.ellipsis, style: text20(context)),
     automaticallyImplyLeading: false,
     leading: isLeading
         ? Platform.isAndroid

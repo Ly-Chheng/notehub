@@ -62,7 +62,7 @@ Future<void> showConfirmDialog({
             /// TITLE + ICON
             title: Column(
               children: [
-                if (icon != null) Icon(icon, size: 40, color: confirmColor),
+                if (icon != null) Icon(icon, size: 50, color: confirmColor),
                 if (icon != null) const SizedBox(height: 8),
                 Text(
                   title,

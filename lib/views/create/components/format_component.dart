@@ -45,7 +45,7 @@ void showFormatSheet({
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SheetHeader(
-                title: "Format Text",
+                title: "Format",
               ),
               const SizedBox(height: 20),
               Row(

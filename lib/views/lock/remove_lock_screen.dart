@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
@@ -37,7 +38,7 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "Back",
+        title: "",
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
@@ -51,7 +52,10 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
                 userAnswer: "",
               );
             },
-            child: Text("Save", style: TextStyle(color: AppColor().primaryColor, fontSize: 18, fontFamily: 'EN-REGULAR')),
+            child: Text(
+              "Save",
+              style: text18(context).copyWith(color: AppColor().primaryColor),
+            ),
           ),
         ],
       ),

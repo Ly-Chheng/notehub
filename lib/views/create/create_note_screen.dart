@@ -45,8 +45,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   final NoteController noteController = Get.put(NoteController());
   late TextEditingController titleController;
   late TextEditingController contentController;
+  late FocusNode _editorFocusNode;
 
-  // Auto-Save Logic
   Timer? _autoSaveTimer;
   bool isAutoSaveEnabled = true;
   late bool isEditingMode;
@@ -77,6 +77,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   @override
   void initState() {
     super.initState();
+    _editorFocusNode = FocusNode();
     isEditingMode = widget.isEditing;
     currentNoteKey = widget.noteKey;
     currentFolderKey = widget.folderKey;
@@ -143,7 +144,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     if (!isAutoSaveEnabled) return;
     if (_autoSaveTimer?.isActive ?? false) _autoSaveTimer!.cancel();
 
-    _autoSaveTimer = Timer(const Duration(seconds: 1), () {
+    _autoSaveTimer = Timer(const Duration(milliseconds: 0), () {
       _saveNote(isAuto: true);
     });
   }
@@ -418,20 +419,22 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 SizedBox(
                   height: 10,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 4,
-                  ),
-                  child: QuillEditor(
-                    controller: _quillController,
-                    scrollController: ScrollController(),
-                    focusNode: FocusNode(),
-                    config: QuillEditorConfig(
-                      placeholder: "Start typing...",
-                      padding: EdgeInsets.zero,
-                    ),
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(
+                //     horizontal: 4,
+                //   ),
+                //   child: QuillEditor(
+                //     controller: _quillController,
+                //     scrollController: ScrollController(),
+                //     // focusNode: FocusNode(),
+                //     focusNode: _editorFocusNode,
+                //     config: QuillEditorConfig(
+                //       placeholder: "Start typing...",
+                //       padding: EdgeInsets.zero,
+                //     ),
+                //   ),
+                // ),
+                _buildQuillEditor(),
                 if (showTable)
                   EditableTableComponent(
                     tableData: tableData,
@@ -660,7 +663,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     String folderTitle = folder.value['title'] ?? "Unnamed Folder";
 
                     return ListTile(
-                      leading: Icon(Icons.folder, color: isSelected ? AppColor().primaryColor :AppColor().primaryColor),
+                      leading: Icon(Icons.folder, color: isSelected ? AppColor().primaryColor : AppColor().primaryColor),
                       title: Text(folderTitle, maxLines: 1, overflow: TextOverflow.ellipsis),
                       trailing: isSelected ? Icon(Icons.check, color: AppColor().primaryColor) : null,
                       onTap: () async {
@@ -707,7 +710,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
     return IconButton(
       icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 25 : 30),
-      onPressed: onPressed,
+      // onPressed: onPressed,
+      onPressed: () {
+        onPressed();
+
+        Future.delayed(Duration.zero, () {
+          _editorFocusNode.requestFocus();
+        });
+      },
     );
   }
 
@@ -763,6 +773,34 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       onBulletPressed: () => _quillController.formatSelection(Attribute.ul),
       onNumberedPressed: () => _quillController.formatSelection(Attribute.ol),
       onHyphenPressed: () => _quillController.formatSelection(Attribute.blockQuote),
+    );
+  }
+
+  Widget _buildQuillEditor() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: QuillEditor(
+        controller: _quillController,
+        scrollController: ScrollController(),
+        focusNode: _editorFocusNode,
+        config: QuillEditorConfig(
+          placeholder: "Start typing...",
+          padding: EdgeInsets.zero,
+          autoFocus: false,
+          showCursor: true,//added to ensure cursor visibility when editor is focused
+          expands: false,
+          scrollable: false,
+          customStyles: DefaultStyles(
+            paragraph: DefaultTextBlockStyle(
+              const TextStyle(fontSize: 16, color: Colors.black, height: 1.5),
+              const HorizontalSpacing(5, 5), // Required: Horizontal spacing
+              const VerticalSpacing(3, 3), // Required: Vertical spacing
+              const VerticalSpacing(2, 2), // Required: Line spacing
+              null, // Required: BoxDecoration
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

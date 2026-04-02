@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
 void showPaletteSheet({
@@ -18,14 +19,14 @@ void showPaletteSheet({
             mainAxisSize: MainAxisSize.min,
             children: [
               SheetHeader(
-                title: "Note Background",
+                title: "Backgrounds",
               ),
               const SizedBox(height: 10),
               Expanded(
                 child: SingleChildScrollView(
                   child: Wrap(
-                    spacing: 5,
-                    runSpacing: 5,
+                    spacing: 6,
+                    runSpacing: 6,
                     children: [
                       Colors.white,
                       const Color(0xFFFFF9C4),
@@ -47,7 +48,6 @@ void showPaletteSheet({
                       const Color(0xFFB2EBF2),
                       const Color(0xFFC8E6C9),
                       const Color(0xFFFFF59D),
-                      const Color(0xFFCFD8DC),
                     ].map((color) {
                       // Check if this specific circle is the active one
                       bool isActive = selectedColor == color;
@@ -58,7 +58,7 @@ void showPaletteSheet({
                           Navigator.pop(context);
                         },
                         child: Container(
-                          width: 100,
+                          width: 80,
                           height: 60,
                           decoration: BoxDecoration(
                             color: color,
@@ -66,9 +66,9 @@ void showPaletteSheet({
                             border: Border.all(color: Colors.black12),
                           ),
                           child: isActive
-                              ? const Icon(
+                              ? Icon(
                                   Icons.check,
-                                  color: Colors.blue,
+                                  color: AppColor().primaryColor,
                                 )
                               : null,
                         ),

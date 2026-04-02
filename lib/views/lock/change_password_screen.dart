@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
@@ -48,7 +49,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "Back",
+        title:  "",
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
@@ -65,12 +66,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 answer: _answerController.text,
               );
             },
-            child: Text("Save",
-                style: TextStyle(
-                  color: AppColor().primaryColor,
-                  fontSize: context.isPhone ? 18 : 20,
-                  fontFamily: 'EN-SEMIBOLD',
-                )),
+            child: Text(
+              "Save",
+              style: text18(context).copyWith(color: AppColor().primaryColor),
+            ),
           ),
         ],
       ),
@@ -100,8 +99,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               const SizedBox(height: 12),
               _buildDropdown(),
               const SizedBox(height: 15),
-              buildStandardField("Enter your answer", controller: _answerController),
-              const SizedBox(height: 30),
+              customTextField(
+                "Enter your answer",
+                false,
+                null,
+                controller: _answerController,
+              )
             ],
           ),
         ),
@@ -113,11 +116,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text("Security Question Verification",
-            style: TextStyle(
-              fontSize: context.isPhone ? 16 : 18,
-              fontFamily: 'EN-MEDIUM',
-            )),
+        Text(
+          "Security Question Verification",
+          style: text16(context),
+        ),
         Text("Optional",
             style: TextStyle(
               color: Colors.grey,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/home/components/recently_deleted_screen.dart';
 import 'package:project_structure/views/lock/remove_lock_screen.dart';
 import 'package:project_structure/views/lock/change_password_screen.dart';
@@ -102,7 +103,7 @@ class _MoreScreenState extends State<MoreScreen> {
             icon,
             color: Theme.of(context).iconTheme.color,
           ),
-          title: Text(title, style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-MEDIUM')),
+          title: Text(title, style: text18(context)),
           trailing: Icon(
             Icons.arrow_forward_ios,
             size: context.isPhone ? 14 : 16,

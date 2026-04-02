@@ -8,7 +8,10 @@ import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/views/create/folder_note_list_screen.dart.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_header.dart';
+
+import '../../core/utils/app_fonts.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -107,16 +110,47 @@ class _MyHomePageState extends State<MyHomePage> {
                                     icon: Icons.edit,
                                     label: 'Edit',
                                   ),
+                                  // SlidableAction(
+                                  //   onPressed: (c) {
+                                  //     bool hasLockedNotes = controller.noteBox.values.any((n) => n['folderKey'] == folderKey && (n['isLocked'] ?? false));
+
+                                  //     controller.verifyAndExecute(
+                                  //       context: context,
+                                  //       isLocked: hasLockedNotes || isLocked,
+                                  //       title: "Delete Protected Folder",
+                                  //       onVerified: () => controller.deleteFolder(folderKey),
+                                  //     );
+                                  //   },
+                                  //   backgroundColor: Colors.red,
+                                  //   icon: Icons.delete,
+                                  //   label: 'Delete',
+                                  // ),
                                   SlidableAction(
                                     onPressed: (c) {
-                                      bool hasLockedNotes = controller.noteBox.values.any((n) => n['folderKey'] == folderKey && (n['isLocked'] ?? false));
+                                      int noteCount = controller.noteBox.values.where((n) => n['folderKey'] == folderKey).length;
 
-                                      controller.verifyAndExecute(
-                                        context: context,
-                                        isLocked: hasLockedNotes || isLocked,
-                                        title: "Delete Protected Folder",
-                                        onVerified: () => controller.deleteFolder(folderKey),
-                                      );
+                                      void executeDeletion() {
+                                        bool hasLockedNotes = controller.noteBox.values.any((n) => n['folderKey'] == folderKey && (n['isLocked'] ?? false));
+
+                                        controller.verifyAndExecute(
+                                          context: context,
+                                          isLocked: hasLockedNotes || isLocked,
+                                          title: "Delete Protected Folder",
+                                          onVerified: () => controller.deleteFolder(folderKey),
+                                        );
+                                      }
+                                      if (noteCount > 0) {
+                                        showConfirmDialog(
+                                          context: context,
+                                          // type: DialogType.warning,
+                                          title: "Delete Folder?",
+                                          subTitle: "This folder contains $noteCount notes. All data inside will be permanently lost.",
+                                          confirmText: "Delete All",
+                                          onConfirm: () => executeDeletion(),
+                                        );
+                                      } else {
+                                        executeDeletion();
+                                      }
                                     },
                                     backgroundColor: Colors.red,
                                     icon: Icons.delete,
@@ -147,7 +181,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           ),
                                         Expanded(
                                             child: Text(isLocked && folderData['title'].length > 3 ? "${folderData['title'].substring(0, 3)}..." : folderData['title'],
-                                                maxLines: 1, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: context.isPhone ? 18 : 20))),
+                                                maxLines: 1, overflow: TextOverflow.ellipsis, style: text18(context))),
                                         if (isPinned) const Icon(Icons.push_pin, size: 17, color: Colors.orange),
                                       ],
                                     ),
@@ -155,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       valueListenable: controller.noteBox.listenable(),
                                       builder: (context, Box nBox, _) {
                                         int count = nBox.values.where((n) => n['folderKey'] == folderKey).length;
-                                        return Text("$count", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR'));
+                                        return Text("$count", style: text16(context));
                                       },
                                     ),
                                     onTap: () {

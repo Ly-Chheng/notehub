@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
@@ -39,7 +40,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "Back",
+        title: "",
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
@@ -52,11 +53,10 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 storedAnswer: storedAnswer,
               );
             },
-            child: Text("Submit",
-                style: TextStyle(
-                  color: AppColor().primaryColor,
-                  fontSize: 18,
-                )),
+            child: Text(
+              "Submit",
+              style: text18(context).copyWith(color: AppColor().primaryColor),
+            ),
           ),
         ],
       ),
@@ -76,12 +76,17 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(storedQuestion ?? "Security setup not found.", style: const TextStyle(fontSize: 16, fontFamily: 'EN-REGULAR')),
+                  Text(storedQuestion ?? "Security setup not found.", style: text16(context)),
                 ],
               ),
             ),
             const SizedBox(height: 10),
-            buildStandardField("Enter your answer", controller: _answerController),
+            customTextField(
+              "Enter your answer",
+              false,
+              null,
+              controller: _answerController,
+            )
           ],
         ),
       ),

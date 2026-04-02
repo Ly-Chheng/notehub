@@ -194,7 +194,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                           "${controller.selectedKeys.length} selected",
                           style: const TextStyle(
                             fontSize: 14,
-                            fontFamily: 'EN-BOLD',
+                            fontFamily: 'EN-REGULAR',
                           ),
                         ),
                         const Spacer(),

@@ -3,10 +3,11 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:signature/signature.dart';
-import 'package:project_structure/widgets/sheet_header.dart';
 
 class HandwritingCanvas extends StatefulWidget {
   final List<Map<String, dynamic>> initialLayers;
@@ -132,9 +133,65 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
         child: Column(
           children: [
             SizedBox(
-              height: 10,
+              height: 40,
             ),
-            SheetHeader(title: "Handwriting", saveText: "Save", onSave: _saveAndExit),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // GestureDetector(
+                //   onTap: () => Navigator.pop(context),
+                //   child: Text('Cancel', style: text18(context).copyWith(color: Colors.red)),
+                // ),
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: AppColor().primaryColor,
+                    )),
+                Row(
+                  children: [
+                    IconButton(
+                        icon: Image.asset(
+                          'assets/images/undo.png',
+                          width: 24,
+                          height: 24,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (_activeController.isNotEmpty) {
+                              _activeController.undo();
+                            } else if (_layers.isNotEmpty) {
+                              _activeController = _layers.removeLast();
+                            }
+                          });
+                        }),
+                    IconButton(
+                        icon: Image.asset(
+                          'assets/images/redo.png',
+                          width: 24,
+                          height: 24,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            if (_activeController.isNotEmpty) {
+                              _activeController.redo();
+                            } else if (_layers.isNotEmpty) {
+                              _activeController = _layers.removeLast();
+                            }
+                          });
+                        }),
+                    TextButton(
+                        onPressed: _saveAndExit,
+                        child: Text(
+                          "Save",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColor().primaryColor),
+                        ))
+                  ],
+                ),
+              ],
+            ),
             Expanded(
               child: RepaintBoundary(
                 key: _repaintKey,
@@ -157,8 +214,47 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
     );
   }
 
+  void _pickCustomColor() {
+    Color tempColor = currentPenColor;
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Pick a color'),
+          content: SingleChildScrollView(
+            child: ColorPicker(
+              pickerColor: currentPenColor,
+              onColorChanged: (color) => tempColor = color,
+              pickerAreaHeightPercent: 0.8,
+            ),
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  child: Text('Cancel', style: text18(context)),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: Text('Applay', style: text18(context)),
+                  onPressed: () {
+                    _updateBrush(color: tempColor);
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildBottomActions() {
-    final colors = [
+    final List<Color> colors = [
       Colors.black,
       Colors.red,
       Colors.blue,
@@ -176,7 +272,26 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
-                children: colors.map((c) => _colorCircle(c)).toList(),
+                children: [
+                  GestureDetector(
+                    onTap: _pickCustomColor,
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.grey,
+                      ),
+                      child: const CircleAvatar(
+                        radius: 15,
+                        backgroundColor: Colors.white,
+                        child: Icon(Icons.add, color: Colors.black, size: 20),
+                      ),
+                    ),
+                  ),
+                  ...colors.map((c) => _colorCircle(c)).toList(),
+                  if (!colors.contains(currentPenColor) && !isEraser) _colorCircle(currentPenColor),
+                ],
               ),
             ),
           ],
@@ -217,39 +332,20 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                   },
                   borderRadius: BorderRadius.circular(8),
                   child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 5),
-                    padding: const EdgeInsets.all(6),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Icon(
                       Icons.color_lens,
-                      size: showColorPalette ? 24 : 24,
+                      size: showColorPalette ? 35 : 35,
                       color: Colors.green,
                     ),
                   ),
                 ),
                 IconButton(
-                    icon: const Icon(Icons.undo),
-                    onPressed: () {
-                      setState(() {
-                        if (_activeController.isNotEmpty) {
-                          _activeController.undo();
-                        } else if (_layers.isNotEmpty) {
-                          _activeController = _layers.removeLast();
-                        }
-                      });
-                    }),
-                IconButton(
-                    icon: const Icon(Icons.redo_outlined),
-                    onPressed: () {
-                      setState(() {
-                        if (_activeController.isNotEmpty) {
-                          _activeController.redo();
-                        } else if (_layers.isNotEmpty) {
-                          _activeController = _layers.removeLast();
-                        }
-                      });
-                    }),
-                IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
+                    icon: const Icon(
+                      Icons.delete,
+                      color: Colors.red,
+                      size: 35,
+                    ),
                     onPressed: () => setState(() {
                           _layers.clear();
                           _activeController.clear();
@@ -285,8 +381,8 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
           if (imagePath != null)
             Image.asset(
               imagePath,
-              width: sel ? 70 : 45,
-              height: sel ? 70 : 45,
+              width: sel ? 70 : 50,
+              height: sel ? 70 : 50,
               colorBlendMode: BlendMode.srcIn,
             )
           else if (icon != null)

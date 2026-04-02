@@ -5,9 +5,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/create/components/delete_confirmation_sheet.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
@@ -159,10 +161,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                             padding: const EdgeInsets.only(top: 20, bottom: 10, left: 5),
                                             child: Text(
                                               currentHeader,
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontFamily: 'EN-BOLD',
-                                                color: Colors.grey[600],
+                                              style: text18(context).copyWith(
+                                                fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                           ),
@@ -527,24 +527,22 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   }
 
   Widget _buildSearchBar() {
-    return TextFormField(
+    return customTextField(
+      "Search notes...",
+      false,
+      null,
       controller: searchController,
       onChanged: controller.updateSearchQuery,
-      decoration: InputDecoration(
-        hintText: "Search notes...",
-        prefixIcon: const Icon(Icons.search),
-        suffixIcon: Obx(() => controller.searchQuery.isNotEmpty
-            ? IconButton(
-                icon: const Icon(Icons.clear),
-                onPressed: () {
-                  searchController.clear();
-                  controller.updateSearchQuery("");
-                })
-            : const SizedBox.shrink()),
-        filled: true,
-        fillColor: Theme.of(context).cardColor,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-      ),
+      prefixIcon: const Icon(Icons.search),
+      suffixIcon: Obx(() => controller.searchQuery.isNotEmpty
+          ? IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                searchController.clear();
+                controller.updateSearchQuery("");
+              },
+            )
+          : const SizedBox.shrink()),
     );
   }
 }

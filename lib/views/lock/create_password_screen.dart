@@ -36,7 +36,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "Back",
+        title: "",
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,

@@ -3,31 +3,42 @@ import 'package:flutter/material.dart';
 Widget customTextField(
   String hint,
   bool obscure,
-  VoidCallback toggle, {
+  VoidCallback? toggle, {
   TextEditingController? controller,
   String? Function(String?)? validator,
+  Widget? prefixIcon,
+  Widget? suffixIcon,
+  Function(String)? onChanged,
 }) {
   return Container(
     decoration: BoxDecoration(
-      color: Colors.grey.withValues(alpha: 0.1),
+      color: Colors.grey.withOpacity(0.1),
       borderRadius: BorderRadius.circular(12),
     ),
     child: TextFormField(
       controller: controller,
       obscureText: obscure,
       validator: validator,
+      onChanged: onChanged,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: const TextStyle(color: Colors.grey),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: InputBorder.none,
-        suffixIcon: IconButton(
-          icon: Icon(
-            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-            color: Colors.grey,
-          ),
-          onPressed: toggle,
-        ),
+        prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon ??
+            (toggle != null
+                ? IconButton(
+                    icon: Icon(
+                      obscure
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: Colors.grey,
+                    ),
+                    onPressed: toggle,
+                  )
+                : null),
       ),
     ),
   );
