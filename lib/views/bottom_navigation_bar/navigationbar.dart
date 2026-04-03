@@ -5,6 +5,7 @@ import 'package:project_structure/controllers/bottom_navigation/navigationbar_co
 import 'package:project_structure/views/focus_track/focus_track_screen.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_navigationbar.dart';
 
 class BottomNavigationBarScreen extends StatefulWidget {
@@ -33,73 +34,22 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        final shouldExit = await showDialog<bool>(
+        bool shouldExit = false;
+
+        await showConfirmDialog(
           context: context,
-          builder: (context) {
-            return AlertDialog(
-              icon: const Icon(
-                Icons.warning,
-                color: Colors.red,
-                size: 60,
-              ),
-              content: const SizedBox(
-                height: 50,
-                child: Center(
-                  child: Text(
-                    "Are you sure you want to exit the app?",
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              actions: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => Get.back(result: false),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Colors.grey.shade300,
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: const Center(
-                            child: Text(
-                              "No",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () => SystemNavigator.pop(),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Theme.of(context).primaryColor,
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                          child: Center(
-                            child: Text(
-                              "Yes",
-                              style: TextStyle(
-                                color: Theme.of(context).cardColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            );
+          title: "Exit App",
+          subTitle: "Are you sure you want to exit the app?",
+          type: DialogType.warning,
+          confirmText: "Yes",
+          onConfirm: () {
+            shouldExit = true;
+            SystemNavigator.pop();
           },
+          showCancel: true,
         );
-        return shouldExit ?? false;
+
+        return shouldExit;
       },
       child: Scaffold(
         key: controller.scaffoldKey,

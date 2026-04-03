@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 const String rengular = 'EN-REGULAR';
 const String sumibold = 'EN-SEMIBOLD';
 const String bold = 'EN-BOLD';
+const String khRengular = 'KH-REGULAR';
 appbarTextSyle() {
   return TextStyle(
     fontFamily: rengular,
@@ -15,7 +16,6 @@ dashboardTextStyle() {
   return const TextStyle(
     fontFamily: rengular,
     fontSize: 14,
-    // color: AppColor.darkColor,
   );
 }
 
@@ -61,5 +61,24 @@ TextStyle text20(BuildContext context) {
   return TextStyle(
     fontSize: context.isPhone ? 20 : 22,
     fontFamily: bold,
+  );
+}
+
+TextStyle en({double size = 16, Color? color, FontWeight? fontWeight}) {
+  return TextStyle(
+    fontFamily: 'EN-REGULAR',
+    fontSize: size,
+    color: color,
+    fontWeight: fontWeight ?? FontWeight.normal,
+  );
+}
+
+// Khmer font
+TextStyle kh({double size = 16, Color? color, FontWeight? fontWeight}) {
+  return TextStyle(
+    fontFamily: 'KH-REGULAR',
+    fontSize: size,
+    color: color,
+    fontWeight: fontWeight ?? FontWeight.normal,
   );
 }

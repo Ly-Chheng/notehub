@@ -110,21 +110,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                     icon: Icons.edit,
                                     label: 'Edit',
                                   ),
-                                  // SlidableAction(
-                                  //   onPressed: (c) {
-                                  //     bool hasLockedNotes = controller.noteBox.values.any((n) => n['folderKey'] == folderKey && (n['isLocked'] ?? false));
-
-                                  //     controller.verifyAndExecute(
-                                  //       context: context,
-                                  //       isLocked: hasLockedNotes || isLocked,
-                                  //       title: "Delete Protected Folder",
-                                  //       onVerified: () => controller.deleteFolder(folderKey),
-                                  //     );
-                                  //   },
-                                  //   backgroundColor: Colors.red,
-                                  //   icon: Icons.delete,
-                                  //   label: 'Delete',
-                                  // ),
                                   SlidableAction(
                                     onPressed: (c) {
                                       int noteCount = controller.noteBox.values.where((n) => n['folderKey'] == folderKey).length;
@@ -139,6 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           onVerified: () => controller.deleteFolder(folderKey),
                                         );
                                       }
+
                                       if (noteCount > 0) {
                                         showConfirmDialog(
                                           context: context,

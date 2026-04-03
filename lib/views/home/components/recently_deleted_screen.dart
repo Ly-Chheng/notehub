@@ -37,44 +37,51 @@ class RecentlyDeletedScreen extends StatelessWidget {
             context: context,
             leadingColor: AppColor().primaryColor,
             actions: [
-              PopupMenuButton<String>(
-                icon: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: AppColor().primaryColor,
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Icon(
-                    Icons.more_vert_outlined,
-                    color: AppColor().primaryColor,
-                    size: 20,
-                  ),
-                ),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                offset: const Offset(0, 50),
-                color: Theme.of(context).cardColor,
-                onSelected: (value) {
-                  if (value == 'select') {
-                    controller.toggleSelectionMode();
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'select',
-                    child: Row(
-                      children: [
-                        Icon(
-                          controller.isSelectionMode.value ? Icons.check_circle_sharp : Icons.radio_button_unchecked,
+              ValueListenableBuilder(
+                valueListenable: controller.trashBox.listenable(),
+                builder: (context, Box box, _) {
+                  if (box.isEmpty) return const SizedBox.shrink();
+
+                  return PopupMenuButton<String>(
+                    icon: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
                           color: AppColor().primaryColor,
+                          width: 1,
                         ),
-                        const SizedBox(width: 10),
-                        Text(controller.isSelectionMode.value ? 'Cancel Selection' : 'Select Notes'),
-                      ],
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Icon(
+                        Icons.more_vert_outlined,
+                        color: AppColor().primaryColor,
+                        size: 20,
+                      ),
                     ),
-                  ),
-                ],
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    offset: const Offset(0, 50),
+                    color: Theme.of(context).cardColor,
+                    onSelected: (value) {
+                      if (value == 'select') {
+                        controller.toggleSelectionMode();
+                      }
+                    },
+                    itemBuilder: (context) => [
+                      PopupMenuItem(
+                        value: 'select',
+                        child: Row(
+                          children: [
+                            Icon(
+                              controller.isSelectionMode.value ? Icons.check_circle_sharp : Icons.radio_button_unchecked,
+                              color: AppColor().primaryColor,
+                            ),
+                            const SizedBox(width: 10),
+                            Text(controller.isSelectionMode.value ? 'Cancel Selection' : 'Select Notes'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -130,42 +137,57 @@ class RecentlyDeletedScreen extends StatelessWidget {
                             ),
                           ],
                         ),
-                        child: Card(
-                          elevation: 0,
-                          margin: EdgeInsets.zero,
-                          color: Theme.of(context).cardColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            side: isSelected ? BorderSide(color: AppColor().primaryColor, width: 1.5) : BorderSide.none,
-                          ),
-                          child: ListTile(
-                            onTap: () {
-                              if (controller.isSelectionMode.value) {
-                                controller.toggleSelection(key);
-                              }
-                            },
-                            leading: controller.isSelectionMode.value
-                                ? Icon(
-                                    isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                                    color: AppColor().primaryColor,
-                                  )
-                                : null,
-                            title: Text(
-                              (data['title'] != null && data['title'].toString().trim().isNotEmpty) ? data['title'] : _getPlainTextFromNote(data['subtitle']),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: context.isPhone ? 18 : 20,
-                                fontFamily: 'EN-REGULAR',
-                              ),
+                        child: GestureDetector(
+                          onTap: () {
+                            if (controller.isSelectionMode.value) {
+                              controller.toggleSelection(key);
+                            }
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(12),
+                              border: isSelected ? Border.all(color: AppColor().primaryColor, width: 1) : null,
                             ),
-                            subtitle: Text(
-                              data['deletedAt'] != null ? DateFormat('MM-dd-yyyy / hh:mm a').format(DateTime.parse(data['deletedAt'])) : "Unknown",
-                              style: TextStyle(
-                                fontSize: context.isPhone ? 14 : 16,
-                                fontFamily: 'EN-REGULAR',
-                                color: Colors.grey[600],
-                              ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                if (controller.isSelectionMode.value)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 12),
+                                    child: Icon(
+                                      isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
+                                      color: AppColor().primaryColor,
+                                    ),
+                                  ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        (data['title'] != null && data['title'].toString().trim().isNotEmpty) ? data['title'] : _getPlainTextFromNote(data['subtitle']),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          fontFamily: 'EN-REGULAR',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        data['deletedAt'] != null ? DateFormat('MM-dd-yyyy / hh:mm a').format(DateTime.parse(data['deletedAt'])) : "Unknown",
+                                        style: TextStyle(
+                                          fontFamily: 'EN-REGULAR',
+                                          fontSize: 14,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

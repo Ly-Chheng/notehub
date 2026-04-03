@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/widgets/custom_appbar.dart';
 
 class ImageDetailScreen extends StatelessWidget {
   final File imageFile;
@@ -9,11 +11,12 @@ class ImageDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 0,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: customAppBar(
+        title: "",
+        titleColor: AppColor().primaryColor,
+        context: context,
+        leadingColor: AppColor().primaryColor,
       ),
       body: Center(
         child: InteractiveViewer(

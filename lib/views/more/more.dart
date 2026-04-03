@@ -2,12 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
-import 'package:project_structure/views/home/components/recently_deleted_screen.dart';
-import 'package:project_structure/views/lock/remove_lock_screen.dart';
-import 'package:project_structure/views/lock/change_password_screen.dart';
-import 'package:project_structure/views/lock/forget_password_screen.dart';
-import 'package:project_structure/views/more/about_screen.dart';
-import 'package:project_structure/views/more/how_to_use_screen.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
 // import 'package:share_plus/share_plus.dart';
 
@@ -40,12 +34,11 @@ class _MoreScreenState extends State<MoreScreen> {
             children: [
               _buildSectionContainer([
                 _buildMenuTile(Icons.info_outline, "About", onTap: () {
-                  Get.to(AboutScreen());
+                  Get.toNamed('/about');
                 }),
                 DarkModeView(),
-                // NotificationView(),
                 _buildMenuTile(Icons.help_outline, "How to use", onTap: () {
-                  Get.to(HowToUseScreen());
+                  Get.toNamed('/howToUse');
                 }),
                 _buildMenuTile(
                   Icons.share_outlined,
@@ -56,20 +49,22 @@ class _MoreScreenState extends State<MoreScreen> {
                 _buildMenuTile(
                   Icons.delete_outline,
                   "Recently Deleted",
-                  onTap: () => Get.to(() => const RecentlyDeletedScreen()),
+                  onTap: () {
+                    Get.toNamed('/recentyDelete');
+                  },
                 ),
               ]),
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 60),
                 child: _buildSectionContainer([
                   _buildMenuTile(Icons.lock_outline, "Change Password", onTap: () {
-                    Get.to(() => const ChangePasswordScreen());
+                    Get.toNamed('/changePassword');
                   }),
                   _buildMenuTile(Icons.sync_lock_outlined, "Reset Password", onTap: () {
-                    Get.to(() => const RemoveLockScreen());
+                    Get.toNamed('/resetPassword');
                   }),
                   _buildMenuTile(Icons.lock_reset, "Forget Password", onTap: () {
-                    Get.to(() => const ForgetPasswordScreen());
+                    Get.toNamed('/fogetPassword');
                   }, isLast: true),
                 ]),
               ),

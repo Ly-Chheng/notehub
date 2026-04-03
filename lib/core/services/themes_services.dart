@@ -23,8 +23,20 @@ class ThemeService {
     cardColor: Colors.white, // card background in light mode
     primaryColor: const Color(0xFF3D5DFF), // primary app color
     iconTheme: const IconThemeData(color: Colors.black87),
+    // textTheme: const TextTheme(
+    //   bodyLarge: TextStyle(color: Colors.black),
+    // ),
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Colors.black87),
+      bodyLarge: TextStyle(color: Colors.black),
+      bodyMedium: TextStyle(color: Colors.black87),
+      bodySmall: TextStyle(color: Colors.black54),
+      titleLarge: TextStyle(
+        color: Colors.black,
+        fontWeight: FontWeight.bold,
+      ),
+      titleMedium: TextStyle(color: Colors.black87),
+      titleSmall: TextStyle(color: Colors.black54),
+      labelLarge: TextStyle(color: Colors.black),
     ),
   );
 
@@ -34,8 +46,20 @@ class ThemeService {
     cardColor: const Color(0xFF1E1E1E), // card background in dark mode
     primaryColor: const Color(0xFF3D5DFF), // primary app color
     iconTheme: const IconThemeData(color: Colors.white70),
+    // textTheme: const TextTheme(
+    //   bodyLarge: TextStyle(color: Colors.white),
+    // ),
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Colors.white70),
+      bodyLarge: TextStyle(color: Colors.white),
+      bodyMedium: TextStyle(color: Colors.white70),
+      bodySmall: TextStyle(color: Colors.white60),
+      titleLarge: TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+      ),
+      titleMedium: TextStyle(color: Colors.white70),
+      titleSmall: TextStyle(color: Colors.white60),
+      labelLarge: TextStyle(color: Colors.white),
     ),
   );
 

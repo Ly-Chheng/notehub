@@ -16,6 +16,7 @@ import 'package:project_structure/views/create/components/handwriting_component.
 import 'package:project_structure/views/create/components/image_detail_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/views/create/components/notebook_painter.dart';
+import 'package:project_structure/views/create/components/quill_editor_component.dart';
 import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
@@ -52,10 +53,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   late bool isEditingMode;
   late int? currentNoteKey;
 
-  bool isBold = false;
-  bool isItalic = false;
-  bool isUnderlined = false;
-  bool isStrikethrough = false;
   Color selectedColor = Colors.black;
   Color? noteBgColor;
   PaperType selectedPaperType = PaperType.none;
@@ -113,7 +110,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     // Load Existing Metadata
     if (isEditingMode && widget.existingNote != null) {
-      noteBgColor = Color(widget.existingNote?['bgColorValue'] ?? 0xFFFFFFFF);
+      final int? savedBgColor = widget.existingNote?['bgColorValue'];
+      if (savedBgColor != null && savedBgColor != 0) {
+        noteBgColor = Color(savedBgColor);
+      } else {
+        noteBgColor = null;
+      }
+
       selectedPaperType = PaperType.values[widget.existingNote?['paperTypeIndex'] ?? 0];
       isLocked = widget.existingNote?['isLocked'] ?? false;
 
@@ -213,6 +216,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   void _openHandwriting() {
+    FocusScope.of(context).unfocus();
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -403,38 +407,25 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   maxLines: null,
                   decoration: InputDecoration(
                     hintText: 'Title',
-                    hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
                     border: InputBorder.none,
+                    hintStyle: TextStyle(
+                      fontSize: context.isPhone ? 22 : 26,
+                      fontFamily: 'EN-BOLD',
+                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                    ),
                   ),
-                  cursorColor: Theme.of(context).primaryColor,
                   style: TextStyle(
-                    fontSize: context.isPhone ? 24 : 28,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.onSurface,
+                    fontSize: context.isPhone ? 20 : 22,
+                    fontFamily: 'EN-BOLD',
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
                 if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
-                SizedBox(
-                  height: 10,
+                // _buildQuillEditor(),
+                QuillEditorComponent(
+                  controller: _quillController,
+                  focusNode: _editorFocusNode,
                 ),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(
-                //     horizontal: 4,
-                //   ),
-                //   child: QuillEditor(
-                //     controller: _quillController,
-                //     scrollController: ScrollController(),
-                //     // focusNode: FocusNode(),
-                //     focusNode: _editorFocusNode,
-                //     config: QuillEditorConfig(
-                //       placeholder: "Start typing...",
-                //       padding: EdgeInsets.zero,
-                //     ),
-                //   ),
-                // ),
-                _buildQuillEditor(),
                 if (showTable)
                   EditableTableComponent(
                     tableData: tableData,
@@ -710,13 +701,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
     return IconButton(
       icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 25 : 30),
-      // onPressed: onPressed,
       onPressed: () {
         onPressed();
-
-        Future.delayed(Duration.zero, () {
-          _editorFocusNode.requestFocus();
-        });
+        FocusScope.of(context).unfocus();
       },
     );
   }
@@ -776,31 +763,36 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  Widget _buildQuillEditor() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: QuillEditor(
-        controller: _quillController,
-        scrollController: ScrollController(),
-        focusNode: _editorFocusNode,
-        config: QuillEditorConfig(
-          placeholder: "Start typing...",
-          padding: EdgeInsets.zero,
-          autoFocus: false,
-          showCursor: true,//added to ensure cursor visibility when editor is focused
-          expands: false,
-          scrollable: false,
-          customStyles: DefaultStyles(
-            paragraph: DefaultTextBlockStyle(
-              const TextStyle(fontSize: 16, color: Colors.black, height: 1.5),
-              const HorizontalSpacing(5, 5), // Required: Horizontal spacing
-              const VerticalSpacing(3, 3), // Required: Vertical spacing
-              const VerticalSpacing(2, 2), // Required: Line spacing
-              null, // Required: BoxDecoration
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // Widget _buildQuillEditor() {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(horizontal: 4),
+  //     child: QuillEditor(
+  //       controller: _quillController,
+  //       scrollController: ScrollController(),
+  //       focusNode: _editorFocusNode,
+  //       config: QuillEditorConfig(
+  //         placeholder: "Start typing...",
+  //         padding: EdgeInsets.zero,
+  //         autoFocus: false,
+  //         showCursor: true,
+  //         expands: false,
+  //         scrollable: false,
+  //         customStyles: DefaultStyles(
+  //           paragraph: DefaultTextBlockStyle(
+  //             TextStyle(
+  //               fontSize: 16,
+  //               height: 1.5,
+  //               fontFamily: 'EN-REGULAR',
+  //               color: Theme.of(context).textTheme.bodyLarge?.color,
+  //             ),
+  //             const HorizontalSpacing(5, 5), // Required: Horizontal spacing
+  //             const VerticalSpacing(3, 3), // Required: Vertical spacing
+  //             const VerticalSpacing(2, 2), // Required: Line spacing
+  //             null, // Required: BoxDecoration
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }

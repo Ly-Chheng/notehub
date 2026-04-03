@@ -51,7 +51,7 @@ class SheetHeader extends StatelessWidget {
                 title,
                 style: TextStyle(
                   fontSize: 16,
-                  fontFamily: 'EN-ENGINEER',
+                  fontFamily: 'EN-BOLD',
                   color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),

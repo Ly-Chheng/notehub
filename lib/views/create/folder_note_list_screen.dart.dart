@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
@@ -46,6 +47,11 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     });
   }
 
+  String formatDate(DateTime date) {
+    // Use intl package for formatting
+    return DateFormat('dd/MM/yyyy').format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -56,34 +62,44 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
-          PopupMenuButton<String>(
-            icon: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: AppColor().primaryColor,
-                  width: 1,
+          ValueListenableBuilder(
+            valueListenable: noteBox.listenable(),
+            builder: (context, Box box, _) {
+              final notesList = controller.getFilteredNotes(widget.folderKey);
+              final bool hasNotes = notesList.isNotEmpty;
+
+              if (!hasNotes) return const SizedBox.shrink();
+
+              return PopupMenuButton<String>(
+                icon: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: AppColor().primaryColor,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Icon(
+                    Icons.more_vert_outlined,
+                    color: AppColor().primaryColor,
+                    size: 20,
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Icon(
-                Icons.more_vert_outlined,
-                color: AppColor().primaryColor,
-                size: 20,
-              ),
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            offset: const Offset(0, 50),
-            color: Theme.of(context).cardColor,
-            onSelected: (value) => _handleMenuSelection(value),
-            itemBuilder: (context) => [
-              buildPopupItem(
-                context,
-                isSelectionMode ? 'Cancel Selection' : 'Select Notes',
-                isSelectionMode ? Icons.check_circle_sharp : Icons.radio_button_unchecked,
-              ),
-            ],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                offset: const Offset(0, 50),
+                color: Theme.of(context).cardColor,
+                onSelected: (value) => _handleMenuSelection(value),
+                itemBuilder: (context) => [
+                  buildPopupItem(
+                    context,
+                    isSelectionMode ? 'Cancel Selection' : 'Select Notes',
+                    isSelectionMode ? Icons.check_circle_sharp : Icons.radio_button_unchecked,
+                  ),
+                ],
+              );
+            },
           ),
         ],
       ),
@@ -325,7 +341,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             ),
           ],
         ),
-        child: InkWell(
+        child: GestureDetector(
           onTap: () {
             if (isSelectionMode) {
               setState(() {
@@ -351,6 +367,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             }
           },
           child: Container(
+            height: 70,
             decoration: BoxDecoration(
               color: noteBgColor,
               borderRadius: BorderRadius.circular(10),
@@ -360,7 +377,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               children: [
                 Expanded(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (isLocked)
                         Container(
@@ -378,7 +396,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Row(
                               children: [
@@ -392,37 +410,41 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                   ),
                                 Expanded(
                                   child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              note['title']?.isEmpty == true ? "" : note['title'],
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(
-                                                fontSize: context.isPhone ? 18 : 20,
-                                                color: Theme.of(context).colorScheme.onSurface,
-                                                fontFamily: 'EN-BOLD',
+                                      if (note['title'] != null && note['title'].toString().trim().isNotEmpty)
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                note['title'],
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: context.isPhone ? 18 : 20,
+                                                  fontFamily: 'EN-BOLD',
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 4),
-                                        child: Text(
-                                          controller.getPlainTextFromNote(note['subtitle']),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: TextStyle(
-                                            color: Theme.of(context).colorScheme.onSurface,
-                                            fontSize: context.isPhone ? 14 : 16,
-                                            fontFamily: 'EN-REGULAR',
-                                          ),
+                                          ],
                                         ),
-                                      ),
+                                      if (note['subtitle'] != null && controller.getPlainTextFromNote(note['subtitle'].toString().trim()).isNotEmpty)
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                controller.getPlainTextFromNote(note['subtitle']),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                  fontSize: context.isPhone ? 18 : 20,
+                                                  fontFamily: (note['title'] != null && note['title'].toString().trim().isNotEmpty) ? 'EN-REGULAR' : 'EN-BOLD',
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -454,7 +476,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     ),
                   ),
                 SizedBox(
-                  width: 15,
+                  width: 10,
                 )
               ],
             ),
