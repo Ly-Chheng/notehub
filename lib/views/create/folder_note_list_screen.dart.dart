@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
@@ -45,11 +44,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       final note = noteBox.get(key);
       return note != null && (note['isLocked'] ?? false);
     });
-  }
-
-  String formatDate(DateTime date) {
-    // Use intl package for formatting
-    return DateFormat('dd/MM/yyyy').format(date);
   }
 
   @override
@@ -366,120 +360,92 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               );
             }
           },
-          child: Container(
-            height: 70,
-            decoration: BoxDecoration(
-              color: noteBgColor,
-              borderRadius: BorderRadius.circular(10),
-              border: isSelected ? Border.all(color: AppColor().primaryColor, width: 1) : null,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (isLocked)
-                        Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: AppColor().primaryColor.withValues(alpha: 0.1),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            Icons.lock_outline,
-                            color: AppColor().primaryColor,
-                            size: 15,
-                          ),
-                        ),
+          child: Stack(
+            children: [
+              Container(
+                constraints: const BoxConstraints(
+                  minHeight: 70,
+                ),
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: noteBgColor,
+                  borderRadius: BorderRadius.circular(10),
+                  border: isSelected ? Border.all(color: AppColor().primaryColor, width: 1) : null,
+                ),
+                child: Row(
+                  children: [
+                    if (isSelectionMode)
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Row(
-                              children: [
-                                if (isSelectionMode)
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 15),
-                                    child: Icon(
-                                      isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
-                                      color: AppColor().primaryColor,
-                                    ),
-                                  ),
-                                Expanded(
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      if (note['title'] != null && note['title'].toString().trim().isNotEmpty)
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                note['title'],
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontSize: context.isPhone ? 18 : 20,
-                                                  fontFamily: 'EN-BOLD',
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      if (note['subtitle'] != null && controller.getPlainTextFromNote(note['subtitle'].toString().trim()).isNotEmpty)
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                controller.getPlainTextFromNote(note['subtitle']),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(
-                                                  fontSize: context.isPhone ? 18 : 20,
-                                                  fontFamily: (note['title'] != null && note['title'].toString().trim().isNotEmpty) ? 'EN-REGULAR' : 'EN-BOLD',
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
+                        padding: const EdgeInsets.only(right: 5),
+                        child: Icon(
+                          isSelected ? Icons.check_circle : Icons.radio_button_unchecked_outlined,
+                          color: AppColor().primaryColor,
+                          size: 20,
                         ),
                       ),
-                    ],
-                  ),
-                ),
-                if (imagePaths != null && imagePaths.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 10, top: 10, bottom: 10),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        File(imagePaths[0]),
-                        width: context.isPhone ? 50 : 80,
-                        height: context.isPhone ? 50 : 80,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          width: context.isPhone ? 50 : 80,
-                          height: context.isPhone ? 50 : 80,
-                          color: Colors.grey[200],
-                          child: Icon(Icons.broken_image, size: context.isPhone ? 24 : 30),
-                        ),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (note['title'] != null && note['title'].toString().trim().isNotEmpty)
+                            Text(
+                              note['title'],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                fontSize: context.isPhone ? 16 : 18,
+                                fontFamily: 'EN-BOLD',
+                              ),
+                            ),
+                          if (note['subtitle'] != null && controller.getPlainTextFromNote(note['subtitle'].toString().trim()).isNotEmpty)
+                            Text(
+                              controller.getPlainTextFromNote(note['subtitle']),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: context.isPhone ? 16 : 18,
+                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                fontFamily: (note['title'] != null && note['title'].toString().trim().isNotEmpty) ? 'EN-REGULAR' : 'EN-BOLD',
+                              ),
+                            ),
+                        ],
                       ),
                     ),
+                    if (imagePaths != null && imagePaths.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(
+                            File(imagePaths[0]),
+                            width: context.isPhone ? 50 : 80,
+                            height: context.isPhone ? 50 : 80,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              width: context.isPhone ? 50 : 80,
+                              height: context.isPhone ? 50 : 80,
+                              color: Colors.grey[200],
+                              child: Icon(Icons.broken_image, size: context.isPhone ? 24 : 30),
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              if (isLocked)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  child: Icon(
+                    Icons.lock,
+                    color: AppColor().primaryColor,
+                    size: 18,
                   ),
-                SizedBox(
-                  width: 10,
-                )
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       ),

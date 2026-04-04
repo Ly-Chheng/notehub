@@ -64,7 +64,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 "Create a secure password to protect your personal notes.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.black54,
+                  color: Colors.grey,
                   fontSize: 14,
                   fontFamily: 'EN-REGULAR',
                 ),

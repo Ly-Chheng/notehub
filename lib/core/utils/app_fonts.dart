@@ -5,6 +5,9 @@ const String rengular = 'EN-REGULAR';
 const String sumibold = 'EN-SEMIBOLD';
 const String bold = 'EN-BOLD';
 const String khRengular = 'KH-REGULAR';
+const String khSemibold = 'KH-SEMIBOLD';
+const String khBold = 'KH-BOLD';
+
 appbarTextSyle() {
   return TextStyle(
     fontFamily: rengular,

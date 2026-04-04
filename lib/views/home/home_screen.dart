@@ -10,7 +10,6 @@ import 'package:project_structure/views/home/components/create_folder_component.
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_header.dart';
-
 import '../../core/utils/app_fonts.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -26,8 +25,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    controller.ensureDefaultFolder();
-    controller.listenToScroll();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.ensureDefaultFolder();
+      controller.listenToScroll();
+    });
   }
 
   @override
@@ -57,12 +58,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         final folderData = folders[index].value;
                         bool isDefault = folderData['title'] == controller.defaultFolderName;
                         bool isPinned = folderData['isPinned'] ?? false;
-                        bool isLocked = folderData['isLocked'] ?? false;
+                        String? masterPass = controller.settingsBox.get('master_password');
+                        bool hasPassword = masterPass != null && masterPass.isNotEmpty;
+                        bool isLocked = (folderData['isLocked'] ?? false) && hasPassword;
 
                         return Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: 16,
-                            vertical: context.isPhone ? 8 : 12,
+                            vertical: context.isPhone ? 6 : 10,
                           ),
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(12),
@@ -116,7 +119,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
                                       void executeDeletion() {
                                         bool hasLockedNotes = controller.noteBox.values.any((n) => n['folderKey'] == folderKey && (n['isLocked'] ?? false));
-
                                         controller.verifyAndExecute(
                                           context: context,
                                           isLocked: hasLockedNotes || isLocked,
@@ -128,7 +130,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                       if (noteCount > 0) {
                                         showConfirmDialog(
                                           context: context,
-                                          // type: DialogType.warning,
                                           title: "Delete Folder?",
                                           subTitle: "This folder contains $noteCount notes. All data inside will be permanently lost.",
                                           confirmText: "Delete All",
@@ -144,55 +145,84 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ),
                                 ],
                               ),
-                              child: Container(
-                                color: Theme.of(context).cardColor,
-                                child: Padding(
-                                  padding: EdgeInsets.all(
-                                    context.isPhone ? 2 : 8,
-                                  ),
-                                  child: ListTile(
-                                    leading: Icon(
-                                      Icons.folder,
-                                      color: AppColor().primaryColor,
-                                      size: context.isPhone ? 30 : 35,
-                                    ),
-                                    title: Row(
-                                      children: [
-                                        if (isLocked)
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                              right: context.isPhone ? 6 : 10,
-                                            ),
-                                            child: Icon(Icons.lock, size: 17, color: AppColor().primaryColor),
-                                          ),
-                                        Expanded(
-                                            child: Text(isLocked && folderData['title'].length > 3 ? "${folderData['title'].substring(0, 3)}..." : folderData['title'],
-                                                maxLines: 1, overflow: TextOverflow.ellipsis, style: text18(context))),
-                                        if (isPinned) const Icon(Icons.push_pin, size: 17, color: Colors.orange),
-                                      ],
-                                    ),
-                                    trailing: ValueListenableBuilder(
-                                      valueListenable: controller.noteBox.listenable(),
-                                      builder: (context, Box nBox, _) {
-                                        int count = nBox.values.where((n) => n['folderKey'] == folderKey).length;
-                                        return Text("$count", style: text16(context));
-                                      },
-                                    ),
-                                    onTap: () {
-                                      final bool isFolderLocked = folderData['isLocked'] ?? false;
+                              child: GestureDetector(
+                                onTap: () {
+                                  final bool isFolderLocked = folderData['isLocked'] ?? false;
 
-                                      controller.verifyAndExecute(
-                                        context: context,
-                                        isLocked: isFolderLocked,
-                                        title: "Locked Folder",
-                                        onVerified: () {
-                                          Get.to(() => FolderNoteListScreen(
-                                                folderKey: folderKey,
-                                                folderName: folderData['title'],
-                                              ));
-                                        },
+                                  controller.verifyAndExecute(
+                                    context: context,
+                                    isLocked: isFolderLocked,
+                                    title: "Locked Folder",
+                                    onVerified: () {
+                                      Get.to(
+                                        () => FolderNoteListScreen(
+                                          folderKey: folderKey,
+                                          folderName: folderData['title'],
+                                        ),
+                                        // transition: Transition.cupertino,
                                       );
                                     },
+                                    // onVerified: () {
+                                    //   Navigator.push(
+                                    //     context,
+                                    //     MaterialPageRoute(
+                                    //       builder: (context) => FolderNoteListScreen(
+                                    //         folderKey: folderKey,
+                                    //         folderName: folderData['title'] ?? '',
+                                    //       ),
+                                    //     ),
+                                    //   );
+                                    // },
+                                  );
+                                },
+                                child: Container(
+                                  color: Theme.of(context).cardColor,
+                                  padding: EdgeInsets.all(context.isPhone ? 12 : 16),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.folder,
+                                        color: AppColor().primaryColor,
+                                        size: context.isPhone ? 30 : 35,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Row(
+                                          children: [
+                                            if (isLocked)
+                                              Padding(
+                                                padding: EdgeInsets.only(
+                                                  right: context.isPhone ? 2 : 5,
+                                                ),
+                                                child: Icon(Icons.lock, size: 17, color: AppColor().primaryColor),
+                                              ),
+                                            Flexible(
+                                              child: Text(
+                                                isLocked && folderData['title'].length > 3 ? "${folderData['title'].substring(0, 3)}..." : folderData['title'],
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: text18(context),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      ValueListenableBuilder(
+                                        valueListenable: controller.noteBox.listenable(),
+                                        builder: (context, Box nBox, _) {
+                                          int count = nBox.values.where((n) => n['folderKey'] == folderKey).length;
+                                          return Row(
+                                            children: [
+                                              if (isPinned) Icon(Icons.push_pin, size: 17, color: Colors.orange),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text("$count", style: text16(context)),
+                                            ],
+                                          );
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -217,7 +247,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   backgroundColor: AppColor().primaryColor,
                   onPressed: () {
                     final defaultKey = controller.getDefaultFolderKey();
-                    Get.to(() => CreateNoteScreen(folderKey: defaultKey));
+                    Get.to(
+                      () => CreateNoteScreen(folderKey: defaultKey),
+                      // transition: Transition.cupertino,
+                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => CreateNoteScreen(
+                    //       folderKey: defaultKey,
+                    //     ),
+                    //   ),
+                    // );
                   },
                   child: Icon(
                     Icons.add,

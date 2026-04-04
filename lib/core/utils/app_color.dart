@@ -15,7 +15,6 @@ class AppColor {
 
   // Background color palette
   List<Color> backgroundColors(BuildContext context) => [
-        Theme.of(context).brightness == Brightness.dark ? Colors.black.withOpacity(0.2) : Colors.white,
         const Color(0xFFBCAAA4),
         const Color(0xFFA5D6A7),
         const Color(0xFFFFCC80),

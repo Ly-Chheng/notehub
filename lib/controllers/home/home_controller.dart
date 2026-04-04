@@ -82,7 +82,6 @@ class HomeController extends GetxController {
     String? masterPassword = settingsBox.get('master_password');
 
     if (masterPassword == null) {
-      Get.snackbar("Security", "Please set a master password first.");
       onVerified();
       return;
     }

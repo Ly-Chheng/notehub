@@ -90,16 +90,32 @@ class StopwatchScreen extends StatelessWidget {
                 ),
               ),
               Expanded(
+                // child: ListView.builder(
+                //   itemCount: controller.laps.length,
+                //   itemBuilder: (context, index) {
+                //     return Padding(
+                //       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                //       child: Row(
+                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //         children: [
+                //           Text("Lap ${controller.laps.length - index}", style: text16(context)),
+                //           Text(controller.laps[index], style: text16(context)),
+                //         ],
+                //       ),
+                //     );
+                //   },
+                // ),
                 child: ListView.builder(
                   itemCount: controller.laps.length,
                   itemBuilder: (context, index) {
+                    final lap = controller.laps[index];
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("Lap ${controller.laps.length - index}", style: text16(context)),
-                          Text(controller.laps[index], style: text16(context)),
+                          Text("Lap ${lap.lapNumber}", style: text16(context)),
+                          Text(lap.formattedTime, style: text16(context)),
                         ],
                       ),
                     );

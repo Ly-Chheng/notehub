@@ -306,7 +306,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final hasText = plainText.isNotEmpty;
     final hasImages = selectedImages.isNotEmpty;
 
-    // Prevent empty share
     if (!hasTitle && !hasText && !hasImages) {
       return;
     }
@@ -421,7 +420,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   ),
                 ),
                 if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
-                // _buildQuillEditor(),
                 QuillEditorComponent(
                   controller: _quillController,
                   focusNode: _editorFocusNode,
@@ -762,37 +760,4 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       onHyphenPressed: () => _quillController.formatSelection(Attribute.blockQuote),
     );
   }
-
-  // Widget _buildQuillEditor() {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(horizontal: 4),
-  //     child: QuillEditor(
-  //       controller: _quillController,
-  //       scrollController: ScrollController(),
-  //       focusNode: _editorFocusNode,
-  //       config: QuillEditorConfig(
-  //         placeholder: "Start typing...",
-  //         padding: EdgeInsets.zero,
-  //         autoFocus: false,
-  //         showCursor: true,
-  //         expands: false,
-  //         scrollable: false,
-  //         customStyles: DefaultStyles(
-  //           paragraph: DefaultTextBlockStyle(
-  //             TextStyle(
-  //               fontSize: 16,
-  //               height: 1.5,
-  //               fontFamily: 'EN-REGULAR',
-  //               color: Theme.of(context).textTheme.bodyLarge?.color,
-  //             ),
-  //             const HorizontalSpacing(5, 5), // Required: Horizontal spacing
-  //             const VerticalSpacing(3, 3), // Required: Vertical spacing
-  //             const VerticalSpacing(2, 2), // Required: Line spacing
-  //             null, // Required: BoxDecoration
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }

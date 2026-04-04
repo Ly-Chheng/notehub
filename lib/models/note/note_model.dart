@@ -1,12 +1,12 @@
 import 'dart:convert';
 
 class Note {
-  int? id; // optional if using auto-increment in DB
+  int? id;
   String title;
-  String subtitle; // can store plain text or JSON for rich text
+  String subtitle;
   DateTime createdAt;
   DateTime updatedAt;
-  String? color; // optional color string (hex)
+  String? color;
   bool isFavorite;
 
   Note({
@@ -48,6 +48,5 @@ class Note {
   // Optional: JSON serialization
   String toJson() => json.encode(toMap());
 
-  factory Note.fromJson(String source) =>
-      Note.fromMap(json.decode(source));
+  factory Note.fromJson(String source) => Note.fromMap(json.decode(source));
 }

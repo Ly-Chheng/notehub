@@ -15,7 +15,7 @@ import 'package:project_structure/route.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  debugPrint("-------------Handling a background message: ${message.data}");
+  // debugPrint("-------------Handling a background message: ${message.data}");
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

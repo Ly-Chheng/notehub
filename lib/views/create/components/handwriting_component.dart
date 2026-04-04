@@ -138,18 +138,13 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // GestureDetector(
-                //   onTap: () => Navigator.pop(context),
-                //   child: Text('Cancel', style: text18(context).copyWith(color: Colors.red)),
-                // ),
-                IconButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    icon: Icon(
-                      Icons.arrow_back,
-                      color: AppColor().primaryColor,
-                    )),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: Text('Cancel', style: text18(context).copyWith(color: Colors.red)),
+                  ),
+                ),
                 Row(
                   children: [
                     IconButton(
@@ -186,7 +181,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                         onPressed: _saveAndExit,
                         child: Text(
                           "Save",
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColor().primaryColor),
+                          style: text18(context).copyWith(color: AppColor().primaryColor),
                         ))
                   ],
                 ),

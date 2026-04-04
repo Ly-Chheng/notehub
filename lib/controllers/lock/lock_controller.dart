@@ -209,7 +209,7 @@ class LockController extends GetxController {
         final note = noteBox.get(key);
         if (note != null && (note['isLocked'] ?? false)) {
           final updatedNote = Map<String, dynamic>.from(note);
-          updatedNote['isLocked'] = false; // Auto-unlock protected data
+          updatedNote['isLocked'] = false;
           await noteBox.put(key, updatedNote);
           unlockCount++;
         }

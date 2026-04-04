@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 class TimerController extends GetxController {
   final Box timerBox = Hive.box('timer_box');
 
-  // Observable maps to track time and status in real-time
   var runningSeconds = <dynamic, int>{}.obs;
   var activeTimerKeys = <dynamic>{}.obs;
 
@@ -24,7 +23,7 @@ class TimerController extends GetxController {
           runningSeconds[key] = runningSeconds[key]! - 1;
         } else {
           activeTimerKeys.remove(key);
-          _updateHiveSeconds(key, 0); // Mark as finished in database
+          _updateHiveSeconds(key, 0);
         }
       }
     });
@@ -45,13 +44,13 @@ class TimerController extends GetxController {
   void toggleTimer(dynamic key) {
     if (activeTimerKeys.contains(key)) {
       activeTimerKeys.remove(key);
-      _updateHiveSeconds(key, runningSeconds[key]!); 
+      _updateHiveSeconds(key, runningSeconds[key]!);
     } else {
       // If restarting a finished timer
       if ((runningSeconds[key] ?? 0) <= 0) {
         final data = timerBox.get(key);
         runningSeconds[key] = data['totalSeconds'];
-        _updateHiveSeconds(key, data['totalSeconds']); 
+        _updateHiveSeconds(key, data['totalSeconds']);
       }
       activeTimerKeys.add(key);
     }
