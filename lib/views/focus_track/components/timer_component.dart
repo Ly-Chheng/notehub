@@ -59,14 +59,14 @@ class TimerComponent extends StatelessWidget {
                 if (activeKeys.isNotEmpty) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: customHeader("Running"),
+                    child: customHeader("Running", context),
                   ),
                   ...activeKeys.map((key) => _buildTimerTile(context, controller, key, box.get(key))),
                 ],
                 if (recentKeys.isNotEmpty) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: customHeader("Recents"),
+                    child: customHeader("Recents", context),
                   ),
                   ...recentKeys.map((key) => _buildTimerTile(context, controller, key, box.get(key))),
                 ],
@@ -103,7 +103,7 @@ class TimerComponent extends StatelessWidget {
               ),
               SlidableAction(
                 onPressed: (_) => controller.deleteTimer(key),
-                backgroundColor: Colors.red,
+                backgroundColor: AppColor().red,
                 icon: Icons.delete,
                 label: 'Delete',
               ),
@@ -125,16 +125,16 @@ class TimerComponent extends StatelessWidget {
                         Text(data['title'] ?? "Timer",
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: isFinished ? Colors.grey : Theme.of(context).colorScheme.onSurface, fontSize: context.isPhone ? 14 : 16, fontFamily: 'EN-REGULAR')),
+                            style: TextStyle(color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface, fontSize: context.isPhone ? 14 : 16, fontFamily: 'EN-REGULAR')),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
                               fontSize: context.isPhone ? 28 : 32,
-                              color: isFinished ? Colors.white : Theme.of(context).colorScheme.onSurface,
+                              color: isFinished ? AppColor().white : Theme.of(context).colorScheme.onSurface,
                               fontFamily: 'EN-REGULAR',
                             )),
                         Text("${controller.formatToHMS(data['totalSeconds'])} total",
                             style: TextStyle(
-                                color: isFinished ? Colors.grey : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
+                                color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
                       ],
                     ),
                   ),
@@ -169,7 +169,7 @@ class TimerComponent extends StatelessWidget {
               child: CircularProgressIndicator(value: progress, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
           Icon(
             isFinished ? Icons.refresh : (isRunning ? Icons.pause : Icons.play_arrow),
-            color: isFinished ? Colors.white : AppColor().primaryColor,
+            color: isFinished ? AppColor().white : AppColor().primaryColor,
             size: context.isPhone ? 30 : 35,
           ),
         ],

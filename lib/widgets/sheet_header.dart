@@ -50,9 +50,9 @@ class SheetHeader extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 20,
                   fontFamily: 'EN-BOLD',
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
               TextButton(

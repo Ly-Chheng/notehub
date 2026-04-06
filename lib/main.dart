@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +79,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final storage = GetStorage();
     return GetMaterialApp(
+      defaultTransition: Platform.isAndroid ? Transition.cupertino : null,
+      transitionDuration: Platform.isAndroid ? const Duration(milliseconds: 300) : null,
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       theme: ThemeService().lightTheme,

@@ -50,6 +50,7 @@ TextStyle text16(BuildContext context) {
   return TextStyle(
     fontSize: context.isPhone ? 16 : 18,
     fontFamily: rengular,
+    color: Theme.of(context).textTheme.bodyLarge?.color,
   );
 }
 
@@ -57,6 +58,7 @@ TextStyle text18(BuildContext context) {
   return TextStyle(
     fontSize: context.isPhone ? 18 : 20,
     fontFamily: rengular,
+    color: Theme.of(context).textTheme.bodyLarge?.color,
   );
 }
 
@@ -64,24 +66,16 @@ TextStyle text20(BuildContext context) {
   return TextStyle(
     fontSize: context.isPhone ? 20 : 22,
     fontFamily: bold,
+    color: Theme.of(context).textTheme.bodyLarge?.color,
   );
 }
 
-TextStyle en({double size = 16, Color? color, FontWeight? fontWeight}) {
+TextStyle text22(BuildContext context) {
   return TextStyle(
-    fontFamily: 'EN-REGULAR',
-    fontSize: size,
-    color: color,
-    fontWeight: fontWeight ?? FontWeight.normal,
+    fontSize: context.isPhone ? 22 : 25,
+    fontFamily: bold,
+    color: Theme.of(context).textTheme.bodyLarge?.color,
   );
 }
 
-// Khmer font
-TextStyle kh({double size = 16, Color? color, FontWeight? fontWeight}) {
-  return TextStyle(
-    fontFamily: 'KH-REGULAR',
-    fontSize: size,
-    color: color,
-    fontWeight: fontWeight ?? FontWeight.normal,
-  );
-}
+

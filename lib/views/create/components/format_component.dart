@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
 void showFormatSheet({
@@ -119,21 +119,25 @@ void showFormatSheet({
                             isBold = !isBold;
                             onBoldChanged(isBold);
                             setSheetState(() {});
+                            Navigator.pop(context);
                           }),
                           _formatToggle(Icons.format_italic, isItalic, () {
                             isItalic = !isItalic;
                             onItalicChanged(isItalic);
                             setSheetState(() {});
+                            Navigator.pop(context);
                           }),
                           _formatToggle(Icons.format_underlined, isUnderlined, () {
                             isUnderlined = !isUnderlined;
                             onUnderlineChanged(isUnderlined);
                             setSheetState(() {});
+                            Navigator.pop(context);
                           }),
                           _formatToggle(Icons.format_strikethrough, isStrikethrough, () {
                             isStrikethrough = !isStrikethrough;
                             onStrikethroughChanged(isStrikethrough);
                             setSheetState(() {});
+                            Navigator.pop(context);
                           }),
                         ],
                       ),
@@ -193,11 +197,11 @@ void showFormatSheet({
                                     Navigator.pop(context);
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                                    padding: EdgeInsets.symmetric(horizontal: 5),
                                     child: CircleAvatar(
                                       backgroundColor: color,
                                       radius: 20,
-                                      child: selectedColor.value == color.value ? const Icon(Icons.check, color: Colors.white, size: 18) : null,
+                                      child: selectedColor.value == color.value ? Icon(Icons.check, color: AppColor().white, size: 18) : null,
                                     ),
                                   ),
                                 );
@@ -208,14 +212,11 @@ void showFormatSheet({
                       )
                     : const SizedBox.shrink(),
               ),
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                "Font Size",
-                style: TextStyle(
-                  fontSize: context.isPhone ? 14 : 16,
-                  fontFamily: 'EN-SEMIBOLD',
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                child: Text(
+                  "Font Size",
+                  style: text16(context),
                 ),
               ),
               _buildContainer(
@@ -231,6 +232,7 @@ void showFormatSheet({
                         onTap: () {
                           setSheetState(() => activeSize = size);
                           onFontSizeChanged(size.toLowerCase());
+                          Navigator.pop(context);
                         },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
@@ -248,7 +250,7 @@ void showFormatSheet({
                           child: Text(
                             size,
                             style: TextStyle(
-                              color: isSelected ? Colors.white : Colors.grey.shade700,
+                              color: isSelected ? AppColor().white : Colors.grey.shade700,
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                               fontSize: 14,
                               fontFamily: 'EN-REGULAR',
@@ -287,13 +289,13 @@ Widget _formatToggle(IconData icon, bool isActive, VoidCallback onTap) {
       child: Container(
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
-          color: isActive ? Colors.blue.withValues(alpha: 0.1) : Colors.transparent,
+          color: isActive ? AppColor().primaryColor.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isActive ? Colors.blue : Colors.grey.shade300),
+          border: Border.all(color: isActive ? AppColor().primaryColor : Colors.grey.shade300),
         ),
         child: Icon(
           icon,
-          color: isActive ? Colors.blue : Colors.grey,
+          color: isActive ? AppColor().primaryColor : AppColor().gray,
           size: 25,
         ),
       ),

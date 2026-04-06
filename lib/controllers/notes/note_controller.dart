@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
+// import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
+
+enum ShareMode { text, photo }
 
 class NoteController extends GetxController {
   final Box noteBox = Hive.box('student_notes');
@@ -74,34 +77,97 @@ class NoteController extends GetxController {
     }
   }
 
+  // Future<void> shareNote({
+  //   required String title,
+  //   required String content,
+  //   required List<File> selectedImages,
+  // }) async {
+  //   final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
+  //   final String shareContent = content.trim().isEmpty ? "No content" : content.trim();
+  //   final String fullText = "$shareTitle\n\n$shareContent";
+
+  //   try {
+  //     List<XFile> files = selectedImages.where((file) => file.existsSync()).map((file) => XFile(file.path)).toList();
+
+  //     final tempDir = await getTemporaryDirectory();
+  //     final tempFile = File('${tempDir.path}/note_content.txt');
+  //     await tempFile.writeAsString(fullText);
+  //     files.add(XFile(tempFile.path));
+
+  //     if (files.isNotEmpty) {
+  //       // ignore: deprecated_member_use
+  //       await Share.shareXFiles(files);
+  //     } else {
+  //       // ignore: deprecated_member_use
+  //       await Share.share(fullText);
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar(
+  //       "Error",
+  //       "Could not share note",
+  //       snackPosition: SnackPosition.BOTTOM,
+  //     );
+  //   }
+  // }
+  // Future<void> shareNote({
+  //   required String title,
+  //   required String content,
+  //   required List<File> selectedImages,
+  // }) async {
+  //   try {
+  //     final String fullText = "${title.toUpperCase()}\n$content";
+
+  //     if (selectedImages.isNotEmpty) {
+  //       // SHARE AS PHOTOS WITH CAPTION
+  //       final List<XFile> xFiles = selectedImages.where((f) => f.existsSync()).map((f) => XFile(f.path)).toList();
+
+  //       await Share.shareXFiles(
+  //         xFiles,
+  //         text: fullText, // This becomes the caption for the photos
+  //         subject: title,
+  //       );
+  //     } else {
+  //       // SHARE AS PLAIN TEXT ONLY
+  //       await Share.share(fullText, subject: title);
+  //     }
+  //   } catch (e) {
+  //     Get.snackbar("Share Error", "Could not open share menu");
+  //   }
+  // }
   Future<void> shareNote({
     required String title,
     required String content,
     required List<File> selectedImages,
+    required ShareMode mode,
   }) async {
-    final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
-    final String shareContent = content.trim().isEmpty ? "No content" : content.trim();
-    final String fullText = "$shareTitle\n\n$shareContent";
-
     try {
-      List<XFile> files = selectedImages.where((file) => file.existsSync()).map((file) => XFile(file.path)).toList();
+      final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
+      final String shareContent = content.trim();
+      final String fullMessage = "${shareTitle.toUpperCase()}\n\n$shareContent";
 
-      final tempDir = await getTemporaryDirectory();
-      final tempFile = File('${tempDir.path}/note_content.txt');
-      await tempFile.writeAsString(fullText);
-      files.add(XFile(tempFile.path));
-
-      if (files.isNotEmpty) {
-        await Share.shareXFiles(files);
+      if (mode == ShareMode.photo) {
+        log("Sharing as photos with caption...");
+        // PHOTO (Share images with text as caption)
+        if (selectedImages.isNotEmpty) {
+          final List<XFile> xFiles = selectedImages.where((f) => f.existsSync()).map((f) => XFile(f.path)).toList();
+          log("Prepared ${xFiles.length} files for sharing as photos.");
+          await Share.shareXFiles(
+            xFiles,
+            text: fullMessage, // The text appears as a caption under the photo
+            subject: shareTitle,
+          );
+        } else {
+          Get.snackbar("Info", "No photos found in this note to share.");
+        }
       } else {
-        await Share.share(fullText);
+        log("Sharing as plain text...");
+        await Share.share(
+          fullMessage,
+          subject: shareTitle,
+        );
       }
     } catch (e) {
-      Get.snackbar(
-        "Error",
-        "Could not share note",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      Get.snackbar("Share Error", "Could not open share menu", backgroundColor: Colors.red, colorText: Colors.white);
     }
   }
 

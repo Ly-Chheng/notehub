@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
-// import 'package:share_plus/share_plus.dart';
+import 'package:share_plus/share_plus.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({
@@ -22,6 +25,27 @@ class _MoreScreenState extends State<MoreScreen> {
   //     "Check out Student Note App!\n\nDownload now:\nhttps://play.google.com/store/apps/details?id=com.yourapp.id",
   //   );
   // }
+  Future<void> shareApp(BuildContext context) async {
+    final text = 'https://onelink.to/bu777v';
+    final box = context.findRenderObject() as RenderBox?;
+    try {
+      if (Platform.isIOS) {
+        await Share.share(
+          text,
+          subject: "Student Note",
+          sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+        );
+      } else {
+        await Share.share(
+          text,
+          subject: "Student Note",
+          sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+        );
+      }
+    } catch (e) {
+      debugPrint("Error sharing text: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +67,9 @@ class _MoreScreenState extends State<MoreScreen> {
                 _buildMenuTile(
                   Icons.share_outlined,
                   "Share App",
-                  onTap: () {},
+                  onTap: () {
+                    shareApp(context);
+                  },
                   isLast: true,
                 ),
                 _buildMenuTile(
@@ -71,7 +97,7 @@ class _MoreScreenState extends State<MoreScreen> {
               Text(
                 "Copyright © 2026 Student Note App.\nVersion 1.0.0 (2)",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 12 : 14, height: 1.5),
+                style: TextStyle(color: AppColor().gray, fontSize: context.isPhone ? 12 : 14, height: 1.5),
               ),
             ],
           ),

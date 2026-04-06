@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 
 Widget customTextField(
   String hint,
@@ -22,19 +23,21 @@ Widget customTextField(
       onChanged: onChanged,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.grey),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        hintStyle: TextStyle(color: AppColor().gray, fontSize: 16, fontFamily: 'EN-REGULAR'),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: InputBorder.none,
         prefixIcon: prefixIcon,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
+        suffixStyle: TextStyle(color: AppColor().gray, fontSize: 14, fontFamily: 'EN-REGULAR'),
         suffixIcon: suffixIcon ??
             (toggle != null
                 ? IconButton(
                     icon: Icon(
-                      obscure
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      color: Colors.grey,
+                      obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                      color: AppColor().gray,
                     ),
                     onPressed: toggle,
                   )
@@ -60,15 +63,19 @@ Widget buildStandardField(
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(
-          color: Colors.grey,
+          color: AppColor().gray,
           fontSize: 16,
           fontFamily: 'EN-REGULAR',
         ),
+        border: InputBorder.none,
+        enabledBorder: InputBorder.none,
+        focusedBorder: InputBorder.none,
+        errorBorder: InputBorder.none,
+        disabledBorder: InputBorder.none,
         prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: const Color(0XFF8E8E93)) : null,
         suffixText: trailing,
-        suffixStyle: const TextStyle(color: Colors.grey),
+        suffixStyle: TextStyle(color: AppColor().gray, fontSize: 14, fontFamily: 'EN-REGULAR'),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: InputBorder.none,
       ),
     ),
   );

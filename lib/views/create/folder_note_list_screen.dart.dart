@@ -173,6 +173,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                               currentHeader,
                                               style: text18(context).copyWith(
                                                 fontWeight: FontWeight.bold,
+                                                color: Theme.of(context).textTheme.bodyLarge?.color,
                                               ),
                                             ),
                                           ),
@@ -194,7 +195,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColor().primaryColor,
-        foregroundColor: Colors.white,
+        foregroundColor: AppColor().white,
         onPressed: () => Get.to(() => CreateNoteScreen(folderKey: widget.folderKey)),
         child: const Icon(Icons.add, size: 30),
       ),
@@ -232,7 +233,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     IconButton(
                       icon: Icon(
                         Icons.delete,
-                        color: Colors.red,
+                        color: AppColor().red,
                         size: 24,
                       ),
                       onPressed: selectedKeys.isEmpty
@@ -293,8 +294,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 updated['isPinned'] = !isPinned;
                 noteBox.put(noteKey, updated);
               },
-              backgroundColor: Colors.orange,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColor().orange,
+              foregroundColor: AppColor().white,
               icon: isPinned ? Icons.push_pin_outlined : Icons.push_pin,
               label: isPinned ? 'Unpin' : 'Pin',
               borderRadius: const BorderRadius.horizontal(left: Radius.circular(10)),
@@ -307,7 +308,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 onVerified: () => _showMoveNotesSheet(singleNoteKey: noteKey),
               ),
               backgroundColor: AppColor().primaryColor,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColor().white,
               icon: Icons.folder,
               label: 'Folder',
             ),
@@ -327,8 +328,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   }
                 },
               ),
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColor().red,
+              foregroundColor: AppColor().white,
               icon: Icons.delete,
               label: 'Delete',
               borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
@@ -394,7 +395,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
                                 fontSize: context.isPhone ? 16 : 18,
                                 fontFamily: 'EN-BOLD',
                               ),
@@ -406,7 +407,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontSize: context.isPhone ? 16 : 18,
-                                color: Theme.of(context).textTheme.bodyMedium?.color,
+                                color: Theme.of(context).textTheme.bodyLarge?.color,
                                 fontFamily: (note['title'] != null && note['title'].toString().trim().isNotEmpty) ? 'EN-REGULAR' : 'EN-BOLD',
                               ),
                             ),

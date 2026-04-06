@@ -2,64 +2,48 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 
 class ThemeService {
-  // // light mode color
-  // final lightTheme = ThemeData.light().copyWith(
-  //   hoverColor: AppColor().black,
-  //   scaffoldBackgroundColor: AppColor().white,
-  //   primaryColor: AppColor().primaryColor,
-  // );
-
-  // // dark mode color
-  // final darkTheme = ThemeData.dark().copyWith(
-  //   hoverColor: AppColor().white,
-  //   scaffoldBackgroundColor: AppColor().darkPrimaryColor,
-  //   primaryColor: AppColor().darkPrimaryColor,
-  // );
+  // light mode color
   ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     scaffoldBackgroundColor: const Color(0xFFF8F9FB), // background
-    cardColor: Colors.white, // card background in light mode
-    primaryColor: const Color(0xFF3D5DFF), // primary app color
+    cardColor: AppColor().white, // card background in light mode
+    primaryColor: AppColor().primaryColor,
     iconTheme: const IconThemeData(color: Colors.black87),
-    // textTheme: const TextTheme(
-    //   bodyLarge: TextStyle(color: Colors.black),
-    // ),
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Colors.black),
-      bodyMedium: TextStyle(color: Colors.black87),
-      bodySmall: TextStyle(color: Colors.black54),
+    textTheme: TextTheme(
+      bodyLarge: const TextStyle(color: Colors.black),
+      bodyMedium: const TextStyle(color: Colors.black87),
+      bodySmall: const TextStyle(color: Colors.black54),
       titleLarge: TextStyle(
-        color: Colors.black,
+        color: AppColor().black,
         fontWeight: FontWeight.bold,
       ),
-      titleMedium: TextStyle(color: Colors.black87),
-      titleSmall: TextStyle(color: Colors.black54),
-      labelLarge: TextStyle(color: Colors.black),
+      titleMedium: const TextStyle(color: Colors.black87),
+      titleSmall: const TextStyle(color: Colors.black54),
+      labelLarge: const TextStyle(color: Colors.black),
     ),
   );
 
+  // dark mode color
   ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
     scaffoldBackgroundColor: const Color(0xFF121212), // background
     cardColor: const Color(0xFF1E1E1E), // card background in dark mode
-    primaryColor: const Color(0xFF3D5DFF), // primary app color
+    primaryColor: AppColor().primaryColor,
     iconTheme: const IconThemeData(color: Colors.white70),
-    // textTheme: const TextTheme(
-    //   bodyLarge: TextStyle(color: Colors.white),
-    // ),
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Colors.white),
-      bodyMedium: TextStyle(color: Colors.white70),
-      bodySmall: TextStyle(color: Colors.white60),
+    textTheme: TextTheme(
+      bodyLarge: TextStyle(color: AppColor().white),
+      bodyMedium: const TextStyle(color: Colors.white70),
+      bodySmall: const TextStyle(color: Colors.white60),
       titleLarge: TextStyle(
-        color: Colors.white,
+        color: AppColor().white,
         fontWeight: FontWeight.bold,
       ),
-      titleMedium: TextStyle(color: Colors.white70),
-      titleSmall: TextStyle(color: Colors.white60),
-      labelLarge: TextStyle(color: Colors.white),
+      titleMedium: const TextStyle(color: Colors.white70),
+      titleSmall: const TextStyle(color: Colors.white60),
+      labelLarge: TextStyle(color: AppColor().white),
     ),
   );
 

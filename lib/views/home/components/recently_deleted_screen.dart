@@ -118,7 +118,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                             SlidableAction(
                               onPressed: (context) => _showFolderPicker(context, controller, noteKey: key),
                               backgroundColor: AppColor().primaryColor,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppColor().white,
                               icon: Icons.folder,
                               label: 'Move',
                               borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
@@ -127,8 +127,8 @@ class RecentlyDeletedScreen extends StatelessWidget {
                               onPressed: (context) {
                                 controller.deleteWapDialog(context, {key});
                               },
-                              backgroundColor: Colors.red,
-                              foregroundColor: Colors.white,
+                              backgroundColor: AppColor().red,
+                              foregroundColor: AppColor().white,
                               icon: Icons.delete,
                               label: 'Delete',
                               borderRadius: const BorderRadius.horizontal(
@@ -221,7 +221,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                         ),
                         const Spacer(),
                         IconButton(
-                          icon: const Icon(Icons.delete, color: Colors.red, size: 28),
+                          icon: Icon(Icons.delete, color: AppColor().red, size: 28),
                           onPressed: controller.selectedKeys.isEmpty ? null : () => controller.deleteSelectedPermanently(context),
                         ),
                       ],

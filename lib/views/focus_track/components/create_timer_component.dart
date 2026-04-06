@@ -228,7 +228,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: customHeader("Duration"),
+              child: customHeader("Duration", context),
             ),
             _buildPickerSection(),
             const SizedBox(height: 30),
@@ -307,7 +307,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          customHeader("Quick Presets"),
+          customHeader("Quick Presets", context),
           IconButton(
             onPressed: () => _showAddPresetSheet(context),
             icon: Icon(Icons.add_circle_outline, color: AppColor().primaryColor, size: context.isPhone ? 25 : 28),

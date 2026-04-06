@@ -39,7 +39,7 @@ class HowToUseScreen extends StatelessWidget {
               title: "Create Your First Note",
               description: "Tap the '+' button on the home screen to start writing. Add titles and body text easily.",
               icon: Icons.edit_note_rounded,
-              iconColor: Colors.blue,
+              iconColor: AppColor().primaryColor,
             ),
             _buildStepCard(
               context,
@@ -47,7 +47,7 @@ class HowToUseScreen extends StatelessWidget {
               title: "Organize with Folders",
               description: "Swipe left on any note to move it to a specific folder like 'Homework' or 'Exams'.",
               icon: Icons.folder_copy_rounded,
-              iconColor: Colors.orange,
+              iconColor: AppColor().orange,
             ),
             _buildStepCard(
               context,
@@ -55,7 +55,7 @@ class HowToUseScreen extends StatelessWidget {
               title: "Secure Your Content",
               description: "Use the 'Lock' feature in the note menu to protect sensitive information with a password.",
               icon: Icons.lock_person_rounded,
-              iconColor: Colors.redAccent,
+              iconColor: AppColor().red,
             ),
             _buildStepCard(
               context,
@@ -63,7 +63,7 @@ class HowToUseScreen extends StatelessWidget {
               title: "Focus with Stopwatch",
               description: "Use the built-in stopwatch to track your study sessions and stay productive.",
               icon: Icons.timer_outlined,
-              iconColor: Colors.green,
+              iconColor: AppColor().green,
             ),
             const SizedBox(height: 40),
           ],
@@ -97,7 +97,6 @@ class HowToUseScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Gradient Circle Icon
           Container(
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
@@ -108,7 +107,7 @@ class HowToUseScreen extends StatelessWidget {
                 end: Alignment.bottomRight,
               ),
             ),
-            child: Icon(icon, color: Colors.white, size: 28),
+            child: Icon(icon, color: AppColor().white, size: 28),
           ),
           const SizedBox(width: 20),
           Expanded(
@@ -126,7 +125,7 @@ class HowToUseScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 4),
-                customHeader(title),
+                customHeader(title, context),
                 const SizedBox(height: 6),
                 Text(
                   description,

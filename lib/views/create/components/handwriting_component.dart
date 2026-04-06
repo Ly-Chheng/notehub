@@ -277,9 +277,9 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                         shape: BoxShape.circle,
                         color: Colors.grey,
                       ),
-                      child: const CircleAvatar(
+                      child: CircleAvatar(
                         radius: 15,
-                        backgroundColor: Colors.white,
+                        backgroundColor: AppColor().white,
                         child: Icon(Icons.add, color: Colors.black, size: 20),
                       ),
                     ),
@@ -336,9 +336,9 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                   ),
                 ),
                 IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.delete,
-                      color: Colors.red,
+                      color: AppColor().red,
                       size: 35,
                     ),
                     onPressed: () => setState(() {

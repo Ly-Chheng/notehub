@@ -39,13 +39,12 @@ class QuillEditorComponent extends StatelessWidget {
             const VerticalSpacing(2, 2),
             null,
           ),
-          
           placeHolder: DefaultTextBlockStyle(
             TextStyle(
               fontSize: 16,
               height: 1.5,
               fontFamily: 'EN-REGULAR',
-              color: Theme.of(context).textTheme.bodyMedium?.color,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
             const HorizontalSpacing(5, 5),
             const VerticalSpacing(3, 3),

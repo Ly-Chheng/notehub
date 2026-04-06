@@ -27,24 +27,6 @@ void showFolderSheet(BuildContext context, {dynamic folderKey, dynamic existingD
               child: SheetHeader(
                 title: existingData == null ? "Create Folder" : "Update Folder",
                 saveText: "Save",
-                // onSave: () async {
-                //   if (folderController.text.trim().isNotEmpty) {
-                //     final data = {
-                //       "title": folderController.text.trim(),
-                //       "colorValue": existingData != null ? existingData['colorValue'] : Colors.blue.value,
-                //       "date": DateTime.now().toString(),
-                //     };
-
-                //     if (existingData != null) {
-                //       // UPDATE: Same as Save Note
-                //       await folderBox.put(folderKey, data);
-                //     } else {
-                //       // CREATE: Same as Save Note
-                //       await folderBox.add(data);
-                //     }
-                //     Get.back();
-                //   }
-                // },
                 onSave: () async {
                   String newName = folderController.text.trim();
 
@@ -63,8 +45,8 @@ void showFolderSheet(BuildContext context, {dynamic folderKey, dynamic existingD
                         "Duplicate Name",
                         "A folder with this name already exists.",
                         snackPosition: SnackPosition.TOP,
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
+                        backgroundColor: AppColor().red,
+                        colorText: AppColor().white,
                       );
                       return;
                     }

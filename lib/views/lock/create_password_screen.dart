@@ -59,12 +59,12 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: Column(
             children: [
-              Center(child: customHeader("Create New Password")),
+              Center(child: customHeader("Create New Password", context)),
               Text(
                 "Create a secure password to protect your personal notes.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.grey,
+                  color: AppColor().gray,
                   fontSize: 14,
                   fontFamily: 'EN-REGULAR',
                 ),
@@ -99,7 +99,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             child: DropdownButton<String>(
               value: _selectedQuestion,
               dropdownColor: Theme.of(context).cardColor,
-              hint: Text("Select Security Question", style: TextStyle(color: Colors.grey, fontSize: context.isPhone ? 14 : 18, fontFamily: 'EN-REGULAR')),
+              hint: Text("Select Security Question", style: TextStyle(color: AppColor().gray, fontSize: context.isPhone ? 14 : 18, fontFamily: 'EN-REGULAR')),
               isExpanded: true,
               items: _questions
                   .map((q) => DropdownMenuItem(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 
 void showDeleteConfirmationSheet(
@@ -30,10 +31,10 @@ void showDeleteConfirmationSheet(
               alignment: Alignment.centerLeft,
               child: TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text(
+                child: Text(
                   "Cancel",
                   style: TextStyle(
-                    color: Colors.red,
+                    color: AppColor().red,
                     fontSize: 16,
                     fontFamily: 'EN-REGULAR',
                   ),
@@ -52,7 +53,7 @@ void showDeleteConfirmationSheet(
             const SizedBox(height: 25),
             CustomButton(
               text: "Delete",
-              backgroundColor: Colors.red,
+              backgroundColor: AppColor().red,
               onPressed: () {
                 Navigator.pop(context);
                 onConfirm();

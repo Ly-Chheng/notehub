@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 
 class HomeController extends GetxController {
@@ -98,7 +99,7 @@ class HomeController extends GetxController {
           Get.back();
           onVerified();
         } else {
-          Get.snackbar("Error", "Incorrect Password", backgroundColor: Colors.red, colorText: Colors.white);
+          Get.snackbar("Error", "Incorrect Password", backgroundColor: Colors.red, colorText: AppColor().white);
         }
       },
     );

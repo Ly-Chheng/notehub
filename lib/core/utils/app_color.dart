@@ -7,11 +7,18 @@ class AppColor {
   Color backgroundColor = const Color(0xFFEBEBEB);
   Color white = Colors.white;
   Color black = Colors.black;
+  Color gray = const Color(0xFF9E9E9E);
+  Color red = const Color(0xFFFF0000);
+  Color orange = const Color(0xFFFF9800);
+  Color green = const Color(0xFF4CAF50);
 
   // Dark
   Color darkPrimaryColor = const Color(0xFF212121);
   Color darkSecondaryColor = const Color(0xFF282828);
   Color darkbackgroundColor = const Color(0xFFEBEBEB);
+  Color darkGray = const Color(0xFF757575);
+  Color darkOrange = const Color(0xFFFFA726);
+  Color darkGreen = const Color(0xFF66BB6A);
 
   // Background color palette
   List<Color> backgroundColors(BuildContext context) => [

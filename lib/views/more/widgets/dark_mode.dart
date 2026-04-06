@@ -12,11 +12,6 @@ class DarkModeView extends GetView<DarkModeController> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      // color: Theme.of(context).cardColor,
-      // clipBehavior: Clip.antiAlias,
-      // shape: RoundedRectangleBorder(
-      //   borderRadius: BorderRadius.circular(8),
-      // ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
         child: Column(
@@ -29,7 +24,7 @@ class DarkModeView extends GetView<DarkModeController> {
                     Icon(
                       Icons.light_mode_outlined,
                       color: Theme.of(context).iconTheme.color,
-                    ), // Updated icon
+                    ),
                     const SizedBox(width: 15),
                     Text(
                       'Dark Mode',
@@ -37,6 +32,7 @@ class DarkModeView extends GetView<DarkModeController> {
                         // fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-MEDIUM',
                         fontFamily: 'EN-REGULAR',
                         fontSize: context.isPhone ? 16 : 18,
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
                   ],
@@ -54,7 +50,6 @@ class DarkModeView extends GetView<DarkModeController> {
                 ),
               ],
             ),
-            // const Divider(height: 1, indent: 50, endIndent: 20, color: Color(0xFFEEEEEE)),
           ],
         ),
       ),

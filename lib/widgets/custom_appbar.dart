@@ -19,7 +19,11 @@ customAppBar({
     titleSpacing: 15,
     scrolledUnderElevation: 0,
     backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-    title: Text(title, overflow: TextOverflow.ellipsis, style: text20(context)),
+    title: Text(title,
+        overflow: TextOverflow.ellipsis,
+        style: text20(context).copyWith(
+          color: Theme.of(context).textTheme.bodyLarge?.color,
+        )),
     automaticallyImplyLeading: false,
     leading: isLeading
         ? Platform.isAndroid

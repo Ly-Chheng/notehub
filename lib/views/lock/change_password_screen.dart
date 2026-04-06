@@ -78,7 +78,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
           child: Column(
             children: [
-              Center(child: customHeader("Change Password")),
+              Center(child: customHeader("Change Password",context)),
               Text("Update the password to protect your notes.", textAlign: TextAlign.center, style: TextStyle(fontSize: context.isPhone ? 15 : 17, color: Colors.grey)),
               const SizedBox(height: 30),
               customTextField("Current Password", _obscureCurrent, () {
@@ -122,7 +122,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         ),
         Text("Optional",
             style: TextStyle(
-              color: Colors.grey,
+              color: AppColor().gray,
               fontSize: context.isPhone ? 12 : 14,
               fontFamily: 'EN-REGULAR',
             )),
@@ -143,12 +143,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           dropdownColor: Theme.of(context).cardColor,
           hint: Text("Select question",
               style: TextStyle(
-                color: Colors.grey,
+                color: AppColor().gray,
                 fontSize: context.isPhone ? 14 : 18,
                 fontFamily: 'EN-REGULAR',
               )),
           isExpanded: true,
-          icon: const Icon(Icons.keyboard_arrow_down, color: Colors.grey),
+          icon:   Icon(Icons.keyboard_arrow_down, color: AppColor().gray),
           items: _questions.map((String q) {
             return DropdownMenuItem(
                 value: q,

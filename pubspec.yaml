@@ -74,10 +74,13 @@ flutter:
   # To add custom fonts to your application, add a fonts section here,
   # "family" key with the font family name, and a "fonts" key with a
   fonts:
+    - family: KH-LIGHT
+      fonts:
+        - asset: assets/fonts/Battambang-Light.ttf
     - family: KH-REGULAR
       fonts:
         - asset: assets/fonts/Battambang-Regular.ttf
-    - family: KH-Bold
+    - family: KH-BOLD
       fonts:
         - asset: assets/fonts/Battambang-Bold.ttf
     - family: EN-REGULAR

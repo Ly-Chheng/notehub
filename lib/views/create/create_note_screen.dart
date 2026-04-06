@@ -10,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/create/components/background_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/handwriting_component.dart';
@@ -288,32 +289,111 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           Get.snackbar(
             "Error",
             "Wrong Password",
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
+            backgroundColor: AppColor().red,
+            colorText: AppColor().white,
           );
         }
       },
     );
   }
 
+  // void _shareNote() {
+  //   _autoSaveTimer?.cancel();
+
+  //   final rawText = _quillController.document.toPlainText();
+  //   final plainText = rawText.replaceAll('\n', '').trim();
+
+  //   final hasTitle = titleController.text.trim().isNotEmpty;
+  //   final hasText = plainText.isNotEmpty;
+  //   final hasImages = selectedImages.isNotEmpty;
+
+  //   if (!hasTitle && !hasText && !hasImages) {
+  //     return;
+  //   }
+
+  //   noteController.shareNote(
+  //     title: titleController.text.trim(),
+  //     content: hasText ? rawText.trim() : "",
+  //     selectedImages: selectedImages,
+  //   );
+  // }
+
+  // void _shareNote() async {
+  //   _autoSaveTimer?.cancel();
+
+  //   final rawText = _quillController.document.toPlainText();
+  //   final plainText = rawText.trim();
+
+  //   final hasTitle = titleController.text.trim().isNotEmpty;
+  //   final hasText = plainText.isNotEmpty;
+  //   final hasImages = selectedImages.isNotEmpty;
+
+  //   if (!hasTitle && !hasText && !hasImages) {
+  //     return;
+  //   }
+
+  //   // Use 'await' to ensure the UI stays responsive
+  //   await noteController.shareNote(
+  //     title: titleController.text.trim(),
+  //     content: hasText ? rawText.trim() : "",
+  //     selectedImages: selectedImages,
+  //   );
+  // }
+
   void _shareNote() {
     _autoSaveTimer?.cancel();
-
     final rawText = _quillController.document.toPlainText();
-    final plainText = rawText.replaceAll('\n', '').trim();
-
-    final hasTitle = titleController.text.trim().isNotEmpty;
-    final hasText = plainText.isNotEmpty;
     final hasImages = selectedImages.isNotEmpty;
-
-    if (!hasTitle && !hasText && !hasImages) {
-      return;
-    }
-
-    noteController.shareNote(
-      title: titleController.text.trim(),
-      content: hasText ? rawText.trim() : "",
-      selectedImages: selectedImages,
+    Get.bottomSheet(
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      SafeArea(
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: Icon(Icons.text_snippet, color: AppColor().primaryColor),
+                title: Text(
+                  "Text",
+                  style: text16(context),
+                ),
+                onTap: () {
+                  Get.back();
+                  noteController.shareNote(
+                    title: titleController.text,
+                    content: rawText,
+                    selectedImages: selectedImages,
+                    mode: ShareMode.text,
+                  );
+                },
+              ),
+              if (hasImages)
+                ListTile(
+                  leading: Icon(Icons.image, color: AppColor().green),
+                  title: Text(
+                    "Photos",
+                    style: text16(context),
+                  ),
+                  onTap: () {
+                    Get.back();
+                    noteController.shareNote(
+                      title: titleController.text,
+                      content: rawText,
+                      selectedImages: selectedImages,
+                      mode: ShareMode.photo,
+                    );
+                  },
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -386,7 +466,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               buildPopupItem(context, 'Share', Icons.share_outlined),
               buildPopupItem(context, 'Move Note', Icons.folder_outlined),
               buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),
-              buildPopupItem(context, 'Delete', Icons.delete_outline, color: Colors.red),
+              buildPopupItem(context, 'Delete', Icons.delete_outline, color: AppColor().red),
             ],
           ),
         ],
@@ -406,11 +486,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   maxLines: null,
                   decoration: InputDecoration(
                     hintText: 'Title',
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
                     border: InputBorder.none,
                     hintStyle: TextStyle(
                       fontSize: context.isPhone ? 22 : 26,
                       fontFamily: 'EN-BOLD',
-                      color: Theme.of(context).textTheme.bodyMedium?.color,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                   ),
                   style: TextStyle(
@@ -516,7 +599,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               Positioned(
                 right: 0,
                 child: IconButton(
-                  icon: const Icon(Icons.cancel, color: Colors.red),
+                  icon: Icon(Icons.cancel, color: AppColor().red),
                   onPressed: () {
                     setState(() {
                       selectedImages.removeWhere((file) => file.path == imageFile.path);

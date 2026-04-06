@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 class EditableTableComponent extends StatefulWidget {
   final List<List<String>> tableData;
@@ -66,39 +68,21 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
     showCupertinoModalPopup(
       context: context,
       builder: (BuildContext context) => CupertinoActionSheet(
-        title: const Text(
-          'Table Options',
-          style: TextStyle(
-            fontSize: 14,
-            fontFamily: 'EN-REGULAR',
-          ),
-        ),
+        title: Text('Table Options', style: text16(context)),
         actions: <CupertinoActionSheetAction>[
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
               widget.onAddRow();
             },
-            child: const Text(
-              'Add Row',
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'EN-REGULAR',
-              ),
-            ),
+            child: Text('Add Row', style: text16(context)),
           ),
           CupertinoActionSheetAction(
             onPressed: () {
               Navigator.pop(context);
               widget.onAddColumn();
             },
-            child: const Text(
-              'Add Column',
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'EN-REGULAR',
-              ),
-            ),
+            child: Text('Add Column', style: text16(context)),
           ),
           CupertinoActionSheetAction(
             isDestructiveAction: true,
@@ -106,25 +90,13 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
               Navigator.pop(context);
               widget.onDeleteTable();
             },
-            child: const Text(
-              'Delete Table',
-              style: TextStyle(
-                fontSize: 16,
-                fontFamily: 'EN-REGULAR',
-              ),
-            ),
+            child: Text('Delete Table', style: text16(context)),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
           isDefaultAction: true,
           onPressed: () => Navigator.pop(context),
-          child: const Text(
-            'Cancel',
-            style: TextStyle(
-              fontSize: 14,
-              fontFamily: 'EN-BOLD',
-            ),
-          ),
+          child: Text('Cancel', style: text16(context)),
         ),
       ),
     );
@@ -163,7 +135,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                   CupertinoButton(
                     padding: EdgeInsets.zero,
                     onPressed: () => _showAddMenu(context),
-                    child: const Icon(CupertinoIcons.plus_circle_fill, color: CupertinoColors.activeGreen, size: 22),
+                    child: Icon(CupertinoIcons.plus_circle_fill, color: AppColor().green, size: 22),
                   ),
                 ],
               ),
@@ -184,7 +156,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                             ),
                           onChanged: (value) => widget.onCellChanged(rowIndex, colIndex, value),
 
-                          // --- AUTO HEIGHT LOGIC ---
+                          //   AUTO HEIGHT LOGIC
                           maxLines: null,
                           keyboardType: TextInputType.multiline,
                           textInputAction: TextInputAction.newline,
@@ -204,7 +176,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                       child: Container(
                         height: 45,
                         alignment: Alignment.center,
-                        child: const Icon(CupertinoIcons.minus_circle, color: CupertinoColors.systemGrey, size: 20),
+                        child: Icon(CupertinoIcons.minus_circle, color: AppColor().gray, size: 20),
                       ),
                     ),
                   ],
@@ -223,7 +195,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
       child: Container(
         height: 40,
         alignment: Alignment.center,
-        child: const Icon(CupertinoIcons.minus_circle, size: 20, color: CupertinoColors.systemGrey),
+        child: Icon(CupertinoIcons.minus_circle, size: 20, color: AppColor().gray),
       ),
     );
   }

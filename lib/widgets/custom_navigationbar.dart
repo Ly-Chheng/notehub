@@ -14,7 +14,7 @@ Widget customNavigationBar({
   final double iconSize = context.isPhone ? 26 : 32;
   final double timerIconSize = context.isPhone ? 29 : 34;
   final Color activeColor = selectedItemColor ?? AppColor().primaryColor;
-  final Color inactiveColor = unselectedItemColor ?? Colors.grey.shade700;
+  final Color inactiveColor = unselectedItemColor ?? AppColor().gray;
 
   return Padding(
     padding: EdgeInsets.only(left: context.isPhone ? 35 : 45, right: context.isPhone ? 35 : 45, bottom: 10),
@@ -95,14 +95,14 @@ Widget customNavigationBar({
                     child: Container(
                       padding: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
-                        color: Colors.red,
+                        color: AppColor().red,
                         shape: BoxShape.circle,
                       ),
                       constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                       child: Center(
                         child: Text(
                           '$chatBadgeCount',
-                          style: const TextStyle(color: Colors.white, fontSize: 10),
+                          style:   TextStyle(color: AppColor().white, fontSize: 10),
                         ),
                       ),
                     ),
