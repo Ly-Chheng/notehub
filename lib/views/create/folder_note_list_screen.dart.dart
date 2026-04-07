@@ -400,8 +400,16 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text((note['title'] != null && note['title'].toString().trim().isNotEmpty) ? note['title'] : controller.getPlainTextFromNote(note['subtitle'] ?? ""),
-                              maxLines: 1, overflow: TextOverflow.ellipsis, style: text18(context).copyWith(color: itemTextColor)),
+                          Text(
+                              // (note['title'] != null && note['title'].toString().trim().isNotEmpty) ? note['title'] : controller.getPlainTextFromNote(note['subtitle'] ?? "Untitled"),
+                              (note['title']?.toString().trim().isNotEmpty ?? false)
+                                  ? note['title']
+                                  : (controller.getPlainTextFromNote(note['subtitle']).trim().isNotEmpty)
+                                      ? controller.getPlainTextFromNote(note['subtitle'])
+                                      : "Untitled",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: text18(context).copyWith(color: itemTextColor)),
                           Row(
                             children: [
                               if (note['date'] != null)

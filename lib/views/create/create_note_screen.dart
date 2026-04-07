@@ -164,8 +164,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final bool isDocEmpty = _quillController.document.isEmpty();
 
     final bool isTableEmpty = tableData.every((row) => row.every((cell) => cell.trim().isEmpty));
+    final bool isDrawingEmpty = drawingLayers.isEmpty;
+    final bool isImagesEmpty = selectedImages.isEmpty;
 
-    if (isAuto && currentTitle.isEmpty && isDocEmpty && (isTableEmpty || !showTable)) {
+    if (isAuto && currentTitle.isEmpty && isDocEmpty && (isTableEmpty || !showTable) && isDrawingEmpty && isImagesEmpty) {
       return;
     }
 
@@ -322,41 +324,47 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             color: Theme.of(context).cardColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
-          child: Wrap(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                leading: Icon(Icons.text_snippet, color: AppColor().primaryColor),
-                title: Text(
-                  "Text",
-                  style: text16(context),
-                ),
-                onTap: () {
-                  Get.back();
-                  noteController.shareNote(
-                    title: titleController.text,
-                    content: rawText,
-                    selectedImages: selectedImages,
-                    mode: ShareMode.text,
-                  );
-                },
-              ),
-              if (hasImages)
-                ListTile(
-                  leading: Icon(Icons.image, color: AppColor().green),
-                  title: Text(
-                    "Photos",
-                    style: text16(context),
+              const SheetHeader(title: "Share"),
+              Wrap(
+                children: [
+                  ListTile(
+                    leading: Icon(Icons.text_snippet, color: AppColor().primaryColor),
+                    title: Text(
+                      "Text",
+                      style: text16(context),
+                    ),
+                    onTap: () {
+                      Get.back();
+                      noteController.shareNote(
+                        title: titleController.text,
+                        content: rawText,
+                        selectedImages: selectedImages,
+                        mode: ShareMode.text,
+                      );
+                    },
                   ),
-                  onTap: () {
-                    Get.back();
-                    noteController.shareNote(
-                      title: titleController.text,
-                      content: rawText,
-                      selectedImages: selectedImages,
-                      mode: ShareMode.photo,
-                    );
-                  },
-                ),
+                  if (hasImages)
+                    ListTile(
+                      leading: Icon(Icons.image, color: AppColor().green),
+                      title: Text(
+                        "Photos",
+                        style: text16(context),
+                      ),
+                      onTap: () {
+                        Get.back();
+                        noteController.shareNote(
+                          title: titleController.text,
+                          content: rawText,
+                          selectedImages: selectedImages,
+                          mode: ShareMode.photo,
+                        );
+                      },
+                    ),
+                ],
+              ),
             ],
           ),
         ),

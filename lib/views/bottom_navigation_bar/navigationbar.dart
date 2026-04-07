@@ -35,7 +35,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
     return WillPopScope(
       onWillPop: () async {
         bool shouldExit = false;
-
         await showConfirmDialog(
           context: context,
           title: "Exit App",
@@ -67,7 +66,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(width: 1),
+                    border: Border.all(width: 1.5, color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.grey),
                   ),
                   child: Icon(
                     Icons.add,
