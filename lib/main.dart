@@ -22,9 +22,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
-///Change this when your data structure changes
-// const int appDataVersion = 2;
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -47,21 +44,6 @@ Future<void> main() async {
 
   // 2. Initialize Hive properly
   await Hive.initFlutter();
-
-  // /// AUTO CLEAR DATA (ONLY WHEN VERSION CHANGES)
-  // final box = GetStorage();
-  // int? savedVersion = box.read('app_data_version');
-
-  // if (savedVersion == null || savedVersion != appDataVersion) {
-  //   // Clear all local data
-  //   await Hive.deleteFromDisk();
-  //   await box.erase();
-
-  //   //Save new version
-  //   await box.write('app_data_version', appDataVersion);
-
-  //   debugPrint(" Auto cleared old data version change");
-  // }
 
   // 3. Open Boxes as Generic
   await Hive.openBox('student_notes');

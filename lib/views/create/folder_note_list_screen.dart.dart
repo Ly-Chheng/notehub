@@ -276,8 +276,22 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     bool isSelected = selectedKeys.contains(noteKey);
     List<dynamic>? imagePaths = note['images'];
 
-    final dynamic savedColor = note['bgColorValue'];
-    final Color noteBgColor = (savedColor == null || savedColor == 0xFFFFFFFF) ? Theme.of(context).cardColor : Color(savedColor);
+    // final dynamic savedColor = note['bgColorValue'];
+    // final Color noteBgColor = (savedColor == null || savedColor == 0xFFFFFFFF) ? Theme.of(context).cardColor : Color(savedColor);
+
+    final dynamic savedColorValue = note['bgColorValue'];
+
+    // Logic: 0 or null = Theme cardColor, otherwise use the saved color
+    final Color noteBgColor = (savedColorValue == null || savedColorValue == 0) ? Theme.of(context).cardColor : Color(savedColorValue);
+
+    // 2. GET CONTRAST TEXT COLOR
+    // Use pure White/Black for custom backgrounds, but stick to Theme for default
+    final Color itemTextColor = (savedColorValue == null || savedColorValue == 0)
+        ? (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black)
+        : (ThemeData.estimateBrightnessForColor(noteBgColor) == Brightness.dark ? Colors.white : Colors.black);
+
+    // Subtext should be slightly more transparent for better hierarchy
+    final Color itemSubTextColor = itemTextColor;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 20),
@@ -364,9 +378,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           child: Stack(
             children: [
               Container(
-                constraints: const BoxConstraints(
-                  minHeight: 70,
-                ),
                 padding: const EdgeInsets.all(15),
                 decoration: BoxDecoration(
                   color: noteBgColor,
@@ -389,28 +400,31 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          if (note['title'] != null && note['title'].toString().trim().isNotEmpty)
-                            Text(
-                              note['title'],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: Theme.of(context).textTheme.bodyLarge?.color,
-                                fontSize: context.isPhone ? 16 : 18,
-                                fontFamily: 'EN-BOLD',
-                              ),
-                            ),
-                          if (note['subtitle'] != null && controller.getPlainTextFromNote(note['subtitle'].toString().trim()).isNotEmpty)
-                            Text(
-                              controller.getPlainTextFromNote(note['subtitle']),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: context.isPhone ? 16 : 18,
-                                color: Theme.of(context).textTheme.bodyLarge?.color,
-                                fontFamily: (note['title'] != null && note['title'].toString().trim().isNotEmpty) ? 'EN-REGULAR' : 'EN-BOLD',
-                              ),
-                            ),
+                          Text((note['title'] != null && note['title'].toString().trim().isNotEmpty) ? note['title'] : controller.getPlainTextFromNote(note['subtitle'] ?? ""),
+                              maxLines: 1, overflow: TextOverflow.ellipsis, style: text18(context).copyWith(color: itemTextColor)),
+                          Row(
+                            children: [
+                              if (note['date'] != null)
+                                Text(
+                                  note['date'].toString(),
+                                  style: TextStyle(
+                                    fontSize: context.isPhone ? 12 : 14,
+                                    color: itemSubTextColor,
+                                    fontFamily: 'EN-REGULAR',
+                                  ),
+                                ),
+                              if (note['title'] != null && note['title'].toString().trim().isNotEmpty) const SizedBox(width: 8),
+                              if (note['title'] != null && note['title'].toString().trim().isNotEmpty && note['subtitle'] != null)
+                                Flexible(
+                                  child: Text(
+                                    controller.getPlainTextFromNote(note['subtitle']),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: text14(context).copyWith(color: itemSubTextColor),
+                                  ),
+                                ),
+                            ],
+                          )
                         ],
                       ),
                     ),
@@ -490,7 +504,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   String folderTitle = folder.value['title'] ?? "Unnamed Folder";
                   return ListTile(
                     leading: Icon(Icons.folder, color: AppColor().primaryColor),
-                    title: Text(folderTitle, maxLines: 1, overflow: TextOverflow.ellipsis),
+                    title: Text(folderTitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: text16(context)),
                     trailing: isCurrentFolder ? Icon(Icons.check, color: AppColor().primaryColor) : null,
                     onTap: () async {
                       if (!isCurrentFolder) {

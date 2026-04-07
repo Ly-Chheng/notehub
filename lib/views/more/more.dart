@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
-import 'package:share_plus/share_plus.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({
@@ -19,33 +16,6 @@ class MoreScreen extends StatefulWidget {
 
 class _MoreScreenState extends State<MoreScreen> {
   final controller = Get.put(DarkModeController());
-
-  // void _shareApp() {
-  //   Share.share(
-  //     "Check out Student Note App!\n\nDownload now:\nhttps://play.google.com/store/apps/details?id=com.yourapp.id",
-  //   );
-  // }
-  Future<void> shareApp(BuildContext context) async {
-    final text = 'https://onelink.to/bu777v';
-    final box = context.findRenderObject() as RenderBox?;
-    try {
-      if (Platform.isIOS) {
-        await Share.share(
-          text,
-          subject: "Student Note",
-          sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-        );
-      } else {
-        await Share.share(
-          text,
-          subject: "Student Note",
-          sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
-        );
-      }
-    } catch (e) {
-      debugPrint("Error sharing text: $e");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,9 +37,7 @@ class _MoreScreenState extends State<MoreScreen> {
                 _buildMenuTile(
                   Icons.share_outlined,
                   "Share App",
-                  onTap: () {
-                    shareApp(context);
-                  },
+                  onTap: () {},
                   isLast: true,
                 ),
                 _buildMenuTile(
@@ -124,7 +92,7 @@ class _MoreScreenState extends State<MoreScreen> {
             icon,
             color: Theme.of(context).iconTheme.color,
           ),
-          title: Text(title, style: text18(context)),
+          title: Text(title, style: text16(context)),
           trailing: Icon(
             Icons.arrow_forward_ios,
             size: context.isPhone ? 14 : 16,

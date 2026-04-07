@@ -5,16 +5,19 @@ class QuillEditorComponent extends StatelessWidget {
   final QuillController controller;
   final FocusNode focusNode;
   final String placeholder;
+  final Color? textColor;
 
   const QuillEditorComponent({
     super.key,
     required this.controller,
     required this.focusNode,
     this.placeholder = "Start typing...",
+    this.textColor,
   });
 
   @override
   Widget build(BuildContext context) {
+    final Color effectiveColor = textColor ?? Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
     return QuillEditor(
       controller: controller,
       scrollController: ScrollController(),
@@ -32,7 +35,8 @@ class QuillEditorComponent extends StatelessWidget {
               fontSize: 16,
               height: 1.5,
               fontFamily: 'EN-REGULAR',
-              color: Theme.of(context).textTheme.bodyLarge?.color,
+              fontFamilyFallback: const ['KH-REGULAR'],
+              color: effectiveColor,
             ),
             const HorizontalSpacing(5, 5),
             const VerticalSpacing(3, 3),
@@ -44,7 +48,8 @@ class QuillEditorComponent extends StatelessWidget {
               fontSize: 16,
               height: 1.5,
               fontFamily: 'EN-REGULAR',
-              color: Theme.of(context).textTheme.bodyLarge?.color,
+              fontFamilyFallback: const ['KH-REGULAR'],
+              color: effectiveColor,
             ),
             const HorizontalSpacing(5, 5),
             const VerticalSpacing(3, 3),

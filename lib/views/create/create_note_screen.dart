@@ -144,6 +144,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _quillController.addListener(_triggerAutoSave);
   }
 
+  // CORE FOCUS MANAGEMENT
+  void _forceUnfocus() {
+    _editorFocusNode.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
   void _triggerAutoSave() {
     if (!isAutoSaveEnabled) return;
     if (_autoSaveTimer?.isActive ?? false) _autoSaveTimer!.cancel();
@@ -174,7 +180,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
       "isPinned": isPinned,
       "colorValue": AppColor().primaryColor.value,
-      "bgColorValue": noteBgColor?.value,
+      // "bgColorValue": noteBgColor?.value,
+      "bgColorValue": noteBgColor?.value ?? 0,
       "images": selectedImages.map((file) => file.path).toList(),
       "showTable": showTable,
       "tableData": tableData,
@@ -206,6 +213,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _quillController.removeListener(_triggerAutoSave);
     _quillController.dispose();
     titleController.dispose();
+    _editorFocusNode.dispose();
     super.dispose();
   }
 
@@ -242,6 +250,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   Future<void> _handleLockToggle() async {
+    _forceUnfocus();
     try {
       if (!Hive.isBoxOpen('settings_box')) {
         await Hive.openBox('settings_box');
@@ -297,50 +306,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  // void _shareNote() {
-  //   _autoSaveTimer?.cancel();
-
-  //   final rawText = _quillController.document.toPlainText();
-  //   final plainText = rawText.replaceAll('\n', '').trim();
-
-  //   final hasTitle = titleController.text.trim().isNotEmpty;
-  //   final hasText = plainText.isNotEmpty;
-  //   final hasImages = selectedImages.isNotEmpty;
-
-  //   if (!hasTitle && !hasText && !hasImages) {
-  //     return;
-  //   }
-
-  //   noteController.shareNote(
-  //     title: titleController.text.trim(),
-  //     content: hasText ? rawText.trim() : "",
-  //     selectedImages: selectedImages,
-  //   );
-  // }
-
-  // void _shareNote() async {
-  //   _autoSaveTimer?.cancel();
-
-  //   final rawText = _quillController.document.toPlainText();
-  //   final plainText = rawText.trim();
-
-  //   final hasTitle = titleController.text.trim().isNotEmpty;
-  //   final hasText = plainText.isNotEmpty;
-  //   final hasImages = selectedImages.isNotEmpty;
-
-  //   if (!hasTitle && !hasText && !hasImages) {
-  //     return;
-  //   }
-
-  //   // Use 'await' to ensure the UI stays responsive
-  //   await noteController.shareNote(
-  //     title: titleController.text.trim(),
-  //     content: hasText ? rawText.trim() : "",
-  //     selectedImages: selectedImages,
-  //   );
-  // }
-
   void _shareNote() {
+    _forceUnfocus();
     _autoSaveTimer?.cancel();
     final rawText = _quillController.document.toPlainText();
     final hasImages = selectedImages.isNotEmpty;
@@ -405,9 +372,16 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _saveNote(isAuto: true);
   }
 
+  Color _getContrastColor(Color? bgColor) {
+    if (bgColor == null) return Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+    // Flutter's built-in utility to check if a color is "dark" or "light"
+    return ThemeData.estimateBrightnessForColor(bgColor) == Brightness.dark ? Colors.white : Colors.black;
+  }
+
   @override
   Widget build(BuildContext context) {
     final Color effectiveBg = noteBgColor ?? Theme.of(context).scaffoldBackgroundColor;
+    final Color textColor = _getContrastColor(noteBgColor);
     return Scaffold(
       backgroundColor: effectiveBg,
       resizeToAvoidBottomInset: true,
@@ -424,6 +398,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               asset: 'assets/images/undo.png',
               isEnabled: _quillController.hasUndo,
               onTap: () {
+                _forceUnfocus();
                 if (_quillController.hasUndo) {
                   _quillController.undo();
                 }
@@ -436,6 +411,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               asset: 'assets/images/redo.png',
               isEnabled: _quillController.hasRedo,
               onTap: () {
+                _forceUnfocus();
                 if (_quillController.hasRedo) {
                   _quillController.redo();
                 }
@@ -443,6 +419,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             ),
           ),
           PopupMenuButton<String>(
+            onOpened: _forceUnfocus,
             icon: Container(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -463,7 +440,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             onSelected: (value) => _handleMenuSelection(value, context),
             itemBuilder: (context) => [
               buildPopupItem(context, isPinned ? 'Unpin' : 'Pin', isPinned ? Icons.push_pin : Icons.push_pin_outlined),
-              buildPopupItem(context, 'Share', Icons.share_outlined),
+              buildPopupItem(
+                context,
+                'Share',
+                Icons.share_outlined,
+              ),
               buildPopupItem(context, 'Move Note', Icons.folder_outlined),
               buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),
               buildPopupItem(context, 'Delete', Icons.delete_outline, color: AppColor().red),
@@ -471,96 +452,102 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: CustomPaint(
-          painter: NotebookPainter(
-            type: selectedPaperType,
-            lineColor: const Color(0x339E9E9E),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Column(
-              children: [
-                TextField(
-                  controller: titleController,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    hintText: 'Title',
-                    enabledBorder: InputBorder.none,
-                    focusedBorder: InputBorder.none,
-                    errorBorder: InputBorder.none,
-                    border: InputBorder.none,
-                    hintStyle: TextStyle(
-                      fontSize: context.isPhone ? 22 : 26,
-                      fontFamily: 'EN-BOLD',
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
+      body: GestureDetector(
+        onTap: _forceUnfocus,
+        child: SingleChildScrollView(
+          child: CustomPaint(
+            painter: NotebookPainter(
+              type: selectedPaperType,
+              lineColor: const Color(0x339E9E9E),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Column(
+                children: [
+                  TextField(
+                    controller: titleController,
+                    maxLines: null,
+                    decoration: InputDecoration(
+                      hintText: 'Title',
+                      enabledBorder: InputBorder.none,
+                      focusedBorder: InputBorder.none,
+                      errorBorder: InputBorder.none,
+                      border: InputBorder.none,
+                      hintStyle: TextStyle(
+                          fontSize: context.isPhone ? 22 : 26,
+                          fontFamily: 'EN-BOLD',
+                          fontFamilyFallback: const ['KH-BOLD'],
+                          // color: Theme.of(context).textTheme.bodyLarge?.color,
+                          color: textColor),
                     ),
+                    style: TextStyle(
+                        fontSize: context.isPhone ? 20 : 22,
+                        fontFamily: 'EN-BOLD',
+                        fontFamilyFallback: const ['KH-BOLD'],
+                        // color: Theme.of(context).textTheme.bodyLarge?.color,
+                        color: textColor),
                   ),
-                  style: TextStyle(
-                    fontSize: context.isPhone ? 20 : 22,
-                    fontFamily: 'EN-BOLD',
-                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                  if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
+                  QuillEditorComponent(
+                    controller: _quillController,
+                    focusNode: _editorFocusNode,
+                    textColor: textColor,
                   ),
-                ),
-                if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
-                QuillEditorComponent(
-                  controller: _quillController,
-                  focusNode: _editorFocusNode,
-                ),
-                if (showTable)
-                  EditableTableComponent(
-                    tableData: tableData,
-                    onCellChanged: (rowIndex, colIndex, value) {
-                      tableData[rowIndex][colIndex] = value;
+                  if (showTable)
+                    EditableTableComponent(
+                      tableData: tableData,
+                      onCellChanged: (rowIndex, colIndex, value) {
+                        tableData[rowIndex][colIndex] = value;
 
-                      _triggerAutoSave();
-                    },
-                    onAddRow: () {
-                      setState(() {
-                        int currentCols = tableData[0].length;
-                        tableData.add(List.generate(currentCols, (_) => ""));
-                      });
-                      _triggerAutoSave();
-                    },
-                    onRemoveRow: (index) {
-                      setState(() {
-                        if (tableData.length > 1) {
-                          tableData.removeAt(index);
-                        } else {
-                          showTable = false;
-                        }
-                      });
-                      _triggerAutoSave();
-                    },
-                    onAddColumn: () {
-                      setState(() {
-                        for (var row in tableData) {
-                          row.add("");
-                        }
-                      });
-                      _triggerAutoSave();
-                    },
-                    onRemoveColumn: (colIndex) {
-                      setState(() {
-                        if (tableData[0].length > 1) {
-                          for (var row in tableData) {
-                            row.removeAt(colIndex);
+                        _triggerAutoSave();
+                      },
+                      onAddRow: () {
+                        setState(() {
+                          int currentCols = tableData[0].length;
+                          tableData.add(List.generate(currentCols, (_) => ""));
+                        });
+                        _triggerAutoSave();
+                      },
+                      onRemoveRow: (index) {
+                        setState(() {
+                          if (tableData.length > 1) {
+                            tableData.removeAt(index);
+                          } else {
+                            showTable = false;
                           }
-                        }
-                      });
-                      _triggerAutoSave();
-                    },
-                    onDeleteTable: () {
-                      setState(() {
-                        showTable = false;
-                        tableData = [
-                          ["", ""]
-                        ];
-                      });
-                      _triggerAutoSave();
-                    },
-                  ),
-              ],
+                        });
+                        _triggerAutoSave();
+                      },
+                      onAddColumn: () {
+                        setState(() {
+                          for (var row in tableData) {
+                            row.add("");
+                          }
+                        });
+                        _triggerAutoSave();
+                      },
+                      onRemoveColumn: (colIndex) {
+                        setState(() {
+                          if (tableData[0].length > 1) {
+                            for (var row in tableData) {
+                              row.removeAt(colIndex);
+                            }
+                          }
+                        });
+                        _triggerAutoSave();
+                      },
+                      onDeleteTable: () {
+                        setState(() {
+                          showTable = false;
+                          tableData = [
+                            ["", ""]
+                          ];
+                        });
+                        _triggerAutoSave();
+                      },
+                    ),
+                ],
+              ),
             ),
           ),
         ),
@@ -635,6 +622,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 child: Row(
                   children: [
                     _bottomIcon(Icons.camera_alt_outlined, () {
+                      _forceUnfocus();
                       final int photoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
 
                       if (photoCount >= 2) {
@@ -656,10 +644,15 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                         },
                       );
                     }),
+                    // _bottomIcon(Icons.text_fields, () {
+                    //   _showFormattingSheet();
+                    // }),
                     _bottomIcon(Icons.text_fields, () {
+                      _forceUnfocus();
                       _showFormattingSheet();
                     }),
                     _bottomIcon(Icons.palette_outlined, () {
+                      _forceUnfocus();
                       showPaletteSheet(
                         context: context,
                         selectedColor: noteBgColor ?? Theme.of(context).scaffoldBackgroundColor,
@@ -672,10 +665,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                       );
                     }),
                     _bottomIcon(Icons.table_chart_outlined, () {
+                      _forceUnfocus();
                       setState(() => showTable = !showTable);
                       _triggerAutoSave();
                     }),
-                    _bottomIcon(Icons.mode_outlined, _openHandwriting),
+                    _bottomIcon(Icons.mode_outlined, () {
+                      _forceUnfocus();
+                      _openHandwriting();
+                    }),
                   ],
                 ),
               ),
@@ -687,6 +684,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   void _handleMenuSelection(String value, BuildContext context) async {
+    _forceUnfocus();
     switch (value) {
       case 'Pin':
       case 'Unpin':
@@ -736,7 +734,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
                     return ListTile(
                       leading: Icon(Icons.folder, color: isSelected ? AppColor().primaryColor : AppColor().primaryColor),
-                      title: Text(folderTitle, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      title: Text(folderTitle, maxLines: 1, overflow: TextOverflow.ellipsis, style: text16(context)),
                       trailing: isSelected ? Icon(Icons.check, color: AppColor().primaryColor) : null,
                       onTap: () async {
                         setState(() {

@@ -171,6 +171,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                                         overflow: TextOverflow.ellipsis,
                                         style: const TextStyle(
                                           fontFamily: 'EN-REGULAR',
+                                          fontFamilyFallback: ['KH-REGULAR'],
                                           fontSize: 16,
                                           fontWeight: FontWeight.w500,
                                         ),

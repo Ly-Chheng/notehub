@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 
 Widget customTextField(
@@ -13,7 +14,7 @@ Widget customTextField(
 }) {
   return Container(
     decoration: BoxDecoration(
-      color: Colors.grey.withOpacity(0.1),
+      color: Colors.grey.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
     ),
     child: TextFormField(
@@ -21,9 +22,20 @@ Widget customTextField(
       obscureText: obscure,
       validator: validator,
       onChanged: onChanged,
+      style: TextStyle(
+        color: Theme.of(Get.context!).textTheme.bodyLarge?.color,
+        fontSize: 16,
+        fontFamily: 'EN-REGULAR',
+        fontFamilyFallback: const ['KH-REGULAR'],
+      ),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: AppColor().gray, fontSize: 16, fontFamily: 'EN-REGULAR'),
+        hintStyle: TextStyle(
+          color: AppColor().gray,
+          fontSize: 16,
+          fontFamily: 'EN-REGULAR',
+          fontFamilyFallback: const ['KH-REGULAR'],
+        ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         border: InputBorder.none,
         prefixIcon: prefixIcon,
@@ -31,7 +43,12 @@ Widget customTextField(
         focusedBorder: InputBorder.none,
         errorBorder: InputBorder.none,
         disabledBorder: InputBorder.none,
-        suffixStyle: TextStyle(color: AppColor().gray, fontSize: 14, fontFamily: 'EN-REGULAR'),
+        suffixStyle: TextStyle(
+          color: AppColor().gray,
+          fontSize: 14,
+          fontFamily: 'EN-REGULAR',
+          fontFamilyFallback: const ['KH-REGULAR'],
+        ),
         suffixIcon: suffixIcon ??
             (toggle != null
                 ? IconButton(
@@ -60,12 +77,19 @@ Widget buildStandardField(
     ),
     child: TextField(
       controller: controller,
+      style: TextStyle(
+        color: Theme.of(Get.context!).textTheme.bodyLarge?.color,
+        fontSize: 16,
+        fontFamily: 'EN-REGULAR',
+        fontFamilyFallback: const ['KH-REGULAR'],
+      ),
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(
           color: AppColor().gray,
           fontSize: 16,
           fontFamily: 'EN-REGULAR',
+          fontFamilyFallback: const ['KH-REGULAR'],
         ),
         border: InputBorder.none,
         enabledBorder: InputBorder.none,
@@ -74,7 +98,12 @@ Widget buildStandardField(
         disabledBorder: InputBorder.none,
         prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: const Color(0XFF8E8E93)) : null,
         suffixText: trailing,
-        suffixStyle: TextStyle(color: AppColor().gray, fontSize: 14, fontFamily: 'EN-REGULAR'),
+        suffixStyle: TextStyle(
+          color: AppColor().gray,
+          fontSize: 14,
+          fontFamily: 'EN-REGULAR',
+          fontFamilyFallback: const ['KH-REGULAR'],
+        ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
     ),

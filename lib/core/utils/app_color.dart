@@ -22,6 +22,13 @@ class AppColor {
 
   // Background color palette
   List<Color> backgroundColors(BuildContext context) => [
+        Colors.white, // Added pure white
+        Colors.black, // Added pure black
+        const Color(0xFFAEB6BF),
+        const Color(0xFFD5F5E3),
+        const Color(0xFFFCF3CF),
+        const Color(0xFFE5E8E8),
+        const Color(0xFFEBDEF0),
         const Color(0xFFBCAAA4),
         const Color(0xFFA5D6A7),
         const Color(0xFFFFCC80),
@@ -33,18 +40,15 @@ class AppColor {
         const Color(0xFFFFAB91),
         const Color(0xFFF48FB1),
         const Color(0xFFCE93D8),
-        const Color(0xFFD5F5E3),
-        const Color(0xFFFCF3CF),
-        const Color(0xFFEBDEF0),
-        const Color(0xFFFAD7A0),
         const Color(0xFFF5B7B1),
-        const Color(0xFFAEB6BF),
-        const Color(0xFFD6DBDF),
-        const Color(0xFFE5E8E8),
         const Color(0xFFEDBB99),
         const Color(0xFF85C1E9),
         const Color(0xFF7DCEA0),
         const Color(0xFFF7DC6F),
         const Color(0xFFBB8FCE),
+        const Color(0xFFFFD700),
+        const Color(0xFF00CED1),
+        const Color(0xFFDC143C),
+        const Color(0xFF32CD32),
       ];
 }

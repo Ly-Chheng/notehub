@@ -190,7 +190,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                               isLocked && folderData['title'].length > 3 ? "${folderData['title'].substring(0, 3)}..." : folderData['title'],
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
-                                              style: text18(context).copyWith(
+                                              style: TextStyle(
+                                                fontFamily: 'EN-SEMIBOLD',
+                                                fontFamilyFallback: const ['KH-BOLD'],
+                                                fontSize: context.isPhone ? 16 : 18,
                                                 color: Theme.of(context).textTheme.bodyLarge?.color,
                                               ),
                                             ),
