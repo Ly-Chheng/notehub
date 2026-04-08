@@ -60,34 +60,37 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        child: Column(
-          children: [
-            Center(child: customHeader("Forget Password", context)),
-            Text(
-              "Verify your identity using your security question to reset your password.",
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppColor().gray, height: 1.5, fontFamily: 'EN-REGULAR'),
-            ),
-            const SizedBox(height: 30),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(storedQuestion ?? "Security setup not found.", style: text16(context)),
-                ],
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            children: [
+              Center(child: customHeader("Forget Password", context)),
+              Text(
+                "Verify your identity using your security question to reset your password.",
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppColor().gray, height: 1.5, fontFamily: 'EN-REGULAR'),
               ),
-            ),
-            const SizedBox(height: 10),
-            customTextField(
-              "Enter your answer",
-              false,
-              null,
-              controller: _answerController,
-            )
-          ],
+              const SizedBox(height: 30),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(storedQuestion ?? "Security setup not found.", style: text16(context)),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+              customTextField(
+                "Enter your answer",
+                false,
+                null,
+                controller: _answerController,
+              )
+            ],
+          ),
         ),
       ),
     );

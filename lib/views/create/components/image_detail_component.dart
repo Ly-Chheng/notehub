@@ -18,16 +18,18 @@ class ImageDetailScreen extends StatelessWidget {
         context: context,
         leadingColor: AppColor().primaryColor,
       ),
-      body: Center(
-        child: InteractiveViewer(
-          clipBehavior: Clip.none,
-          minScale: 0.5,
-          maxScale: 4.0,
-          child: Image.file(
-            imageFile,
-            fit: BoxFit.contain,
-            width: double.infinity,
-            height: double.infinity,
+      body: SafeArea(
+        child: Center(
+          child: InteractiveViewer(
+            clipBehavior: Clip.none,
+            minScale: 0.5,
+            maxScale: 4.0,
+            child: Image.file(
+              imageFile,
+              fit: BoxFit.contain,
+              width: double.infinity,
+              height: double.infinity,
+            ),
           ),
         ),
       ),

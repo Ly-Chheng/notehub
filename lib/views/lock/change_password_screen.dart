@@ -49,7 +49,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title:  "",
+        title: "",
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
@@ -73,39 +73,44 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
-          child: Column(
-            children: [
-              Center(child: customHeader("Change Password",context)),
-              Text("Update the password to protect your notes.", textAlign: TextAlign.center, style: TextStyle(fontSize: context.isPhone ? 15 : 17, color: Colors.grey)),
-              const SizedBox(height: 30),
-              customTextField("Current Password", _obscureCurrent, () {
-                setState(() => _obscureCurrent = !_obscureCurrent);
-              }, controller: _currentPassController),
-              const SizedBox(height: 15),
-              customTextField("New Password", _obscureNew, () {
-                setState(() => _obscureNew = !_obscureNew);
-              }, controller: _newPassController),
-              const SizedBox(height: 15),
-              customTextField("Confirm New Password", _obscureConfirm, () {
-                setState(() => _obscureConfirm = !_obscureConfirm);
-              }, controller: _confirmPassController),
-              const SizedBox(height: 15),
-              buildStandardField("New Hint", trailing: "Optional", controller: _hintController),
-              const SizedBox(height: 30),
-              _buildSecurityHeader(),
-              const SizedBox(height: 12),
-              _buildDropdown(),
-              const SizedBox(height: 15),
-              customTextField(
-                "Enter your answer",
-                false,
-                null,
-                controller: _answerController,
-              )
-            ],
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+            child: Column(
+              children: [
+                Center(child: customHeader("Change Password", context)),
+                Text("Update the password to protect your notes.", textAlign: TextAlign.center, style: TextStyle(fontSize: context.isPhone ? 15 : 17, color: Colors.grey)),
+                const SizedBox(height: 30),
+                customTextField("Current Password", _obscureCurrent, () {
+                  setState(() => _obscureCurrent = !_obscureCurrent);
+                }, controller: _currentPassController),
+                const SizedBox(height: 15),
+                customTextField("New Password", _obscureNew, () {
+                  setState(() => _obscureNew = !_obscureNew);
+                }, controller: _newPassController),
+                const SizedBox(height: 15),
+                customTextField("Confirm New Password", _obscureConfirm, () {
+                  setState(() => _obscureConfirm = !_obscureConfirm);
+                }, controller: _confirmPassController),
+                const SizedBox(height: 15),
+                buildStandardField("New Hint", trailing: "Optional", controller: _hintController),
+                const SizedBox(height: 30),
+                _buildSecurityHeader(),
+                const SizedBox(height: 12),
+                _buildDropdown(),
+                const SizedBox(height: 15),
+                customTextField(
+                  "Enter your answer",
+                  false,
+                  null,
+                  controller: _answerController,
+                )
+              ],
+            ),
           ),
         ),
       ),
@@ -148,7 +153,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 fontFamily: 'EN-REGULAR',
               )),
           isExpanded: true,
-          icon:   Icon(Icons.keyboard_arrow_down, color: AppColor().gray),
+          icon: Icon(Icons.keyboard_arrow_down, color: AppColor().gray),
           items: _questions.map((String q) {
             return DropdownMenuItem(
                 value: q,

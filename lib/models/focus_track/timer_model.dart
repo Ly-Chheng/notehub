@@ -1,46 +1,39 @@
-class TimerModel {
-  final dynamic id;
-  final String title;
-  final int totalSeconds;
+import 'package:hive/hive.dart';
+
+part 'timer_model.g.dart';
+
+@HiveType(typeId: 0)
+class TimerModel extends HiveObject {
+  @HiveField(0)
+  String id;
+
+  @HiveField(1)
+  String title;
+
+  @HiveField(2)
+  int totalSeconds;
+
+  @HiveField(3)
   int remainingSeconds;
-  final String type;
-  final DateTime? createdAt;
-  final DateTime? completedAt;
+
+  @HiveField(4)
+  DateTime createdAt;
+
+  @HiveField(5)
+  DateTime? completedAt;
+
+  @HiveField(6)
+  String type;
 
   TimerModel({
     required this.id,
     required this.title,
     required this.totalSeconds,
     required this.remainingSeconds,
-    this.type = 'timer',
-    this.createdAt,
+    required this.createdAt,
     this.completedAt,
+    this.type = 'timer',
   });
-
-  factory TimerModel.fromMap(dynamic key, Map data) {
-    return TimerModel(
-      id: key,
-      title: data['title'] ?? 'Timer',
-      totalSeconds: data['totalSeconds'] ?? 0,
-      remainingSeconds: data['remainingSeconds'] ?? 0,
-      type: data['type'] ?? 'timer',
-      createdAt: data['createdAt'] != null ? DateTime.tryParse(data['createdAt']) : null,
-      completedAt: data['completedAt'] != null ? DateTime.tryParse(data['completedAt']) : null,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'totalSeconds': totalSeconds,
-      'remainingSeconds': remainingSeconds,
-      'type': type,
-      'createdAt': createdAt?.toIso8601String(),
-      'completedAt': completedAt?.toIso8601String(),
-    };
-  }
-
-  double get progress => totalSeconds > 0 ? remainingSeconds / totalSeconds : 0.0;
 
   bool get isFinished => remainingSeconds <= 0;
 }

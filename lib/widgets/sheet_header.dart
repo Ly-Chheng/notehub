@@ -38,10 +38,10 @@ class SheetHeader extends StatelessWidget {
             children: [
               TextButton(
                 onPressed: onCancel ?? () => Get.back(),
-                child: const Text(
+                child: Text(
                   "Cancel",
                   style: TextStyle(
-                    color: Colors.red,
+                    color: AppColor().red,
                     fontFamily: 'EN-ENGINEER',
                     fontSize: 16,
                   ),

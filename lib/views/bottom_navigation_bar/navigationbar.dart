@@ -82,7 +82,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(width: 1),
+                    border: Border.all(width: 1.5, color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.grey),
                   ),
                   child: Icon(Icons.add, size: context.isPhone ? 24 : 25),
                 ),
@@ -91,7 +91,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
           ],
         ),
         body: Center(
-          // child: controller.screenWidget[controller.selectedIndex],
           child: controller.selectedIndex == 1
               ? FocusTrackScreen(
                   onToggleChanged: (index) {

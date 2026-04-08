@@ -281,16 +281,12 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
     final dynamic savedColorValue = note['bgColorValue'];
 
-    // Logic: 0 or null = Theme cardColor, otherwise use the saved color
     final Color noteBgColor = (savedColorValue == null || savedColorValue == 0) ? Theme.of(context).cardColor : Color(savedColorValue);
 
-    // 2. GET CONTRAST TEXT COLOR
-    // Use pure White/Black for custom backgrounds, but stick to Theme for default
     final Color itemTextColor = (savedColorValue == null || savedColorValue == 0)
         ? (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black)
         : (ThemeData.estimateBrightnessForColor(noteBgColor) == Brightness.dark ? Colors.white : Colors.black);
 
-    // Subtext should be slightly more transparent for better hierarchy
     final Color itemSubTextColor = itemTextColor;
 
     return Padding(
@@ -401,7 +397,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                              // (note['title'] != null && note['title'].toString().trim().isNotEmpty) ? note['title'] : controller.getPlainTextFromNote(note['subtitle'] ?? "Untitled"),
                               (note['title']?.toString().trim().isNotEmpty ?? false)
                                   ? note['title']
                                   : (controller.getPlainTextFromNote(note['subtitle']).trim().isNotEmpty)

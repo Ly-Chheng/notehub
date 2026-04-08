@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_button.dart';
+import 'package:project_structure/widgets/sheet_header.dart';
 
 void showDeleteConfirmationSheet(
   BuildContext context,
@@ -8,7 +9,7 @@ void showDeleteConfirmationSheet(
 ) {
   showModalBottomSheet(
     context: context,
-    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    backgroundColor: Theme.of(context).cardColor,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
     ),
@@ -18,32 +19,12 @@ void showDeleteConfirmationSheet(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 15),
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(10),
-              ),
+            SheetHeader(
+              title: "",
             ),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text(
-                  "Cancel",
-                  style: TextStyle(
-                    color: AppColor().red,
-                    fontSize: 16,
-                    fontFamily: 'EN-REGULAR',
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             const Text(
-              "Are you sure you want to delete selected note(s)?",
+              "Are you sure you want to delete selected notes?",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,
@@ -59,7 +40,6 @@ void showDeleteConfirmationSheet(
                 onConfirm();
               },
             ),
-            const SizedBox(height: 10),
           ],
         ),
       ),

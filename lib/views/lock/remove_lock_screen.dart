@@ -59,42 +59,45 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        child: Column(
-          children: [
-            Center(child: customHeader("Reset Password", context)), //the mean Security Verification
-            const Text("Please enter your current password to remove all protection.", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.grey, fontFamily: 'EN-REGULAR')),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+          child: Column(
+            children: [
+              Center(child: customHeader("Reset Password", context)), //the mean Security Verification
+              const Text("Please enter your current password to remove all protection.", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.grey, fontFamily: 'EN-REGULAR')),
 
-            const SizedBox(height: 30),
+              const SizedBox(height: 30),
 
-            if (hasLockedNotes)
-              Container(
-                padding: const EdgeInsets.all(12),
-                margin: const EdgeInsets.only(bottom: 25),
-                decoration: BoxDecoration(
-                  color: Colors.orange.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.lock_open_rounded, color: AppColor().orange),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        "All currently locked notes will be unlocked and no longer require a password.",
-                        style: TextStyle(fontSize: 12, color: AppColor().orange, fontFamily: 'EN-REGULAR'),
+              if (hasLockedNotes)
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  margin: const EdgeInsets.only(bottom: 25),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(Icons.lock_open_rounded, color: AppColor().orange),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          "All currently locked notes will be unlocked and no longer require a password.",
+                          style: TextStyle(fontSize: 12, color: AppColor().orange, fontFamily: 'EN-REGULAR'),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
 
-            customTextField("Current Password", _obscureCurrent, () => setState(() => _obscureCurrent = !_obscureCurrent), controller: _currentPassController),
-            const SizedBox(height: 15),
-            customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
-          ],
+              customTextField("Current Password", _obscureCurrent, () => setState(() => _obscureCurrent = !_obscureCurrent), controller: _currentPassController),
+              const SizedBox(height: 15),
+              customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
+            ],
+          ),
         ),
       ),
     );

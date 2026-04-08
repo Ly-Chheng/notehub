@@ -11,12 +11,8 @@ Future<void> showConfirmDialog({
   required String subTitle,
   String? confirmText,
   required VoidCallback onConfirm,
-
-  /// UI control
   bool showCancel = true,
   DialogType type = DialogType.normal,
-
-  /// Optional TextField
   TextEditingController? controller,
   bool obscureText = false,
   String? hintText,

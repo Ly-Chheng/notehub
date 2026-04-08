@@ -262,7 +262,6 @@ class RecentlyDeletedScreen extends StatelessWidget {
                       return ListTile(
                         leading: Icon(
                           Icons.folder,
-                          //color: Color(folderData['colorValue'])
                           color: AppColor().primaryColor,
                         ),
                         title: Text(

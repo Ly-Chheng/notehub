@@ -22,6 +22,7 @@ import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
@@ -167,11 +168,21 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final bool isDrawingEmpty = drawingLayers.isEmpty;
     final bool isImagesEmpty = selectedImages.isEmpty;
 
-    if (isAuto && currentTitle.isEmpty && isDocEmpty && (isTableEmpty || !showTable) && isDrawingEmpty && isImagesEmpty) {
-      return;
-    }
+    // if (isAuto && currentTitle.isEmpty && isDocEmpty && (isTableEmpty || !showTable) && isDrawingEmpty && isImagesEmpty) {
+    //   return;
+    // }
 
     final noteBox = Hive.box('student_notes');
+
+    // If everything is empty and note exists, delete it
+    if (currentTitle.isEmpty && isDocEmpty && (isTableEmpty || !showTable) && isDrawingEmpty && isImagesEmpty) {
+      if (isEditingMode && currentNoteKey != null) {
+        await noteBox.delete(currentNoteKey);
+        debugPrint("Deleted empty note ID $currentNoteKey");
+      }
+      return; // skip saving
+    }
+
     final contentJson = jsonEncode(_quillController.document.toDelta().toJson());
 
     final noteData = {
@@ -182,7 +193,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
       "isPinned": isPinned,
       "colorValue": AppColor().primaryColor.value,
-      // "bgColorValue": noteBgColor?.value,
       "bgColorValue": noteBgColor?.value ?? 0,
       "images": selectedImages.map((file) => file.path).toList(),
       "showTable": showTable,
@@ -207,6 +217,61 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       Get.back();
     }
   }
+
+  // Future<void> _saveNote({required bool isAuto}) async {
+  //   final String currentTitle = titleController.text.trim();
+  //   final bool isDocEmpty = _quillController.document.isEmpty();
+
+  //   final bool isTableEmpty = tableData.every((row) => row.every((cell) => cell.trim().isEmpty));
+  //   final bool isDrawingEmpty = drawingLayers.isEmpty;
+  //   final bool isImagesEmpty = selectedImages.isEmpty;
+
+  //   final noteBox = Hive.box('student_notes');
+
+  //   // If everything is empty and note exists, delete it
+  //   if (currentTitle.isEmpty && isDocEmpty && (isTableEmpty || !showTable) && isDrawingEmpty && isImagesEmpty) {
+  //     if (isEditingMode && currentNoteKey != null) {
+  //       await noteBox.delete(currentNoteKey);
+  //       debugPrint("Deleted empty note ID $currentNoteKey");
+  //     }
+  //     return; // skip saving
+  //   }
+
+  //   // Prepare note data
+  //   final contentJson = jsonEncode(_quillController.document.toDelta().toJson());
+
+  //   final noteData = {
+  //     "title": currentTitle,
+  //     "subtitle": contentJson,
+  //     "isLocked": isLocked,
+  //     "folderKey": currentFolderKey,
+  //     "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
+  //     "isPinned": isPinned,
+  //     "colorValue": AppColor().primaryColor.value,
+  //     "bgColorValue": noteBgColor?.value ?? 0,
+  //     "images": selectedImages.map((file) => file.path).toList(),
+  //     "showTable": showTable,
+  //     "tableData": tableData,
+  //     "paperTypeIndex": selectedPaperType.index,
+  //     "drawingLayers": drawingLayers,
+  //   };
+
+  //   if (isEditingMode && currentNoteKey != null) {
+  //     await noteBox.put(currentNoteKey, noteData);
+  //     debugPrint("Saved Note ID $currentNoteKey");
+  //   } else {
+  //     final newKey = await noteBox.add(noteData);
+  //     setState(() {
+  //       currentNoteKey = newKey;
+  //       isEditingMode = true;
+  //     });
+  //     debugPrint("New Note Created ID $newKey");
+  //   }
+
+  //   if (!isAuto) {
+  //     Get.back();
+  //   }
+  // }
 
   @override
   void dispose() {
@@ -475,25 +540,16 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   TextField(
                     controller: titleController,
                     maxLines: null,
+                    cursorColor: AppColor().primaryColor,
                     decoration: InputDecoration(
                       hintText: 'Title',
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
                       errorBorder: InputBorder.none,
                       border: InputBorder.none,
-                      hintStyle: TextStyle(
-                          fontSize: context.isPhone ? 22 : 26,
-                          fontFamily: 'EN-BOLD',
-                          fontFamilyFallback: const ['KH-BOLD'],
-                          // color: Theme.of(context).textTheme.bodyLarge?.color,
-                          color: textColor),
+                      hintStyle: TextStyle(fontSize: context.isPhone ? 22 : 26, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
                     ),
-                    style: TextStyle(
-                        fontSize: context.isPhone ? 20 : 22,
-                        fontFamily: 'EN-BOLD',
-                        fontFamilyFallback: const ['KH-BOLD'],
-                        // color: Theme.of(context).textTheme.bodyLarge?.color,
-                        color: textColor),
+                    style: TextStyle(fontSize: context.isPhone ? 20 : 22, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
                   ),
                   if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
                   QuillEditorComponent(
@@ -634,6 +690,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                       final int photoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
 
                       if (photoCount >= 2) {
+                        showConfirmDialog(
+                          context: context,
+                          title: "Image Limit",
+                          subTitle: "You can only select up to 2 images.",
+                          showCancel: false,
+                          confirmText: "OK",
+                          onConfirm: () {},
+                        );
                         return;
                       }
 
@@ -652,9 +716,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                         },
                       );
                     }),
-                    // _bottomIcon(Icons.text_fields, () {
-                    //   _showFormattingSheet();
-                    // }),
                     _bottomIcon(Icons.text_fields, () {
                       _forceUnfocus();
                       _showFormattingSheet();

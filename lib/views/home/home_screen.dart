@@ -8,7 +8,7 @@ import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/views/create/folder_note_list_screen.dart.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
-import 'package:project_structure/widgets/animated_fab.dart';
+import 'package:project_structure/widgets/custom_fab.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_header.dart';
 import '../../core/utils/app_fonts.dart';

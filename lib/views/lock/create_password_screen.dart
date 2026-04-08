@@ -54,32 +54,35 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
           )
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-          child: Column(
-            children: [
-              Center(child: customHeader("Create New Password", context)),
-              Text(
-                "Create a secure password to protect your personal notes.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColor().gray,
-                  fontSize: 14,
-                  fontFamily: 'EN-REGULAR',
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Column(
+              children: [
+                Center(child: customHeader("Create New Password", context)),
+                Text(
+                  "Create a secure password to protect your personal notes.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: AppColor().gray,
+                    fontSize: 14,
+                    fontFamily: 'EN-REGULAR',
+                  ),
                 ),
-              ),
-              const SizedBox(height: 30),
-              customTextField("New Password", _obscureNew, () => setState(() => _obscureNew = !_obscureNew), controller: _newPassController),
-              const SizedBox(height: 15),
-              customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
-              const SizedBox(height: 15),
-              buildStandardField("Hint", trailing: "Optional", controller: _hintController),
-              const SizedBox(height: 30),
-              _buildDropdown(),
-              const SizedBox(height: 15),
-              buildStandardField("Security Answer", controller: _answerController),
-            ],
+                const SizedBox(height: 30),
+                customTextField("New Password", _obscureNew, () => setState(() => _obscureNew = !_obscureNew), controller: _newPassController),
+                const SizedBox(height: 15),
+                customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
+                const SizedBox(height: 15),
+                buildStandardField("Hint", trailing: "Optional", controller: _hintController),
+                const SizedBox(height: 30),
+                _buildDropdown(),
+                const SizedBox(height: 15),
+                buildStandardField("Security Answer", controller: _answerController),
+              ],
+            ),
           ),
         ),
       ),

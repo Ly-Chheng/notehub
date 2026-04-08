@@ -11,10 +11,14 @@ Widget customTextField(
   Widget? prefixIcon,
   Widget? suffixIcon,
   Function(String)? onChanged,
+  bool showBorder = false,
+  Color? fillColor,
+  double? hintFontSize,
+  double? fontSize,
 }) {
   return Container(
     decoration: BoxDecoration(
-      color: Colors.grey.withValues(alpha: 0.1),
+      color: fillColor ?? Colors.grey.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),
     ),
     child: TextFormField(
@@ -22,6 +26,7 @@ Widget customTextField(
       obscureText: obscure,
       validator: validator,
       onChanged: onChanged,
+      cursorColor: AppColor().primaryColor,
       style: TextStyle(
         color: Theme.of(Get.context!).textTheme.bodyLarge?.color,
         fontSize: 16,
@@ -32,12 +37,17 @@ Widget customTextField(
         hintText: hint,
         hintStyle: TextStyle(
           color: AppColor().gray,
-          fontSize: 16,
+          fontSize: fontSize ?? 16,
           fontFamily: 'EN-REGULAR',
           fontFamilyFallback: const ['KH-REGULAR'],
         ),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        border: InputBorder.none,
+        border: showBorder
+            ? OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: AppColor().gray),
+              )
+            : InputBorder.none,
         prefixIcon: prefixIcon,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
@@ -45,7 +55,7 @@ Widget customTextField(
         disabledBorder: InputBorder.none,
         suffixStyle: TextStyle(
           color: AppColor().gray,
-          fontSize: 14,
+          fontSize: hintFontSize ?? 14,
           fontFamily: 'EN-REGULAR',
           fontFamilyFallback: const ['KH-REGULAR'],
         ),
@@ -83,6 +93,7 @@ Widget buildStandardField(
         fontFamily: 'EN-REGULAR',
         fontFamilyFallback: const ['KH-REGULAR'],
       ),
+      cursorColor: AppColor().primaryColor,
       decoration: InputDecoration(
         hintText: hint,
         hintStyle: TextStyle(
