@@ -16,13 +16,11 @@ import 'package:project_structure/views/create/components/format_component.dart'
 import 'package:project_structure/views/create/components/handwriting_component.dart';
 import 'package:project_structure/views/create/components/image_detail_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
-import 'package:project_structure/views/create/components/notebook_painter.dart';
 import 'package:project_structure/views/create/components/quill_editor_component.dart';
 import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
-import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
@@ -57,7 +55,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   Color selectedColor = Colors.black;
   Color? noteBgColor;
-  PaperType selectedPaperType = PaperType.none;
   late QuillController _quillController;
 
   bool isLocked = false;
@@ -119,7 +116,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         noteBgColor = null;
       }
 
-      selectedPaperType = PaperType.values[widget.existingNote?['paperTypeIndex'] ?? 0];
       isLocked = widget.existingNote?['isLocked'] ?? false;
 
       List<dynamic>? imagePaths = widget.existingNote?['images'];
@@ -180,7 +176,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         await noteBox.delete(currentNoteKey);
         debugPrint("Deleted empty note ID $currentNoteKey");
       }
-      return; // skip saving
+      return;
     }
 
     final contentJson = jsonEncode(_quillController.document.toDelta().toJson());
@@ -197,7 +193,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       "images": selectedImages.map((file) => file.path).toList(),
       "showTable": showTable,
       "tableData": tableData,
-      "paperTypeIndex": selectedPaperType.index,
       "drawingLayers": drawingLayers,
     };
 
@@ -217,61 +212,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       Get.back();
     }
   }
-
-  // Future<void> _saveNote({required bool isAuto}) async {
-  //   final String currentTitle = titleController.text.trim();
-  //   final bool isDocEmpty = _quillController.document.isEmpty();
-
-  //   final bool isTableEmpty = tableData.every((row) => row.every((cell) => cell.trim().isEmpty));
-  //   final bool isDrawingEmpty = drawingLayers.isEmpty;
-  //   final bool isImagesEmpty = selectedImages.isEmpty;
-
-  //   final noteBox = Hive.box('student_notes');
-
-  //   // If everything is empty and note exists, delete it
-  //   if (currentTitle.isEmpty && isDocEmpty && (isTableEmpty || !showTable) && isDrawingEmpty && isImagesEmpty) {
-  //     if (isEditingMode && currentNoteKey != null) {
-  //       await noteBox.delete(currentNoteKey);
-  //       debugPrint("Deleted empty note ID $currentNoteKey");
-  //     }
-  //     return; // skip saving
-  //   }
-
-  //   // Prepare note data
-  //   final contentJson = jsonEncode(_quillController.document.toDelta().toJson());
-
-  //   final noteData = {
-  //     "title": currentTitle,
-  //     "subtitle": contentJson,
-  //     "isLocked": isLocked,
-  //     "folderKey": currentFolderKey,
-  //     "date": DateFormat('dd/MM/yyyy').format(DateTime.now()),
-  //     "isPinned": isPinned,
-  //     "colorValue": AppColor().primaryColor.value,
-  //     "bgColorValue": noteBgColor?.value ?? 0,
-  //     "images": selectedImages.map((file) => file.path).toList(),
-  //     "showTable": showTable,
-  //     "tableData": tableData,
-  //     "paperTypeIndex": selectedPaperType.index,
-  //     "drawingLayers": drawingLayers,
-  //   };
-
-  //   if (isEditingMode && currentNoteKey != null) {
-  //     await noteBox.put(currentNoteKey, noteData);
-  //     debugPrint("Saved Note ID $currentNoteKey");
-  //   } else {
-  //     final newKey = await noteBox.add(noteData);
-  //     setState(() {
-  //       currentNoteKey = newKey;
-  //       isEditingMode = true;
-  //     });
-  //     debugPrint("New Note Created ID $newKey");
-  //   }
-
-  //   if (!isAuto) {
-  //     Get.back();
-  //   }
-  // }
 
   @override
   void dispose() {
@@ -491,127 +431,157 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               },
             ),
           ),
-          PopupMenuButton<String>(
-            onOpened: _forceUnfocus,
-            icon: Container(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: AppColor().primaryColor,
-                  width: 1,
+          // PopupMenuButton<String>(
+          //   onOpened: _forceUnfocus,
+          //   icon: Container(
+          //     decoration: BoxDecoration(
+          //       border: Border.all(
+          //         color: AppColor().primaryColor,
+          //         width: 1,
+          //       ),
+          //       borderRadius: BorderRadius.circular(5),
+          //     ),
+          //     child: Icon(
+          //       Icons.more_vert_outlined,
+          //       color: AppColor().primaryColor,
+          //       size: 20,
+          //     ),
+          //   ),
+          //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          //   offset: const Offset(0, 50),
+          //   color: Theme.of(context).cardColor,
+          //   onSelected: (value) => _handleMenuSelection(value, context),
+          //   itemBuilder: (context) => [
+          //     buildPopupItem(context, isPinned ? 'Unpin' : 'Pin', isPinned ? Icons.push_pin : Icons.push_pin_outlined),
+          //     buildPopupItem(
+          //       context,
+          //       'Share',
+          //       Icons.share_outlined,
+          //     ),
+          //     buildPopupItem(context, 'Move Note', Icons.folder_outlined),
+          //     buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),
+          //     buildPopupItem(context, 'Delete', Icons.delete_outline, color: AppColor().red),
+          //   ],
+          // ),
+          AnimatedBuilder(
+            animation: Listenable.merge([titleController, _quillController]),
+            builder: (context, _) {
+              final bool isEmpty = _isNoteEmpty;
+
+              return PopupMenuButton<String>(
+                enabled: !isEmpty,
+                onOpened: _forceUnfocus,
+                icon: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isEmpty ? AppColor().gray : AppColor().primaryColor,
+                      width: 1,
+                    ),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Icon(
+                    Icons.more_vert_outlined,
+                    color: isEmpty ? AppColor().gray : AppColor().primaryColor,
+                    size: 20,
+                  ),
                 ),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: Icon(
-                Icons.more_vert_outlined,
-                color: AppColor().primaryColor,
-                size: 20,
-              ),
-            ),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-            offset: const Offset(0, 50),
-            color: Theme.of(context).cardColor,
-            onSelected: (value) => _handleMenuSelection(value, context),
-            itemBuilder: (context) => [
-              buildPopupItem(context, isPinned ? 'Unpin' : 'Pin', isPinned ? Icons.push_pin : Icons.push_pin_outlined),
-              buildPopupItem(
-                context,
-                'Share',
-                Icons.share_outlined,
-              ),
-              buildPopupItem(context, 'Move Note', Icons.folder_outlined),
-              buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),
-              buildPopupItem(context, 'Delete', Icons.delete_outline, color: AppColor().red),
-            ],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                offset: const Offset(0, 50),
+                color: Theme.of(context).cardColor,
+                onSelected: (value) => _handleMenuSelection(value, context),
+                itemBuilder: (context) => [
+                  buildPopupItem(context, isPinned ? 'Unpin' : 'Pin', isPinned ? Icons.push_pin : Icons.push_pin_outlined),
+                  buildPopupItem(context, 'Share', Icons.share_outlined),
+                  buildPopupItem(context, 'Move Note', Icons.folder_outlined),
+                  buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),
+                  buildPopupItem(context, 'Delete', Icons.delete_outline, color: AppColor().red),
+                ],
+              );
+            },
           ),
         ],
       ),
       body: GestureDetector(
         onTap: _forceUnfocus,
         child: SingleChildScrollView(
-          child: CustomPaint(
-            painter: NotebookPainter(
-              type: selectedPaperType,
-              lineColor: const Color(0x339E9E9E),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Column(
-                children: [
-                  TextField(
-                    controller: titleController,
-                    maxLines: null,
-                    cursorColor: AppColor().primaryColor,
-                    decoration: InputDecoration(
-                      hintText: 'Title',
-                      enabledBorder: InputBorder.none,
-                      focusedBorder: InputBorder.none,
-                      errorBorder: InputBorder.none,
-                      border: InputBorder.none,
-                      hintStyle: TextStyle(fontSize: context.isPhone ? 22 : 26, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
-                    ),
-                    style: TextStyle(fontSize: context.isPhone ? 20 : 22, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
+                  maxLines: null,
+                  cursorColor: AppColor().primaryColor,
+                  decoration: InputDecoration(
+                    hintText: 'Title',
+                    enabledBorder: InputBorder.none,
+                    focusedBorder: InputBorder.none,
+                    errorBorder: InputBorder.none,
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(fontSize: context.isPhone ? 22 : 26, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
                   ),
-                  if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
-                  QuillEditorComponent(
-                    controller: _quillController,
-                    focusNode: _editorFocusNode,
-                    textColor: textColor,
-                  ),
-                  if (showTable)
-                    EditableTableComponent(
-                      tableData: tableData,
-                      onCellChanged: (rowIndex, colIndex, value) {
-                        tableData[rowIndex][colIndex] = value;
-
-                        _triggerAutoSave();
-                      },
-                      onAddRow: () {
-                        setState(() {
-                          int currentCols = tableData[0].length;
-                          tableData.add(List.generate(currentCols, (_) => ""));
-                        });
-                        _triggerAutoSave();
-                      },
-                      onRemoveRow: (index) {
-                        setState(() {
-                          if (tableData.length > 1) {
-                            tableData.removeAt(index);
-                          } else {
-                            showTable = false;
-                          }
-                        });
-                        _triggerAutoSave();
-                      },
-                      onAddColumn: () {
-                        setState(() {
-                          for (var row in tableData) {
-                            row.add("");
-                          }
-                        });
-                        _triggerAutoSave();
-                      },
-                      onRemoveColumn: (colIndex) {
-                        setState(() {
-                          if (tableData[0].length > 1) {
-                            for (var row in tableData) {
-                              row.removeAt(colIndex);
-                            }
-                          }
-                        });
-                        _triggerAutoSave();
-                      },
-                      onDeleteTable: () {
-                        setState(() {
+                  style: TextStyle(fontSize: context.isPhone ? 20 : 22, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
+                ),
+                if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
+                QuillEditorComponent(
+                  controller: _quillController,
+                  focusNode: _editorFocusNode,
+                  textColor: textColor,
+                ),
+                if (showTable)
+                  EditableTableComponent(
+                    tableData: tableData,
+                    onCellChanged: (rowIndex, colIndex, value) {
+                      tableData[rowIndex][colIndex] = value;
+          
+                      _triggerAutoSave();
+                    },
+                    onAddRow: () {
+                      setState(() {
+                        int currentCols = tableData[0].length;
+                        tableData.add(List.generate(currentCols, (_) => ""));
+                      });
+                      _triggerAutoSave();
+                    },
+                    onRemoveRow: (index) {
+                      setState(() {
+                        if (tableData.length > 1) {
+                          tableData.removeAt(index);
+                        } else {
                           showTable = false;
-                          tableData = [
-                            ["", ""]
-                          ];
-                        });
-                        _triggerAutoSave();
-                      },
-                    ),
-                ],
-              ),
+                        }
+                      });
+                      _triggerAutoSave();
+                    },
+                    onAddColumn: () {
+                      setState(() {
+                        for (var row in tableData) {
+                          row.add("");
+                        }
+                      });
+                      _triggerAutoSave();
+                    },
+                    onRemoveColumn: (colIndex) {
+                      setState(() {
+                        if (tableData[0].length > 1) {
+                          for (var row in tableData) {
+                            row.removeAt(colIndex);
+                          }
+                        }
+                      });
+                      _triggerAutoSave();
+                    },
+                    onDeleteTable: () {
+                      setState(() {
+                        showTable = false;
+                        tableData = [
+                          ["", ""]
+                        ];
+                      });
+                      _triggerAutoSave();
+                    },
+                  ),
+              ],
             ),
           ),
         ),
@@ -909,5 +879,15 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       onNumberedPressed: () => _quillController.formatSelection(Attribute.ol),
       onHyphenPressed: () => _quillController.formatSelection(Attribute.blockQuote),
     );
+  }
+
+  bool get _isNoteEmpty {
+    final String currentTitle = titleController.text.trim();
+    final bool isDocEmpty = _quillController.document.toPlainText().trim().isEmpty;
+    final bool isTableEmpty = tableData.every((row) => row.every((cell) => cell.trim().isEmpty));
+    final bool isDrawingEmpty = drawingLayers.isEmpty;
+    final bool isImagesEmpty = selectedImages.isEmpty;
+
+    return currentTitle.isEmpty && isDocEmpty && (isTableEmpty || !showTable) && isDrawingEmpty && isImagesEmpty;
   }
 }

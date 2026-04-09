@@ -1,21 +1,28 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/controllers/focus_track/timer_controller.dart';
-import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/models/focus_track/timer_model.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_button.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
 class CreateTimerScreen extends StatefulWidget {
   final bool isEditing;
   final dynamic timerKey;
-  final Map? existingTimer;
+  final TimerModel? existingTimer;
 
-  const CreateTimerScreen({super.key, this.isEditing = false, this.timerKey, this.existingTimer});
+  const CreateTimerScreen({
+    super.key,
+    this.isEditing = false,
+    this.timerKey,
+    this.existingTimer,
+  });
 
   @override
   State<CreateTimerScreen> createState() => _CreateTimerScreenState();
@@ -34,17 +41,19 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   @override
   void initState() {
     super.initState();
+    // Initialize values based on whether we are editing or creating
     if (widget.isEditing && widget.existingTimer != null) {
-      int total = widget.existingTimer!['totalSeconds'];
+      final total = widget.existingTimer!.totalSeconds;
       selectedHours = total ~/ 3600;
       selectedMinutes = (total % 3600) ~/ 60;
       selectedSeconds = total % 60;
-      _labelController = TextEditingController(text: widget.existingTimer!['title']);
+      _labelController = TextEditingController(text: widget.existingTimer!.title);
     } else {
-      selectedHours = 3;
-      selectedMinutes = 50;
-      selectedSeconds = 20;
-      _labelController = TextEditingController(text: "Timer");
+      selectedHours = 1;
+      selectedMinutes = 20;
+      selectedSeconds = 40;
+      // _labelController = TextEditingController(text: "Timer");
+      _labelController = TextEditingController(text: (widget.existingTimer?.title != null && widget.existingTimer!.title.isNotEmpty) ? widget.existingTimer!.title : "Timer");
     }
 
     hourController = FixedExtentScrollController(initialItem: selectedHours);
@@ -64,139 +73,107 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     secController.animateToItem(s, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
   }
 
-  void _showAddPresetSheet(BuildContext context) {
-    int tempH = 1;
-    int tempM = 3;
-    int tempS = 5;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).cardColor,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) {
-        return StatefulBuilder(builder: (context, setSheetState) {
-          return SafeArea(
-            child: Padding(
-              padding: EdgeInsetsGeometry.all(15),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SheetHeader(
-                    title: "Add Quick Preset",
-                  ),
-                  const SizedBox(height: 20),
-                  Container(
-                    height: context.isPhone ? 180 : 250,
-                    decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(15)),
-                    child: Row(
-                      children: [
-                        _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
-                        _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v), initial: tempM),
-                        _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v), initial: tempS),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-                  CustomButton(
-                    text: "Save Preset",
-                    backgroundColor: AppColor().primaryColor,
-                    textColor: Colors.white,
-                    borderRadius: 12,
-                    onPressed: () {
-                      _finalizePresetSave(tempH, tempM, tempS);
-                      Navigator.pop(context);
-                    },
-                  )
-                ],
-              ),
-            ),
-          );
-        });
-      },
-    );
-  }
-
-  Widget _buildSheetPicker(int max, String label, Function(int) onChanged, {int initial = 0}) {
-    return Expanded(
-      child: CupertinoPicker(
-        scrollController: FixedExtentScrollController(initialItem: initial),
-        itemExtent: 40,
-        onSelectedItemChanged: onChanged,
-        children: List.generate(
-          max,
-          (index) => Center(
-            child: Text(
-              "$index $label",
-              style: const TextStyle(fontSize: 18),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   void _finalizePresetSave(int h, int m, int s) async {
     if (h == 0 && m == 0 && s == 0) return;
+    bool isFixedDuplicate = (h == 0 && m == 10 && s == 0) || (h == 0 && m == 30 && s == 0) || (h == 1 && m == 0 && s == 0);
 
-    final box = Hive.box('timer_box');
-    List rawList = box.get('user_presets', defaultValue: []);
+    if (isFixedDuplicate) {
+      Get.back();
+      showConfirmDialog(
+        context: context,
+        title: "Already Exists",
+        subTitle: "This time is already available in your presets.",
+        showCancel: false,
+        onConfirm: () {},
+        confirmText: "OK",
+      );
+
+      return;
+    }
+
+    final settingsBox = Hive.box('settings_box');
+    List rawList = settingsBox.get('user_presets', defaultValue: []);
     List customPresets = List.from(rawList);
 
-    bool isDuplicate = customPresets.any((p) {
-      final Map data = p as Map;
-      return data['h'] == h && data['m'] == m && data['s'] == s;
-    });
+    bool isUserDuplicate = customPresets.any((p) => p['h'] == h && p['m'] == m && p['s'] == s);
 
-    if (isDuplicate) {
-      Get.snackbar(
-        "Already Exists",
-        "This time is already in your presets.",
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
+    if (isUserDuplicate) {
+      Get.back();
+
+      showConfirmDialog(
+        context: context,
+        title: "Already Exists",
+        subTitle: "This time is already available in your presets.",
+        showCancel: false,
+        onConfirm: () {},
+        confirmText: "OK",
       );
       return;
     }
 
     String label = "${h > 0 ? '${h}h ' : ''}${m > 0 ? '${m}m ' : ''}${s > 0 ? '${s}s' : ''}".trim();
-
-    if (h == 0 && m == 0 && s > 0) {
-      label = "${s}s";
-    }
-
     Map<String, dynamic> newPreset = {"label": label, "h": h, "m": m, "s": s};
-    customPresets.add(newPreset);
-    await box.put('user_presets', customPresets);
 
+    customPresets.add(newPreset);
+    await settingsBox.put('user_presets', customPresets);
     setState(() {});
   }
 
   void _saveTimer() async {
-    final box = Hive.box('timer_box');
+    final Box<TimerModel> box = Hive.box<TimerModel>('timer_box');
     int totalSec = (selectedHours * 3600) + (selectedMinutes * 60) + selectedSeconds;
 
     if (totalSec <= 0) {
-      Get.snackbar("Error", "Duration cannot be zero", snackPosition: SnackPosition.BOTTOM);
+      showConfirmDialog(
+        context: context,
+        title: "Duration",
+        subTitle: "Duration cannot be zero",
+        showCancel: false,
+        onConfirm: () {},
+        confirmText: "OK",
+      );
       return;
     }
 
-    final timerData = {
-      "type": "timer",
-      "title": _labelController.text,
-      "totalSeconds": totalSec,
-      "remainingSeconds": totalSec,
-      "updatedAt": DateTime.now().toIso8601String(),
-      "createdAt": widget.isEditing ? widget.existingTimer!['createdAt'] : DateTime.now().toIso8601String(),
-    };
+    bool isDuplicate = box.values.any((timer) => timer.totalSeconds == totalSec && timer.title.trim().toLowerCase() == _labelController.text.trim().toLowerCase());
 
-    if (widget.isEditing) {
-      final TimerController controller = Get.find<TimerController>();
-      controller.resetTimerMemory(widget.timerKey);
-      await box.put(widget.timerKey, timerData);
-    } else {
-      await box.add(timerData);
+    if (isDuplicate) {
+      showConfirmDialog(
+        context: context,
+        title: "Duplicate",
+        subTitle: "A timer with this duration and name already exists.",
+        showCancel: false,
+        onConfirm: () {},
+        confirmText: "OK",
+      );
+      return;
     }
+
+    if (widget.isEditing && widget.existingTimer != null) {
+      final TimerController controller = Get.find<TimerController>();
+
+      // Reset controller state for this timer
+      controller.activeTimerKeys.remove(widget.timerKey);
+      controller.resetTimerMemory(widget.timerKey);
+
+      // Update the Hive object
+      widget.existingTimer!.title = _labelController.text;
+      widget.existingTimer!.totalSeconds = totalSec;
+      widget.existingTimer!.remainingSeconds = totalSec;
+
+      await widget.existingTimer!.save();
+    } else {
+      // Create and add new timer
+      final newTimer = TimerModel(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        title: _labelController.text,
+        totalSeconds: totalSec,
+        remainingSeconds: totalSec,
+        createdAt: DateTime.now(),
+      );
+      await box.add(newTimer);
+    }
+
     Get.back();
   }
 
@@ -222,22 +199,26 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: customHeader("Duration", context),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  child: customHeader("Duration", context),
+                ),
+                _buildPickerSection(),
+                const SizedBox(height: 25),
+                _buildLabelRow(),
+                const SizedBox(height: 20),
+                _buildPresetHeader(),
+                _buildAllPresets(),
+              ],
             ),
-            _buildPickerSection(),
-            const SizedBox(height: 30),
-            _buildLabelRow(),
-            const SizedBox(height: 30),
-            _buildPresetHeader(),
-            _buildAllPresets(),
-            const SizedBox(height: 40),
-          ],
+          ),
         ),
       ),
     );
@@ -245,12 +226,9 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
 
   Widget _buildPickerSection() {
     return Container(
-      height: 220,
+      height: 200,
       margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-      ),
+      decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(20)),
       child: Row(
         children: [
           _buildPicker(24, "h", hourController, (v) => selectedHours = v),
@@ -266,8 +244,10 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       child: CupertinoPicker(
         scrollController: controller,
         itemExtent: 40,
-        onSelectedItemChanged: onSelect,
-        children: List.generate(count, (i) => Center(child: Text("$i $unit", style: const TextStyle(fontSize: 22)))),
+        onSelectedItemChanged: (index) {
+          setState(() => onSelect(index));
+        },
+        children: List.generate(count, (i) => Center(child: Text("$i $unit", style: const TextStyle(fontSize: 20)))),
       ),
     );
   }
@@ -278,18 +258,16 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
-            decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text("Label", style: text18(context)),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+            decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+            child: Text("Label", style: text16(context)),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: TextField(
               controller: _labelController,
               decoration: InputDecoration(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 15),
                 filled: true,
                 fillColor: Colors.grey.withValues(alpha: 0.1),
                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
@@ -309,8 +287,8 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         children: [
           customHeader("Quick Presets", context),
           IconButton(
-            onPressed: () => _showAddPresetSheet(context),
-            icon: Icon(Icons.add_circle_outline, color: AppColor().primaryColor, size: context.isPhone ? 25 : 28),
+            onPressed: () => _showAddPresetSheet(),
+            icon: Icon(Icons.add_circle_outline, color: AppColor().primaryColor, size: context.isPhone ? 28 : 32),
           ),
         ],
       ),
@@ -318,11 +296,11 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   }
 
   Widget _buildAllPresets() {
-    final box = Hive.box('timer_box');
-    final List rawList = box.get('user_presets', defaultValue: []);
+    final settingsBox = Hive.box('settings_box');
+    final List rawList = settingsBox.get('user_presets', defaultValue: []);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: const EdgeInsets.all(20),
       child: Wrap(
         spacing: 10,
         runSpacing: 10,
@@ -330,50 +308,115 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           _fixedPresetItem("10 m", 0, 10, 0),
           _fixedPresetItem("30 m", 0, 30, 0),
           _fixedPresetItem("50 m", 0, 50, 0),
-          ...rawList.map((p) {
-            final Map data = p as Map;
-            return SizedBox(
-              width: (MediaQuery.of(context).size.width - 60) / 3,
-              child: _presetButton(
-                data['label'].toString(),
-                () => _setPreset(data['h'] as int, data['m'] as int, data['s'] as int),
-                isCustom: true,
+          ...rawList.map((p) => _presetButton(
+                p['label'].toString(),
+                () => _setPreset(p['h'], p['m'], p['s']),
                 onLongPress: () {
                   List updated = List.from(rawList);
                   updated.remove(p);
-                  box.put('user_presets', updated);
+                  settingsBox.put('user_presets', updated);
                   setState(() {});
                 },
-              ),
-            );
-          }).toList(),
+              )),
         ],
       ),
     );
   }
 
-  Widget _fixedPresetItem(String text, int h, int m, int s) {
-    return SizedBox(
-      width: (MediaQuery.of(context).size.width - 60) / 3,
-      child: _presetButton(text, () => _setPreset(h, m, s)),
-    );
-  }
+  Widget _fixedPresetItem(String text, int h, int m, int s) => _presetButton(text, () => _setPreset(h, m, s));
 
-  Widget _presetButton(String text, VoidCallback onTap, {bool isCustom = false, VoidCallback? onLongPress}) {
+  Widget _presetButton(String text, VoidCallback onTap, {VoidCallback? onLongPress}) {
     return InkWell(
       onTap: onTap,
       onLongPress: onLongPress,
       borderRadius: BorderRadius.circular(10),
       child: Container(
+        width: (MediaQuery.of(context).size.width - 60) / 3,
         padding: const EdgeInsets.symmetric(vertical: 12),
-        alignment: Alignment.center,
         decoration: BoxDecoration(
-          color: Colors.blueGrey.withValues(alpha: 0.1),
+          color: Colors.blueGrey.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: Colors.blueGrey.withOpacity(0.2)),
+          border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.1)),
         ),
-        child: Text(text, style: TextStyle(color: Colors.blueGrey, fontFamily: 'EN-REGULAR', fontSize: context.isPhone ? 12 : 14)),
+        child: Center(child: Text(text, style: const TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.w500))),
       ),
     );
+  }
+
+  void _showAddPresetSheet() {
+    int tempH = selectedHours;
+    int tempM = selectedMinutes;
+    int tempS = selectedSeconds;
+
+    Get.bottomSheet(
+      StatefulBuilder(builder: (context, setSheetState) {
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SheetHeader(title: "Add Quick Preset"),
+                const SizedBox(height: 20),
+                Container(
+                  height: 200,
+                  decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.01), borderRadius: BorderRadius.circular(20)),
+                  child: Row(
+                    children: [
+                      _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
+                      _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v), initial: tempM),
+                      _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v), initial: tempS),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 25),
+                Row(
+                  children: [
+                    Expanded(
+                      child: CustomButton(
+                        text: "Save Preset",
+                        onPressed: () {
+                          _finalizePresetSave(tempH, tempM, tempS);
+                          Get.back();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildSheetPicker(int max, String label, Function(int) onChanged, {int initial = 0}) {
+    return Expanded(
+      child: CupertinoPicker(
+        scrollController: FixedExtentScrollController(initialItem: initial),
+        itemExtent: 35,
+        onSelectedItemChanged: onChanged,
+        children: List.generate(
+          max,
+          (index) => Center(
+            child: Text("$index $label", style: const TextStyle(fontSize: 18)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    hourController.dispose();
+    minController.dispose();
+    secController.dispose();
+    _labelController.dispose();
+    super.dispose();
   }
 }

@@ -80,7 +80,7 @@ class ActionSheet {
                           item.switchValue!.value = val;
                           item.onSwitchChanged?.call(val);
                         },
-                        activeColor: Colors.green,
+                        activeTrackColor: Colors.green,
                       ),
                     ],
                   ),

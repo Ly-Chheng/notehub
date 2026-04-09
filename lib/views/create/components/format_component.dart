@@ -289,7 +289,7 @@ Widget _formatToggle(IconData icon, bool isActive, VoidCallback onTap) {
       child: Container(
         padding: const EdgeInsets.all(5),
         decoration: BoxDecoration(
-          color: isActive ? AppColor().primaryColor.withOpacity(0.1) : Colors.transparent,
+          color: isActive ? AppColor().primaryColor.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: isActive ? AppColor().primaryColor : Colors.grey.shade300),
         ),

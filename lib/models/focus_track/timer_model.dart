@@ -1,8 +1,8 @@
 import 'package:hive/hive.dart';
 
-part 'timer_model.g.dart';
+part 'timer_model.g.dart'; // This file will be generated
 
-@HiveType(typeId: 0)
+@HiveType(typeId: 0) // Unique ID for this class
 class TimerModel extends HiveObject {
   @HiveField(0)
   String id;
@@ -17,23 +17,21 @@ class TimerModel extends HiveObject {
   int remainingSeconds;
 
   @HiveField(4)
-  DateTime createdAt;
+  String type;
 
   @HiveField(5)
-  DateTime? completedAt;
+  DateTime? createdAt;
 
   @HiveField(6)
-  String type;
+  DateTime? completedAt;
 
   TimerModel({
     required this.id,
     required this.title,
     required this.totalSeconds,
     required this.remainingSeconds,
-    required this.createdAt,
-    this.completedAt,
     this.type = 'timer',
+    this.createdAt,
+    this.completedAt,
   });
-
-  bool get isFinished => remainingSeconds <= 0;
 }

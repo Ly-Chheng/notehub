@@ -36,10 +36,9 @@ class NotificationView extends StatelessWidget {
                   ],
                 ),
                 Obx(() => Switch.adaptive(
-                      activeColor: Colors.green, // Matching your app's blue branding
+                      activeThumbColor: Colors.green,
                       onChanged: (value) {
                         isNotificationOn.value = value;
-                        // Add your notification service logic here
                       },
                       value: isNotificationOn.value,
                     )),

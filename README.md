@@ -18,3 +18,14 @@ samples, guidance on mobile development, and a full API reference.
 
 # Coment for create model
 flutter pub run build_runner build --delete-conflicting-outputs
+
+# *Clean and Rebuild
+
+# 1. Remove old generated files
+flutter pub run build_runner clean
+
+# 2. Get dependencies again
+flutter pub get
+
+# 3. Re-generate the adapter
+flutter pub run build_runner build --delete-conflicting-outputs

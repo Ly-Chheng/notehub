@@ -143,7 +143,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                     ),
                                   ),
                                 ),
-                                ...pinnedNotes.map((entry) => _buildSlidableNote(entry.key, entry.value)).toList(),
+                                ...pinnedNotes.map(
+                                  (entry) => _buildSlidableNote(entry.key, entry.value),
+                                ),
                               ],
                               if (unpinnedNotes.isNotEmpty) ...[
                                 ListView.builder(

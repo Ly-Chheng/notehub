@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:project_structure/models/focus_track/timer_model.dart';
 
 class TimerController extends GetxController {
-  final Box timerBox = Hive.box('timer_box');
+  Box<TimerModel> get timerBox => Hive.box<TimerModel>('timer_box');
 
   var runningSeconds = <dynamic, int>{}.obs;
   var activeTimerKeys = <dynamic>{}.obs;
-
   Timer? _globalTimer;
 
   @override
@@ -19,8 +19,12 @@ class TimerController extends GetxController {
   void _startGlobalTimer() {
     _globalTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       for (var key in activeTimerKeys.toList()) {
-        if (runningSeconds.containsKey(key) && runningSeconds[key]! > 0) {
+        if ((runningSeconds[key] ?? 0) > 0) {
           runningSeconds[key] = runningSeconds[key]! - 1;
+
+          if (runningSeconds[key]! % 10 == 0) {
+            _updateHiveSeconds(key, runningSeconds[key]!);
+          }
         } else {
           activeTimerKeys.remove(key);
           _updateHiveSeconds(key, 0);
@@ -29,16 +33,15 @@ class TimerController extends GetxController {
     });
   }
 
-  // Critical for Edit: Forces the UI to fetch fresh data from Hive
+  void initTimerState(dynamic key, int remainingSeconds) {
+    if (!runningSeconds.containsKey(key)) {
+      runningSeconds[key] = remainingSeconds;
+    }
+  }
+
   void resetTimerMemory(dynamic key) {
     activeTimerKeys.remove(key);
     runningSeconds.remove(key);
-  }
-
-  void initTimerState(dynamic key, int currentSeconds) {
-    if (!runningSeconds.containsKey(key)) {
-      runningSeconds[key] = currentSeconds;
-    }
   }
 
   void toggleTimer(dynamic key) {
@@ -46,21 +49,22 @@ class TimerController extends GetxController {
       activeTimerKeys.remove(key);
       _updateHiveSeconds(key, runningSeconds[key]!);
     } else {
-      // If restarting a finished timer
-      if ((runningSeconds[key] ?? 0) <= 0) {
-        final data = timerBox.get(key);
-        runningSeconds[key] = data['totalSeconds'];
-        _updateHiveSeconds(key, data['totalSeconds']);
+      TimerModel? timer = timerBox.get(key);
+      if (timer != null) {
+        if (runningSeconds[key] == null || runningSeconds[key]! <= 0) {
+          runningSeconds[key] = timer.totalSeconds;
+        }
+        activeTimerKeys.add(key);
       }
-      activeTimerKeys.add(key);
     }
   }
 
   void _updateHiveSeconds(dynamic key, int seconds) {
-    var data = timerBox.get(key);
-    if (data != null) {
-      data['remainingSeconds'] = seconds;
-      timerBox.put(key, data);
+    TimerModel? timer = timerBox.get(key);
+    if (timer != null) {
+      timer.remainingSeconds = seconds;
+      if (seconds <= 0) timer.completedAt = DateTime.now();
+      timer.save();
     }
   }
 
@@ -70,20 +74,14 @@ class TimerController extends GetxController {
     timerBox.delete(key);
   }
 
-  // Converts seconds to 00:00:00 format
   String formatTime(int seconds) {
     int h = seconds ~/ 3600;
     int m = (seconds % 3600) ~/ 60;
     int s = seconds % 60;
-    if (h > 0) {
-      return "${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}";
-    }
-    return "${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}";
+    return h > 0 ? "${h.toString().padLeft(2, '0')}:${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}" : "${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}";
   }
 
-  // Converts seconds to "1h 5m 30s" format
   String formatToHMS(int totalSeconds) {
-    if (totalSeconds <= 0) return "0s";
     int h = totalSeconds ~/ 3600;
     int m = (totalSeconds % 3600) ~/ 60;
     int s = totalSeconds % 60;

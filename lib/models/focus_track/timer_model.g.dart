@@ -21,9 +21,9 @@ class TimerModelAdapter extends TypeAdapter<TimerModel> {
       title: fields[1] as String,
       totalSeconds: fields[2] as int,
       remainingSeconds: fields[3] as int,
-      createdAt: fields[4] as DateTime,
-      completedAt: fields[5] as DateTime?,
-      type: fields[6] as String,
+      type: fields[4] as String,
+      createdAt: fields[5] as DateTime?,
+      completedAt: fields[6] as DateTime?,
     );
   }
 
@@ -40,11 +40,11 @@ class TimerModelAdapter extends TypeAdapter<TimerModel> {
       ..writeByte(3)
       ..write(obj.remainingSeconds)
       ..writeByte(4)
-      ..write(obj.createdAt)
+      ..write(obj.type)
       ..writeByte(5)
-      ..write(obj.completedAt)
+      ..write(obj.createdAt)
       ..writeByte(6)
-      ..write(obj.type);
+      ..write(obj.completedAt);
   }
 
   @override

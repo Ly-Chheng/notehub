@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/controllers/focus_track/timer_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 import 'package:project_structure/views/focus_track/components/timer_detail_screen.dart';
 import 'package:project_structure/widgets/custom_header.dart';
@@ -19,56 +20,50 @@ class TimerComponent extends StatelessWidget {
       closeWhenOpened: true,
       child: ValueListenableBuilder(
           valueListenable: controller.timerBox.listenable(),
-          builder: (context, Box box, _) {
-            final allKeys = box.keys.where((k) {
-              final data = box.get(k);
-              if (data is Map) {
-                return data['type'] == 'timer';
-              }
-              return false;
-            }).toList();
+          builder: (context, Box<TimerModel> box, _) {
+            final List<TimerModel> allTimers = box.values.toList();
 
-            if (allKeys.isEmpty) {
+            if (allTimers.isEmpty) {
               Future.microtask(() => Get.to(() => const CreateTimerScreen()));
-
-              return Center(
-                child: Text("No timer"),
-              );
+              return const Center(child: Text("No timer"));
             }
 
-            final activeKeys = allKeys.where((k) {
-              int rem = box.get(k)['remainingSeconds'] ?? 0;
-              bool isCurrentlyRunning = controller.activeTimerKeys.contains(k);
-
-              return rem > 0 || isCurrentlyRunning;
+            // FILTERING LOGIC
+            final activeTimers = allTimers.where((t) {
+              bool isCurrentlyRunning = controller.activeTimerKeys.contains(t.key);
+              return t.remainingSeconds > 0 || isCurrentlyRunning;
             }).toList();
 
-            final recentKeys = allKeys.where((k) {
-              int rem = box.get(k)['remainingSeconds'] ?? 0;
-              bool isCurrentlyRunning = controller.activeTimerKeys.contains(k);
-
-              return rem <= 0 && !isCurrentlyRunning;
+            final recentTimers = allTimers.where((t) {
+              bool isCurrentlyRunning = controller.activeTimerKeys.contains(t.key);
+              return t.remainingSeconds <= 0 && !isCurrentlyRunning;
             }).toList();
 
-            activeKeys.sort((a, b) => (box.get(b)['createdAt'] ?? '').compareTo(box.get(a)['createdAt'] ?? ''));
-            recentKeys.sort((a, b) => (box.get(b)['completedAt'] ?? '').compareTo(box.get(a)['completedAt'] ?? ''));
+            // SORTING
+            activeTimers.sort((a, b) => (b.createdAt ?? DateTime.now()).compareTo(a.createdAt ?? DateTime.now()));
+            recentTimers.sort((a, b) => (b.completedAt ?? DateTime.now()).compareTo(a.completedAt ?? DateTime.now()));
 
             return ListView(
-              padding: const EdgeInsets.symmetric(vertical: 10),
+              padding: const EdgeInsets.symmetric(vertical: 15),
               children: [
-                if (activeKeys.isNotEmpty) ...[
+                if (activeTimers.isNotEmpty) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: customHeader("Running", context),
                   ),
-                  ...activeKeys.map((key) => _buildTimerTile(context, controller, key, box.get(key))),
+                  ...activeTimers.map((timer) => _buildTimerTile(context, controller, timer)),
                 ],
-                if (recentKeys.isNotEmpty) ...[
+                SizedBox(
+                  height: 10,
+                ),
+                if (recentTimers.isNotEmpty) ...[
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                    ),
                     child: customHeader("Recents", context),
                   ),
-                  ...recentKeys.map((key) => _buildTimerTile(context, controller, key, box.get(key))),
+                  ...recentTimers.map((timer) => _buildTimerTile(context, controller, timer)),
                 ],
               ],
             );
@@ -76,33 +71,33 @@ class TimerComponent extends StatelessWidget {
     );
   }
 
-  Widget _buildTimerTile(BuildContext context, TimerController controller, dynamic key, Map data) {
-    controller.initTimerState(key, data['remainingSeconds'] ?? data['totalSeconds']);
+  Widget _buildTimerTile(BuildContext context, TimerController controller, TimerModel timer) {
+    controller.initTimerState(timer.key, timer.remainingSeconds > 0 ? timer.remainingSeconds : timer.totalSeconds);
 
     return Obx(() {
-      int currentSec = controller.runningSeconds[key] ?? data['totalSeconds'];
-      bool isRunning = controller.activeTimerKeys.contains(key);
-      bool isFinished = currentSec <= 0;
-      double progress = data['totalSeconds'] > 0 ? currentSec / data['totalSeconds'] : 0.0;
+      int currentSec = controller.runningSeconds[timer.key] ?? timer.totalSeconds;
+      bool isRunning = controller.activeTimerKeys.contains(timer.key);
+      bool isFinished = currentSec <= 0 && !isRunning;
+      double progress = timer.totalSeconds > 0 ? currentSec / timer.totalSeconds : 0.0;
 
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 5),
         child: Slidable(
-          key: ValueKey(key),
+          key: ValueKey(timer.key),
           endActionPane: ActionPane(
             motion: const DrawerMotion(),
             children: [
               SlidableAction(
                 onPressed: (_) {
-                  controller.activeTimerKeys.remove(key);
-                  Get.to(() => CreateTimerScreen(isEditing: true, timerKey: key, existingTimer: data));
+                  controller.activeTimerKeys.remove(timer.key);
+                  Get.to(() => CreateTimerScreen(isEditing: true, timerKey: timer.key, existingTimer: timer));
                 },
                 backgroundColor: AppColor().primaryColor,
                 icon: Icons.edit,
                 label: 'Edit',
               ),
               SlidableAction(
-                onPressed: (_) => controller.deleteTimer(key),
+                onPressed: (_) => controller.deleteTimer(timer.key),
                 backgroundColor: AppColor().red,
                 icon: Icons.delete,
                 label: 'Delete',
@@ -110,7 +105,7 @@ class TimerComponent extends StatelessWidget {
             ],
           ),
           child: GestureDetector(
-            onTap: () => Get.to(() => TimerDetailScreen(timerKey: key, data: data)),
+            onTap: () => Get.to(() => TimerDetailScreen(timerKey: timer.key, data: timer)),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               decoration: BoxDecoration(
@@ -122,23 +117,23 @@ class TimerComponent extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(data['title'] ?? "Timer",
+                        Text(timer.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface, fontSize: context.isPhone ? 14 : 16, fontFamily: 'EN-REGULAR')),
+                            style: TextStyle(color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR')),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
                               fontSize: context.isPhone ? 28 : 32,
                               color: isFinished ? AppColor().white : Theme.of(context).colorScheme.onSurface,
-                              fontFamily: 'EN-REGULAR',
+                              fontFamily: 'EN-SEMIBOLD',
                             )),
-                        Text("${controller.formatToHMS(data['totalSeconds'])} total",
-                            style: TextStyle(
-                                color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
+                        Text("${controller.formatToHMS(timer.totalSeconds)} total",
+                            style:
+                                TextStyle(color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface.withAlpha(150), fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
                       ],
                     ),
                   ),
-                  _buildiPhoneCircle(controller, key, progress, isFinished, isRunning, context),
+                  _buildiPhoneCircle(controller, timer, progress, isFinished, isRunning, context),
                 ],
               ),
             ),
@@ -148,9 +143,15 @@ class TimerComponent extends StatelessWidget {
     });
   }
 
-  Widget _buildiPhoneCircle(TimerController controller, dynamic key, double progress, bool isFinished, bool isRunning, BuildContext context) {
+  Widget _buildiPhoneCircle(TimerController controller, TimerModel timer, double progress, bool isFinished, bool isRunning, BuildContext context) {
     return GestureDetector(
-      onTap: () => controller.toggleTimer(key),
+      onTap: () {
+        if (timer.remainingSeconds <= 0 && !isRunning) {
+          timer.remainingSeconds = timer.totalSeconds;
+          timer.save();
+        }
+        controller.toggleTimer(timer.key);
+      },
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -161,7 +162,7 @@ class TimerComponent extends StatelessWidget {
                   value: 1.0,
                   strokeWidth: 4,
                   valueColor: AlwaysStoppedAnimation(
-                    Colors.grey.withValues(alpha: 0.1),
+                    Colors.grey.withAlpha(30),
                   ))),
           SizedBox(
               width: context.isPhone ? 55 : 65,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/focus_track/stopwatch_controller.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
 class StopwatchScreen extends StatelessWidget {
@@ -56,7 +57,7 @@ class StopwatchScreen extends StatelessWidget {
                 strokeWidth: context.isPhone ? 10 : 12,
                 backgroundColor: const Color(0x1A9E9E9E),
                 strokeCap: StrokeCap.round,
-                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF4D7CFF)),
+                valueColor: AlwaysStoppedAnimation<Color>(AppColor().primaryColor),
               ),
             ),
             Text(
@@ -90,21 +91,6 @@ class StopwatchScreen extends StatelessWidget {
                 ),
               ),
               Expanded(
-                // child: ListView.builder(
-                //   itemCount: controller.laps.length,
-                //   itemBuilder: (context, index) {
-                //     return Padding(
-                //       padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
-                //       child: Row(
-                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //         children: [
-                //           Text("Lap ${controller.laps.length - index}", style: text16(context)),
-                //           Text(controller.laps[index], style: text16(context)),
-                //         ],
-                //       ),
-                //     );
-                //   },
-                // ),
                 child: ListView.builder(
                   itemCount: controller.laps.length,
                   itemBuilder: (context, index) {
@@ -141,7 +127,7 @@ class StopwatchScreen extends StatelessWidget {
             child: Icon(
               isRunning ? Icons.stop_circle : Icons.play_circle_filled,
               size: context.isPhone ? 60 : 90,
-              color: const Color(0xFF4D7CFF),
+              color: AppColor().primaryColor,
             ),
           ),
           _roundButton(Icons.flag_outlined, (isAtZero || !isRunning) ? null : controller.addLap, context),
@@ -164,7 +150,7 @@ class StopwatchScreen extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          color: isDisabled ? Colors.grey : Colors.black87,
+          color: isDisabled ? AppColor().gray : Colors.black87,
           size: context.isPhone ? 24 : 30,
         ),
       ),

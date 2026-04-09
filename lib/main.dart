@@ -12,6 +12,7 @@ import 'package:project_structure/core/services/themes_services.dart';
 import 'package:project_structure/core/utils/app_language.dart';
 import 'package:project_structure/core/functions/local_storage.dart';
 import 'package:project_structure/firebase_options.dart';
+import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/route.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -41,18 +42,19 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 2. Initialize Hive properly
-  await Hive.initFlutter();
+  await Hive.initFlutter(); // Initialize Hive properly
+
+  Hive.registerAdapter(TimerModelAdapter()); // Register the generated adapter
 
   await Hive.deleteFromDisk();
   await GetStorage().erase();
 
-  // 3. Open Boxes as Generic
+  // Open Boxes as Generic
   await Hive.openBox('student_notes');
   await Hive.openBox('folders_box');
-  await Hive.openBox('timer_box');
   await Hive.openBox('settings_box');
   await Hive.openBox('recently_deleted');
+  await Hive.openBox<TimerModel>('timer_box');
 
   runApp(const MyApp());
 }
