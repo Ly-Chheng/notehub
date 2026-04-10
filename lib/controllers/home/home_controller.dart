@@ -30,7 +30,6 @@ class HomeController extends GetxController {
     }
   }
 
-  // Sorting logic
   List<MapEntry<dynamic, dynamic>> getSortedFolders(List<MapEntry<dynamic, dynamic>> entries) {
     return entries
       ..sort((a, b) {
@@ -105,7 +104,6 @@ class HomeController extends GetxController {
     );
   }
 
-  // FOLDER LOCK LOGIC
   void toggleFolderLock(dynamic key, dynamic data) {
     final updated = Map<String, dynamic>.from(data);
     bool currentlyLocked = data['isLocked'] ?? false;
@@ -174,7 +172,6 @@ class HomeController extends GetxController {
     );
   }
 
-  // For Bulk Move (Selection Mode)
   void moveSelectedToFolder(dynamic targetFolderKey) {
     if (selectedKeys.isEmpty) return;
     for (var key in selectedKeys) {
@@ -184,13 +181,11 @@ class HomeController extends GetxController {
     Get.back();
   }
 
-  // For Single Move (Swipe)
   void moveSingleNoteToFolder(dynamic key, dynamic targetFolderKey) {
     _executeMove(key, targetFolderKey);
     Get.back();
   }
 
-  // Internal helper to avoid code duplication
   void _executeMove(dynamic key, dynamic targetFolderKey) {
     final data = trashBox.get(key);
     if (data != null) {

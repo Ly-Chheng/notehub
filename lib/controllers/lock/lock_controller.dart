@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 
@@ -229,10 +230,10 @@ class LockController extends GetxController {
   }
 
   void _showError(String message) {
-    Get.snackbar("Error", message, backgroundColor: Colors.red, colorText: Colors.white, snackPosition: SnackPosition.TOP);
+    Get.snackbar("Error", message, backgroundColor: AppColor().red, colorText: AppColor().white, snackPosition: SnackPosition.TOP);
   }
 
   void _showSuccess(String message) {
-    Get.snackbar("Success", message, backgroundColor: Colors.green, colorText: Colors.white, snackPosition: SnackPosition.TOP);
+    Get.snackbar("Success", message, backgroundColor: AppColor().green, colorText: AppColor().white, snackPosition: SnackPosition.TOP);
   }
 }

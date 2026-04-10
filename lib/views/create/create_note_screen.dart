@@ -164,10 +164,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final bool isDrawingEmpty = drawingLayers.isEmpty;
     final bool isImagesEmpty = selectedImages.isEmpty;
 
-    // if (isAuto && currentTitle.isEmpty && isDocEmpty && (isTableEmpty || !showTable) && isDrawingEmpty && isImagesEmpty) {
-    //   return;
-    // }
-
     final noteBox = Hive.box('student_notes');
 
     // If everything is empty and note exists, delete it
@@ -387,7 +383,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   Color _getContrastColor(Color? bgColor) {
     if (bgColor == null) return Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
-    // Flutter's built-in utility to check if a color is "dark" or "light"
     return ThemeData.estimateBrightnessForColor(bgColor) == Brightness.dark ? Colors.white : Colors.black;
   }
 
@@ -533,7 +528,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     tableData: tableData,
                     onCellChanged: (rowIndex, colIndex, value) {
                       tableData[rowIndex][colIndex] = value;
-          
+
                       _triggerAutoSave();
                     },
                     onAddRow: () {

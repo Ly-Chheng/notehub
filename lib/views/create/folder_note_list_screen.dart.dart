@@ -278,9 +278,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     bool isSelected = selectedKeys.contains(noteKey);
     List<dynamic>? imagePaths = note['images'];
 
-    // final dynamic savedColor = note['bgColorValue'];
-    // final Color noteBgColor = (savedColor == null || savedColor == 0xFFFFFFFF) ? Theme.of(context).cardColor : Color(savedColor);
-
     final dynamic savedColorValue = note['bgColorValue'];
 
     final Color noteBgColor = (savedColorValue == null || savedColorValue == 0) ? Theme.of(context).cardColor : Color(savedColorValue);

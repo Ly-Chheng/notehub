@@ -8,6 +8,7 @@ import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 import 'package:project_structure/views/focus_track/components/timer_detail_screen.dart';
 import 'package:project_structure/widgets/custom_header.dart';
+import 'package:project_structure/widgets/custome_no_data.dart';
 
 class TimerComponent extends StatelessWidget {
   const TimerComponent({super.key});
@@ -24,8 +25,16 @@ class TimerComponent extends StatelessWidget {
             final List<TimerModel> allTimers = box.values.toList();
 
             if (allTimers.isEmpty) {
-              Future.microtask(() => Get.to(() => const CreateTimerScreen()));
-              return const Center(child: Text("No timer"));
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CustomNoData(
+                    message: "No time",
+                    imagePath: "assets/images/no_time.png",
+                  ),
+                ],
+              );
             }
 
             // FILTERING LOGIC

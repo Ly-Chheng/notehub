@@ -54,8 +54,6 @@ Future<void> showConfirmDialog({
               borderRadius: BorderRadius.circular(20),
             ),
             backgroundColor: Theme.of(context).cardColor,
-
-            /// TITLE + ICON
             title: Column(
               children: [
                 if (icon != null) Icon(icon, size: 50, color: confirmColor),
@@ -71,8 +69,6 @@ Future<void> showConfirmDialog({
                 ),
               ],
             ),
-
-            /// CONTENT
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -85,8 +81,6 @@ Future<void> showConfirmDialog({
                       fontFamily: 'EN-REGULAR',
                     ),
                   ),
-
-                  /// TEXT FIELD
                   if (controller != null) ...[
                     const SizedBox(height: 16),
                     TextFormField(
@@ -107,8 +101,6 @@ Future<void> showConfirmDialog({
                 ],
               ),
             ),
-
-            /// BUTTONS
             actionsPadding: EdgeInsets.only(
               bottom: 16,
               left: kIsWeb ? 30 : 16,
@@ -117,7 +109,6 @@ Future<void> showConfirmDialog({
             actions: [
               Row(
                 children: [
-                  /// CANCEL (optional)
                   if (showCancel)
                     Expanded(
                       child: ElevatedButton(
@@ -142,10 +133,7 @@ Future<void> showConfirmDialog({
                         ),
                       ),
                     ),
-
                   if (showCancel) const SizedBox(width: 10),
-
-                  /// CONFIRM
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () {

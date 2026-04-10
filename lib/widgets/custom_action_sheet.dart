@@ -45,7 +45,7 @@ class ActionSheet {
         actions: actions.map((item) {
           if (item.isSwitch && item.switchValue != null) {
             return Obx(() => CupertinoActionSheetAction(
-                  onPressed: () {}, // Pressing the action does nothing, user must toggle switch
+                  onPressed: () {},
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

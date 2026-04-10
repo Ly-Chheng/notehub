@@ -65,11 +65,9 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: Column(
             children: [
-              Center(child: customHeader("Reset Password", context)), //the mean Security Verification
+              Center(child: customHeader("Reset Password", context)),
               const Text("Please enter your current password to remove all protection.", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.grey, fontFamily: 'EN-REGULAR')),
-
               const SizedBox(height: 30),
-
               if (hasLockedNotes)
                 Container(
                   padding: const EdgeInsets.all(12),
@@ -92,7 +90,6 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
                     ],
                   ),
                 ),
-
               customTextField("Current Password", _obscureCurrent, () => setState(() => _obscureCurrent = !_obscureCurrent), controller: _currentPassController),
               const SizedBox(height: 15),
               customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),

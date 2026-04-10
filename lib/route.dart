@@ -14,8 +14,6 @@ final appRoute = [
   GetPage(name: '/', page: () => const SplashScreen()),
   GetPage(name: '/home', page: () => const MyHomePage()),
   GetPage(name: '/createTimer', page: () => const CreateTimerScreen()),
-
-  // More Screen Routes
   GetPage(name: '/about', page: () => const AboutScreen()),
   GetPage(name: '/howToUse', page: () => const HowToUseScreen()),
   GetPage(name: '/recentyDelete', page: () => const RecentlyDeletedScreen()),

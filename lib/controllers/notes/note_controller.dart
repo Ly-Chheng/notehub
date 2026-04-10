@@ -5,6 +5,7 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
@@ -71,7 +72,7 @@ class NoteController extends GetxController {
       }
       update();
     } catch (e) {
-      Get.snackbar("Error", "Failed to move notes", backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar("Error", "Failed to move notes", backgroundColor: AppColor().red, colorText: AppColor().white);
     }
   }
 
@@ -97,7 +98,7 @@ class NoteController extends GetxController {
         SharePlus.instance.share(ShareParams(text: fullMessage, subject: shareTitle));
       }
     } catch (e) {
-      Get.snackbar("Share Error", "Could not open share menu", backgroundColor: Colors.red, colorText: Colors.white);
+      Get.snackbar("Share Error", "Could not open share menu", backgroundColor: AppColor().red, colorText: AppColor().white);
     }
   }
 
@@ -191,12 +192,7 @@ class NoteController extends GetxController {
         if (passController.text == masterPassword) {
           onVerified();
         } else {
-          Get.snackbar(
-            "Error",
-            "Incorrect Password",
-            backgroundColor: Colors.red,
-            colorText: Colors.white,
-          );
+          Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
         }
       },
     );
