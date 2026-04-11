@@ -50,9 +50,9 @@ class TimerDetailScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _actionButton(
-                  const Icon(Icons.close, color: Colors.white, size: 40),
+                  Icon(Icons.close, color: AppColor().white, size: 40),
                   Colors.grey[800]!,
-                  Colors.white,
+                  AppColor().white,
                   () => Get.back(),
                 ),
                 _actionButton(
@@ -61,8 +61,8 @@ class TimerDetailScreen extends StatelessWidget {
                     color: isRunning ? AppColor().primaryColor : AppColor().green,
                     size: 40,
                   ),
-                  isRunning ? AppColor().primaryColor.withValues(alpha: 0.2) : Colors.green.withValues(alpha: 0.2),
-                  isRunning ? AppColor().primaryColor : Colors.green,
+                  isRunning ? AppColor().primaryColor.withValues(alpha: 0.2) : AppColor().green.withValues(alpha: 0.2),
+                  isRunning ? AppColor().primaryColor : AppColor().green,
                   () => controller.toggleTimer(timerKey),
                 ),
               ],

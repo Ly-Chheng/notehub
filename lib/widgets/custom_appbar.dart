@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
 customAppBar({
@@ -34,7 +35,7 @@ customAppBar({
                     },
                 child: Icon(
                   Icons.arrow_back,
-                  color: leadingColor ?? Colors.white,
+                  color: leadingColor ?? AppColor().white,
                 ),
               )
             : GestureDetector(
@@ -44,7 +45,7 @@ customAppBar({
                     },
                 child: Icon(
                   Icons.arrow_back_ios,
-                  color: leadingColor ?? Colors.white,
+                  color: leadingColor ?? AppColor().white,
                 ),
               )
         : leading,

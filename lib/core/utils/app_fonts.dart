@@ -59,8 +59,8 @@ TextStyle text16(BuildContext context) {
 TextStyle text18(BuildContext context) {
   return TextStyle(
     fontSize: context.isPhone ? 18 : 20,
-    fontFamily: 'EN-BOLD', // Primary font (English numbers/letters)
-    fontFamilyFallback: const ['KH-BOLD'], // Fallback font for Khmer script
+    fontFamily: bold,
+    fontFamilyFallback: const ['KH-BOLD'],
     color: Theme.of(context).textTheme.bodyLarge?.color,
   );
 }

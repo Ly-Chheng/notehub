@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 class AppColor {
-  // Light
   Color primaryColor = const Color(0xFF3D5DFF);
   Color secondaryColor = const Color(0xFF66B9C1);
   Color backgroundColor = const Color(0xFFEBEBEB);
@@ -12,7 +11,6 @@ class AppColor {
   Color orange = const Color(0xFFFF9800);
   Color green = const Color(0xFF4CAF50);
 
-  // Dark
   Color darkPrimaryColor = const Color(0xFF212121);
   Color darkSecondaryColor = const Color(0xFF282828);
   Color darkbackgroundColor = const Color(0xFFEBEBEB);
@@ -20,10 +18,9 @@ class AppColor {
   Color darkOrange = const Color(0xFFFFA726);
   Color darkGreen = const Color(0xFF66BB6A);
 
-  // Background color palette
   List<Color> backgroundColors(BuildContext context) => [
-        Colors.white, // Added pure white
-        Colors.black, // Added pure black
+        Colors.white,
+        Colors.black,
         const Color(0xFFAEB6BF),
         const Color(0xFFD5F5E3),
         const Color(0xFFFCF3CF),

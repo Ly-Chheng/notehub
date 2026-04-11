@@ -53,7 +53,6 @@ void showFolderSheet(BuildContext context, {dynamic folderKey, dynamic existingD
 
                     final data = {
                       "title": newName,
-                      "colorValue": existingData != null ? existingData['colorValue'] : AppColor().primaryColor.value,
                       "date": existingData != null ? existingData['date'] : DateTime.now().toString(),
                     };
 

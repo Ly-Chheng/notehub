@@ -15,6 +15,7 @@ Widget customTextField(
   Color? fillColor,
   double? hintFontSize,
   double? fontSize,
+  Widget? trailing,
 }) {
   return Container(
     decoration: BoxDecoration(
@@ -60,62 +61,23 @@ Widget customTextField(
           fontFamilyFallback: const ['KH-REGULAR'],
         ),
         suffixIcon: suffixIcon ??
-            (toggle != null
-                ? IconButton(
-                    icon: Icon(
-                      obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                      color: AppColor().gray,
+            (trailing != null
+                ? Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: Center(
+                      widthFactor: 1,
+                      child: trailing,
                     ),
-                    onPressed: toggle,
                   )
-                : null),
-      ),
-    ),
-  );
-}
-
-Widget buildStandardField(
-  String hint, {
-  String? trailing,
-  TextEditingController? controller,
-  IconData? prefixIcon,
-}) {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.grey.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(12),
-    ),
-    child: TextField(
-      controller: controller,
-      style: TextStyle(
-        color: Theme.of(Get.context!).textTheme.bodyLarge?.color,
-        fontSize: 16,
-        fontFamily: 'EN-REGULAR',
-        fontFamilyFallback: const ['KH-REGULAR'],
-      ),
-      cursorColor: AppColor().primaryColor,
-      decoration: InputDecoration(
-        hintText: hint,
-        hintStyle: TextStyle(
-          color: AppColor().gray,
-          fontSize: 16,
-          fontFamily: 'EN-REGULAR',
-          fontFamilyFallback: const ['KH-REGULAR'],
-        ),
-        border: InputBorder.none,
-        enabledBorder: InputBorder.none,
-        focusedBorder: InputBorder.none,
-        errorBorder: InputBorder.none,
-        disabledBorder: InputBorder.none,
-        prefixIcon: prefixIcon != null ? Icon(prefixIcon, color: const Color(0XFF8E8E93)) : null,
-        suffixText: trailing,
-        suffixStyle: TextStyle(
-          color: AppColor().gray,
-          fontSize: 14,
-          fontFamily: 'EN-REGULAR',
-          fontFamilyFallback: const ['KH-REGULAR'],
-        ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                : toggle != null
+                    ? IconButton(
+                        icon: Icon(
+                          obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                          color: AppColor().gray,
+                        ),
+                        onPressed: toggle,
+                      )
+                    : null),
       ),
     ),
   );

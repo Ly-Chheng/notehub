@@ -10,7 +10,7 @@ class Folder {
     required this.colorValue,
     this.isDefault = false,
     this.count = 0,
-    this.isPinned = false, 
+    this.isPinned = false,
   });
 
   Map<String, dynamic> toMap() {

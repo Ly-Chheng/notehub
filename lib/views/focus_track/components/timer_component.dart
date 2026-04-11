@@ -118,7 +118,7 @@ class TimerComponent extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               decoration: BoxDecoration(
-                color: isFinished ? Colors.black : Theme.of(context).cardColor,
+                color: isFinished ? AppColor().black : Theme.of(context).cardColor,
               ),
               child: Row(
                 children: [

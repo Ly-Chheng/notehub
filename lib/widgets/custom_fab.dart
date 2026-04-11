@@ -27,7 +27,7 @@ class AnimatedFab extends StatelessWidget {
           onPressed: isVisible ? onPressed : null,
           child: Icon(
             icon,
-            color: Colors.white,
+            color: AppColor().white,
             size: MediaQuery.of(context).size.shortestSide < 600 ? 30 : 35,
           ),
         ),

@@ -28,12 +28,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   bool _obscureConfirm = true;
   String? _selectedQuestion;
 
-  final List<String> _questions = [
-    "What was the name of your first school?",
-    "What is your mother's maiden name?",
-    "In which city were you born?",
-  ];
-
   @override
   void dispose() {
     _currentPassController.dispose();
@@ -97,7 +91,20 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   setState(() => _obscureConfirm = !_obscureConfirm);
                 }, controller: _confirmPassController),
                 const SizedBox(height: 15),
-                buildStandardField("New Hint", trailing: "Optional", controller: _hintController),
+                customTextField(
+                  "New Hint",
+                  false,
+                  null,
+                  controller: _hintController,
+                  trailing: Text(
+                    "Optional",
+                    style: TextStyle(
+                      color: AppColor().gray,
+                      fontSize: context.isPhone ? 14 : 16,
+                      fontFamily: 'EN-REGULAR',
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 30),
                 _buildSecurityHeader(),
                 const SizedBox(height: 12),
@@ -128,7 +135,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         Text("Optional",
             style: TextStyle(
               color: AppColor().gray,
-              fontSize: context.isPhone ? 12 : 14,
+              fontSize: context.isPhone ? 14 : 16,
               fontFamily: 'EN-REGULAR',
             )),
       ],
@@ -137,7 +144,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   Widget _buildDropdown() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 2),
       decoration: BoxDecoration(
         color: Colors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -154,7 +161,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               )),
           isExpanded: true,
           icon: Icon(Icons.keyboard_arrow_down, color: AppColor().gray),
-          items: _questions.map((String q) {
+          items: _lockController.questions.map((String q) {
             return DropdownMenuItem(
                 value: q,
                 child: Text(q,

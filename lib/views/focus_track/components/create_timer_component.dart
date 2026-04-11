@@ -52,7 +52,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       selectedHours = 1;
       selectedMinutes = 20;
       selectedSeconds = 40;
-      // _labelController = TextEditingController(text: "Timer");
       _labelController = TextEditingController(text: (widget.existingTimer?.title != null && widget.existingTimer!.title.isNotEmpty) ? widget.existingTimer!.title : "Timer");
     }
 
@@ -178,6 +177,15 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   }
 
   @override
+  void dispose() {
+    hourController.dispose();
+    minController.dispose();
+    secController.dispose();
+    _labelController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -226,7 +234,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
 
   Widget _buildPickerSection() {
     return Container(
-      height: 200,
+      height: context.isPhone ? 200 : 300,
       margin: const EdgeInsets.symmetric(horizontal: 20),
       decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(20)),
       child: Row(
@@ -363,7 +371,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
                 SheetHeader(title: "Add Quick Preset"),
                 const SizedBox(height: 20),
                 Container(
-                  height: 200,
+                  height: context.isPhone ? 200 : 300,
                   decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.01), borderRadius: BorderRadius.circular(20)),
                   child: Row(
                     children: [
@@ -404,19 +412,10 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         children: List.generate(
           max,
           (index) => Center(
-            child: Text("$index $label", style: const TextStyle(fontSize: 18)),
+            child: Text("$index $label", style: text18(context)),
           ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    hourController.dispose();
-    minController.dispose();
-    secController.dispose();
-    _labelController.dispose();
-    super.dispose();
   }
 }

@@ -66,16 +66,16 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
           child: Column(
             children: [
               Center(child: customHeader("Reset Password", context)),
-              const Text("Please enter your current password to remove all protection.", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: Colors.grey, fontFamily: 'EN-REGULAR')),
+              Text("Please enter your current password to remove all protection.", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColor().gray, fontFamily: 'EN-REGULAR')),
               const SizedBox(height: 30),
               if (hasLockedNotes)
                 Container(
                   padding: const EdgeInsets.all(12),
                   margin: const EdgeInsets.only(bottom: 25),
                   decoration: BoxDecoration(
-                    color: Colors.orange.withValues(alpha: 0.1),
+                    color: AppColor().orange.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: Colors.orange.withValues(alpha: 0.5)),
+                    border: Border.all(color: AppColor().orange.withValues(alpha: 0.5)),
                   ),
                   child: Row(
                     children: [

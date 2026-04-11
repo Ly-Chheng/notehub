@@ -25,12 +25,6 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   bool _obscureConfirm = true;
   String? _selectedQuestion;
 
-  final List<String> _questions = [
-    "What was the name of your first school?",
-    "What is your mother's maiden name?",
-    "In which city were you born?",
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,7 +44,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
               answer: _answerController.text,
               hint: _hintController.text,
             ),
-            child: Text("Create", style: TextStyle(fontSize: 18, color: AppColor().primaryColor, fontFamily: 'EN-REGULAR')),
+            child: Text("Create", style: TextStyle(fontSize: context.isPhone ? 18 : 20, color: AppColor().primaryColor, fontFamily: 'EN-REGULAR')),
           )
         ],
       ),
@@ -67,7 +61,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: AppColor().gray,
-                    fontSize: 14,
+                    fontSize: context.isPhone ? 14 : 16,
                     fontFamily: 'EN-REGULAR',
                   ),
                 ),
@@ -76,11 +70,29 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 const SizedBox(height: 15),
                 customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
                 const SizedBox(height: 15),
-                buildStandardField("Hint", trailing: "Optional", controller: _hintController),
+                customTextField(
+                  "Hint",
+                  false,
+                  null,
+                  controller: _hintController,
+                  trailing: Text(
+                    "Optional",
+                    style: TextStyle(
+                      color: AppColor().gray,
+                      fontSize: context.isPhone ? 14 : 16,
+                      fontFamily: 'EN-REGULAR',
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 30),
                 _buildDropdown(),
                 const SizedBox(height: 15),
-                buildStandardField("Security Answer", controller: _answerController),
+                customTextField(
+                  "Security Answer",
+                  false,
+                  null,
+                  controller: _answerController,
+                )
               ],
             ),
           ),
@@ -96,20 +108,20 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         Text("Security Question Verification", style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR')),
         const SizedBox(height: 10),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
           decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: _selectedQuestion,
               dropdownColor: Theme.of(context).cardColor,
-              hint: Text("Select Security Question", style: TextStyle(color: AppColor().gray, fontSize: context.isPhone ? 14 : 18, fontFamily: 'EN-REGULAR')),
+              hint: Text("Select Security Question", style: TextStyle(color: AppColor().gray, fontSize: context.isPhone ? 14 : 16, fontFamily: 'EN-REGULAR')),
               isExpanded: true,
-              items: _questions
+              items: _controller.questions
                   .map((q) => DropdownMenuItem(
                       value: q,
                       child: Text(q,
                           style: TextStyle(
-                            fontSize: context.isPhone ? 16 : 18,
+                            fontSize: context.isPhone ? 16 : 16,
                             fontFamily: 'EN-REGULAR',
                           ))))
                   .toList(),

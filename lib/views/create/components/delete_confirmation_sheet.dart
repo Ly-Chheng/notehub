@@ -5,8 +5,9 @@ import 'package:project_structure/widgets/sheet_header.dart';
 
 void showDeleteConfirmationSheet(
   BuildContext context,
-  VoidCallback onConfirm,
-) {
+  VoidCallback onConfirm, {
+  required int count,
+}) {
   showModalBottomSheet(
     context: context,
     backgroundColor: Theme.of(context).cardColor,
@@ -23,8 +24,8 @@ void showDeleteConfirmationSheet(
               title: "",
             ),
             const SizedBox(height: 20),
-            const Text(
-              "Are you sure you want to delete selected notes?",
+            Text(
+              count == 1 ? "Are you sure you want to delete this note?" : "Are you sure you want to delete selected notes?",
               textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 16,

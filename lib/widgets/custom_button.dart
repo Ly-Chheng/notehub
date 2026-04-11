@@ -55,12 +55,12 @@ class CustomButton extends StatelessWidget {
         ),
       ),
       child: isLoading
-          ? const SizedBox(
+          ? SizedBox(
               height: 20,
               width: 20,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: Colors.white,
+                color: AppColor().white,
               ),
             )
           : Row(
@@ -74,7 +74,7 @@ class CustomButton extends StatelessWidget {
                 Text(
                   text,
                   style: TextStyle(
-                    color: textColor ?? Colors.white,
+                    color: textColor ?? AppColor().white,
                     fontSize: context.isPhone ? 16 : 18,
                     fontFamily: 'KH-SemiBold',
                   ),

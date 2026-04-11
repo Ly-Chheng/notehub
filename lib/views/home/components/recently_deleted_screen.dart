@@ -169,10 +169,10 @@ class RecentlyDeletedScreen extends StatelessWidget {
                                         (data['title'] != null && data['title'].toString().trim().isNotEmpty) ? data['title'] : _getPlainTextFromNote(data['subtitle']),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
-                                        style: const TextStyle(
+                                        style: TextStyle(
                                           fontFamily: 'EN-REGULAR',
                                           fontFamilyFallback: ['KH-REGULAR'],
-                                          fontSize: 16,
+                                          fontSize: context.isPhone ? 16 : 18,
                                           fontWeight: FontWeight.w500,
                                         ),
                                       ),
@@ -181,7 +181,7 @@ class RecentlyDeletedScreen extends StatelessWidget {
                                         data['deletedAt'] != null ? DateFormat('MM-dd-yyyy / hh:mm a').format(DateTime.parse(data['deletedAt'])) : "Unknown",
                                         style: TextStyle(
                                           fontFamily: 'EN-REGULAR',
-                                          fontSize: 14,
+                                          fontSize: context.isPhone ? 14 : 16,
                                           color: Colors.grey[600],
                                         ),
                                       ),
@@ -215,8 +215,8 @@ class RecentlyDeletedScreen extends StatelessWidget {
                         const Spacer(),
                         Text(
                           "${controller.selectedKeys.length} selected",
-                          style: const TextStyle(
-                            fontSize: 14,
+                          style: TextStyle(
+                            fontSize: context.isPhone ? 14 : 16,
                             fontFamily: 'EN-REGULAR',
                           ),
                         ),

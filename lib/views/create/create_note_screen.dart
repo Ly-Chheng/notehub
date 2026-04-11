@@ -141,7 +141,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _quillController.addListener(_triggerAutoSave);
   }
 
-  // CORE FOCUS MANAGEMENT
   void _forceUnfocus() {
     _editorFocusNode.unfocus();
     FocusManager.instance.primaryFocus?.unfocus();
@@ -328,7 +327,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SheetHeader(title: "Share"),
+              const SheetHeader(title: ""),
               Wrap(
                 children: [
                   ListTile(
@@ -426,38 +425,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               },
             ),
           ),
-          // PopupMenuButton<String>(
-          //   onOpened: _forceUnfocus,
-          //   icon: Container(
-          //     decoration: BoxDecoration(
-          //       border: Border.all(
-          //         color: AppColor().primaryColor,
-          //         width: 1,
-          //       ),
-          //       borderRadius: BorderRadius.circular(5),
-          //     ),
-          //     child: Icon(
-          //       Icons.more_vert_outlined,
-          //       color: AppColor().primaryColor,
-          //       size: 20,
-          //     ),
-          //   ),
-          //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-          //   offset: const Offset(0, 50),
-          //   color: Theme.of(context).cardColor,
-          //   onSelected: (value) => _handleMenuSelection(value, context),
-          //   itemBuilder: (context) => [
-          //     buildPopupItem(context, isPinned ? 'Unpin' : 'Pin', isPinned ? Icons.push_pin : Icons.push_pin_outlined),
-          //     buildPopupItem(
-          //       context,
-          //       'Share',
-          //       Icons.share_outlined,
-          //     ),
-          //     buildPopupItem(context, 'Move Note', Icons.folder_outlined),
-          //     buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),
-          //     buildPopupItem(context, 'Delete', Icons.delete_outline, color: AppColor().red),
-          //   ],
-          // ),
           AnimatedBuilder(
             animation: Listenable.merge([titleController, _quillController]),
             builder: (context, _) {

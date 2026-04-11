@@ -1,5 +1,4 @@
-// ignore_for_file: deprecated_member_use
-import 'package:flutter/material.dart';
+ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:project_structure/core/utils/app_color.dart';
@@ -8,8 +7,8 @@ class ThemeService {
   // light mode color
   ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
-    scaffoldBackgroundColor: const Color(0xFFF8F9FB), // background
-    cardColor: AppColor().white, // card background in light mode
+    scaffoldBackgroundColor: const Color(0xFFF8F9FB),  
+    cardColor: AppColor().white,  
     primaryColor: AppColor().primaryColor,
     iconTheme: const IconThemeData(color: Colors.black87),
     textTheme: TextTheme(
@@ -29,8 +28,8 @@ class ThemeService {
   // dark mode color
   ThemeData darkTheme = ThemeData(
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: const Color(0xFF121212), // background
-    cardColor: const Color(0xFF1E1E1E), // card background in dark mode
+    scaffoldBackgroundColor: const Color(0xFF121212),
+    cardColor: const Color(0xFF1E1E1E),
     primaryColor: AppColor().primaryColor,
     iconTheme: const IconThemeData(color: Colors.white70),
     textTheme: TextTheme(

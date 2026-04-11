@@ -30,7 +30,6 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -42,14 +41,13 @@ Future<void> main() async {
 
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Hive.initFlutter(); // Initialize Hive properly
+  await Hive.initFlutter();
 
   Hive.registerAdapter(TimerModelAdapter()); // Register the generated adapter
 
   await Hive.deleteFromDisk();
   await GetStorage().erase();
 
-  // Open Boxes as Generic
   await Hive.openBox('student_notes');
   await Hive.openBox('folders_box');
   await Hive.openBox('settings_box');

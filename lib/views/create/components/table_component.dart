@@ -104,7 +104,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 15),
               child: Table(
-                defaultColumnWidth: const FixedColumnWidth(150),
+                defaultColumnWidth: const FixedColumnWidth(160),
                 columnWidths: {
                   columnCount: const FixedColumnWidth(50),
                 },

@@ -22,19 +22,19 @@ Future<void> showConfirmDialog({
 
   switch (type) {
     case DialogType.success:
-      confirmColor = Colors.green;
+      confirmColor = AppColor().green;
       icon = Icons.check_circle;
       break;
     case DialogType.error:
-      confirmColor = Colors.red;
+      confirmColor = AppColor().red;
       icon = Icons.error;
       break;
     case DialogType.warning:
-      confirmColor = Colors.orange;
+      confirmColor = AppColor().orange;
       icon = Icons.warning;
       break;
     default:
-      confirmColor = Colors.red;
+      confirmColor = AppColor().red;
       icon = null;
   }
 
@@ -154,7 +154,7 @@ Future<void> showConfirmDialog({
                         confirmText ?? 'OK',
                         style: TextStyle(
                           fontSize: context.isPhone ? 16 : 18,
-                          color: Colors.white,
+                          color: AppColor().white,
                           fontFamily: 'EN-REGULAR',
                         ),
                       ),

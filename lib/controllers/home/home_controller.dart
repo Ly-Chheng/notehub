@@ -98,7 +98,7 @@ class HomeController extends GetxController {
           Get.back();
           onVerified();
         } else {
-          Get.snackbar("Error", "Incorrect Password", backgroundColor: Colors.red, colorText: AppColor().white);
+          Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
         }
       },
     );

@@ -8,6 +8,12 @@ import 'package:project_structure/widgets/custom_dialog.dart';
 class LockController extends GetxController {
   final Box settingsBox = Hive.box('settings_box');
 
+  final List<String> questions = [
+    "What was the name of your first school?",
+    "What is your mother's maiden name?",
+    "In which city were you born?",
+  ];
+
   Future<void> _showDialog(
     BuildContext context, {
     required String title,

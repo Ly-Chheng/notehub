@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/bottom_navigation/navigationbar_controller.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/focus_track/focus_track_screen.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
@@ -66,7 +67,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(width: 1.5, color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.grey),
+                    border: Border.all(width: 1.5, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
                   ),
                   child: Icon(
                     Icons.add,
@@ -82,7 +83,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(width: 1.5, color: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.grey),
+                    border: Border.all(width: 1.5, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
                   ),
                   child: Icon(Icons.add, size: context.isPhone ? 24 : 25),
                 ),

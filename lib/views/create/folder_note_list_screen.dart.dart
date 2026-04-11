@@ -259,6 +259,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                         },
                                       );
                                     },
+                                    count: selectedKeys.length,
                                   );
                                 },
                               );

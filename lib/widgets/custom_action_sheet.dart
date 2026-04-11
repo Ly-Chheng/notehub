@@ -37,9 +37,9 @@ class ActionSheet {
         title: Text(
           title,
           style: TextStyle(
-            color: CupertinoColors.systemGrey,
+            color: AppColor().gray,
             fontSize: context.isPhone ? 12 : 14,
-            fontFamily: 'EN-BOLD',
+            fontFamily: 'EN-REGULAR',
           ),
         ),
         actions: actions.map((item) {
@@ -80,7 +80,7 @@ class ActionSheet {
                           item.switchValue!.value = val;
                           item.onSwitchChanged?.call(val);
                         },
-                        activeTrackColor: Colors.green,
+                        activeTrackColor: AppColor().green,
                       ),
                     ],
                   ),

@@ -1,7 +1,3 @@
-// import 'dart:async';
-// import 'package:get/get.dart';
-
-// class StopwatchController extends GetxController {
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:project_structure/models/focus_track/lap_model.dart';

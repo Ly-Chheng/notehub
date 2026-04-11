@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/focus_track/components/timer_component.dart';
 import 'package:project_structure/views/focus_track/components/stopwatch_component.dart';
 
@@ -81,7 +82,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
   }
 
   Widget _toggleItem(String label, int index) {
-    final Color activeColor = Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black;
+    final Color activeColor = Theme.of(context).brightness == Brightness.dark ? AppColor().white : AppColor().black;
     return Expanded(
       child: GestureDetector(
         onTap: () => _handleToggle(index),
@@ -92,7 +93,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
             label,
             style: TextStyle(
               fontFamily: 'EN-SEMIBOLD',
-              color: selectedIndex == index ? activeColor : Colors.grey,
+              color: selectedIndex == index ? activeColor : AppColor().gray,
               fontSize: context.isPhone ? 16 : 18,
             ),
           ),

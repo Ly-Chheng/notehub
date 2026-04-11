@@ -19,7 +19,6 @@ class Note {
     this.isFavorite = false,
   });
 
-  // Convert Note object to Map (for SQLite/Hive)
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -28,11 +27,10 @@ class Note {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'color': color,
-      'is_favorite': isFavorite ? 1 : 0, // SQLite boolean
+      'is_favorite': isFavorite ? 1 : 0,
     };
   }
 
-  // Convert Map to Note object
   factory Note.fromMap(Map<String, dynamic> map) {
     return Note(
       id: map['id'],
@@ -45,7 +43,6 @@ class Note {
     );
   }
 
-  // Optional: JSON serialization
   String toJson() => json.encode(toMap());
 
   factory Note.fromJson(String source) => Note.fromMap(json.decode(source));
