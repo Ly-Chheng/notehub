@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
@@ -44,7 +45,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
               answer: _answerController.text,
               hint: _hintController.text,
             ),
-            child: Text("Create", style: TextStyle(fontSize: context.isPhone ? 18 : 20, color: AppColor().primaryColor, fontFamily: 'EN-REGULAR')),
+            child: Text("Create", style: text18(context).copyWith(color: AppColor().primaryColor),),
           )
         ],
       ),

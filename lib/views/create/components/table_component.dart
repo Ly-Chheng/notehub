@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_action_sheet.dart';
 
@@ -10,6 +11,7 @@ class EditableTableComponent extends StatefulWidget {
   final VoidCallback onAddColumn;
   final Function(int colIndex) onRemoveColumn;
   final VoidCallback onDeleteTable;
+  final Color? noteBgColor;
 
   const EditableTableComponent({
     super.key,
@@ -20,6 +22,7 @@ class EditableTableComponent extends StatefulWidget {
     required this.onAddColumn,
     required this.onRemoveColumn,
     required this.onDeleteTable,
+    this.noteBgColor,
   });
 
   @override
@@ -91,9 +94,17 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
     );
   }
 
+  Color _getContrastColor(Color? bgColor) {
+    if (bgColor == null || bgColor.value == 0) {
+      return Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
+    }
+    return ThemeData.estimateBrightnessForColor(bgColor) == Brightness.dark ? Colors.white : Colors.black;
+  }
+
   @override
   Widget build(BuildContext context) {
     int columnCount = widget.tableData.isNotEmpty ? widget.tableData[0].length : 0;
+    final Color textColor = _getContrastColor(widget.noteBgColor);
     return LayoutBuilder(
       builder: (context, constraints) {
         return SingleChildScrollView(
@@ -110,7 +121,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                 },
                 border: TableBorder.all(
                   color: CupertinoColors.separator.resolveFrom(context),
-                  width: 0.5,
+                  width: 1,
                 ),
                 children: [
                   TableRow(
@@ -153,7 +164,9 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                               decoration: null,
                               style: TextStyle(
                                 fontSize: 16,
-                                color: CupertinoColors.label.resolveFrom(context),
+                                color: textColor,
+                                fontFamily: 'EN-REGULAR',
+                                fontFamilyFallback: const ['KH-REGULAR'],
                               ),
                             ),
                           );

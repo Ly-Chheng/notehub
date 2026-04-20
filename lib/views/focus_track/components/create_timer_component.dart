@@ -346,7 +346,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.1)),
         ),
-        child: Center(child: Text(text, style: const TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.w500))),
+        child: Center(child: Text(text, style: const TextStyle(color: Colors.blueGrey,))),
       ),
     );
   }
@@ -357,6 +357,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     int tempS = selectedSeconds;
 
     Get.bottomSheet(
+      isScrollControlled: true,
       StatefulBuilder(builder: (context, setSheetState) {
         return SafeArea(
           child: Container(
@@ -412,7 +413,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         children: List.generate(
           max,
           (index) => Center(
-            child: Text("$index $label", style: text18(context)),
+            child: Text("$index $label", style: text16(context)),
           ),
         ),
       ),

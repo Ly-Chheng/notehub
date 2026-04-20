@@ -313,6 +313,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _autoSaveTimer?.cancel();
     final rawText = _quillController.document.toPlainText();
     final hasImages = selectedImages.isNotEmpty;
+    final bool hasText = titleController.text.trim().isNotEmpty || rawText.trim().isNotEmpty;
+
     Get.bottomSheet(
       isScrollControlled: true,
       backgroundColor: Theme.of(context).cardColor,
@@ -330,22 +332,23 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               const SheetHeader(title: ""),
               Wrap(
                 children: [
-                  ListTile(
-                    leading: Icon(Icons.text_snippet, color: AppColor().primaryColor),
-                    title: Text(
-                      "Text",
-                      style: text16(context),
+                  if (hasText)
+                    ListTile(
+                      leading: Icon(Icons.text_snippet, color: AppColor().primaryColor),
+                      title: Text(
+                        "Text",
+                        style: text16(context),
+                      ),
+                      onTap: () {
+                        Get.back();
+                        noteController.shareNote(
+                          title: titleController.text,
+                          content: rawText,
+                          selectedImages: selectedImages,
+                          mode: ShareMode.text,
+                        );
+                      },
                     ),
-                    onTap: () {
-                      Get.back();
-                      noteController.shareNote(
-                        title: titleController.text,
-                        content: rawText,
-                        selectedImages: selectedImages,
-                        mode: ShareMode.text,
-                      );
-                    },
-                  ),
                   if (hasImages)
                     ListTile(
                       leading: Icon(Icons.image, color: AppColor().green),
@@ -473,7 +476,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 TextField(
                   controller: titleController,
                   maxLines: null,
-                  cursorColor: AppColor().primaryColor,
+                  // cursorColor: AppColor().primaryColor,
                   decoration: InputDecoration(
                     hintText: 'Title',
                     enabledBorder: InputBorder.none,
@@ -493,6 +496,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 if (showTable)
                   EditableTableComponent(
                     tableData: tableData,
+                    noteBgColor: noteBgColor,
                     onCellChanged: (rowIndex, colIndex, value) {
                       tableData[rowIndex][colIndex] = value;
 
