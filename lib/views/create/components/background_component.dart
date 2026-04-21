@@ -10,6 +10,7 @@ void showPaletteSheet({
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    constraints: BoxConstraints(maxWidth: double.infinity),
     backgroundColor: Theme.of(context).cardColor,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (context) => SafeArea(

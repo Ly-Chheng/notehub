@@ -9,6 +9,7 @@ import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/create/components/delete_confirmation_sheet.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
@@ -76,7 +77,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   child: Icon(
                     Icons.more_vert_outlined,
                     color: AppColor().primaryColor,
-                    size: 20,
+                    size: context.isPhone ? 20 : 25,
                   ),
                 ),
                 shape: RoundedRectangleBorder(
@@ -137,8 +138,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                                   child: Text(
                                     "Pinned",
                                     style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold,
+                                      fontSize: context.isPhone ? 16 : 18,
+                                      fontFamily: 'EN-BOLD',
                                       color: AppColor().primaryColor,
                                     ),
                                   ),
@@ -213,7 +214,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       icon: Icon(
                         Icons.folder,
                         color: AppColor().primaryColor,
-                        size: 24,
+                        size: context.isPhone ? 25 : 30,
                       ),
                       onPressed: selectedKeys.isEmpty
                           ? null
@@ -236,7 +237,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       icon: Icon(
                         Icons.delete,
                         color: AppColor().red,
-                        size: 24,
+                        size: context.isPhone ? 25 : 30,
                       ),
                       onPressed: selectedKeys.isEmpty
                           ? null
@@ -326,15 +327,45 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               onPressed: (context) => controller.verifyAndExecute(
                 context: context,
                 isLocked: isLocked,
-                title: "Delete Locked Note",
+                // title: "Delete Locked Note",
+                title: "Delete Note",
+                // onVerified: () {
+                //   final noteData = noteBox.get(noteKey);
+                //   if (noteData != null) {
+                //     trashBox.put(noteKey, {
+                //       ...Map<String, dynamic>.from(noteData),
+                //       'deletedAt': DateTime.now().toIso8601String(),
+                //     });
+                //     noteBox.delete(noteKey);
+                //   }
+                // },
                 onVerified: () {
-                  final noteData = noteBox.get(noteKey);
-                  if (noteData != null) {
-                    trashBox.put(noteKey, {
-                      ...Map<String, dynamic>.from(noteData),
-                      'deletedAt': DateTime.now().toIso8601String(),
-                    });
-                    noteBox.delete(noteKey);
+                  if (isLocked) {
+                    controller.deleteNote(
+                      noteKey: noteKey,
+                      noteData: note,
+                    );
+                  } else {
+                    // showDeleteConfirmationSheet(
+                    //   context,
+                    //   () => controller.deleteNote(
+                    //     noteKey: noteKey,
+                    //     noteData: note,
+                    //   ),
+                    //   count: 1,
+                    // );
+                    showConfirmDialog(
+                      context: context,
+                      title: "Delete Note",
+                      subTitle: "Are you sure you want to delete this note?",
+                      confirmText: "Delete",
+                      onConfirm: () {
+                        controller.deleteNote(
+                          noteKey: noteKey,
+                          noteData: note,
+                        );
+                      },
+                    );
                   }
                 },
               ),
@@ -342,6 +373,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               foregroundColor: AppColor().white,
               icon: Icons.delete,
               label: 'Delete',
+              // label: isLocked ? "Unlock & Delete" : "Delete",
               borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
             ),
           ],
@@ -485,6 +517,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
     showModalBottomSheet(
       context: context,
+      constraints: BoxConstraints(maxWidth: double.infinity),
       backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) => Container(

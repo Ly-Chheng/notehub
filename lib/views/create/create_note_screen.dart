@@ -230,6 +230,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     FocusScope.of(context).unfocus();
     showModalBottomSheet(
       context: context,
+      constraints: BoxConstraints(maxWidth: double.infinity),
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => HandwritingCanvas(
@@ -315,63 +316,77 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final hasImages = selectedImages.isNotEmpty;
     final bool hasText = titleController.text.trim().isNotEmpty || rawText.trim().isNotEmpty;
 
-    Get.bottomSheet(
+    showModalBottomSheet(
+      context: context,
       isScrollControlled: true,
+      constraints: BoxConstraints(maxWidth: double.infinity),
       backgroundColor: Theme.of(context).cardColor,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      SafeArea(
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SheetHeader(title: ""),
-              Wrap(
-                children: [
-                  if (hasText)
-                    ListTile(
-                      leading: Icon(Icons.text_snippet, color: AppColor().primaryColor),
-                      title: Text(
-                        "Text",
-                        style: text16(context),
-                      ),
-                      onTap: () {
-                        Get.back();
-                        noteController.shareNote(
-                          title: titleController.text,
-                          content: rawText,
-                          selectedImages: selectedImages,
-                          mode: ShareMode.text,
-                        );
-                      },
-                    ),
-                  if (hasImages)
-                    ListTile(
-                      leading: Icon(Icons.image, color: AppColor().green),
-                      title: Text(
-                        "Photos",
-                        style: text16(context),
-                      ),
-                      onTap: () {
-                        Get.back();
-                        noteController.shareNote(
-                          title: titleController.text,
-                          content: rawText,
-                          selectedImages: selectedImages,
-                          mode: ShareMode.photo,
-                        );
-                      },
-                    ),
-                ],
-              ),
-            ],
-          ),
-        ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      builder: (context) {
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SheetHeader(title: ""),
+                Wrap(
+                  children: [
+                    if (hasText)
+                      ListTile(
+                        leading: Icon(
+                          Icons.text_snippet,
+                          color: AppColor().primaryColor,
+                          size: context.isPhone ? 20 : 25,
+                        ),
+                        title: Text(
+                          "Text",
+                          style: text16(context),
+                        ),
+                        onTap: () {
+                          Get.back();
+                          noteController.shareNote(
+                            title: titleController.text,
+                            content: rawText,
+                            selectedImages: selectedImages,
+                            mode: ShareMode.text,
+                          );
+                        },
+                      ),
+                    if (hasImages)
+                      ListTile(
+                        leading: Icon(
+                          Icons.image,
+                          color: AppColor().green,
+                          size: context.isPhone ? 20 : 25,
+                        ),
+                        title: Text(
+                          "Photos",
+                          style: text16(context),
+                        ),
+                        onTap: () {
+                          Get.back();
+                          noteController.shareNote(
+                            title: titleController.text,
+                            content: rawText,
+                            selectedImages: selectedImages,
+                            mode: ShareMode.photo,
+                          );
+                        },
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -447,7 +462,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   child: Icon(
                     Icons.more_vert_outlined,
                     color: isEmpty ? AppColor().gray : AppColor().primaryColor,
-                    size: 20,
+                    size: context.isPhone ? 20 : 25,
                   ),
                 ),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
@@ -476,7 +491,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 TextField(
                   controller: titleController,
                   maxLines: null,
-                  // cursorColor: AppColor().primaryColor,
                   decoration: InputDecoration(
                     hintText: 'Title',
                     enabledBorder: InputBorder.none,
@@ -606,82 +620,86 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 15, horizontal: 40),
-          padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(40),
-            boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    _bottomIcon(Icons.camera_alt_outlined, () {
-                      _forceUnfocus();
-                      final int photoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
+        child: UnconstrainedBox(
+          child: Container(
+            margin: const EdgeInsets.symmetric(
+              vertical: 10,
+            ),
+            padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 15 : 40, vertical: context.isPhone ? 3 : 10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(40),
+              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _bottomIcon(Icons.camera_alt_outlined, () {
+                        _forceUnfocus();
+                        final int photoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
 
-                      if (photoCount >= 2) {
-                        showConfirmDialog(
+                        if (photoCount >= 2) {
+                          showConfirmDialog(
+                            context: context,
+                            title: "Image Limit",
+                            subTitle: "You can only select up to 2 images.",
+                            showCancel: false,
+                            confirmText: "OK",
+                            onConfirm: () {},
+                          );
+                          return;
+                        }
+
+                        showMediaSheet(
                           context: context,
-                          title: "Image Limit",
-                          subTitle: "You can only select up to 2 images.",
-                          showCancel: false,
-                          confirmText: "OK",
-                          onConfirm: () {},
+                          onImageSelected: (File tempImage) async {
+                            final int currentPhotoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
+
+                            if (currentPhotoCount < 2) {
+                              File permanentFile = await _moveFileToPermanentStorage(tempImage);
+                              setState(() {
+                                selectedImages.add(permanentFile);
+                              });
+                              _triggerAutoSave();
+                            }
+                          },
                         );
-                        return;
-                      }
-
-                      showMediaSheet(
-                        context: context,
-                        onImageSelected: (File tempImage) async {
-                          final int currentPhotoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
-
-                          if (currentPhotoCount < 2) {
-                            File permanentFile = await _moveFileToPermanentStorage(tempImage);
+                      }),
+                      _bottomIcon(Icons.text_fields, () {
+                        _forceUnfocus();
+                        _showFormattingSheet();
+                      }),
+                      _bottomIcon(Icons.palette_outlined, () {
+                        _forceUnfocus();
+                        showPaletteSheet(
+                          context: context,
+                          selectedColor: noteBgColor ?? Theme.of(context).scaffoldBackgroundColor,
+                          onColorSelected: (Color color) {
                             setState(() {
-                              selectedImages.add(permanentFile);
+                              noteBgColor = color;
                             });
                             _triggerAutoSave();
-                          }
-                        },
-                      );
-                    }),
-                    _bottomIcon(Icons.text_fields, () {
-                      _forceUnfocus();
-                      _showFormattingSheet();
-                    }),
-                    _bottomIcon(Icons.palette_outlined, () {
-                      _forceUnfocus();
-                      showPaletteSheet(
-                        context: context,
-                        selectedColor: noteBgColor ?? Theme.of(context).scaffoldBackgroundColor,
-                        onColorSelected: (Color color) {
-                          setState(() {
-                            noteBgColor = color;
-                          });
-                          _triggerAutoSave();
-                        },
-                      );
-                    }),
-                    _bottomIcon(Icons.table_chart_outlined, () {
-                      _forceUnfocus();
-                      setState(() => showTable = !showTable);
-                      _triggerAutoSave();
-                    }),
-                    _bottomIcon(Icons.mode_outlined, () {
-                      _forceUnfocus();
-                      _openHandwriting();
-                    }),
-                  ],
+                          },
+                        );
+                      }),
+                      _bottomIcon(Icons.table_chart_outlined, () {
+                        _forceUnfocus();
+                        setState(() => showTable = !showTable);
+                        _triggerAutoSave();
+                      }),
+                      _bottomIcon(Icons.mode_outlined, () {
+                        _forceUnfocus();
+                        _openHandwriting();
+                      }),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -716,6 +734,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     showModalBottomSheet(
       context: context,
+      constraints: BoxConstraints(maxWidth: double.infinity),
       backgroundColor: Theme.of(context).cardColor,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
@@ -769,10 +788,28 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       title: 'Delete Note',
       subTitle: 'Are you sure you want to delete this note and all its attachments?',
       confirmText: "Delete",
-      onConfirm: () {
-        noteController.deleteNote(
-          noteKey: widget.noteKey,
-          noteData: widget.existingNote,
+      // onConfirm: () {
+      //   noteController.deleteNote(
+      //     noteKey: widget.noteKey,
+      //     noteData: widget.existingNote,
+      //     onSuccess: () {
+      //       if (Get.isOverlaysOpen) Get.back();
+      //       Get.back();
+      //     },
+      //   );
+      // },
+      onConfirm: () async {
+        if (currentNoteKey == null) {
+          // Not saved yet → just close screen
+          Get.back();
+          return;
+        }
+
+        final noteData = Hive.box('student_notes').get(currentNoteKey);
+
+        await noteController.deleteNote(
+          noteKey: currentNoteKey,
+          noteData: noteData,
           onSuccess: () {
             if (Get.isOverlaysOpen) Get.back();
             Get.back();
@@ -783,12 +820,15 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
   Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
-    return IconButton(
-      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 25 : 30),
-      onPressed: () {
-        onPressed();
-        FocusScope.of(context).unfocus();
-      },
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 5 : 20),
+      child: IconButton(
+        icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 25 : 35),
+        onPressed: () {
+          onPressed();
+          FocusScope.of(context).unfocus();
+        },
+      ),
     );
   }
 
@@ -801,9 +841,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       onPressed: isEnabled ? onTap : null,
       icon: Image.asset(
         asset,
-        width: 24,
-        height: 24,
-        color: isEnabled ? AppColor().primaryColor : Colors.grey.shade400,
+        width: context.isPhone ? 24 : 30,
+        height: context.isPhone ? 24 : 30,
+        color: isEnabled ? AppColor().primaryColor : AppColor().gray,
       ),
     );
   }

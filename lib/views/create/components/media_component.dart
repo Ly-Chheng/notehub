@@ -29,6 +29,7 @@ void showMediaSheet({
 
   showModalBottomSheet(
     context: context,
+    constraints: BoxConstraints(maxWidth: double.infinity),
     backgroundColor: Theme.of(context).cardColor,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),

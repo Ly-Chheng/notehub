@@ -34,6 +34,7 @@ void showFormatSheet({
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    constraints: BoxConstraints(maxWidth: double.infinity),
     backgroundColor: Theme.of(context).cardColor,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (context) => StatefulBuilder(builder: (context, setSheetState) {
@@ -216,7 +217,7 @@ void showFormatSheet({
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: Text(
                   "Font Size",
-                  style: text16(context),
+                  style: text18(context),
                 ),
               ),
               _buildContainer(

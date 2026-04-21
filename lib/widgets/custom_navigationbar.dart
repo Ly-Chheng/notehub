@@ -17,7 +17,7 @@ Widget customNavigationBar({
   final Color inactiveColor = unselectedItemColor ?? AppColor().gray;
 
   return Padding(
-    padding: EdgeInsets.only(left: context.isPhone ? 35 : 45, right: context.isPhone ? 35 : 45, bottom: 10),
+    padding: EdgeInsets.only(left: context.isPhone ? 50 : 70, right: context.isPhone ? 50 : 70, bottom: 10),
     child: Container(
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,

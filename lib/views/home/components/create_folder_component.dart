@@ -14,6 +14,7 @@ void showFolderSheet(BuildContext context, {dynamic folderKey, dynamic existingD
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    constraints: BoxConstraints(maxWidth: double.infinity),
     backgroundColor: Theme.of(context).cardColor,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(25))),
     builder: (context) => SafeArea(

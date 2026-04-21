@@ -209,6 +209,7 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {
+    isSelectionMode.value = false;
     scrollController.dispose();
     super.onClose();
   }
