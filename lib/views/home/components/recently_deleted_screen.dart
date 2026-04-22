@@ -302,56 +302,5 @@ class RecentlyDeletedScreen extends StatelessWidget {
         ),
       ),
     );
-    // Get.bottomSheet(
-    //   Container(
-    //     decoration: BoxDecoration(
-    //       color: Theme.of(context).cardColor,
-    //       borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-    //     ),
-    //     padding: const EdgeInsets.all(20),
-    //     child: Column(
-    //       mainAxisSize: MainAxisSize.min,
-    //       crossAxisAlignment: CrossAxisAlignment.start,
-    //       children: [
-    //         const SheetHeader(title: "Move to Folder"),
-    //         const SizedBox(height: 15),
-    //         Flexible(
-    //           child: ValueListenableBuilder(
-    //             valueListenable: controller.folderBox.listenable(),
-    //             builder: (context, Box box, _) {
-    //               final folders = box.toMap().entries.toList();
-    //               return ListView.builder(
-    //                 shrinkWrap: true,
-    //                 itemCount: folders.length,
-    //                 itemBuilder: (context, index) {
-    //                   final folderKey = folders[index].key;
-    //                   final folderData = folders[index].value;
-    //                   return ListTile(
-    //                     leading: Icon(
-    //                       Icons.folder,
-    //                       color: AppColor().primaryColor,
-    //                     ),
-    //                     title: Text(
-    //                       folderData['title'],
-    //                       maxLines: 1,
-    //                       overflow: TextOverflow.ellipsis,
-    //                     ),
-    //                     onTap: () {
-    //                       if (noteKey != null) {
-    //                         controller.moveSingleNoteToFolder(noteKey, folderKey);
-    //                       } else {
-    //                         controller.moveSelectedToFolder(folderKey);
-    //                       }
-    //                     },
-    //                   );
-    //                 },
-    //               );
-    //             },
-    //           ),
-    //         ),
-    //       ],
-    //     ),
-    //   ),
-    // );
   }
 }
