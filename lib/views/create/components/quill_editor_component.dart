@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:get/get.dart';
 
 class QuillEditorComponent extends StatelessWidget {
   final QuillController controller;
@@ -32,7 +33,7 @@ class QuillEditorComponent extends StatelessWidget {
         customStyles: DefaultStyles(
           paragraph: DefaultTextBlockStyle(
             TextStyle(
-              fontSize: 16,
+              fontSize: context.isPhone ? 16 : 18,
               height: 1.4,
               fontFamily: 'EN-REGULAR',
               fontFamilyFallback: const ['KH-REGULAR'],

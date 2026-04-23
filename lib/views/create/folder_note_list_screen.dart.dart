@@ -200,7 +200,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         backgroundColor: AppColor().primaryColor,
         foregroundColor: AppColor().white,
         onPressed: () => Get.to(() => CreateNoteScreen(folderKey: widget.folderKey)),
-        child: const Icon(Icons.add, size: 30),
+        child: Icon(Icons.add, size: context.isPhone ? 30 : 40),
       ),
       bottomNavigationBar: isSelectionMode
           ? BottomAppBar(
@@ -230,7 +230,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     const Spacer(),
                     Text(
                       "${selectedKeys.length} selected",
-                      style: const TextStyle(fontSize: 12, fontFamily: 'EN-ENGULAR'),
+                      style: TextStyle(fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-ENGULAR'),
                     ),
                     const Spacer(),
                     IconButton(
@@ -327,18 +327,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               onPressed: (context) => controller.verifyAndExecute(
                 context: context,
                 isLocked: isLocked,
-                // title: "Delete Locked Note",
                 title: "Delete Note",
-                // onVerified: () {
-                //   final noteData = noteBox.get(noteKey);
-                //   if (noteData != null) {
-                //     trashBox.put(noteKey, {
-                //       ...Map<String, dynamic>.from(noteData),
-                //       'deletedAt': DateTime.now().toIso8601String(),
-                //     });
-                //     noteBox.delete(noteKey);
-                //   }
-                // },
                 onVerified: () {
                   if (isLocked) {
                     controller.deleteNote(
@@ -346,14 +335,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       noteData: note,
                     );
                   } else {
-                    // showDeleteConfirmationSheet(
-                    //   context,
-                    //   () => controller.deleteNote(
-                    //     noteKey: noteKey,
-                    //     noteData: note,
-                    //   ),
-                    //   count: 1,
-                    // );
                     showConfirmDialog(
                       context: context,
                       title: "Delete Note",
@@ -373,7 +354,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               foregroundColor: AppColor().white,
               icon: Icons.delete,
               label: 'Delete',
-              // label: isLocked ? "Unlock & Delete" : "Delete",
               borderRadius: const BorderRadius.horizontal(right: Radius.circular(10)),
             ),
           ],

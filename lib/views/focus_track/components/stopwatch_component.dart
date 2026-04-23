@@ -16,7 +16,7 @@ class StopwatchScreen extends StatelessWidget {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
             child: Column(
               children: [
                 SizedBox(
@@ -46,8 +46,8 @@ class StopwatchScreen extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             Container(
-              width: context.isPhone ? 250 : 330,
-              height: context.isPhone ? 250 : 330,
+              width: context.isPhone ? 250 : 300,
+              height: context.isPhone ? 250 : 300,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.transparent,

@@ -788,16 +788,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       title: 'Delete Note',
       subTitle: 'Are you sure you want to delete this note and all its attachments?',
       confirmText: "Delete",
-      // onConfirm: () {
-      //   noteController.deleteNote(
-      //     noteKey: widget.noteKey,
-      //     noteData: widget.existingNote,
-      //     onSuccess: () {
-      //       if (Get.isOverlaysOpen) Get.back();
-      //       Get.back();
-      //     },
-      //   );
-      // },
       onConfirm: () async {
         if (currentNoteKey == null) {
           // Not saved yet → just close screen

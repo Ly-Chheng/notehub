@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
@@ -253,7 +254,7 @@ void showFormatSheet({
                             style: TextStyle(
                               color: isSelected ? AppColor().white : Colors.grey.shade700,
                               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              fontSize: 14,
+                              fontSize: context.isPhone ? 14 : 16,
                               fontFamily: 'EN-REGULAR',
                             ),
                           ),

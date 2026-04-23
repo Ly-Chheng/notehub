@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
@@ -150,8 +151,8 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                     IconButton(
                         icon: Image.asset(
                           'assets/images/undo.png',
-                          width: 24,
-                          height: 24,
+                          width: context.isPhone ? 24 : 30,
+                          height: context.isPhone ? 24 : 30,
                         ),
                         onPressed: () {
                           setState(() {
@@ -165,8 +166,8 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                     IconButton(
                         icon: Image.asset(
                           'assets/images/redo.png',
-                          width: 24,
-                          height: 24,
+                          width: context.isPhone ? 24 : 30,
+                          height: context.isPhone ? 24 : 30,
                         ),
                         onPressed: () {
                           setState(() {
@@ -271,16 +272,22 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                   GestureDetector(
                     onTap: _pickCustomColor,
                     child: Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      margin: EdgeInsets.symmetric(
+                        horizontal: context.isPhone ? 5 : 10,
+                      ),
                       padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.grey,
+                        color: AppColor().gray,
                       ),
                       child: CircleAvatar(
-                        radius: 15,
+                        radius: context.isPhone ? 14 : 16,
                         backgroundColor: AppColor().white,
-                        child: Icon(Icons.add, color: Colors.black, size: 20),
+                        child: Icon(
+                          Icons.add,
+                          color: Colors.black,
+                          size: context.isPhone ? 20 : 25,
+                        ),
                       ),
                     ),
                   ),
@@ -290,7 +297,9 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
               ),
             ),
           ],
-          const SizedBox(height: 10),
+          SizedBox(
+            height: 5,
+          ),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
@@ -358,10 +367,12 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
     return GestureDetector(
       onTap: () => _updateBrush(color: color),
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 5),
+        margin: EdgeInsets.symmetric(
+          horizontal: context.isPhone ? 5 : 10,
+        ),
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: isSelected ? AppColor().primaryColor : Colors.transparent, width: 1)),
-        child: CircleAvatar(radius: 15, backgroundColor: color),
+        child: CircleAvatar(radius: context.isPhone ? 14 : 16, backgroundColor: color),
       ),
     );
   }
@@ -383,7 +394,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
           else if (icon != null)
             Icon(
               icon,
-              size: 24,
+              size: context.isPhone ? 24 : 30,
             ),
         ],
       ),

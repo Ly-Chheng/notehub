@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 
 class AnimatedFab extends StatelessWidget {
   final IconData icon;
   final VoidCallback onPressed;
-  final bool isVisible;  
+  final bool isVisible;
 
   const AnimatedFab({
     super.key,
     required this.icon,
     required this.onPressed,
-    required this.isVisible, 
+    required this.isVisible,
   });
 
   @override
@@ -28,7 +29,8 @@ class AnimatedFab extends StatelessWidget {
           child: Icon(
             icon,
             color: AppColor().white,
-            size: MediaQuery.of(context).size.shortestSide < 600 ? 30 : 35,
+            // size: MediaQuery.of(context).size.shortestSide < 600 ? 30 : 35,
+            size: context.isPhone ? 30 : 40,
           ),
         ),
       ),

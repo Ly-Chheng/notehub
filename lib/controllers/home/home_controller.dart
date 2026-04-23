@@ -3,7 +3,9 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/sheet_header.dart';
 
 class HomeController extends GetxController {
   final Box folderBox = Hive.box('folders_box');
@@ -132,7 +134,7 @@ class HomeController extends GetxController {
     showConfirmDialog(
       context: context,
       title: "Delete Permanently?",
-      subTitle: "Are you sure you want to delete ${keysToDelete.length} item(s) forever? This action cannot be undone.",
+      subTitle: "Are you sure you want to delete ${keysToDelete.length} items forever? This action cannot be undone.",
       onConfirm: () {
         for (var key in keysToDelete) {
           trashBox.delete(key);
@@ -156,18 +158,71 @@ class HomeController extends GetxController {
     }
   }
 
+  // void deleteSelectedPermanently(BuildContext context) {
+  //   if (selectedKeys.isEmpty) return;
+
+  //   showConfirmDialog(
+  //     context: context,
+  //     title: "Delete Permanently?",
+  //     subTitle: "Are you sure you want to delete ${selectedKeys.length} items forever? This action cannot be undone.",
+  //     onConfirm: () {
+  //       for (var key in selectedKeys) {
+  //         trashBox.delete(key);
+  //       }
+  //       toggleSelectionMode();
+  //     },
+  //   );
+  // }
+
   void deleteSelectedPermanently(BuildContext context) {
     if (selectedKeys.isEmpty) return;
 
-    showConfirmDialog(
+    showModalBottomSheet(
       context: context,
-      title: "Delete Permanently?",
-      subTitle: "Are you sure you want to delete ${selectedKeys.length} items forever? This action cannot be undone.",
-      onConfirm: () {
-        for (var key in selectedKeys) {
-          trashBox.delete(key);
-        }
-        toggleSelectionMode();
+      constraints: BoxConstraints(maxWidth: double.infinity),
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SheetHeader(title: ""),
+                const SizedBox(height: 20),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    "Are you sure you want to delete ${selectedKeys.length} items forever? This action cannot be undone.",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: context.isPhone ? 16 : 18,
+                      fontFamily: 'EN-REGULAR',
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 30),
+                SizedBox(
+                  width: double.infinity,
+                  child: CustomButton(
+                    text: "Delete Forever",
+                    backgroundColor: AppColor().red,
+                    onPressed: () {
+                      for (var key in selectedKeys) {
+                        trashBox.delete(key);
+                      }
+                      toggleSelectionMode();
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }

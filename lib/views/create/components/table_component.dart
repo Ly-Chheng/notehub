@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_action_sheet.dart';
 
@@ -163,7 +164,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                               padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
                               decoration: null,
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: context.isPhone ? 16 : 18,
                                 color: textColor,
                                 fontFamily: 'EN-REGULAR',
                                 fontFamilyFallback: const ['KH-REGULAR'],
@@ -176,7 +177,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                           child: Container(
                             height: 45,
                             alignment: Alignment.center,
-                            child: Icon(CupertinoIcons.minus_circle, color: AppColor().gray, size: 20),
+                            child: Icon(CupertinoIcons.minus_circle, color: AppColor().gray, size: context.isPhone ? 20 : 25),
                           ),
                         ),
                       ],
@@ -195,9 +196,9 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 40,
+        height: context.isPhone ? 40 : 50,
         alignment: Alignment.center,
-        child: Icon(CupertinoIcons.minus_circle, size: 20, color: AppColor().gray),
+        child: Icon(CupertinoIcons.minus_circle, size: context.isPhone ? 20 : 25, color: AppColor().gray),
       ),
     );
   }

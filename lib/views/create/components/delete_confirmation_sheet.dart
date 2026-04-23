@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
@@ -10,6 +11,7 @@ void showDeleteConfirmationSheet(
 }) {
   showModalBottomSheet(
     context: context,
+    constraints: BoxConstraints(maxWidth: double.infinity),
     backgroundColor: Theme.of(context).cardColor,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
@@ -28,7 +30,7 @@ void showDeleteConfirmationSheet(
               count == 1 ? "Are you sure you want to delete this note?" : "Are you sure you want to delete selected notes?",
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 16,
+                fontSize: context.isPhone ? 16 : 18,
                 fontFamily: 'EN-REGULAR',
               ),
             ),

@@ -17,7 +17,7 @@ Widget customNavigationBar({
   final Color inactiveColor = unselectedItemColor ?? AppColor().gray;
 
   return Padding(
-    padding: EdgeInsets.only(left: context.isPhone ? 50 : 70, right: context.isPhone ? 50 : 70, bottom: 10),
+    padding: EdgeInsets.only(left: context.isPhone ? 50 : 90, right: context.isPhone ? 50 : 90, bottom: 10),
     child: Container(
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
@@ -102,7 +102,7 @@ Widget customNavigationBar({
                       child: Center(
                         child: Text(
                           '$chatBadgeCount',
-                          style:   TextStyle(color: AppColor().white, fontSize: 10),
+                          style: TextStyle(color: AppColor().white, fontSize: 10),
                         ),
                       ),
                     ),

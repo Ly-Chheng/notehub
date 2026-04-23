@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
@@ -24,8 +25,8 @@ void showPaletteSheet({
             ),
             const SizedBox(height: 10),
             Wrap(
-              spacing: 6,
-              runSpacing: 6,
+              spacing: context.isPhone ? 6 : 8,
+              runSpacing: context.isPhone ? 6 : 8,
               children: AppColor().backgroundColors(context).map((color) {
                 bool isActive = selectedColor == color;
                 return GestureDetector(
@@ -34,8 +35,8 @@ void showPaletteSheet({
                     Navigator.pop(context);
                   },
                   child: Container(
-                    width: 80,
-                    height: 60,
+                    width: context.isPhone ? 80 : 100,
+                    height: context.isPhone ? 60 : 80,
                     decoration: BoxDecoration(
                       color: color,
                       borderRadius: BorderRadius.circular(15),

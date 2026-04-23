@@ -37,20 +37,20 @@ class TimerDetailScreen extends StatelessWidget {
                 alignment: Alignment.center,
                 children: [
                   SizedBox(
-                      width: context.isPhone ? 280 : 330,
-                      height: context.isPhone ? 280 : 330,
+                      width: context.isPhone ? 280 : 350,
+                      height: context.isPhone ? 280 : 350,
                       child: CircularProgressIndicator(
                           value: progress, strokeWidth: context.isPhone ? 10 : 12, valueColor: AlwaysStoppedAnimation(AppColor().primaryColor), backgroundColor: Colors.grey.shade300)),
                   Text(controller.formatTime(currentSec), style: TextStyle(fontSize: context.isPhone ? 45 : 55, fontFamily: 'EN-SEMIBOLD', color: Theme.of(context).textTheme.bodyLarge!.color)),
                 ],
               ),
             ),
-            const SizedBox(height: 100),
+              SizedBox(height: context.isPhone ? 100 : 150),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _actionButton(
-                  Icon(Icons.close, color: AppColor().white, size: 40),
+                  Icon(Icons.close, color: AppColor().white, size: context.isPhone ? 40 : 50),
                   Colors.grey[800]!,
                   AppColor().white,
                   () => Get.back(),
@@ -59,7 +59,7 @@ class TimerDetailScreen extends StatelessWidget {
                   Icon(
                     isRunning ? Icons.pause : Icons.play_arrow,
                     color: isRunning ? AppColor().primaryColor : AppColor().green,
-                    size: 40,
+                    size: context.isPhone ? 40 : 50,
                   ),
                   isRunning ? AppColor().primaryColor.withValues(alpha: 0.2) : AppColor().green.withValues(alpha: 0.2),
                   isRunning ? AppColor().primaryColor : AppColor().green,
