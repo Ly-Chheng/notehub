@@ -134,7 +134,7 @@ class HomeController extends GetxController {
     showConfirmDialog(
       context: context,
       title: "Delete Permanently?",
-      subTitle: "Are you sure you want to delete ${keysToDelete.length} items forever? This action cannot be undone.",
+      subTitle: "Are you sure you want to delete ${keysToDelete.length} item forever? This action cannot be undone.",
       onConfirm: () {
         for (var key in keysToDelete) {
           trashBox.delete(key);
@@ -196,7 +196,7 @@ class HomeController extends GetxController {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    "Are you sure you want to delete ${selectedKeys.length} items forever? This action cannot be undone.",
+                    "Are you sure you want to delete ${selectedKeys.length} item forever? This action cannot be undone.",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: context.isPhone ? 16 : 18,

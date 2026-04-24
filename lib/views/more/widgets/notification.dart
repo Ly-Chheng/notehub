@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 
 class NotificationView extends StatelessWidget {
   const NotificationView({super.key});
@@ -33,7 +34,7 @@ class NotificationView extends StatelessWidget {
                   ],
                 ),
                 Obx(() => Switch.adaptive(
-                      activeThumbColor: Colors.green,
+                      activeThumbColor: AppColor().green,
                       onChanged: (value) {
                         isNotificationOn.value = value;
                       },

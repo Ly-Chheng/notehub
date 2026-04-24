@@ -29,7 +29,6 @@ class AnimatedFab extends StatelessWidget {
           child: Icon(
             icon,
             color: AppColor().white,
-            // size: MediaQuery.of(context).size.shortestSide < 600 ? 30 : 35,
             size: context.isPhone ? 30 : 40,
           ),
         ),

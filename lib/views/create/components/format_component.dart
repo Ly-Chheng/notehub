@@ -50,63 +50,65 @@ void showFormatSheet({
                 title: "Format",
               ),
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: _buildContainer(
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildContainer(
                       context,
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             _formatToggle(Icons.format_align_left, isLeftAligned, () {
                               onLeftAlignPressed();
                               Navigator.pop(context);
-                            }),
+                            }, context),
                             _formatToggle(Icons.format_align_center, isCenterAligned, () {
                               onCenterAlignPressed();
                               Navigator.pop(context);
-                            }),
+                            }, context),
                             _formatToggle(Icons.format_align_right, isRightAligned, () {
                               onRightAlignPressed();
                               Navigator.pop(context);
-                            }),
+                            }, context),
                             _formatToggle(Icons.format_align_justify, isJustifyAligned, () {
                               onJustifyAlignPressed();
                               Navigator.pop(context);
-                            }),
+                            }, context),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 15),
-                  _buildContainer(
-                    context,
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          _formatToggle(Icons.format_list_bulleted, false, () {
-                            onBulletPressed();
-                            Navigator.pop(context);
-                          }),
-                          _formatToggle(Icons.format_line_spacing_rounded, false, () {
-                            onHyphenPressed();
-                            Navigator.pop(context);
-                          }),
-                          _formatToggle(Icons.format_list_numbered, false, () {
-                            onNumberedPressed();
-                            Navigator.pop(context);
-                          }),
-                        ],
+                    const SizedBox(width: 15),
+                    _buildContainer(
+                      context,
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            _formatToggle(Icons.format_list_bulleted, false, () {
+                              onBulletPressed();
+                              Navigator.pop(context);
+                            }, context),
+                            _formatToggle(Icons.format_line_spacing_rounded, false, () {
+                              onHyphenPressed();
+                              Navigator.pop(context);
+                            }, context),
+                            _formatToggle(Icons.format_list_numbered, false, () {
+                              onNumberedPressed();
+                              Navigator.pop(context);
+                            }, context),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 15),
               Row(
@@ -122,25 +124,25 @@ void showFormatSheet({
                             onBoldChanged(isBold);
                             setSheetState(() {});
                             Navigator.pop(context);
-                          }),
+                          }, context),
                           _formatToggle(Icons.format_italic, isItalic, () {
                             isItalic = !isItalic;
                             onItalicChanged(isItalic);
                             setSheetState(() {});
                             Navigator.pop(context);
-                          }),
+                          }, context),
                           _formatToggle(Icons.format_underlined, isUnderlined, () {
                             isUnderlined = !isUnderlined;
                             onUnderlineChanged(isUnderlined);
                             setSheetState(() {});
                             Navigator.pop(context);
-                          }),
+                          }, context),
                           _formatToggle(Icons.format_strikethrough, isStrikethrough, () {
                             isStrikethrough = !isStrikethrough;
                             onStrikethroughChanged(isStrikethrough);
                             setSheetState(() {});
                             Navigator.pop(context);
-                          }),
+                          }, context),
                         ],
                       ),
                     ),
@@ -156,7 +158,7 @@ void showFormatSheet({
                             setSheetState(() {
                               isColorPickerOpen = !isColorPickerOpen;
                             });
-                          }),
+                          }, context),
                         ],
                       ),
                     ),
@@ -202,8 +204,8 @@ void showFormatSheet({
                                     padding: EdgeInsets.symmetric(horizontal: 5),
                                     child: CircleAvatar(
                                       backgroundColor: color,
-                                      radius: 20,
-                                      child: selectedColor.value == color.value ? Icon(Icons.check, color: AppColor().white, size: 18) : null,
+                                      radius: context.isPhone ? 16 : 20,
+                                      child: selectedColor.value == color.value ? Icon(Icons.check, color: AppColor().white, size: context.isPhone ? 18 : 24) : null,
                                     ),
                                   ),
                                 );
@@ -215,7 +217,7 @@ void showFormatSheet({
                     : const SizedBox.shrink(),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10),
+                padding: EdgeInsets.symmetric(vertical: context.isPhone ? 10 : 20),
                 child: Text(
                   "Font Size",
                   style: text18(context),
@@ -224,38 +226,40 @@ void showFormatSheet({
               _buildContainer(
                 context,
                 SizedBox(
-                  height: 43,
+                  height: context.isPhone ? 40 : 50,
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
                     children: ['Small', 'Normal', 'Large', 'Huge'].map((size) {
                       bool isSelected = activeSize == size;
-                      return GestureDetector(
-                        onTap: () {
-                          setSheetState(() => activeSize = size);
-                          onFontSizeChanged(size.toLowerCase());
-                          Navigator.pop(context);
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          margin: const EdgeInsets.only(right: 10),
-                          height: double.infinity,
-                          alignment: Alignment.center,
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: isSelected ? AppColor().primaryColor : Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: isSelected ? AppColor().primaryColor : Colors.grey.withValues(alpha: 0.3),
+                      return Padding(
+                        padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 5 : 10),
+                        child: GestureDetector(
+                          onTap: () {
+                            setSheetState(() => activeSize = size);
+                            onFontSizeChanged(size.toLowerCase());
+                            Navigator.pop(context);
+                          },
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            height: double.infinity,
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 16 : 20, vertical: context.isPhone ? 4 : 8),
+                            decoration: BoxDecoration(
+                              color: isSelected ? AppColor().primaryColor : Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: isSelected ? AppColor().primaryColor : Colors.grey.withValues(alpha: 0.3),
+                              ),
                             ),
-                          ),
-                          child: Text(
-                            size,
-                            style: TextStyle(
-                              color: isSelected ? AppColor().white : Colors.grey.shade700,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              fontSize: context.isPhone ? 14 : 16,
-                              fontFamily: 'EN-REGULAR',
+                            child: Text(
+                              size,
+                              style: TextStyle(
+                                color: isSelected ? AppColor().white : Colors.grey.shade700,
+                                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                fontSize: context.isPhone ? 14 : 16,
+                                fontFamily: 'EN-REGULAR',
+                              ),
                             ),
                           ),
                         ),
@@ -274,7 +278,7 @@ void showFormatSheet({
 
 Widget _buildContainer(BuildContext context, Widget child) {
   return Container(
-    padding: const EdgeInsets.all(10),
+    padding: EdgeInsets.all(context.isPhone ? 6 : 11),
     decoration: BoxDecoration(
       color: Theme.of(context).scaffoldBackgroundColor,
       borderRadius: BorderRadius.circular(8),
@@ -283,13 +287,13 @@ Widget _buildContainer(BuildContext context, Widget child) {
   );
 }
 
-Widget _formatToggle(IconData icon, bool isActive, VoidCallback onTap) {
+Widget _formatToggle(IconData icon, bool isActive, VoidCallback onTap, BuildContext context) {
   return InkWell(
     onTap: onTap,
     child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
+      padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 5 : 10),
       child: Container(
-        padding: const EdgeInsets.all(5),
+        padding: EdgeInsets.all(context.isPhone ? 5 : 10),
         decoration: BoxDecoration(
           color: isActive ? AppColor().primaryColor.withValues(alpha: 0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
@@ -298,7 +302,7 @@ Widget _formatToggle(IconData icon, bool isActive, VoidCallback onTap) {
         child: Icon(
           icon,
           color: isActive ? AppColor().primaryColor : AppColor().gray,
-          size: 25,
+          size: context.isPhone ? 25 : 35,
         ),
       ),
     ),

@@ -25,8 +25,8 @@ class SheetHeader extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            width: 40,
-            height: 4,
+            width: context.isPhone ? 40 : 50,
+            height: context.isPhone ? 4 : 8,
             margin: const EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
               color: Theme.of(context).scaffoldBackgroundColor,
@@ -43,14 +43,14 @@ class SheetHeader extends StatelessWidget {
                   style: TextStyle(
                     color: AppColor().red,
                     fontFamily: 'EN-ENGINEER',
-                    fontSize: 16,
+                    fontSize: context.isPhone ? 16 : 18,
                   ),
                 ),
               ),
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: context.isPhone ? 18 : 20,
                   fontFamily: 'EN-BOLD',
                   color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
@@ -62,7 +62,7 @@ class SheetHeader extends StatelessWidget {
                   style: TextStyle(
                     color: AppColor().primaryColor,
                     fontFamily: 'EN-ENGINEER',
-                    fontSize: 16,
+                    fontSize: context.isPhone ? 16 : 18,
                   ),
                 ),
               ),

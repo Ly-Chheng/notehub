@@ -790,7 +790,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       confirmText: "Delete",
       onConfirm: () async {
         if (currentNoteKey == null) {
-          // Not saved yet → just close screen
           Get.back();
           return;
         }
