@@ -85,7 +85,6 @@ class NoteController extends GetxController {
     try {
       final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
       final String shareContent = content.trim();
-      // final String fullMessage = "${shareTitle.toUpperCase()}\n$shareContent";
       final String fullMessage = "$shareTitle\n$shareContent";
 
       if (mode == ShareMode.photo) {

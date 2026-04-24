@@ -346,7 +346,11 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.1)),
         ),
-        child: Center(child: Text(text, style: const TextStyle(color: Colors.blueGrey,))),
+        child: Center(
+            child: Text(text,
+                style: const TextStyle(
+                  color: Colors.blueGrey,
+                ))),
       ),
     );
   }
@@ -356,51 +360,59 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     int tempM = selectedMinutes;
     int tempS = selectedSeconds;
 
-    Get.bottomSheet(
+    showModalBottomSheet(
+      context: context,
       isScrollControlled: true,
-      StatefulBuilder(builder: (context, setSheetState) {
-        return SafeArea(
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SheetHeader(title: "Add Quick Preset"),
-                const SizedBox(height: 20),
-                Container(
-                  height: context.isPhone ? 200 : 300,
-                  decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.01), borderRadius: BorderRadius.circular(20)),
-                  child: Row(
-                    children: [
-                      _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
-                      _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v), initial: tempM),
-                      _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v), initial: tempS),
-                    ],
-                  ),
+      constraints: BoxConstraints(maxWidth: double.infinity),
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return SafeArea(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                 ),
-                const SizedBox(height: 25),
-                Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Expanded(
-                      child: CustomButton(
-                        text: "Save Preset",
-                        onPressed: () {
-                          _finalizePresetSave(tempH, tempM, tempS);
-                          Get.back();
-                        },
+                    SheetHeader(title: "Add Quick Preset"),
+                    const SizedBox(height: 20),
+                    Container(
+                      height: context.isPhone ? 200 : 300,
+                      decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.01), borderRadius: BorderRadius.circular(20)),
+                      child: Row(
+                        children: [
+                          _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
+                          _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v), initial: tempM),
+                          _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v), initial: tempS),
+                        ],
                       ),
+                    ),
+                    const SizedBox(height: 25),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CustomButton(
+                            text: "Save Preset",
+                            onPressed: () {
+                              _finalizePresetSave(tempH, tempM, tempS);
+                              Get.back();
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
-      }),
+      },
     );
   }
 

@@ -158,22 +158,6 @@ class HomeController extends GetxController {
     }
   }
 
-  // void deleteSelectedPermanently(BuildContext context) {
-  //   if (selectedKeys.isEmpty) return;
-
-  //   showConfirmDialog(
-  //     context: context,
-  //     title: "Delete Permanently?",
-  //     subTitle: "Are you sure you want to delete ${selectedKeys.length} items forever? This action cannot be undone.",
-  //     onConfirm: () {
-  //       for (var key in selectedKeys) {
-  //         trashBox.delete(key);
-  //       }
-  //       toggleSelectionMode();
-  //     },
-  //   );
-  // }
-
   void deleteSelectedPermanently(BuildContext context) {
     if (selectedKeys.isEmpty) return;
 
