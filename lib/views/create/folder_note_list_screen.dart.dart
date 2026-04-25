@@ -291,7 +291,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     final Color itemSubTextColor = itemTextColor;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: EdgeInsets.only(
+        bottom: context.isPhone ? 10 : 15,
+      ),
       child: Slidable(
         key: ValueKey(noteKey),
         enabled: !isSelectionMode,

@@ -380,6 +380,24 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           );
                         },
                       ),
+                    if (hasText)
+                      ListTile(
+                        leading: Icon(
+                          Icons.insert_drive_file,
+                          color: AppColor().orange,
+                          size: context.isPhone ? 20 : 25,
+                        ),
+                        title: Text("File (txt)", style: text16(context)),
+                        onTap: () {
+                          Get.back();
+                          noteController.shareNote(
+                            title: titleController.text,
+                            content: rawText,
+                            selectedImages: selectedImages,
+                            mode: ShareMode.file,
+                          );
+                        },
+                      ),
                   ],
                 ),
               ],
@@ -840,6 +858,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   void _showFormattingSheet() {
     final selectionStyle = _quillController.getSelectionStyle();
     final attributes = selectionStyle.attributes;
+    Color currentHighlightColor = Colors.transparent;
     showFormatSheet(
       context: context,
       isLeftAligned: selectionStyle.attributes[Attribute.align.key]?.value == 'left' || selectionStyle.attributes[Attribute.align.key] == null,
@@ -850,7 +869,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       isItalic: selectionStyle.attributes.containsKey(Attribute.italic.key),
       isUnderlined: selectionStyle.attributes.containsKey(Attribute.underline.key),
       isStrikethrough: selectionStyle.attributes.containsKey(Attribute.strikeThrough.key),
-      selectedColor: Colors.black,
+      selectedColor: Colors.transparent,
+      selectedHighlightColor: currentHighlightColor,
       onBoldChanged: (v) => _quillController.formatSelection(v ? Attribute.bold : Attribute.clone(Attribute.bold, null)),
       onItalicChanged: (v) => _quillController.formatSelection(v ? Attribute.italic : Attribute.clone(Attribute.italic, null)),
       onUnderlineChanged: (v) => _quillController.formatSelection(v ? Attribute.underline : Attribute.clone(Attribute.underline, null)),
@@ -859,6 +879,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       onCenterAlignPressed: () => _quillController.formatSelection(Attribute.centerAlignment),
       onRightAlignPressed: () => _quillController.formatSelection(Attribute.rightAlignment),
       onJustifyAlignPressed: () => _quillController.formatSelection(Attribute.justifyAlignment),
+      onHighlightColorChanged: (color) {
+        final hex = '#${color.value.toRadixString(16).substring(2)}';
+        _quillController.formatSelection(BackgroundAttribute(hex));
+      },
       onFontSizeChanged: (String size) {
         if (size == 'normal') {
           _quillController.formatSelection(Attribute.clone(Attribute.size, null));

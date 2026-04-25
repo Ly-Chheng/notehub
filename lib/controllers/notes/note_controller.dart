@@ -5,12 +5,13 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'dart:io';
 import 'package:share_plus/share_plus.dart';
 
-enum ShareMode { text, photo }
+enum ShareMode { text, photo, file }
 
 class NoteController extends GetxController {
   final Box noteBox = Hive.box('student_notes');
@@ -81,6 +82,7 @@ class NoteController extends GetxController {
     required String content,
     required List<File> selectedImages,
     required ShareMode mode,
+    List<String>? filePaths,
   }) async {
     try {
       final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
@@ -94,6 +96,16 @@ class NoteController extends GetxController {
         } else {
           Get.snackbar("Info", "No photos found in this note to share.");
         }
+      } else if (mode == ShareMode.file) {
+        final directory = await getTemporaryDirectory();
+        final safeTitle = shareTitle.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
+        final file = File('${directory.path}/$safeTitle.txt');
+
+        await file.writeAsString(shareContent, mode: FileMode.write, flush: true);
+
+        await Share.shareXFiles(
+          [XFile(file.path)],
+        );
       } else {
         SharePlus.instance.share(ShareParams(text: fullMessage, subject: shareTitle));
       }

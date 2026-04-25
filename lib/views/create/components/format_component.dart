@@ -28,9 +28,31 @@ void showFormatSheet({
   required Function(String) onFontSizeChanged,
   required bool isJustifyAligned,
   required VoidCallback onJustifyAlignPressed,
+  required Color selectedHighlightColor,
+  required Function(Color) onHighlightColorChanged,
 }) {
   bool isColorPickerOpen = false;
+  bool isHighlightPickerOpen = false;
   String activeSize = 'Normal';
+
+  final List<int> colorValues = [
+    0XFF9500FF,
+    0XFFFF0000,
+    0XFF002AFC,
+    0XFFFFFFFF,
+    0XFF2196F3,
+    0XFF4CAF50,
+    0XFFFF9800,
+    0XFF000000,
+    0xFFFFC107,
+    0xFF9C27B0,
+    0xFFE91E63,
+    0xFF00BCD4,
+    0xFF8BC34A,
+    0xFFFF5722,
+    0xFF607D8B,
+    0xFF795548,
+  ];
 
   showModalBottomSheet(
     context: context,
@@ -39,6 +61,40 @@ void showFormatSheet({
     backgroundColor: Theme.of(context).cardColor,
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (context) => StatefulBuilder(builder: (context, setSheetState) {
+      Widget buildModernColorPicker(Color activeColor, Function(Color) onPicked) {
+        return _buildContainer(
+          context,
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: Row(
+              children: colorValues.map((val) {
+                Color color = Color(val);
+                bool isSelected = activeColor.value == color.value;
+                return GestureDetector(
+                  onTap: () {
+                    onPicked(color);
+                    Navigator.pop(context);
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 6),
+                    child: AnimatedScale(
+                      scale: isSelected ? 1.0 : 1.0,
+                      duration: const Duration(milliseconds: 200),
+                      child: CircleAvatar(
+                        backgroundColor: color,
+                        radius: context.isPhone ? 16 : 20,
+                        //child: isSelected ? Icon(Icons.check, color: Colors.white, size: context.isPhone ? 18 : 24) : null,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        );
+      }
+
       return SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
@@ -157,6 +213,13 @@ void showFormatSheet({
                           _formatToggle(Icons.format_color_text, isColorPickerOpen, () {
                             setSheetState(() {
                               isColorPickerOpen = !isColorPickerOpen;
+                              isHighlightPickerOpen = false;
+                            });
+                          }, context),
+                          _formatToggle(Icons.border_color, isHighlightPickerOpen, () {
+                            setSheetState(() {
+                              isHighlightPickerOpen = !isHighlightPickerOpen;
+                              isColorPickerOpen = false;
                             });
                           }, context),
                         ],
@@ -165,56 +228,27 @@ void showFormatSheet({
                   ),
                 ],
               ),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                height: isColorPickerOpen ? 80 : 0,
-                curve: Curves.easeInOut,
-                child: isColorPickerOpen
-                    ? Padding(
-                        padding: const EdgeInsets.only(top: 15),
-                        child: _buildContainer(
-                          context,
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                0XFF9500FF,
-                                0XFFFF0000,
-                                0XFF002AFC,
-                                0XFF2196F3,
-                                0XFF4CAF50,
-                                0XFFFF9800,
-                                0XFF000000,
-                                0xFFFFC107,
-                                0xFF9C27B0,
-                                0xFFE91E63,
-                                0xFF00BCD4,
-                                0xFF8BC34A,
-                                0xFFFF5722,
-                                0xFF607D8B,
-                                0xFF795548,
-                              ].map((colorValue) {
-                                Color color = Color(colorValue);
-                                return GestureDetector(
-                                  onTap: () {
-                                    onColorChanged(color);
-                                    Navigator.pop(context);
-                                  },
-                                  child: Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 5),
-                                    child: CircleAvatar(
-                                      backgroundColor: color,
-                                      radius: context.isPhone ? 16 : 20,
-                                      child: selectedColor.value == color.value ? Icon(Icons.check, color: AppColor().white, size: context.isPhone ? 18 : 24) : null,
-                                    ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      )
-                    : const SizedBox.shrink(),
+
+              // Text Color Picker
+              AnimatedSize(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOutCubic,
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: isColorPickerOpen
+                      ? Padding(
+                          key: const ValueKey('text_color'),
+                          padding: const EdgeInsets.only(top: 15),
+                          child: buildModernColorPicker(selectedColor, onColorChanged),
+                        )
+                      : isHighlightPickerOpen
+                          ? Padding(
+                              key: const ValueKey('highlight_color'),
+                              padding: const EdgeInsets.only(top: 15),
+                              child: buildModernColorPicker(selectedHighlightColor, onHighlightColorChanged),
+                            )
+                          : const SizedBox.shrink(key: ValueKey('none')),
+                ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: context.isPhone ? 10 : 20),
