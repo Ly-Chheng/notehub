@@ -1,49 +1,67 @@
 import 'dart:convert';
 
-class Note {
+class NoteModel {
   int? id;
+  int folderId;
   String title;
-  String subtitle;
-  DateTime createdAt;
-  DateTime updatedAt;
-  String? color;
-  bool isFavorite;
+  String content;
+  String date;
+  bool isLocked;
+  bool isPinned;
+  int bgColor;
+  List<String> imagePaths;
+  bool showTable;
+  List<List<String>> tableData;
+  List<Map<String, dynamic>> drawingLayers;
 
-  Note({
+  NoteModel({
     this.id,
+    required this.folderId,
     required this.title,
-    required this.subtitle,
-    required this.createdAt,
-    required this.updatedAt,
-    this.color,
-    this.isFavorite = false,
+    required this.content,
+    required this.date,
+    this.isLocked = false,
+    this.isPinned = false,
+    this.bgColor = 0,
+    this.imagePaths = const [],
+    this.showTable = false,
+    this.tableData = const [],
+    this.drawingLayers = const [],
   });
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'folder_id': folderId,
       'title': title,
-      'subtitle': subtitle,
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
-      'color': color,
-      'is_favorite': isFavorite ? 1 : 0,
+      'content': content,
+      'date': date,
+      'is_locked': isLocked ? 1 : 0,
+      'is_pinned': isPinned ? 1 : 0,
+      'bg_color': bgColor,
+      'image_paths': jsonEncode(imagePaths),
+      'show_table': showTable ? 1 : 0,
+      'table_data': jsonEncode(tableData),
+      'drawing_layers': jsonEncode(drawingLayers),
     };
   }
 
-  factory Note.fromMap(Map<String, dynamic> map) {
-    return Note(
+  factory NoteModel.fromMap(Map<String, dynamic> map) {
+    return NoteModel(
       id: map['id'],
-      title: map['title'] ?? '',
-      subtitle: map['subtitle'] ?? '',
-      createdAt: DateTime.parse(map['created_at']),
-      updatedAt: DateTime.parse(map['updated_at']),
-      color: map['color'],
-      isFavorite: map['is_favorite'] == 1,
+      folderId: map['folder_id'],
+      title: map['title'] ?? "",
+      content: map['content'] ?? "",
+      date: map['date'] ?? "",
+      isLocked: map['is_locked'] == 1,
+      isPinned: map['is_pinned'] == 1,
+      bgColor: map['bg_color'] ?? 0,
+      imagePaths: List<String>.from(jsonDecode(map['image_paths'] ?? '[]')),
+      showTable: map['show_table'] == 1,
+      tableData: (jsonDecode(map['table_data'] ?? '[[]]') as List)
+          .map((row) => List<String>.from(row))
+          .toList(),
+      drawingLayers: List<Map<String, dynamic>>.from(jsonDecode(map['drawing_layers'] ?? '[]')),
     );
   }
-
-  String toJson() => json.encode(toMap());
-
-  factory Note.fromJson(String source) => Note.fromMap(json.decode(source));
 }

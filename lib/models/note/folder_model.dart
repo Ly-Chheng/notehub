@@ -1,35 +1,27 @@
-class Folder {
+class FolderModel {
+  int? id;
   String title;
-  int colorValue;
-  bool isDefault;
-  int count;
-  bool isPinned;
+  String? date;
 
-  Folder({
+  FolderModel({
+    this.id,
     required this.title,
-    required this.colorValue,
-    this.isDefault = false,
-    this.count = 0,
-    this.isPinned = false,
+    this.date,
   });
 
   Map<String, dynamic> toMap() {
     return {
+      'id': id,
       'title': title,
-      'colorValue': colorValue,
-      'isDefault': isDefault,
-      'count': count,
-      'isPinned': isPinned,
+      'date': date ?? DateTime.now().toIso8601String(),
     };
   }
 
-  factory Folder.fromMap(Map<String, dynamic> map) {
-    return Folder(
+  factory FolderModel.fromMap(Map<String, dynamic> map) {
+    return FolderModel(
+      id: map['id'],
       title: map['title'] ?? '',
-      colorValue: map['colorValue'] ?? 0xFF000000,
-      isDefault: map['isDefault'] ?? false,
-      count: map['count'] ?? 0,
-      isPinned: map['isPinned'] ?? false,
+      date: map['date'],
     );
   }
 }
