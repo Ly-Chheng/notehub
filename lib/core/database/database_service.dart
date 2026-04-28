@@ -12,20 +12,26 @@ class DatabaseService {
 
   static Future<Database> initDB() async {
     final path = join(await getDatabasesPath(), 'notes_app.db');
-    return openDatabase(
+
+    return await openDatabase(
       path,
-      version: 1,
-      onConfigure: (db) async => await db.execute('PRAGMA foreign_keys = ON'),
+      version: 4, // ← Increased to 4
+      onConfigure: (db) async {
+        await db.execute('PRAGMA foreign_keys = ON');
+      },
       onCreate: (db, version) async {
         // Folders Table
         await db.execute('''
           CREATE TABLE folders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT,
-            date TEXT
+            title TEXT NOT NULL,
+            date TEXT,
+            isPinned INTEGER DEFAULT 0,
+            isLocked INTEGER DEFAULT 0
           )
         ''');
-        // Notes Table
+
+        // Notes Table - with ALL columns
         await db.execute('''
           CREATE TABLE notes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -35,11 +41,45 @@ class DatabaseService {
             date TEXT,
             is_locked INTEGER DEFAULT 0,
             is_pinned INTEGER DEFAULT 0,
-            bg_color INTEGER,
+            bg_color INTEGER DEFAULT 0,
+            image_paths TEXT DEFAULT '[]',
+            show_table INTEGER DEFAULT 0,
+            table_data TEXT DEFAULT '[]',
+            drawing_layers TEXT DEFAULT '[]',
             FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE
           )
         ''');
       },
+      onUpgrade: (db, oldVersion, newVersion) async {
+        print(' Database upgrading: $oldVersion → $newVersion');
+
+        if (oldVersion < 2) {
+          await db.execute("ALTER TABLE folders ADD COLUMN isPinned INTEGER DEFAULT 0");
+        }
+        if (oldVersion < 3) {
+          await db.execute("ALTER TABLE folders ADD COLUMN isLocked INTEGER DEFAULT 0");
+        }
+        if (oldVersion < 4) {
+          // Add new columns to notes table
+          await _addColumnIfNotExists(db, 'notes', 'image_paths', "TEXT DEFAULT '[]'");
+          await _addColumnIfNotExists(db, 'notes', 'show_table', "INTEGER DEFAULT 0");
+          await _addColumnIfNotExists(db, 'notes', 'table_data', "TEXT DEFAULT '[]'");
+          await _addColumnIfNotExists(db, 'notes', 'drawing_layers', "TEXT DEFAULT '[]'");
+
+          print(" Added new columns to notes table (v4)");
+        }
+      },
     );
+  }
+
+  // Helper method to safely add column
+  static Future<void> _addColumnIfNotExists(Database db, String table, String column, String definition) async {
+    final tableInfo = await db.rawQuery("PRAGMA table_info($table)");
+    final exists = tableInfo.any((col) => col['name'] == column);
+
+    if (!exists) {
+      await db.execute("ALTER TABLE $table ADD COLUMN $column $definition");
+      print("Added column: $column to table $table");
+    }
   }
 }

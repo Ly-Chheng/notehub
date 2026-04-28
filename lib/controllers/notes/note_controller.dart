@@ -1,153 +1,192 @@
-import 'dart:async';
 import 'dart:convert';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:project_structure/core/utils/app_color.dart';
-import 'package:project_structure/widgets/custom_dialog.dart';
-import 'dart:io';
-import 'package:share_plus/share_plus.dart';
-
-enum ShareMode { text, photo, file }
+import 'package:project_structure/core/database/database_service.dart';
+import 'package:project_structure/models/note/note_model.dart';
 
 class NoteController extends GetxController {
-  final Box noteBox = Hive.box('student_notes');
-  final Box trashBox = Hive.box('recently_deleted');
-  final Box settingsBox = Hive.box('settings_box');
-  final Box folderBox = Hive.box('folders_box');
-  var searchQuery = "".obs;
+  var notes = <NoteModel>[].obs;
+  var isLoading = false.obs;
 
-  void updateSearchQuery(String query) {
-    searchQuery.value = query.trim().toLowerCase();
-  }
-
-  List<MapEntry<dynamic, dynamic>> getFilteredNotes(dynamic folderKey) {
-    final allNotes = noteBox.toMap().entries.where((entry) => entry.value['folderKey'] == folderKey).toList();
-
-    List<MapEntry<dynamic, dynamic>> filtered = allNotes;
-    if (searchQuery.isNotEmpty) {
-      filtered = allNotes.where((entry) {
-        final title = (entry.value['title'] ?? "").toString().toLowerCase();
-        final content = (entry.value['subtitle'] ?? "").toString().toLowerCase();
-        return title.contains(searchQuery.value) || content.contains(searchQuery.value);
-      }).toList();
-    }
-
-    filtered.sort((a, b) {
-      DateTime dateA = _parseNoteDate(a.value['date']);
-      DateTime dateB = _parseNoteDate(b.value['date']);
-
-      int dateCompare = dateB.compareTo(dateA);
-      if (dateCompare != 0) return dateCompare;
-
-      return b.key.compareTo(a.key);
-    });
-
-    return filtered;
-  }
-
-  DateTime _parseNoteDate(dynamic dateStr) {
+  //   FETCH NOTES
+  Future<void> fetchNotesByFolder(int folderId) async {
+    isLoading.value = true;
     try {
-      if (dateStr == null) return DateTime(2000);
-      return DateFormat('dd/MM/yyyy').parse(dateStr.toString());
-    } catch (e) {
-      return DateTime(2000);
+      final db = await DatabaseService.db;
+      final maps = await db.query(
+        'notes',
+        where: 'folder_id = ?',
+        whereArgs: [folderId],
+        orderBy: 'is_pinned DESC, id DESC',
+      );
+
+      notes.assignAll(maps.map((e) => NoteModel.fromMap(e)).toList());
+      debugPrint(" Fetched ${notes.length} note(s) from folder ID: $folderId");
+    } catch (e, stack) {
+      debugPrint(" Error fetching notes: $e");
+    } finally {
+      isLoading.value = false;
     }
   }
 
-  Future<void> moveNotesToFolder({
-    required List<dynamic> keysToMove,
-    required dynamic targetFolderKey,
-  }) async {
-    try {
-      for (var noteKey in keysToMove) {
-        final noteData = noteBox.get(noteKey);
-        if (noteData != null) {
-          final updatedNote = Map<String, dynamic>.from(noteData);
-          updatedNote['folderKey'] = targetFolderKey;
-          await noteBox.put(noteKey, updatedNote);
-        }
-      }
-      update();
-    } catch (e) {
-      Get.snackbar("Error", "Failed to move notes", backgroundColor: AppColor().red, colorText: AppColor().white);
-    }
-  }
-
-  Future<void> shareNote({
+  //   SAVE NOTE (Create / Update)
+  Future<int?> saveNoteSQLite({
+    int? id,
+    required int folderId,
     required String title,
-    required String content,
-    required List<File> selectedImages,
-    required ShareMode mode,
-    List<String>? filePaths,
+    required String contentJson,
+    bool isLocked = false,
+    bool isPinned = false,
+    int bgColor = 0,
+    List<String> imagePaths = const [],
+    bool showTable = false,
+    List<List<String>> tableData = const [],
+    List<Map<String, dynamic>> drawingLayers = const [],
   }) async {
+    final db = await DatabaseService.db;
+    final date = DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()); // Better format
+
+    final row = {
+      'folder_id': folderId,
+      'title': title.isEmpty ? "Untitled" : title,
+      'content': contentJson,
+      'date': date,
+      'is_locked': isLocked ? 1 : 0,
+      'is_pinned': isPinned ? 1 : 0,
+      'bg_color': bgColor,
+      'image_paths': jsonEncode(imagePaths),
+      'show_table': showTable ? 1 : 0,
+      'table_data': jsonEncode(tableData),
+      'drawing_layers': jsonEncode(drawingLayers),
+    };
+
     try {
-      final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
-      final String shareContent = content.trim();
-      final String fullMessage = "$shareTitle\n$shareContent";
-
-      if (mode == ShareMode.photo) {
-        if (selectedImages.isNotEmpty) {
-          final List<XFile> xFiles = selectedImages.where((f) => f.existsSync()).map((f) => XFile(f.path)).toList();
-          SharePlus.instance.share(ShareParams(files: xFiles));
-        } else {
-          Get.snackbar("Info", "No photos found in this note to share.");
-        }
-      } else if (mode == ShareMode.file) {
-        final directory = await getTemporaryDirectory();
-        final safeTitle = shareTitle.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_');
-        final file = File('${directory.path}/$safeTitle.txt');
-
-        await file.writeAsString(shareContent, mode: FileMode.write, flush: true);
-
-        await Share.shareXFiles(
-          [XFile(file.path)],
-        );
+      if (id == null) {
+        // CREATE
+        final newId = await db.insert('notes', row);
+        debugPrint('Note CREATED successfully! New ID = $newId');
+        return newId;
       } else {
-        SharePlus.instance.share(ShareParams(text: fullMessage, subject: shareTitle));
+        // UPDATE
+        final rowsAffected = await db.update('notes', row, where: 'id = ?', whereArgs: [id]);
+        debugPrint(' Note UPDATED successfully! ID = $id | Rows affected: $rowsAffected');
+        return id;
       }
     } catch (e) {
-      Get.snackbar("Share Error", "Could not open share menu", backgroundColor: AppColor().red, colorText: AppColor().white);
+      debugPrint(' Failed to save note: $e');
+
+      rethrow;
     }
   }
 
-  Future<void> deleteNote({
-    required dynamic noteKey,
-    required Map? noteData,
-    VoidCallback? onSuccess,
-  }) async {
+  //   DELETE NOTE
+  Future<void> deleteNote(int id, int folderId) async {
     try {
-      final noteBox = Hive.box('student_notes');
-      final trashBox = Hive.box('recently_deleted');
-
-      if (noteKey != null && noteData != null) {
-        final Map<String, dynamic> deletedData = Map<String, dynamic>.from(noteData);
-        deletedData['deletedAt'] = DateTime.now().toIso8601String();
-
-        await trashBox.put(noteKey, deletedData);
-
-        await noteBox.delete(noteKey);
-      }
-
-      if (onSuccess != null) onSuccess();
+      final db = await DatabaseService.db;
+      await db.delete('notes', where: 'id = ?', whereArgs: [id]);
+      debugPrint(' Note deleted successfully (ID: $id)');
+      await fetchNotesByFolder(folderId);
     } catch (e) {
-      Get.snackbar("Error", "Could not move to trash: $e");
+      debugPrint(' Error deleting note: $e');
+    }
+  }
+
+  //   SEARCH NOTES
+  Future<void> searchNotes(String query, int folderId) async {
+    final trimmedQuery = query.trim();
+
+    if (trimmedQuery.isEmpty) {
+      fetchNotesByFolder(folderId);
+      return;
+    }
+
+    try {
+      final db = await DatabaseService.db;
+      final maps = await db.query(
+        'notes',
+        where: 'folder_id = ? AND (title LIKE ? OR content LIKE ?)',
+        whereArgs: [folderId, '%$trimmedQuery%', '%$trimmedQuery%'],
+        orderBy: 'is_pinned DESC, id DESC',
+      );
+
+      notes.assignAll(maps.map((e) => NoteModel.fromMap(e)).toList());
+      debugPrint(" Search for '$trimmedQuery' returned ${notes.length} result(s)");
+    } catch (e) {
+      debugPrint(" Search error: $e");
+    }
+  }
+
+// MOVE NOTE TO ANOTHER FOLDER
+  Future<void> moveNote(int noteId, int newFolderId) async {
+    try {
+      final db = await DatabaseService.db;
+
+      int rowsAffected = await db.update(
+        'notes',
+        {'folder_id': newFolderId},
+        where: 'id = ?',
+        whereArgs: [noteId],
+      );
+
+      if (rowsAffected > 0) {
+        debugPrint("Note $noteId moved to folder $newFolderId in Database");
+
+        notes.removeWhere((element) => element.id == noteId);
+
+        notes.refresh();
+      } else {
+        debugPrint("Move failed: Note ID not found");
+      }
+    } catch (e) {
+      debugPrint("Move Note Error: $e");
+    }
+  }
+
+  Future<void> togglePinNote(NoteModel note, int folderId) async {
+    try {
+      final db = await DatabaseService.db;
+
+      int newStatus = (note.isPinned == true) ? 0 : 1;
+
+      await db.update(
+        'notes',
+        {'is_pinned': newStatus},
+        where: 'id = ?',
+        whereArgs: [note.id],
+      );
+
+      await fetchNotesByFolder(folderId);
+    } catch (e) {
+      debugPrint("Pin Error: $e");
+    }
+  }
+
+  String getPlainTextFromNote(String? jsonContent) {
+    if (jsonContent == null || jsonContent.isEmpty || jsonContent == '[]') {
+      return "";
+    }
+    try {
+      final doc = quill.Document.fromJson(jsonDecode(jsonContent));
+      return doc.toPlainText().replaceAll('\n', ' ').trim();
+    } catch (e) {
+      return "";
     }
   }
 
   String getDateHeader(String dateStr) {
     try {
       DateTime noteDate = DateFormat('dd/MM/yyyy').parse(dateStr);
+
       DateTime now = DateTime.now();
       DateTime today = DateTime(now.year, now.month, now.day);
-      DateTime yesterday = today.subtract(const Duration(days: 1));
+      DateTime yesterday = DateTime(now.year, now.month, now.day - 1);
+      DateTime noteDateMidnight = DateTime(noteDate.year, noteDate.month, noteDate.day);
 
-      if (noteDate.isAtSameMomentAs(today)) {
+      if (noteDateMidnight.isAtSameMomentAs(today)) {
         return "Today";
-      } else if (noteDate.isAtSameMomentAs(yesterday)) {
+      } else if (noteDateMidnight.isAtSameMomentAs(yesterday)) {
         return "Yesterday";
       } else if (noteDate.year == now.year) {
         return DateFormat('MMMM d').format(noteDate);
@@ -156,89 +195,6 @@ class NoteController extends GetxController {
       }
     } catch (e) {
       return "Earlier";
-    }
-  }
-
-  String getPlainTextFromNote(String? subtitleJson) {
-    if (subtitleJson == null || subtitleJson.isEmpty) return "";
-
-    try {
-      final document = quill.Document.fromJson(jsonDecode(subtitleJson));
-      return document.toPlainText().trim();
-    } catch (e) {
-      return subtitleJson;
-    }
-  }
-
-  /// Check if any selected notes are locked
-  bool anySelectedNoteIsLocked(Set<dynamic> selectedKeys) {
-    return selectedKeys.any((key) {
-      final note = noteBox.get(key);
-      return note != null && (note['isLocked'] ?? false);
-    });
-  }
-
-  void verifyAndExecute({
-    required BuildContext context,
-    required bool isLocked,
-    required VoidCallback onVerified,
-    String title = "This note is locked.",
-  }) {
-    if (!isLocked) {
-      onVerified();
-      return;
-    }
-
-    final TextEditingController passController = TextEditingController();
-    String? masterPassword = settingsBox.get('master_password');
-
-    showConfirmDialog(
-      context: context,
-      title: title,
-      subTitle: "Verification required for this locked note.",
-      confirmText: "Unlock",
-      controller: passController,
-      obscureText: true,
-      hintText: "Master Password",
-      onConfirm: () {
-        if (passController.text == masterPassword) {
-          onVerified();
-        } else {
-          Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
-        }
-      },
-    );
-  }
-
-  /// Deletes multiple notes and moves them to the recently_deleted box
-  void deleteSelectedNotes({
-    required Set<dynamic> selectedKeys,
-    VoidCallback? onComplete,
-  }) {
-    for (var key in selectedKeys) {
-      final noteData = noteBox.get(key);
-      if (noteData != null) {
-        final deletedData = Map<String, dynamic>.from(noteData);
-        deletedData['deletedAt'] = DateTime.now().toIso8601String();
-
-        trashBox.put(key, deletedData);
-        noteBox.delete(key);
-      }
-    }
-
-    update();
-
-    if (onComplete != null) onComplete();
-  }
-
-  List<MapEntry<dynamic, dynamic>> get allFolders => folderBox.toMap().entries.toList();
-  Future<void> updateNoteFolder(dynamic noteKey, dynamic targetFolderKey) async {
-    final noteData = noteBox.get(noteKey);
-    if (noteData != null) {
-      final updatedNote = Map<String, dynamic>.from(noteData);
-      updatedNote['folderKey'] = targetFolderKey;
-      await noteBox.put(noteKey, updatedNote);
-      update();
     }
   }
 }

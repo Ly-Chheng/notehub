@@ -2,11 +2,15 @@ class FolderModel {
   int? id;
   String title;
   String? date;
+  bool isPinned;
+  bool isLocked;
 
   FolderModel({
     this.id,
     required this.title,
     this.date,
+    this.isPinned = false,
+    this.isLocked = false,
   });
 
   Map<String, dynamic> toMap() {
@@ -14,6 +18,8 @@ class FolderModel {
       'id': id,
       'title': title,
       'date': date ?? DateTime.now().toIso8601String(),
+      'isPinned': isPinned ? 1 : 0,
+      'isLocked': isLocked ? 1 : 0,
     };
   }
 
@@ -22,6 +28,8 @@ class FolderModel {
       id: map['id'],
       title: map['title'] ?? '',
       date: map['date'],
+      isPinned: map['isPinned'] == 1 || map['isPinned'] == true,
+      isLocked: map['isLocked'] == 1 || map['isLocked'] == true,
     );
   }
 }

@@ -1,244 +1,188 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:hive_flutter/hive_flutter.dart';
-// import 'package:flutter_slidable/flutter_slidable.dart';
-// import 'package:project_structure/controllers/home/home_controller.dart';
-// import 'package:project_structure/core/utils/app_color.dart';
-// import 'package:project_structure/views/create/create_note_screen.dart';
-// import 'package:project_structure/views/create/folder_note_list_screen.dart.dart';
-// import 'package:project_structure/views/home/components/create_folder_component.dart';
-// import 'package:project_structure/views/lock/create_password_screen.dart';
-// import 'package:project_structure/widgets/custom_fab.dart';
-// import 'package:project_structure/widgets/custom_dialog.dart';
-// import 'package:project_structure/widgets/custom_header.dart';
-// import '../../core/utils/app_fonts.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get/get.dart';
+import 'package:project_structure/controllers/notes/folder_controller.dart';
+import 'package:project_structure/controllers/notes/note_controller.dart';
+import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/models/note/folder_model.dart';
+import 'package:project_structure/views/create/create_note_screen.dart';
+import 'package:project_structure/views/create/folder_note_list_screen.dart';
+import 'package:project_structure/views/home/components/show_folder_sheet.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/custom_header.dart';
 
-// class MyHomePage extends StatefulWidget {
-//   const MyHomePage({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key});
 
-//   @override
-//   State<MyHomePage> createState() => _MyHomePageState();
-// }
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
-// class _MyHomePageState extends State<MyHomePage> {
-//   final HomeController controller = Get.put(HomeController());
+class _MyHomePageState extends State<MyHomePage> {
+  final FolderController controller = Get.put(FolderController());
+  final NoteController noteController = Get.put(NoteController());
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     WidgetsBinding.instance.addPostFrameCallback((_) {
-//       controller.ensureDefaultFolder();
-//       controller.listenToScroll();
-//     });
-//   }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            child: customHeader("Folders", context),
+          ),
+          Expanded(
+            child: Obx(() {
+              if (controller.folders.isEmpty) {
+                return const Center(
+                  child: Text("No folders yet"),
+                );
+              }
+              return ListView.builder(
+                itemCount: controller.folders.length,
+                padding: const EdgeInsets.only(bottom: 100),
+                itemBuilder: (context, index) {
+                  final folder = controller.folders[index];
+                  final isDefault = controller.isDefaultFolder(folder);
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-//       body: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-//             child: customHeader("Folders", context),
-//           ),
-//           Expanded(
-//             child: SlidableAutoCloseBehavior(
-//               closeWhenOpened: true,
-//               child: ValueListenableBuilder(
-//                 valueListenable: controller.folderBox.listenable(),
-//                 builder: (context, Box box, _) {
-//                   final folders = controller.getSortedFolders(box.toMap().entries.toList());
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Slidable(
+                        enabled: !isDefault,
+                        key: ValueKey(folder.id),
+                        startActionPane: ActionPane(
+                          motion: const BehindMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (c) => _togglePin(folder),
+                              backgroundColor: AppColor().orange,
+                              foregroundColor: Colors.white,
+                              icon: folder.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+                              label: folder.isPinned ? 'Unpin' : 'Pin',
+                            ),
+                            SlidableAction(
+                              onPressed: (c) => _toggleLock(folder),
+                              backgroundColor: Colors.green,
+                              icon: folder.isLocked ? Icons.lock : Icons.lock_open,
+                              label: folder.isLocked ? 'Unlock' : 'Lock',
+                            ),
+                          ],
+                        ),
+                        endActionPane: ActionPane(
+                          motion: const DrawerMotion(),
+                          children: [
+                            SlidableAction(
+                              onPressed: (c) => showFolderSheet(context, folder: folder),
+                              backgroundColor: AppColor().primaryColor,
+                              icon: Icons.edit,
+                              label: 'Edit',
+                            ),
+                            SlidableAction(
+                              onPressed: (c) => _confirmDelete(context, folder),
+                              backgroundColor: AppColor().red,
+                              icon: Icons.delete,
+                              label: 'Delete',
+                            ),
+                          ],
+                        ),
+                        child: folderTile(folder, isDefault),
+                      ),
+                    ),
+                  );
+                },
+              );
+            }),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColor().primaryColor,
+        onPressed: () {
+          // Get the ID of the "My Note" folder from your FolderController
+          final int targetFolderId = controller.defaultFolderId;
 
-//                   return ListView.builder(
-//                     controller: controller.scrollController,
-//                     itemCount: folders.length,
-//                     itemBuilder: (context, index) {
-//                       final folderKey = folders[index].key;
-//                       final folderData = folders[index].value;
-//                       bool isDefault = folderData['title'] == controller.defaultFolderName;
-//                       bool isPinned = folderData['isPinned'] ?? false;
-//                       String? masterPass = controller.settingsBox.get('master_password');
-//                       bool hasPassword = masterPass != null && masterPass.isNotEmpty;
-//                       bool isLocked = (folderData['isLocked'] ?? false) && hasPassword;
+          Get.to(() => CreateNoteScreen(
+                isEditing: false,
+                folderId: targetFolderId,
+              ));
+        },
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
+    );
+  }
 
-//                       return Padding(
-//                         padding: EdgeInsets.symmetric(
-//                           horizontal: 16,
-//                           vertical: context.isPhone ? 6 : 10,
-//                         ),
-//                         child: ClipRRect(
-//                           borderRadius: BorderRadius.circular(12),
-//                           child: Slidable(
-//                             enabled: !isDefault,
-//                             startActionPane: ActionPane(
-//                               motion: const BehindMotion(),
-//                               children: [
-//                                 SlidableAction(
-//                                   onPressed: (c) => controller.togglePin(folderKey, folderData),
-//                                   backgroundColor: AppColor().orange,
-//                                   foregroundColor: AppColor().white,
-//                                   icon: isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-//                                   label: isPinned ? 'Unpin' : 'Pin',
-//                                 ),
-//                                 SlidableAction(
-//                                   onPressed: (context) {
-//                                     String? masterPass = controller.settingsBox.get('master_password');
+  void _togglePin(FolderModel folder) async {
+    await controller.togglePin(folder.id!);
+  }
 
-//                                     if (masterPass == null || masterPass.isEmpty) {
-//                                       Get.to(() => const CreatePasswordScreen());
-//                                       return;
-//                                     }
+  void _toggleLock(FolderModel folder) async {
+    await controller.toggleLock(folder.id!);
+  }
 
-//                                     controller.verifyAndExecute(
-//                                       context: context,
-//                                       isLocked: isLocked,
-//                                       title: isLocked ? "Unlock Folder" : "Lock Folder",
-//                                       onVerified: () => controller.toggleFolderLock(folderKey, folderData),
-//                                     );
-//                                   },
-//                                   backgroundColor: AppColor().green,
-//                                   foregroundColor: AppColor().white,
-//                                   icon: isLocked ? Icons.lock_open : Icons.lock,
-//                                   label: isLocked ? 'Unlock' : 'Lock',
-//                                 ),
-//                               ],
-//                             ),
-//                             endActionPane: ActionPane(
-//                               motion: const DrawerMotion(),
-//                               children: [
-//                                 SlidableAction(
-//                                   onPressed: (c) => showFolderSheet(context, folderKey: folderKey, existingData: folderData),
-//                                   backgroundColor: AppColor().primaryColor,
-//                                   icon: Icons.edit,
-//                                   label: 'Edit',
-//                                 ),
-//                                 SlidableAction(
-//                                   onPressed: (c) {
-//                                     int noteCount = controller.noteBox.values.where((n) => n['folderKey'] == folderKey).length;
+  void _confirmDelete(BuildContext context, FolderModel folder) {
+    showConfirmDialog(
+      context: context,
+      title: "Delete Folder?",
+      subTitle: "This folder contains ${folder.title} notes. All data inside will be permanently lost.",
+      confirmText: "Delete",
+      onConfirm: () async {
+        await controller.deleteFolder(folder.id!);
+      },
+    );
+  }
 
-//                                     void executeDeletion() {
-//                                       bool hasLockedNotes = controller.noteBox.values.any((n) => n['folderKey'] == folderKey && (n['isLocked'] ?? false));
-//                                       controller.verifyAndExecute(
-//                                         context: context,
-//                                         isLocked: hasLockedNotes || isLocked,
-//                                         title: "Delete Protected Folder",
-//                                         onVerified: () => controller.deleteFolder(folderKey),
-//                                       );
-//                                     }
-
-//                                     if (noteCount > 0) {
-//                                       showConfirmDialog(
-//                                         context: context,
-//                                         title: "Delete Folder?",
-//                                         subTitle: "This folder contains $noteCount notes. All data inside will be permanently lost.",
-//                                         confirmText: "Delete All",
-//                                         onConfirm: () => executeDeletion(),
-//                                       );
-//                                     } else {
-//                                       executeDeletion();
-//                                     }
-//                                   },
-//                                   backgroundColor: AppColor().red,
-//                                   icon: Icons.delete,
-//                                   label: 'Delete',
-//                                 ),
-//                               ],
-//                             ),
-//                             child: GestureDetector(
-//                               onTap: () {
-//                                 final bool isFolderLocked = folderData['isLocked'] ?? false;
-
-//                                 controller.verifyAndExecute(
-//                                   context: context,
-//                                   isLocked: isFolderLocked,
-//                                   title: "Locked Folder",
-//                                   onVerified: () {
-//                                     Get.to(
-//                                       () => FolderNoteListScreen(
-//                                         folderKey: folderKey,
-//                                         folderName: folderData['title'],
-//                                       ),
-//                                     );
-//                                   },
-//                                 );
-//                               },
-//                               child: Container(
-//                                 color: Theme.of(context).cardColor,
-//                                 padding: EdgeInsets.all(context.isPhone ? 12 : 16),
-//                                 child: Row(
-//                                   children: [
-//                                     Icon(
-//                                       Icons.folder,
-//                                       color: AppColor().primaryColor,
-//                                       size: context.isPhone ? 30 : 35,
-//                                     ),
-//                                     const SizedBox(width: 12),
-//                                     Expanded(
-//                                       child: Row(
-//                                         children: [
-//                                           if (isLocked)
-//                                             Padding(
-//                                               padding: EdgeInsets.only(
-//                                                 right: context.isPhone ? 2 : 5,
-//                                               ),
-//                                               child: Icon(Icons.lock, size: 17, color: AppColor().primaryColor),
-//                                             ),
-//                                           Flexible(
-//                                             child: Text(
-//                                               isLocked && folderData['title'].length > 3 ? "${folderData['title'].substring(0, 3)}..." : folderData['title'],
-//                                               maxLines: 1,
-//                                               overflow: TextOverflow.ellipsis,
-//                                               style: TextStyle(
-//                                                 fontFamily: 'EN-SEMIBOLD',
-//                                                 fontFamilyFallback: const ['KH-BOLD'],
-//                                                 fontSize: context.isPhone ? 16 : 18,
-//                                                 color: Theme.of(context).textTheme.bodyLarge?.color,
-//                                               ),
-//                                             ),
-//                                           ),
-//                                         ],
-//                                       ),
-//                                     ),
-//                                     ValueListenableBuilder(
-//                                       valueListenable: controller.noteBox.listenable(),
-//                                       builder: (context, Box nBox, _) {
-//                                         int count = nBox.values.where((n) => n['folderKey'] == folderKey).length;
-//                                         return Row(
-//                                           children: [
-//                                             if (isPinned) Icon(Icons.push_pin, size: 17, color: AppColor().orange),
-//                                             SizedBox(
-//                                               width: 5,
-//                                             ),
-//                                             Text("$count", style: text16(context)),
-//                                           ],
-//                                         );
-//                                       },
-//                                     ),
-//                                   ],
-//                                 ),
-//                               ),
-//                             ),
-//                           ),
-//                         ),
-//                       );
-//                     },
-//                   );
-//                 },
-//               ),
-//             ),
-//           ),
-//         ],
-//       ),
-//       floatingActionButton: Obx(() => AnimatedFab(
-//             isVisible: controller.isFabVisible.value,
-//             icon: Icons.add,
-//             onPressed: () {
-//               final defaultKey = controller.getDefaultFolderKey();
-//               Get.to(() => CreateNoteScreen(folderKey: defaultKey));
-//             },
-//           )),
-//     );
-//   }
-// }
+  Widget folderTile(FolderModel folder, bool isDefault) {
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => FolderNoteListScreen(
+              folderId: folder.id!,
+              folderName: folder.title,
+            ));
+      },
+      child: Container(
+        color: Theme.of(context).cardColor,
+        padding: const EdgeInsets.all(15),
+        child: Row(
+          children: [
+            Icon(Icons.folder, color: AppColor().primaryColor, size: 35),
+            const SizedBox(width: 12),
+            if (folder.isLocked)
+              Padding(
+                padding: EdgeInsets.only(
+                  right: context.isPhone ? 2 : 5,
+                ),
+                child: Icon(Icons.lock, size: 18, color: AppColor().primaryColor),
+              ),
+            Expanded(
+              child: Text(
+                folder.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: 'EN-SEMIBOLD',
+                  fontFamilyFallback: const ['KH-BOLD'],
+                  fontSize: context.isPhone ? 16 : 18,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            if (folder.isPinned)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Icon(Icons.push_pin, size: 18, color: AppColor().orange),
+              ),
+            Obx(() {
+              final int noteCount = noteController.notes.where((n) => n.folderId == folder.id).length;
+              return Text("$noteCount", style: text16(context));
+            }),
+          ],
+        ),
+      ),
+    );
+  }
+}

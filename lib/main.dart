@@ -7,8 +7,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:project_structure/controllers/notes/test_folder_controller.dart' show FolderController;
-import 'package:project_structure/controllers/notes/test_note_controller.dart';
+import 'package:project_structure/controllers/notes/folder_controller.dart' show FolderController;
+import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/core/services/themes_services.dart';
@@ -55,8 +55,6 @@ Future<void> main() async {
   await Hive.deleteFromDisk();
   await GetStorage().erase();
 
-  // await Hive.openBox('student_notes');
-  // await Hive.openBox('folders_box');
   await Hive.openBox('settings_box');
   await Hive.openBox('recently_deleted');
   await Hive.openBox<TimerModel>('timer_box');

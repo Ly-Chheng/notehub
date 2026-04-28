@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/controllers/notes/test_folder_controller.dart';
+import 'package:project_structure/controllers/notes/folder_controller.dart';
 
 import 'package:project_structure/models/note/folder_model.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
-import 'package:project_structure/core/utils/app_color.dart';
+
 
 void showFolderSheet(BuildContext context, {FolderModel? folder}) {
-  // Use Get.find to get the existing controller instance
   final FolderController controller = Get.find<FolderController>();
 
   TextEditingController folderController = TextEditingController(
     text: folder != null ? folder.title : "",
   );
+  void showDuplicateNameDialog(BuildContext context) {
+    showConfirmDialog(
+      context: context,
+      title: "Duplicate Name",
+      subTitle: "A folder with this name already exists.",
+      confirmText: "OK",
+      onConfirm: () {
+        Navigator.pop(context);
+      },
+    );
+  }
 
   showModalBottomSheet(
     context: context,
@@ -39,16 +50,10 @@ void showFolderSheet(BuildContext context, {FolderModel? folder}) {
                   String newName = folderController.text.trim();
 
                   if (newName.isNotEmpty) {
-                    // Duplicate Check
                     bool isDuplicate = controller.folders.any((f) => f.title.toLowerCase() == newName.toLowerCase() && f.id != folder?.id);
 
                     if (isDuplicate) {
-                      Get.snackbar(
-                        "Duplicate Name",
-                        "A folder with this name already exists.",
-                        backgroundColor: AppColor().red,
-                        colorText: Colors.white,
-                      );
+                      showDuplicateNameDialog(context);
                       return;
                     }
 
@@ -59,7 +64,7 @@ void showFolderSheet(BuildContext context, {FolderModel? folder}) {
                       // Logic for Create (SQLite)
                       await controller.addFolder(newName);
                     }
-                    Get.back(); // Close sheet
+                    Get.back();  
                   }
                 },
               ),
