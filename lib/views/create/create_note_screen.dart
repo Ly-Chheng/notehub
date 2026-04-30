@@ -5,6 +5,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/models/note/note_model.dart';
@@ -19,9 +22,11 @@ import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/views/create/components/quill_editor_component.dart';
 import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/views/create/components/handwriting_component.dart';
+import 'package:project_structure/views/lock/create_password_screen.dart';
 
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
@@ -44,6 +49,7 @@ class CreateNoteScreen extends StatefulWidget {
 class _CreateNoteScreenState extends State<CreateNoteScreen> {
   final NoteController noteController = Get.find<NoteController>();
   final FolderController folderController = Get.find<FolderController>();
+  final LockController lockController = Get.put(LockController());
 
   late final TextEditingController titleController;
   late final QuillController _quillController;
@@ -51,6 +57,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   Timer? _autoSaveTimer;
   bool isAutoSaveEnabled = true;
+  bool _isSessionUnlocked = false;
 
   // Note State
   Color? noteBgColor;
@@ -147,11 +154,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       return;
     }
 
-    // if (title.isEmpty && isContentEmpty && selectedImages.isEmpty && !showTable && drawingLayers.isEmpty) {
-    //   if (!isAuto) Get.back();
-    //   return;
-    // }
-
     final String contentJson = jsonEncode(_quillController.document.toDelta().toJson());
 
     final savedId = await noteController.saveNoteSQLite(
@@ -177,6 +179,164 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
+  // // --- LOCK LOGIC ---
+  // void _handleLockToggle() {
+  //   String? storedPass = lockController.settingsBox.get('master_password');
+
+  //   if (storedPass == null || storedPass.isEmpty) {
+  //     Get.to(() => const CreatePasswordScreen())?.then((value) {
+  //       if (value == true) {
+  //         setState(() {
+  //           isLocked = true;
+  //           _isSessionUnlocked = true;
+  //         });
+  //         _triggerAutoSave();
+  //       }
+  //     });
+  //   } else {
+  //     if (isLocked) {
+  //       _showVerifyUnlockDialog(onSuccess: () {
+  //         setState(() {
+  //           isLocked = false;
+  //           _isSessionUnlocked = true;
+  //         });
+  //         _triggerAutoSave();
+  //       });
+  //     } else {
+  //       setState(() {
+  //         isLocked = true;
+  //         _isSessionUnlocked = false;
+  //       });
+  //       _triggerAutoSave();
+  //     }
+  //   }
+  // }
+
+  // void _showVerifyUnlockDialog({required VoidCallback onSuccess}) {
+  //   final verifyController = TextEditingController();
+  //   String storedPass = lockController.settingsBox.get('master_password') ?? "";
+
+  //   showConfirmDialog(
+  //     context: context,
+  //     title: "Unlock Note",
+  //     subTitle: "Please enter your password to view this note.",
+  //     confirmText: "Verify",
+  //     controller: verifyController,
+  //     obscureText: true,
+  //     hintText: "Password",
+  //     onConfirm: () {
+  //       if (verifyController.text == storedPass) {
+  //         Get.back();
+  //         onSuccess();
+  //       } else {
+  //         Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+  //       }
+  //     },
+  //   );
+  // }
+  // ... existing imports ...
+
+// --- Inside _CreateNoteScreenState ---
+
+  // --- UPDATED: LOCK LOGIC FOR SQLITE ---
+  Future<void> _handleLockToggle() async {
+    // 1. Fetch settings from SQLite
+    final settings = await lockController.getSecuritySettings();
+    String? storedPass = settings?['master_password'];
+
+    if (storedPass == null || storedPass.isEmpty) {
+      // No password set yet, send user to create one
+      final result = await Get.to(() => const CreatePasswordScreen());
+      if (result == true) {
+        setState(() {
+          isLocked = true;
+          _isSessionUnlocked = true;
+        });
+        _triggerAutoSave();
+      }
+    } else {
+      if (isLocked) {
+        // If note is currently locked, verify password before unlocking
+        _showVerifyUnlockDialog(
+          storedPass: storedPass, 
+          onSuccess: () {
+            setState(() {
+              isLocked = false;
+              _isSessionUnlocked = true;
+            });
+            _triggerAutoSave();
+          }
+        );
+      } else {
+        // If note is open, just lock it
+        setState(() {
+          isLocked = true;
+          _isSessionUnlocked = false;
+        });
+        _triggerAutoSave();
+      }
+    }
+  }
+
+  // --- UPDATED: VERIFICATION DIALOG ---
+  void _showVerifyUnlockDialog({required String storedPass, required VoidCallback onSuccess}) {
+    final verifyController = TextEditingController();
+
+    showConfirmDialog(
+      context: context,
+      title: "Unlock Note",
+      subTitle: "Please enter your password to remove protection.",
+      confirmText: "Verify",
+      controller: verifyController,
+      obscureText: true,
+      hintText: "Password",
+      onConfirm: () {
+        if (verifyController.text == storedPass) {
+          Get.back(); // Close dialog
+          onSuccess();
+        } else {
+          Get.snackbar(
+            "Error", 
+            "Incorrect Password", 
+            backgroundColor: AppColor().red, 
+            colorText: Colors.white,
+            snackPosition: SnackPosition.TOP,
+          );
+        }
+      },
+    );
+  }
+
+  // --- UPDATED: MENU SELECTION HANDLER ---
+  void _handleMenuSelection(String value) {
+    _forceUnfocus();
+    switch (value) {
+      case 'Lock Note':
+      case 'Unlock Note':
+        _handleLockToggle(); // This is now an async call internally
+        break;
+      case 'Pin':
+        setState(() => isPinned = true);
+        _triggerAutoSave();
+        break;
+      case 'Unpin':
+        setState(() => isPinned = false);
+        _triggerAutoSave();
+        break;
+      case 'Delete':
+        _showDeleteDialog();
+        break;
+      case 'Share':
+        _shareNote();
+        break;
+      case 'Move Note':
+        _showMoveSheet();
+        break;
+    }
+  }
+
+// ... rest of the code remains the same ...
+
   void _forceUnfocus() {
     _editorFocusNode.unfocus();
     FocusManager.instance.primaryFocus?.unfocus();
@@ -194,17 +354,43 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  void _openMediaPicker() {
+  void _handleImageSelection() {
     _forceUnfocus();
+    final int photoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
+
+    if (photoCount >= 2) {
+      showConfirmDialog(
+        context: context,
+        title: "Image Limit",
+        subTitle: "You can only select up to 2 images.",
+        showCancel: false,
+        confirmText: "OK",
+        onConfirm: () {},
+      );
+      return;
+    }
+
     showMediaSheet(
       context: context,
-      onImageSelected: (File file) {
-        setState(() {
-          selectedImages.add(file);
-        });
-        _triggerAutoSave();
+      onImageSelected: (File tempImage) async {
+        final int currentCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
+
+        if (currentCount < 2) {
+          File permanentFile = await _moveFileToPermanentStorage(tempImage);
+          setState(() {
+            selectedImages.add(permanentFile);
+          });
+          _triggerAutoSave();
+        }
       },
     );
+  }
+
+  Future<File> _moveFileToPermanentStorage(File sourceFile) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final String fileName = "${DateTime.now().millisecondsSinceEpoch}${p.extension(sourceFile.path)}";
+    final String newPath = p.join(directory.path, fileName);
+    return await sourceFile.copy(newPath);
   }
 
   void _openFormatting() {
@@ -269,6 +455,105 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  void _shareNote() {
+    _forceUnfocus();
+    _autoSaveTimer?.cancel();
+    final rawText = _quillController.document.toPlainText();
+    final hasImages = selectedImages.isNotEmpty;
+    final bool hasText = titleController.text.trim().isNotEmpty || rawText.trim().isNotEmpty;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      constraints: BoxConstraints(maxWidth: double.infinity),
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SheetHeader(title: ""),
+                Wrap(
+                  children: [
+                    if (hasText)
+                      ListTile(
+                        leading: Icon(
+                          Icons.text_snippet,
+                          color: AppColor().primaryColor,
+                          size: context.isPhone ? 20 : 25,
+                        ),
+                        title: Text(
+                          "Text",
+                          style: text16(context),
+                        ),
+                        onTap: () {
+                          Get.back();
+                          noteController.shareNote(
+                            title: titleController.text,
+                            content: rawText,
+                            selectedImages: selectedImages,
+                            mode: ShareMode.text,
+                          );
+                        },
+                      ),
+                    if (hasImages)
+                      ListTile(
+                        leading: Icon(
+                          Icons.image,
+                          color: AppColor().green,
+                          size: context.isPhone ? 20 : 25,
+                        ),
+                        title: Text(
+                          "Photos",
+                          style: text16(context),
+                        ),
+                        onTap: () {
+                          Get.back();
+                          noteController.shareNote(
+                            title: titleController.text,
+                            content: rawText,
+                            selectedImages: selectedImages,
+                            mode: ShareMode.photo,
+                          );
+                        },
+                      ),
+                    if (hasText)
+                      ListTile(
+                        leading: Icon(
+                          Icons.insert_drive_file,
+                          color: AppColor().orange,
+                          size: context.isPhone ? 20 : 25,
+                        ),
+                        title: Text("File (txt)", style: text16(context)),
+                        onTap: () {
+                          Get.back();
+                          noteController.shareNote(
+                            title: titleController.text,
+                            content: rawText,
+                            selectedImages: selectedImages,
+                            mode: ShareMode.file,
+                          );
+                        },
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildBottomToolbar(Color iconColor) {
     return SafeArea(
       child: Padding(
@@ -284,45 +569,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               borderRadius: BorderRadius.circular(40),
               boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
             ),
-            // child: Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-            //   children: [
-            //     // Inside _buildBottomToolbar
-            //     IconButton(
-            //       icon: Icon(Icons.image_outlined, color: iconColor),
-            //       onPressed: _openMediaPicker,
-            //     ),
-            //     IconButton(
-            //       icon: Icon(Icons.text_fields, color: iconColor),
-            //       onPressed: _openFormatting,
-            //     ),
-            //     IconButton(
-            //       icon: Icon(Icons.palette_outlined, color: iconColor),
-            //       onPressed: _openPalette,
-            //     ),
-            //     IconButton(
-            //       icon: Icon(Icons.table_chart_outlined, color: iconColor),
-            //       onPressed: () {
-            //         setState(() => showTable = !showTable);
-            //         _triggerAutoSave();
-            //       },
-            //     ),
-            //     IconButton(
-            //       icon: Icon(Icons.mode_outlined, color: iconColor),
-            //       onPressed: _openDrawing,
-            //     ),
-            //     IconButton(
-            //       icon: Icon(Icons.check, color: AppColor().primaryColor),
-            //       onPressed: () => _saveNote(isAuto: false),
-            //     ),
-            //   ],
-            // ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _bottomIcon(Icons.image_outlined, () {
-                  _openMediaPicker();
-                  _triggerAutoSave();
+                  _handleImageSelection();
                 }),
                 _bottomIcon(Icons.text_fields, _openFormatting),
                 _bottomIcon(Icons.palette_outlined, () {
@@ -340,10 +591,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   _openDrawing();
                   _triggerAutoSave();
                 }),
-                // _bottomIcon(
-                //   Icons.check,
-                //   () => _saveNote(isAuto: false),
-                // ),
               ],
             ),
           ),
@@ -411,21 +658,69 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  void _handleMenuSelection(String value, BuildContext context) {
-    _forceUnfocus();
+  // void _handleMenuSelection(String value, BuildContext context) {
+  //   _forceUnfocus();
 
-    if (value.contains('Pin')) {
-      setState(() => isPinned = !isPinned);
-      _triggerAutoSave();
-    } else if (value.contains('Lock')) {
-      setState(() => isLocked = !isLocked);
-      _triggerAutoSave();
-    } else if (value == 'Move Note') {
-      _showMoveSheet();
-    } else if (value == 'Delete') {
-      _showDeleteDialog();
-    }
-  }
+  //   switch (value) {
+  //     case 'Pin':
+  //       setState(() => isPinned = true);
+  //       _triggerAutoSave();
+  //       break;
+
+  //     case 'Unpin':
+  //       setState(() => isPinned = false);
+  //       _triggerAutoSave();
+  //       break;
+
+  //     case 'Lock Note':
+  //       setState(() => isLocked = true);
+  //       _triggerAutoSave();
+  //       break;
+
+  //     case 'Unlock Note':
+  //       setState(() => isLocked = false);
+  //       _triggerAutoSave();
+  //       break;
+
+  //     case 'Move Note':
+  //       _showMoveSheet();
+  //       break;
+
+  //     case 'Delete':
+  //       _showDeleteDialog();
+  //       break;
+
+  //     case 'Share':
+  //       _shareNote();
+  //       break;
+  //   }
+  // }
+  // void _handleMenuSelection(String value) {
+  //   _forceUnfocus();
+  //   switch (value) {
+  //     case 'Lock Note':
+  //     case 'Unlock Note':
+  //       _handleLockToggle();
+  //       break;
+  //     case 'Pin':
+  //       setState(() => isPinned = true);
+  //       _triggerAutoSave();
+  //       break;
+  //     case 'Unpin':
+  //       setState(() => isPinned = false);
+  //       _triggerAutoSave();
+  //       break;
+  //     case 'Delete':
+  //       _showDeleteDialog();
+  //       break;
+  //     case 'Share':
+  //       _shareNote();
+  //       break;
+  //     case 'Move Note':
+  //       _showMoveSheet();
+  //       break;
+  //   }
+  // }
 
   bool get _isNoteEmpty => titleController.text.trim().isEmpty && _quillController.document.isEmpty() && selectedImages.isEmpty && !showTable && drawingLayers.isEmpty;
 
@@ -484,7 +779,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 ),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 offset: const Offset(0, 50),
-                onSelected: (v) => _handleMenuSelection(v, context),
+                onSelected: (v) => _handleMenuSelection(v),
                 itemBuilder: (context) => [
                   buildPopupItem(context, isPinned ? 'Unpin' : 'Pin', isPinned ? Icons.push_pin : Icons.push_pin_outlined),
                   buildPopupItem(context, 'Share', Icons.share_outlined),
@@ -507,12 +802,15 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               TextField(
                 controller: titleController,
                 maxLines: null,
-                style: text22(context).copyWith(color: textColor),
                 decoration: InputDecoration(
                   hintText: 'Title',
-                  hintStyle: TextStyle(color: textColor.withOpacity(0.5)),
+                  enabledBorder: InputBorder.none,
+                  focusedBorder: InputBorder.none,
+                  errorBorder: InputBorder.none,
                   border: InputBorder.none,
+                  hintStyle: TextStyle(fontSize: context.isPhone ? 22 : 26, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
                 ),
+                style: TextStyle(fontSize: context.isPhone ? 20 : 22, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
               ),
               if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
               QuillEditorComponent(

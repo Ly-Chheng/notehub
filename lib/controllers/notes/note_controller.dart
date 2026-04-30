@@ -1,13 +1,21 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/core/database/database_service.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/models/note/note_model.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:sqflite/sqflite.dart';
+
+enum ShareMode { text, photo, file }
 
 class NoteController extends GetxController {
   var notes = <NoteModel>[].obs;
+  var trashNotes = <NoteModel>[].obs;
   var isLoading = false.obs;
 
   //   FETCH NOTES
@@ -24,7 +32,7 @@ class NoteController extends GetxController {
 
       notes.assignAll(maps.map((e) => NoteModel.fromMap(e)).toList());
       debugPrint(" Fetched ${notes.length} note(s) from folder ID: $folderId");
-    } catch (e, stack) {
+    } catch (e) {
       debugPrint(" Error fetching notes: $e");
     } finally {
       isLoading.value = false;
@@ -46,7 +54,7 @@ class NoteController extends GetxController {
     List<Map<String, dynamic>> drawingLayers = const [],
   }) async {
     final db = await DatabaseService.db;
-    final date = DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now()); // Better format
+    final date = DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now());
 
     final row = {
       'folder_id': folderId,
@@ -63,21 +71,31 @@ class NoteController extends GetxController {
     };
 
     try {
-      if (id == null) {
-        // CREATE
-        final newId = await db.insert('notes', row);
-        debugPrint('Note CREATED successfully! New ID = $newId');
-        return newId;
-      } else {
-        // UPDATE
-        final rowsAffected = await db.update('notes', row, where: 'id = ?', whereArgs: [id]);
-        debugPrint(' Note UPDATED successfully! ID = $id | Rows affected: $rowsAffected');
-        return id;
-      }
-    } catch (e) {
-      debugPrint(' Failed to save note: $e');
+      int? resultId;
 
-      rethrow;
+      if (id == null) {
+        //  CREATE NEW NOTE
+        resultId = await db.insert('notes', row);
+        debugPrint(' Note CREATED: ID $resultId');
+      } else {
+        // UPDATE EXISTING NOTE
+        int count = await db.update('notes', row, where: 'id = ?', whereArgs: [id]);
+        resultId = id;
+        debugPrint(' Note UPDATED: ID $id ($count rows affected)');
+      }
+
+      await fetchNotesByFolder(folderId);
+
+      return resultId;
+    } catch (e) {
+      debugPrint(' SQLite Save Error: $e');
+
+      Get.snackbar(
+        "Save Failed",
+        "Could not save your note to the database.",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return null;
     }
   }
 
@@ -156,8 +174,11 @@ class NoteController extends GetxController {
         where: 'id = ?',
         whereArgs: [note.id],
       );
-
+      // Refresh the data from SQLite
       await fetchNotesByFolder(folderId);
+      notes.refresh();
+
+      // await fetchNotesByFolder(folderId);
     } catch (e) {
       debugPrint("Pin Error: $e");
     }
@@ -196,5 +217,90 @@ class NoteController extends GetxController {
     } catch (e) {
       return "Earlier";
     }
+  }
+
+  Future<void> shareNote({
+    required String title,
+    required String content,
+    required List<File> selectedImages,
+    required ShareMode mode,
+  }) async {
+    try {
+      final String shareTitle = title.trim().isEmpty ? "Untitled Note" : title.trim();
+      final String shareContent = content.trim();
+      final String fullMessage = "$shareTitle\n$shareContent";
+
+      if (mode == ShareMode.photo) {
+        if (selectedImages.isNotEmpty) {
+          final List<XFile> xFiles = selectedImages.where((f) => f.existsSync()).map((f) => XFile(f.path)).toList();
+          SharePlus.instance.share(ShareParams(files: xFiles));
+        } else {
+          Get.snackbar("Info", "No photos found in this note to share.");
+        }
+      } else if (mode == ShareMode.file) {
+        final Directory tempDir = await getTemporaryDirectory();
+        final String cleanTitle = shareTitle.replaceAll(RegExp(r'[^\p{L}\p{N}\s]+', unicode: true), '');
+        final String fileName = "${cleanTitle.isEmpty ? 'shared_file' : cleanTitle}.txt";
+        final File file = File('${tempDir.path}/$fileName');
+
+        // await file.writeAsString(fullMessage);
+        await file.writeAsString(shareContent);
+
+        final XFile xFile = XFile(file.path);
+        SharePlus.instance.share(ShareParams(files: [xFile]));
+      } else {
+        SharePlus.instance.share(ShareParams(text: fullMessage, subject: shareTitle));
+      }
+    } catch (e) {
+      Get.snackbar("Share Error", "Could not open share menu", backgroundColor: AppColor().red, colorText: AppColor().white);
+    }
+  }
+
+  Future<int> getCountForFolder(int folderId) async {
+    try {
+      final db = await DatabaseService.db;
+      final result = await db.rawQuery('SELECT COUNT(*) as count FROM notes WHERE folder_id = ?', [folderId]);
+      return Sqflite.firstIntValue(result) ?? 0;
+    } catch (e) {
+      return 0;
+    }
+  }
+
+  // USE FOR LOCK
+  // --- ADD THIS: Generic Update for any NoteModel ---
+  Future<void> updateNote(NoteModel note) async {
+    try {
+      final db = await DatabaseService.db;
+      await db.update(
+        'notes',
+        note.toMap(),
+        where: 'id = ?',
+        whereArgs: [note.id],
+      );
+      debugPrint("Note ${note.id} updated in SQLite");
+    } catch (e) {
+      debugPrint("Error updating note: $e");
+    }
+  }
+
+  // --- ADD THIS: Fetch ALL notes (across all folders) ---
+  Future<void> fetchAllNotes() async {
+    isLoading.value = true;
+    try {
+      final db = await DatabaseService.db;
+      final maps = await db.query('notes', orderBy: 'id DESC');
+      notes.assignAll(maps.map((e) => NoteModel.fromMap(e)).toList());
+    } catch (e) {
+      debugPrint("Error fetching all notes: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // --- ADD THIS: Refresh currently displayed folder ---
+  // Since your screen calls fetchNotesByFolder(folderId),
+  // you can call this if you know which folder is open.
+  void refreshNotes(int folderId) {
+    fetchNotesByFolder(folderId);
   }
 }

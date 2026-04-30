@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:project_structure/controllers/lock/lock_controller.dart';
 
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
@@ -33,6 +34,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   final NoteController controller = Get.find<NoteController>();
   final FolderController folderController = Get.find<FolderController>();
   final TextEditingController searchController = TextEditingController();
+  final LockController lockController = Get.put(LockController());
 
   bool isSelectionMode = false;
   Set<int> selectedNoteIds = {};
@@ -41,6 +43,97 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   void initState() {
     super.initState();
     controller.fetchNotesByFolder(widget.folderId);
+  }
+
+  // --- NEW: NAVIGATION LOGIC WITH LOCK ---
+  void _handleNoteTap(NoteModel note) async {
+    if (isSelectionMode) {
+      setState(() {
+        if (selectedNoteIds.contains(note.id)) {
+          selectedNoteIds.remove(note.id!);
+        } else {
+          selectedNoteIds.add(note.id!);
+        }
+      });
+    } else {
+      if (note.isLocked == true) {
+        _showUnlockDialog(note);
+      } else {
+        _navigateToCreateNote(note);
+      }
+    }
+  }
+
+  // void _showUnlockDialog(NoteModel note) {
+  //   final TextEditingController verifyPassController = TextEditingController();
+  //   String storedPass = lockController.settingsBox.get('master_password') ?? "";
+
+  //   showConfirmDialog(
+  //     context: context,
+  //     title: "Locked Note",
+  //     subTitle: "Please enter your password to view this note.",
+  //     confirmText: "Unlock",
+  //     controller: verifyPassController,
+  //     obscureText: true,
+  //     hintText: "Password",
+  //     onConfirm: () {
+  //       if (verifyPassController.text == storedPass) {
+  //         _navigateToCreateNote(note);
+  //       } else {
+  //         Get.snackbar(
+  //           "Error",
+  //           "Incorrect Password",
+  //           backgroundColor: AppColor().red,
+  //           colorText: Colors.white,
+  //           snackPosition: SnackPosition.TOP,
+  //         );
+  //       }
+  //     },
+  //   );
+  // }
+
+void _showUnlockDialog(NoteModel note) async {
+    final TextEditingController verifyPassController = TextEditingController();
+    
+    // Fetch settings from SQLite via LockController
+    final settings = await lockController.getSecuritySettings();
+    String storedPass = settings?['master_password'] ?? "";
+
+    if (!mounted) return;
+
+    showConfirmDialog(
+      context: context,
+      title: "Locked Note",
+      subTitle: "Please enter your password to view this note.",
+      confirmText: "Unlock",
+      controller: verifyPassController,
+      obscureText: true,
+      hintText: "Password",
+      onConfirm: () {
+        if (verifyPassController.text == storedPass) {
+          _navigateToCreateNote(note);
+        } else {
+          Get.snackbar(
+            "Error",
+            "Incorrect Password",
+            backgroundColor: AppColor().red,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.TOP,
+          );
+        }
+      },
+    );
+  }
+  void _navigateToCreateNote(NoteModel note) async {
+    final result = await Get.to(() => CreateNoteScreen(
+          isEditing: true,
+          existingNote: note,
+          folderId: widget.folderId,
+        ));
+
+    if (result == true) {
+      controller.fetchNotesByFolder(widget.folderId);
+    }
   }
 
   @override
@@ -77,7 +170,10 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
-                return const Center(child: CircularProgressIndicator());
+                return Center(
+                    child: CircularProgressIndicator(
+                  color: AppColor().primaryColor,
+                ));
               }
 
               if (controller.notes.isEmpty) {
@@ -159,7 +255,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
     final Color itemTextColor = (note.bgColor == null || note.bgColor == 0)
         ? (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black)
-        : (ThemeData.estimateBrightnessForColor(noteBgColor) == Brightness.dark ? Colors.white : Colors.black);
+        : (ThemeData.estimateBrightnessForColor(noteBgColor) == Brightness.dark ? AppColor().white : AppColor().black);
 
     final Color itemSubTextColor = itemTextColor.withOpacity(0.7);
 
@@ -175,7 +271,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             SlidableAction(
               onPressed: (context) => controller.togglePinNote(note, widget.folderId),
               backgroundColor: AppColor().orange,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColor().white,
               icon: note.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
               label: note.isPinned ? 'Unpin' : 'Pin',
               borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
@@ -183,14 +279,14 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             SlidableAction(
               onPressed: (context) => _showMoveSheet([note.id!]),
               backgroundColor: AppColor().primaryColor,
-              foregroundColor: Colors.white,
+              foregroundColor: AppColor().white,
               icon: Icons.folder,
               label: 'Folder',
             ),
             SlidableAction(
               onPressed: (context) => _showDeleteConfirmation(note),
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: AppColor().red,
+              foregroundColor: AppColor().white,
               icon: Icons.delete,
               label: 'Delete',
               borderRadius: const BorderRadius.horizontal(right: Radius.circular(12)),
@@ -198,27 +294,28 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           ],
         ),
         child: GestureDetector(
-          onTap: () async {
-            if (isSelectionMode) {
-              setState(() {
-                if (isSelected) {
-                  selectedNoteIds.remove(note.id!);
-                } else {
-                  selectedNoteIds.add(note.id!);
-                }
-              });
-            } else {
-              final result = await Get.to(() => CreateNoteScreen(
-                    isEditing: true,
-                    existingNote: note,
-                    folderId: widget.folderId,
-                  ));
+          // onTap: () async {
+          //   if (isSelectionMode) {
+          //     setState(() {
+          //       if (isSelected) {
+          //         selectedNoteIds.remove(note.id!);
+          //       } else {
+          //         selectedNoteIds.add(note.id!);
+          //       }
+          //     });
+          //   } else {
+          //     final result = await Get.to(() => CreateNoteScreen(
+          //           isEditing: true,
+          //           existingNote: note,
+          //           folderId: widget.folderId,
+          //         ));
 
-              if (result == true) {
-                controller.fetchNotesByFolder(widget.folderId);
-              }
-            }
-          },
+          //     if (result == true) {
+          //       controller.fetchNotesByFolder(widget.folderId);
+          //     }
+          //   }
+          // },
+          onTap: () => _handleNoteTap(note),
           child: Container(
             decoration: BoxDecoration(
               color: noteBgColor,
@@ -255,37 +352,47 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          (note.title?.trim().isNotEmpty ?? false)
-                              ? note.title!
-                              : (controller.getPlainTextFromNote(note.content ?? "").trim().isNotEmpty)
-                                  ? controller.getPlainTextFromNote(note.content ?? "")
-                                  : "Untitled",
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: text18(context).copyWith(
-                            color: itemTextColor,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
                         Row(
                           children: [
-                            if (note.date != null)
-                              Text(
-                                note.date.toString(),
-                                style: text14(context).copyWith(color: itemSubTextColor),
-                              ),
-                            if (note.title != null && note.title!.trim().isNotEmpty) ...[
-                              const SizedBox(width: 8),
-                              Flexible(
-                                child: Text(
-                                  controller.getPlainTextFromNote(note.content ?? ""),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: text14(context).copyWith(color: itemSubTextColor),
+                            if (note.isLocked == true)
+                              Padding(
+                                padding: EdgeInsets.only(right: 8.0),
+                                child: Icon(
+                                  Icons.lock_outline,
+                                  size: 18,
+                                  color: AppColor().primaryColor,
                                 ),
                               ),
-                            ],
+                            Text(
+                              (note.title.trim().isNotEmpty)
+                                  ? note.title
+                                  : (controller.getPlainTextFromNote(note.content ?? "").trim().isNotEmpty)
+                                      ? controller.getPlainTextFromNote(note.content ?? "")
+                                      : "Untitled",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: text18(context).copyWith(
+                                color: itemTextColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Text(
+                              note.date.toString(),
+                              style: text14(context).copyWith(color: itemSubTextColor),
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                controller.getPlainTextFromNote(note.content ?? ""),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: text14(context).copyWith(color: itemSubTextColor),
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -395,7 +502,10 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                     final folder = otherFolders[index];
                     return ListTile(
                       leading: Icon(Icons.folder, color: AppColor().primaryColor),
-                      title: Text(folder.title),
+                      title: Text(
+                        folder.title,
+                        style: text18(context),
+                      ),
                       onTap: () async {
                         for (var id in noteIds) {
                           await controller.moveNote(id, folder.id!);

@@ -27,6 +27,15 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
   String? _selectedQuestion;
 
   @override
+  void dispose() {
+    _newPassController.dispose();
+    _confirmPassController.dispose();
+    _hintController.dispose();
+    _answerController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -37,15 +46,20 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
-            onPressed: () => _controller.handleCreatePassword(
-              context: context,
-              password: _newPassController.text,
-              confirmPassword: _confirmPassController.text,
-              question: _selectedQuestion,
-              answer: _answerController.text,
-              hint: _hintController.text,
+            onPressed: () {
+              // Updated: Removed 'context: context' to match the SQLite LockController
+              _controller.handleCreatePassword(
+                password: _newPassController.text,
+                confirmPassword: _confirmPassController.text,
+                question: _selectedQuestion,
+                answer: _answerController.text,
+                hint: _hintController.text,
+              );
+            },
+            child: Text(
+              "Create",
+              style: text18(context).copyWith(color: AppColor().primaryColor),
             ),
-            child: Text("Create", style: text18(context).copyWith(color: AppColor().primaryColor),),
           )
         ],
       ),
@@ -57,6 +71,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             child: Column(
               children: [
                 Center(child: customHeader("Create New Password", context)),
+                const SizedBox(height: 8),
                 Text(
                   "Create a secure password to protect your personal notes.",
                   textAlign: TextAlign.center,
@@ -67,9 +82,19 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                customTextField("New Password", _obscureNew, () => setState(() => _obscureNew = !_obscureNew), controller: _newPassController),
+                customTextField(
+                  "New Password",
+                  _obscureNew,
+                  () => setState(() => _obscureNew = !_obscureNew),
+                  controller: _newPassController,
+                ),
                 const SizedBox(height: 15),
-                customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
+                customTextField(
+                  "Confirm Password",
+                  _obscureConfirm,
+                  () => setState(() => _obscureConfirm = !_obscureConfirm),
+                  controller: _confirmPassController,
+                ),
                 const SizedBox(height: 15),
                 customTextField(
                   "Hint",
@@ -106,25 +131,45 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Security Question Verification", style: TextStyle(fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR')),
+        Text(
+          "Security Question Verification",
+          style: TextStyle(
+            fontSize: context.isPhone ? 16 : 18,
+            fontFamily: 'EN-REGULAR',
+          ),
+        ),
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-          decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(12)),
+          decoration: BoxDecoration(
+            color: Colors.grey.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: _selectedQuestion,
               dropdownColor: Theme.of(context).cardColor,
-              hint: Text("Select Security Question", style: TextStyle(color: AppColor().gray, fontSize: context.isPhone ? 14 : 16, fontFamily: 'EN-REGULAR')),
+              hint: Text(
+                "Select Security Question",
+                style: TextStyle(
+                  color: AppColor().gray,
+                  fontSize: context.isPhone ? 14 : 16,
+                  fontFamily: 'EN-REGULAR',
+                ),
+              ),
               isExpanded: true,
+              icon: Icon(Icons.keyboard_arrow_down, color: AppColor().gray),
               items: _controller.questions
                   .map((q) => DropdownMenuItem(
-                      value: q,
-                      child: Text(q,
+                        value: q,
+                        child: Text(
+                          q,
                           style: TextStyle(
                             fontSize: context.isPhone ? 16 : 16,
                             fontFamily: 'EN-REGULAR',
-                          ))))
+                          ),
+                        ),
+                      ))
                   .toList(),
               onChanged: (val) => setState(() => _selectedQuestion = val),
             ),

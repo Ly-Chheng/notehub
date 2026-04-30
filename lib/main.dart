@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -17,6 +18,7 @@ import 'package:project_structure/core/functions/local_storage.dart';
 import 'package:project_structure/firebase_options.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/route.dart';
+import 'package:sqflite/sqflite.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -27,6 +29,9 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  var databasesPath = await getDatabasesPath();
+  log("--- DATABASE LOCATION --->$databasesPath");
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -55,8 +60,6 @@ Future<void> main() async {
   await Hive.deleteFromDisk();
   await GetStorage().erase();
 
-  await Hive.openBox('settings_box');
-  await Hive.openBox('recently_deleted');
   await Hive.openBox<TimerModel>('timer_box');
 
   runApp(const MyApp());
@@ -77,6 +80,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeService().getThemeMode(),
       initialRoute: '/',
       getPages: appRoute,
+
       /// GETX CONTROLLERS
       initialBinding: BindingsBuilder(() {
         Get.put(NoteController());

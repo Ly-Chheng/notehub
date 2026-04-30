@@ -83,17 +83,26 @@ Future<void> showConfirmDialog({
                   ),
                   if (controller != null) ...[
                     const SizedBox(height: 16),
-                    TextFormField(
-                      controller: controller,
-                      obscureText: obscureText,
-                      decoration: InputDecoration(
-                        hintText: hintText ?? "Enter text",
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextFormField(
+                        controller: controller,
+                        obscureText: obscureText,
+                        decoration: InputDecoration(
+                          hintText: hintText ?? "Enter text",
+                          hintStyle: TextStyle(
+                            color: AppColor().gray,
+                            fontFamily: 'EN-REGULAR',
+                            fontFamilyFallback: const ['KH-REGULAR'],
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
                         ),
                       ),
                     ),

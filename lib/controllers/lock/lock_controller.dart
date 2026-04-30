@@ -1,96 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
+import 'package:project_structure/core/database/database_service.dart';
+import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
-import 'package:project_structure/widgets/custom_dialog.dart';
 
 class LockController extends GetxController {
-  final Box settingsBox = Hive.box('settings_box');
-
   final List<String> questions = [
     "What was the name of your first school?",
     "What is your mother's maiden name?",
     "In which city were you born?",
   ];
 
-  Future<void> _showDialog(
-    BuildContext context, {
-    required String title,
-    required String message,
-  }) async {
-    await showConfirmDialog(
-      context: context,
-      title: title,
-      subTitle: message,
-      confirmText: "OK",
-      onConfirm: () {},
-    );
+  // Helper: Fetch current security settings
+  Future<Map<String, dynamic>?> getSecuritySettings() async {
+    final db = await DatabaseService.db;
+    final List<Map<String, dynamic>> maps = await db.query('security', where: 'id = 1');
+    return maps.isNotEmpty ? maps.first : null;
   }
 
-  Future<void> handleChangePassword({
-    required BuildContext context,
-    required String currentInput,
-    required String newPass,
-    required String confirmPass,
-    required String hint,
-    required String? question,
-    required String answer,
-  }) async {
-    String? storedPass = settingsBox.get('master_password');
-
-    if (storedPass == null || storedPass.isEmpty) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "No password found. Please create one first.",
-      );
-      return;
-    }
-
-    if (currentInput.isEmpty || newPass.isEmpty || confirmPass.isEmpty) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "Please fill all password fields",
-      );
-      return;
-    }
-
-    if (currentInput != storedPass) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "Current password is incorrect",
-      );
-      return;
-    }
-
-    if (newPass != confirmPass) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "New passwords do not match",
-      );
-      return;
-    }
-
-    try {
-      await settingsBox.put('master_password', newPass);
-      await settingsBox.put('password_hint', hint);
-      if (question != null && answer.isNotEmpty) {
-        await settingsBox.put('security_question', question);
-        await settingsBox.put('security_answer', answer.trim().toLowerCase());
-      }
-      Get.back();
-      _showSuccess("Password changed successfully");
-    } catch (e) {
-      _showError("Update failed");
-    }
-  }
-
+  // CREATE OR RESET PASSWORD
   Future<void> handleCreatePassword({
-    required BuildContext context,
     required String password,
     required String confirmPassword,
     required String? question,
@@ -98,148 +28,139 @@ class LockController extends GetxController {
     required String hint,
   }) async {
     if (password.isEmpty || question == null || answer.isEmpty) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "Please fill all required fields",
-      );
+      _showError("All fields are required.");
       return;
     }
-
     if (password != confirmPassword) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "Passwords do not match",
-      );
+      _showError("Passwords do not match.");
       return;
     }
 
     try {
-      await settingsBox.put('master_password', password);
-      await settingsBox.put('security_question', question);
-      await settingsBox.put('security_answer', answer.trim().toLowerCase());
-      await settingsBox.put('hint', hint);
+      final db = await DatabaseService.db;
+      await db.update(
+          'security',
+          {
+            'master_password': password,
+            'security_question': question,
+            'security_answer': answer.trim().toLowerCase(),
+            'password_hint': hint,
+          },
+          where: 'id = 1');
 
       Get.back(result: true);
       _showSuccess("Security Settings Saved");
     } catch (e) {
-      _showError("Failed to save settings");
+      _showError("Failed to save settings.");
     }
   }
 
-  void handleForgetPasswordVerify({
-    required BuildContext context,
-    required String userAnswer,
-    required String? storedAnswer,
-  }) async {
-    if (storedAnswer == null || storedAnswer.isEmpty) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "No password found. Please set one first.",
-      );
-
-      return;
-    }
-
-    if (userAnswer.isEmpty) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "Please enter your recovery answer",
-      );
-      return;
-    }
-
-    if (userAnswer.trim().toLowerCase() == storedAnswer.toLowerCase()) {
-      _showSuccess("Identity Verified");
-
-      Get.off(() => const CreatePasswordScreen());
-    } else {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "Incorrect answer. Try again.",
-      );
-    }
-  }
-
-  Future<void> handleRemoveAllLock({
-    required BuildContext context,
+  // CHANGE EXISTING PASSWORD
+  Future<void> handleChangePassword({
     required String currentInput,
+    required String newPass,
     required String confirmPass,
-    required String userAnswer,
+    required String hint,
+    required String? question,
+    required String answer,
   }) async {
-    String? storedPass = settingsBox.get('master_password');
-    final Box noteBox = Hive.box('student_notes');
-
-    if (storedPass == null || storedPass.isEmpty) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "No password exists to remove.",
-      );
-      return;
-    }
-
-    if (currentInput.isEmpty || confirmPass.isEmpty) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "Please enter password in both fields",
-      );
-      return;
-    }
+    final settings = await getSecuritySettings();
+    String storedPass = settings?['master_password'] ?? "";
 
     if (currentInput != storedPass) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "Current password is incorrect",
-      );
+      _showError("Current password incorrect.");
       return;
     }
-
-    if (currentInput != confirmPass) {
-      await _showDialog(
-        context,
-        title: "Error",
-        message: "Confirmation password does not match",
-      );
+    if (newPass != confirmPass) {
+      _showError("New passwords do not match.");
       return;
     }
 
     try {
-      int unlockCount = 0;
-      for (var key in noteBox.keys) {
-        final note = noteBox.get(key);
-        if (note != null && (note['isLocked'] ?? false)) {
-          final updatedNote = Map<String, dynamic>.from(note);
-          updatedNote['isLocked'] = false;
-          await noteBox.put(key, updatedNote);
-          unlockCount++;
-        }
-      }
-
-      await settingsBox.delete('master_password');
-      await settingsBox.delete('security_question');
-      await settingsBox.delete('security_answer');
-      await settingsBox.delete('password_hint');
+      final db = await DatabaseService.db;
+      await db.update(
+          'security',
+          {
+            'master_password': newPass,
+            'password_hint': hint,
+            'security_question': question,
+            'security_answer': answer.trim().toLowerCase(),
+          },
+          where: 'id = 1');
 
       Get.back();
-      _showSuccess(unlockCount > 0 ? "Locks removed and $unlockCount notes unlocked." : "All security locks removed.");
-      update();
+      _showSuccess("Password Updated");
     } catch (e) {
-      _showError("Failed to complete removal process");
+      _showError("Update failed.");
+    }
+  }
+
+  // FORGET PASSWORD VERIFICATION
+  Future<void> handleForgetPasswordVerify({
+    required String userAnswer,
+  }) async {
+    final settings = await getSecuritySettings();
+    String storedAnswer = settings?['security_answer'] ?? "";
+
+    if (storedAnswer.isEmpty) {
+      _showError("Recovery not set up.");
+      return;
+    }
+
+    if (userAnswer.trim().toLowerCase() == storedAnswer) {
+      _showSuccess("Identity Verified");
+      Get.off(() => const CreatePasswordScreen()); // Redirect to reset
+    } else {
+      _showError("Incorrect answer.");
+    }
+  }
+
+  // REMOVE ALL SECURITY & UNLOCK NOTES
+  Future<void> handleRemoveAllLock({
+    required String currentInput,
+    required String confirmPass,
+  }) async {
+    final settings = await getSecuritySettings();
+    String storedPass = settings?['master_password'] ?? "";
+
+    if (currentInput != storedPass || currentInput != confirmPass) {
+      _showError("Verification failed.");
+      return;
+    }
+
+    try {
+      final db = await DatabaseService.db;
+
+      // 1. Bulk Unlock all notes in SQLite
+      await db.update('notes', {'is_locked': 0});
+
+      // 2. Clear security table
+      await db.update(
+          'security',
+          {
+            'master_password': '',
+            'security_question': '',
+            'security_answer': '',
+            'password_hint': '',
+          },
+          where: 'id = 1');
+
+      // 3. Refresh UI
+      final NoteController noteController = Get.find<NoteController>();
+      await noteController.fetchAllNotes();
+
+      Get.back();
+      _showSuccess("Security removed and notes unlocked.");
+    } catch (e) {
+      _showError("Removal failed.");
     }
   }
 
   void _showError(String message) {
-    Get.snackbar("Error", message, backgroundColor: AppColor().red, colorText: AppColor().white, snackPosition: SnackPosition.TOP);
+    Get.snackbar("Error", message, backgroundColor: AppColor().red, colorText: Colors.white);
   }
 
   void _showSuccess(String message) {
-    Get.snackbar("Success", message, backgroundColor: AppColor().green, colorText: AppColor().white, snackPosition: SnackPosition.TOP);
+    Get.snackbar("Success", message, backgroundColor: AppColor().green, colorText: Colors.white);
   }
 }

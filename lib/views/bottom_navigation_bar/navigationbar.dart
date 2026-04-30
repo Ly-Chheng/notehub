@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/bottom_navigation/navigationbar_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/focus_track/focus_track_screen.dart';
-import 'package:project_structure/views/home/components/show_folder_sheet.dart';
+import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_navigationbar.dart';

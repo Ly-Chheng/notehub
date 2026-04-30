@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
+import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
@@ -18,6 +18,8 @@ class RemoveLockScreen extends StatefulWidget {
 class _RemoveLockScreenState extends State<RemoveLockScreen> {
   final LockController _lockController = Get.put(LockController());
 
+  final NoteController _noteController = Get.find<NoteController>();
+
   final TextEditingController _currentPassController = TextEditingController();
   final TextEditingController _confirmPassController = TextEditingController();
 
@@ -33,7 +35,7 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasLockedNotes = Hive.box('student_notes').values.any((n) => n['isLocked'] == true);
+    final bool hasLockedNotes = _noteController.notes.any((n) => n.isLocked == true);
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
@@ -46,10 +48,8 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
           TextButton(
             onPressed: () {
               _lockController.handleRemoveAllLock(
-                context: context,
                 currentInput: _currentPassController.text.trim(),
                 confirmPass: _confirmPassController.text.trim(),
-                userAnswer: "",
               );
             },
             child: Text(
@@ -65,17 +65,24 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
           child: Column(
             children: [
-              Center(child: customHeader("Reset Password", context)),
-              Text("Please enter your current password to remove all protection.", textAlign: TextAlign.center, style: TextStyle(fontSize: 14, color: AppColor().gray, fontFamily: 'EN-REGULAR')),
+              Center(child: customHeader("Remove Protection", context)),
+              const SizedBox(height: 8),
+              Text(
+                "Please enter your current password to remove all protection.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: AppColor().gray, fontFamily: 'EN-REGULAR'),
+              ),
               const SizedBox(height: 30),
+
+              // Warning box if there are locked notes
               if (hasLockedNotes)
                 Container(
                   padding: const EdgeInsets.all(12),
                   margin: const EdgeInsets.only(bottom: 25),
                   decoration: BoxDecoration(
-                    color: AppColor().orange.withValues(alpha: 0.1),
+                    color: AppColor().orange.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppColor().orange.withValues(alpha: 0.5)),
+                    border: Border.all(color: AppColor().orange.withOpacity(0.5)),
                   ),
                   child: Row(
                     children: [
@@ -90,6 +97,7 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
                     ],
                   ),
                 ),
+
               customTextField("Current Password", _obscureCurrent, () => setState(() => _obscureCurrent = !_obscureCurrent), controller: _currentPassController),
               const SizedBox(height: 15),
               customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),

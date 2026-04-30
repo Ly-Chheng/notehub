@@ -8,7 +8,7 @@ import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/note/folder_model.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/views/create/folder_note_list_screen.dart';
-import 'package:project_structure/views/home/components/show_folder_sheet.dart';
+import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_header.dart';
 
@@ -60,13 +60,13 @@ class _MyHomePageState extends State<MyHomePage> {
                             SlidableAction(
                               onPressed: (c) => _togglePin(folder),
                               backgroundColor: AppColor().orange,
-                              foregroundColor: Colors.white,
+                              foregroundColor: AppColor().white,
                               icon: folder.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
                               label: folder.isPinned ? 'Unpin' : 'Pin',
                             ),
                             SlidableAction(
                               onPressed: (c) => _toggleLock(folder),
-                              backgroundColor: Colors.green,
+                              backgroundColor: AppColor().green,
                               icon: folder.isLocked ? Icons.lock : Icons.lock_open,
                               label: folder.isLocked ? 'Unlock' : 'Lock',
                             ),
@@ -102,7 +102,6 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppColor().primaryColor,
         onPressed: () {
-          // Get the ID of the "My Note" folder from your FolderController
           final int targetFolderId = controller.defaultFolderId;
 
           Get.to(() => CreateNoteScreen(
@@ -110,7 +109,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 folderId: targetFolderId,
               ));
         },
-        child: const Icon(Icons.add, color: Colors.white),
+        child: Icon(
+          Icons.add,
+          color: AppColor().white,
+        ),
       ),
     );
   }
@@ -142,6 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
               folderId: folder.id!,
               folderName: folder.title,
             ));
+        controller.folders.refresh();
       },
       child: Container(
         color: Theme.of(context).cardColor,
@@ -176,10 +179,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Icon(Icons.push_pin, size: 18, color: AppColor().orange),
               ),
-            Obx(() {
-              final int noteCount = noteController.notes.where((n) => n.folderId == folder.id).length;
-              return Text("$noteCount", style: text16(context));
-            }),
+            FutureBuilder<int>(
+              future: noteController.getCountForFolder(folder.id!),
+              builder: (context, snapshot) {
+                final count = snapshot.data ?? 0;
+                return Text(
+                  "$count",
+                  style: text16(context).copyWith(color: AppColor().gray),
+                );
+              },
+            ),
           ],
         ),
       ),
