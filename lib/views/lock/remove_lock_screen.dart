@@ -70,7 +70,9 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
               Text(
                 "Please enter your current password to remove all protection.",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: AppColor().gray, fontFamily: 'EN-REGULAR'),
+                style: text14(context).copyWith(
+                  color: AppColor().gray,
+                ),
               ),
               const SizedBox(height: 30),
 

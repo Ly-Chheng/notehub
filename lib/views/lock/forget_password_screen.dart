@@ -83,11 +83,8 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     Text(
                       "Verify your identity using your security question to reset your password.",
                       textAlign: TextAlign.center,
-                      style: TextStyle(
+                      style: text14(context).copyWith(
                         color: AppColor().gray,
-                        height: 1.5,
-                        fontFamily: 'EN-REGULAR',
-                        fontSize: context.isPhone ? 14 : 16,
                       ),
                     ),
                     const SizedBox(height: 30),
@@ -103,12 +100,12 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                           const SizedBox(height: 5),
                           Text(
                             storedQuestion ?? "No security question set up.",
-                            style: text18(context).copyWith(fontFamily: 'EN-MEDIUM'),
+                            style: text16(context),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     if (storedQuestion != null)
                       customTextField(
                         "Enter your answer",

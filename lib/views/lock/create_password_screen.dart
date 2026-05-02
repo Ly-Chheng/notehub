@@ -75,10 +75,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 Text(
                   "Create a secure password to protect your personal notes.",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
+                  style: text14(context).copyWith(
                     color: AppColor().gray,
-                    fontSize: context.isPhone ? 14 : 16,
-                    fontFamily: 'EN-REGULAR',
                   ),
                 ),
                 const SizedBox(height: 30),

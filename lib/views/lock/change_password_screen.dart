@@ -99,9 +99,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 Text(
                   "Update the password to protect your notes.",
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: context.isPhone ? 15 : 17,
-                    color: Colors.grey,
+                  style: text14(context).copyWith(
+                    color: AppColor().gray,
                   ),
                 ),
                 const SizedBox(height: 30),
