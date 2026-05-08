@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
@@ -22,6 +23,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final FolderController controller = Get.put(FolderController());
   final NoteController noteController = Get.put(NoteController());
+  final LockController lockController = Get.put(LockController());
 
   @override
   Widget build(BuildContext context) {
@@ -61,13 +63,13 @@ class _MyHomePageState extends State<MyHomePage> {
                               onPressed: (c) => _togglePin(folder),
                               backgroundColor: AppColor().orange,
                               foregroundColor: AppColor().white,
-                              icon: folder.isPinned ? Icons.push_pin : Icons.push_pin_outlined,
+                              icon: folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
                               label: folder.isPinned ? 'Unpin' : 'Pin',
                             ),
                             SlidableAction(
                               onPressed: (c) => _toggleLock(folder),
                               backgroundColor: AppColor().green,
-                              icon: folder.isLocked ? Icons.lock : Icons.lock_open,
+                              icon: folder.isLocked ? Icons.lock_open : Icons.lock,
                               label: folder.isLocked ? 'Unlock' : 'Lock',
                             ),
                           ],
@@ -76,7 +78,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           motion: const DrawerMotion(),
                           children: [
                             SlidableAction(
-                              onPressed: (c) => showFolderSheet(context, folder: folder),
+                              // onPressed: (c) => showFolderSheet(context, folder: folder),
+                              onPressed: (c) => _handleEditFolder(context, folder),
                               backgroundColor: AppColor().primaryColor,
                               icon: Icons.edit,
                               label: 'Edit',
@@ -121,8 +124,76 @@ class _MyHomePageState extends State<MyHomePage> {
     await controller.togglePin(folder.id!);
   }
 
+  // void _toggleLock(FolderModel folder) async {
+  //   await controller.toggleLock(folder.id!);
+  // }
   void _toggleLock(FolderModel folder) async {
-    await controller.toggleLock(folder.id!);
+    final settings = await lockController.getSecuritySettings();
+    String storedPass = settings?['master_password'] ?? "";
+
+    if (storedPass.isEmpty) {
+      Get.toNamed('/createPassword');
+      return;
+    }
+
+    if (folder.isLocked) {
+      final TextEditingController verifyPassController = TextEditingController();
+
+      if (!mounted) return;
+
+      showConfirmDialog(
+        context: context,
+        title: "Remove Protection",
+        subTitle: "Enter password to permanently unlock '${folder.title}'.",
+        confirmText: "Unlock",
+        controller: verifyPassController,
+        obscureText: true,
+        hintText: "Password",
+        onConfirm: () async {
+          if (verifyPassController.text == storedPass) {
+            await controller.toggleLock(folder.id!);
+            Get.back();
+          } else {
+            Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+          }
+        },
+      );
+    }
+
+    // Folder is open and password exists (Just lock it)
+    else {
+      await controller.toggleLock(folder.id!);
+    }
+  }
+
+  void _handleEditFolder(BuildContext context, FolderModel folder) async {
+    if (!folder.isLocked) {
+      showFolderSheet(context, folder: folder);
+      return;
+    }
+    final settings = await lockController.getSecuritySettings();
+    String storedPass = settings?['master_password'] ?? "";
+    final TextEditingController verifyPassController = TextEditingController();
+
+    if (!mounted) return;
+
+    showConfirmDialog(
+      context: context,
+      title: "Verify Identity",
+      subTitle: "Enter password to edit '${folder.title}'.",
+      confirmText: "Verify",
+      controller: verifyPassController,
+      obscureText: true,
+      hintText: "Password",
+      onConfirm: () {
+        if (verifyPassController.text == storedPass) {
+          Get.back();
+          showFolderSheet(context, folder: folder);
+        } else {
+          Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+        }
+      },
+    );
   }
 
   void _confirmDelete(BuildContext context, FolderModel folder) {
@@ -139,12 +210,53 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget folderTile(FolderModel folder, bool isDefault) {
     return GestureDetector(
-      onTap: () {
-        Get.to(() => FolderNoteListScreen(
-              folderId: folder.id!,
-              folderName: folder.title,
-            ));
-        controller.folders.refresh();
+      // onTap: () {
+      //   Get.to(() => FolderNoteListScreen(
+      //         folderId: folder.id!,
+      //         folderName: folder.title,
+      //       ));
+      //   controller.folders.refresh();
+      // },
+      onTap: () async {
+        if (folder.isLocked) {
+          final TextEditingController verifyPassController = TextEditingController();
+          final settings = await lockController.getSecuritySettings();
+          String storedPass = settings?['master_password'] ?? "";
+
+          if (!mounted) return;
+
+          showConfirmDialog(
+            context: context,
+            title: "Locked Folder",
+            subTitle: "Please enter your password to access '${folder.title}'.",
+            confirmText: "Unlock",
+            controller: verifyPassController,
+            obscureText: true,
+            hintText: "Password",
+            onConfirm: () {
+              if (verifyPassController.text == storedPass) {
+                Get.to(() => FolderNoteListScreen(
+                      folderId: folder.id!,
+                      folderName: folder.title,
+                    ));
+                controller.folders.refresh();
+              } else {
+                Get.snackbar(
+                  "Error",
+                  "Incorrect Password",
+                  backgroundColor: AppColor().red,
+                  colorText: Colors.white,
+                );
+              }
+            },
+          );
+        } else {
+          Get.to(() => FolderNoteListScreen(
+                folderId: folder.id!,
+                folderName: folder.title,
+              ));
+          controller.folders.refresh();
+        }
       },
       child: Container(
         color: Theme.of(context).cardColor,

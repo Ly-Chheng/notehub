@@ -44,7 +44,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   Icons.delete_outline,
                   "Recently Deleted",
                   onTap: () {
-                    Get.toNamed('/recentyDelete');
+                   // Get.toNamed('/recentyDelete');
                   },
                 ),
               ]),

@@ -4,6 +4,7 @@ import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 
 class LockController extends GetxController {
   final List<String> questions = [
@@ -28,7 +29,11 @@ class LockController extends GetxController {
     required String hint,
   }) async {
     if (password.isEmpty || question == null || answer.isEmpty) {
-      _showError("All fields are required.");
+      await _showDialog(
+        Get.context!,
+        title: "Error",
+        message: "All fields are required.",
+      );
       return;
     }
     if (password != confirmPassword) {
@@ -67,12 +72,29 @@ class LockController extends GetxController {
     final settings = await getSecuritySettings();
     String storedPass = settings?['master_password'] ?? "";
 
+    if (storedPass.isEmpty) {
+      await _showDialog(
+        Get.context!,
+        title: "Error",
+        message: "Password not set up.",
+      );
+      return;
+    }
+
     if (currentInput != storedPass) {
-      _showError("Current password incorrect.");
+      await _showDialog(
+        Get.context!,
+        title: "Error",
+        message: "Current password incorrect.",
+      );
       return;
     }
     if (newPass != confirmPass) {
-      _showError("New passwords do not match.");
+      await _showDialog(
+        Get.context!,
+        title: "Error",
+        message: "New passwords do not match.",
+      );
       return;
     }
 
@@ -91,7 +113,11 @@ class LockController extends GetxController {
       Get.back();
       _showSuccess("Password Updated");
     } catch (e) {
-      _showError("Update failed.");
+      await _showDialog(
+        Get.context!,
+        title: "Error",
+        message: "Update failed.",
+      );
     }
   }
 
@@ -103,7 +129,11 @@ class LockController extends GetxController {
     String storedAnswer = settings?['security_answer'] ?? "";
 
     if (storedAnswer.isEmpty) {
-      _showError("Recovery not set up.");
+      await _showDialog(
+        Get.context!,
+        title: "Error",
+        message: "Recovery not set up.",
+      );
       return;
     }
 
@@ -111,7 +141,11 @@ class LockController extends GetxController {
       _showSuccess("Identity Verified");
       Get.off(() => const CreatePasswordScreen()); // Redirect to reset
     } else {
-      _showError("Incorrect answer.");
+      await _showDialog(
+        Get.context!,
+        title: "Error",
+        message: "Incorrect answer.",
+      );
     }
   }
 
@@ -123,8 +157,21 @@ class LockController extends GetxController {
     final settings = await getSecuritySettings();
     String storedPass = settings?['master_password'] ?? "";
 
+    if (storedPass.isEmpty) {
+      await _showDialog(
+        Get.context!,
+        title: "Error",
+        message: "Remove password not set up.",
+      );
+      return;
+    }
+
     if (currentInput != storedPass || currentInput != confirmPass) {
-      _showError("Verification failed.");
+      await _showDialog(
+        Get.context!,
+        title: "Error",
+        message: "Verification failed.",
+      );
       return;
     }
 
@@ -154,6 +201,20 @@ class LockController extends GetxController {
     } catch (e) {
       _showError("Removal failed.");
     }
+  }
+
+  Future<void> _showDialog(
+    BuildContext context, {
+    required String title,
+    required String message,
+  }) async {
+    await showConfirmDialog(
+      context: context,
+      title: title,
+      subTitle: message,
+      confirmText: "OK",
+      onConfirm: () {},
+    );
   }
 
   void _showError(String message) {

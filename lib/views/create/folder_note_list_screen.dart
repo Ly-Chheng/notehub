@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
-
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
@@ -64,37 +63,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     }
   }
 
-  // void _showUnlockDialog(NoteModel note) {
-  //   final TextEditingController verifyPassController = TextEditingController();
-  //   String storedPass = lockController.settingsBox.get('master_password') ?? "";
-
-  //   showConfirmDialog(
-  //     context: context,
-  //     title: "Locked Note",
-  //     subTitle: "Please enter your password to view this note.",
-  //     confirmText: "Unlock",
-  //     controller: verifyPassController,
-  //     obscureText: true,
-  //     hintText: "Password",
-  //     onConfirm: () {
-  //       if (verifyPassController.text == storedPass) {
-  //         _navigateToCreateNote(note);
-  //       } else {
-  //         Get.snackbar(
-  //           "Error",
-  //           "Incorrect Password",
-  //           backgroundColor: AppColor().red,
-  //           colorText: Colors.white,
-  //           snackPosition: SnackPosition.TOP,
-  //         );
-  //       }
-  //     },
-  //   );
-  // }
-
-void _showUnlockDialog(NoteModel note) async {
+  void _showUnlockDialog(NoteModel note) async {
     final TextEditingController verifyPassController = TextEditingController();
-    
+
     // Fetch settings from SQLite via LockController
     final settings = await lockController.getSecuritySettings();
     String storedPass = settings?['master_password'] ?? "";
@@ -124,6 +95,38 @@ void _showUnlockDialog(NoteModel note) async {
       },
     );
   }
+
+  void _showUnlockBeforeDelete(NoteModel note) async {
+    final TextEditingController verifyPassController = TextEditingController();
+    final settings = await lockController.getSecuritySettings();
+    String storedPass = settings?['master_password'] ?? "";
+
+    if (!mounted) return;
+
+    showConfirmDialog(
+      context: context,
+      title: "Verify Password",
+      subTitle: "This note is locked. Please enter your password to delete it.",
+      confirmText: "Delete",
+      controller: verifyPassController,
+      obscureText: true,
+      hintText: "Password",
+      onConfirm: () async {
+        if (verifyPassController.text == storedPass) {
+          await controller.deleteNote(note.id!, widget.folderId);
+          controller.fetchNotesByFolder(widget.folderId);
+        } else {
+          Get.snackbar(
+            "Access Denied",
+            "Incorrect Password. Note was not deleted.",
+            backgroundColor: AppColor().red,
+            colorText: Colors.white,
+          );
+        }
+      },
+    );
+  }
+
   void _navigateToCreateNote(NoteModel note) async {
     final result = await Get.to(() => CreateNoteScreen(
           isEditing: true,
@@ -284,7 +287,14 @@ void _showUnlockDialog(NoteModel note) async {
               label: 'Folder',
             ),
             SlidableAction(
-              onPressed: (context) => _showDeleteConfirmation(note),
+              // onPressed: (context) => _showDeleteConfirmation(note),
+              onPressed: (context) {
+                if (note.isLocked == true) {
+                  _showUnlockBeforeDelete(note);
+                } else {
+                  _showDeleteConfirmation(note);
+                }
+              },
               backgroundColor: AppColor().red,
               foregroundColor: AppColor().white,
               icon: Icons.delete,
@@ -294,27 +304,6 @@ void _showUnlockDialog(NoteModel note) async {
           ],
         ),
         child: GestureDetector(
-          // onTap: () async {
-          //   if (isSelectionMode) {
-          //     setState(() {
-          //       if (isSelected) {
-          //         selectedNoteIds.remove(note.id!);
-          //       } else {
-          //         selectedNoteIds.add(note.id!);
-          //       }
-          //     });
-          //   } else {
-          //     final result = await Get.to(() => CreateNoteScreen(
-          //           isEditing: true,
-          //           existingNote: note,
-          //           folderId: widget.folderId,
-          //         ));
-
-          //     if (result == true) {
-          //       controller.fetchNotesByFolder(widget.folderId);
-          //     }
-          //   }
-          // },
           onTap: () => _handleNoteTap(note),
           child: Container(
             decoration: BoxDecoration(
@@ -444,8 +433,13 @@ void _showUnlockDialog(NoteModel note) async {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
+          // _buildBottomAction(Icons.folder, AppColor().primaryColor, () {
+          //   if (selectedNoteIds.isNotEmpty) _showMoveSheet(selectedNoteIds.toList());
+          // }),
           _buildBottomAction(Icons.folder, AppColor().primaryColor, () {
-            if (selectedNoteIds.isNotEmpty) _showMoveSheet(selectedNoteIds.toList());
+            if (selectedNoteIds.isNotEmpty) {
+              _handleMoveWithLock(); 
+            }
           }),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -457,11 +451,79 @@ void _showUnlockDialog(NoteModel note) async {
             ],
           ),
           _buildBottomAction(Icons.delete, AppColor().red, () {
-            if (selectedNoteIds.isNotEmpty) _showBulkDeleteConfirm();
+            if (selectedNoteIds.isNotEmpty) _handleBulkDeleteProtection();
           }),
         ],
       ),
     );
+  }
+  
+  void _handleBulkDeleteProtection() async {
+    bool containsLockedNotes = controller.notes.where((n) => selectedNoteIds.contains(n.id)).any((n) => n.isLocked == true);
+
+    if (containsLockedNotes) {
+      final TextEditingController verifyPassController = TextEditingController();
+      final settings = await lockController.getSecuritySettings();
+      String storedPass = settings?['master_password'] ?? "";
+
+      if (!mounted) return;
+
+      showConfirmDialog(
+        context: context,
+        title: "Verify Password",
+        subTitle: "Some selected notes are locked. Enter password to delete all.",
+        confirmText: "Delete",
+        controller: verifyPassController,
+        obscureText: true,
+        hintText: "Password",
+        onConfirm: () {
+          if (verifyPassController.text == storedPass) {
+            _showBulkDeleteConfirm();
+          } else {
+            Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+          }
+        },
+      );
+    } else {
+      _showBulkDeleteConfirm();
+    }
+  }
+
+  void _handleMoveWithLock() async {
+    final List<NoteModel> selectedNotes = controller.notes.where((n) => selectedNoteIds.contains(n.id)).toList();
+
+    bool hasLockedNote = selectedNotes.any((n) => n.isLocked == true);
+
+    if (hasLockedNote) {
+      final TextEditingController verifyPassController = TextEditingController();
+      final settings = await lockController.getSecuritySettings();
+      String storedPass = settings?['master_password'] ?? "";
+
+      if (!mounted) return;
+
+      showConfirmDialog(
+        context: context,
+        title: "Verify Password",
+        subTitle: "You are moving locked notes. Please enter your password.",
+        confirmText: "Verify",
+        controller: verifyPassController,
+        obscureText: true,
+        onConfirm: () {
+          if (verifyPassController.text == storedPass) {
+            _showMoveSheet(selectedNoteIds.toList());
+          } else {
+            Get.snackbar(
+              "Access Denied",
+              "Incorrect Password",
+              backgroundColor: AppColor().red,
+              colorText: Colors.white,
+            );
+          }
+        },
+      );
+    } else {
+      _showMoveSheet(selectedNoteIds.toList());
+    }
   }
 
   Widget _buildBottomAction(IconData icon, Color color, VoidCallback onTap) {
@@ -504,7 +566,7 @@ void _showUnlockDialog(NoteModel note) async {
                       leading: Icon(Icons.folder, color: AppColor().primaryColor),
                       title: Text(
                         folder.title,
-                        style: text18(context),
+                        style: text16(context),
                       ),
                       onTap: () async {
                         for (var id in noteIds) {

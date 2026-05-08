@@ -90,7 +90,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       return;
     }
 
-    final settingsBox = Hive.box('settings_box');
+    final settingsBox = Hive.box('create_timer_box');
     List rawList = settingsBox.get('user_presets', defaultValue: []);
     List customPresets = List.from(rawList);
 
@@ -304,7 +304,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   }
 
   Widget _buildAllPresets() {
-    final settingsBox = Hive.box('settings_box');
+    final settingsBox = Hive.box('create_timer_box');
     final List rawList = settingsBox.get('user_presets', defaultValue: []);
 
     return Padding(

@@ -7,7 +7,6 @@ import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
-
 void showFolderSheet(BuildContext context, {FolderModel? folder}) {
   final FolderController controller = Get.find<FolderController>();
 
@@ -29,6 +28,7 @@ void showFolderSheet(BuildContext context, {FolderModel? folder}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    constraints: BoxConstraints(maxWidth: double.infinity),
     backgroundColor: Theme.of(context).cardColor,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
@@ -64,7 +64,7 @@ void showFolderSheet(BuildContext context, {FolderModel? folder}) {
                       // Logic for Create (SQLite)
                       await controller.addFolder(newName);
                     }
-                    Get.back();  
+                    Get.back();
                   }
                 },
               ),

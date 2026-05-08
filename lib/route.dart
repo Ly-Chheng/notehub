@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
-import 'package:project_structure/views/home/components/recently_deleted_screen.dart';
 import 'package:project_structure/views/home/home_screen.dart';
 import 'package:project_structure/views/lock/change_password_screen.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';

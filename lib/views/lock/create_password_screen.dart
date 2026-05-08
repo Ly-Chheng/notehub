@@ -67,7 +67,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
             child: Column(
               children: [
                 Center(child: customHeader("Create New Password", context)),

@@ -61,6 +61,7 @@ Future<void> main() async {
   await GetStorage().erase();
 
   await Hive.openBox<TimerModel>('timer_box');
+  await Hive.openBox('create_timer_box');
 
   runApp(const MyApp());
 }

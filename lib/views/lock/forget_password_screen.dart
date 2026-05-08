@@ -55,19 +55,18 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
-          if (!isLoading && storedQuestion != null)
-            TextButton(
-              onPressed: () {
-                // Logic now handled inside controller using SQLite
-                _controller.handleForgetPasswordVerify(
-                  userAnswer: _answerController.text,
-                );
-              },
-              child: Text(
-                "Submit",
-                style: text18(context).copyWith(color: AppColor().primaryColor),
-              ),
+          TextButton(
+            onPressed: () {
+              // Logic now handled inside controller using SQLite
+              _controller.handleForgetPasswordVerify(
+                userAnswer: _answerController.text,
+              );
+            },
+            child: Text(
+              "Submit",
+              style: text18(context).copyWith(color: AppColor().primaryColor),
             ),
+          ),
         ],
       ),
       body: GestureDetector(
@@ -75,7 +74,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
                 child: Column(
                   children: [
                     Center(child: customHeader("Forget Password", context)),
@@ -93,32 +92,24 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Text(
+                          //   storedQuestion ?? "No security question set up.",
+                          //   style: text16(context),
+                          // ),
                           Text(
-                            "Security Question:",
-                            style: text14(context).copyWith(color: AppColor().gray),
-                          ),
-                          const SizedBox(height: 5),
-                          Text(
-                            storedQuestion ?? "No security question set up.",
+                            (storedQuestion == null || storedQuestion!.trim().isEmpty) ? "No security question set up." : storedQuestion!,
                             style: text16(context),
                           ),
                         ],
                       ),
                     ),
                     const SizedBox(height: 10),
-                    if (storedQuestion != null)
-                      customTextField(
-                        "Enter your answer",
-                        false,
-                        null,
-                        controller: _answerController,
-                      )
-                    else
-                      Text(
-                        "You cannot reset your password because no security question was configured.",
-                        style: TextStyle(color: AppColor().red),
-                        textAlign: TextAlign.center,
-                      ),
+                    customTextField(
+                      "Enter your answer",
+                      false,
+                      null,
+                      controller: _answerController,
+                    )
                   ],
                 ),
               ),

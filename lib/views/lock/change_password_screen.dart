@@ -70,7 +70,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              // Removed 'context: context' as per updated LockController logic
               _lockController.handleChangePassword(
                 currentInput: _currentPassController.text,
                 newPass: _newPassController.text,
@@ -91,7 +90,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
             child: Column(
               children: [
                 Center(child: customHeader("Change Password", context)),

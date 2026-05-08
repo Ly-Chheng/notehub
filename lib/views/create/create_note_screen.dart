@@ -179,65 +179,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
-  // // --- LOCK LOGIC ---
-  // void _handleLockToggle() {
-  //   String? storedPass = lockController.settingsBox.get('master_password');
-
-  //   if (storedPass == null || storedPass.isEmpty) {
-  //     Get.to(() => const CreatePasswordScreen())?.then((value) {
-  //       if (value == true) {
-  //         setState(() {
-  //           isLocked = true;
-  //           _isSessionUnlocked = true;
-  //         });
-  //         _triggerAutoSave();
-  //       }
-  //     });
-  //   } else {
-  //     if (isLocked) {
-  //       _showVerifyUnlockDialog(onSuccess: () {
-  //         setState(() {
-  //           isLocked = false;
-  //           _isSessionUnlocked = true;
-  //         });
-  //         _triggerAutoSave();
-  //       });
-  //     } else {
-  //       setState(() {
-  //         isLocked = true;
-  //         _isSessionUnlocked = false;
-  //       });
-  //       _triggerAutoSave();
-  //     }
-  //   }
-  // }
-
-  // void _showVerifyUnlockDialog({required VoidCallback onSuccess}) {
-  //   final verifyController = TextEditingController();
-  //   String storedPass = lockController.settingsBox.get('master_password') ?? "";
-
-  //   showConfirmDialog(
-  //     context: context,
-  //     title: "Unlock Note",
-  //     subTitle: "Please enter your password to view this note.",
-  //     confirmText: "Verify",
-  //     controller: verifyController,
-  //     obscureText: true,
-  //     hintText: "Password",
-  //     onConfirm: () {
-  //       if (verifyController.text == storedPass) {
-  //         Get.back();
-  //         onSuccess();
-  //       } else {
-  //         Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
-  //       }
-  //     },
-  //   );
-  // }
-  // ... existing imports ...
-
-// --- Inside _CreateNoteScreenState ---
-
   // --- UPDATED: LOCK LOGIC FOR SQLITE ---
   Future<void> _handleLockToggle() async {
     // 1. Fetch settings from SQLite
@@ -581,7 +522,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   _triggerAutoSave();
                 }),
                 _bottomIcon(
-                  showTable ? Icons.table_chart : Icons.table_chart_outlined,
+                  showTable ? Icons.table_chart_outlined : Icons.table_chart_outlined,
                   () {
                     setState(() => showTable = !showTable);
                     _triggerAutoSave();
