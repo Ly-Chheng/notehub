@@ -13,14 +13,13 @@ class LockController extends GetxController {
     "In which city were you born?",
   ];
 
-  // Helper: Fetch current security settings
+  // Fetch current security settings
   Future<Map<String, dynamic>?> getSecuritySettings() async {
     final db = await DatabaseService.db;
     final List<Map<String, dynamic>> maps = await db.query('security', where: 'id = 1');
     return maps.isNotEmpty ? maps.first : null;
   }
 
-  // CREATE OR RESET PASSWORD
   Future<void> handleCreatePassword({
     required String password,
     required String confirmPassword,
@@ -31,13 +30,18 @@ class LockController extends GetxController {
     if (password.isEmpty || question == null || answer.isEmpty) {
       await _showDialog(
         Get.context!,
-        title: "Error",
-        message: "All fields are required.",
+        title: "Field Required",
+        message: "Please fill in the password, security question, and answer.",
       );
       return;
     }
+
     if (password != confirmPassword) {
-      _showError("Passwords do not match.");
+      await _showDialog(
+        Get.context!,
+        title: "Mismatch",
+        message: "Passwords do not match. Please re-type your password.",
+      );
       return;
     }
 
@@ -54,102 +58,144 @@ class LockController extends GetxController {
           where: 'id = 1');
 
       Get.back(result: true);
-      _showSuccess("Security Settings Saved");
+      _showSuccess("Security settings saved successfully!");
     } catch (e) {
-      _showError("Failed to save settings.");
+      await _showDialog(
+        Get.context!,
+        title: "Database Error",
+        message: "We couldn't save your settings. Please try again.",
+      );
     }
   }
 
-  // CHANGE EXISTING PASSWORD
   Future<void> handleChangePassword({
     required String currentInput,
     required String newPass,
     required String confirmPass,
     required String hint,
-    required String? question,
-    required String answer,
+    String? question, // Optional
+    String? answer, // Optional
   }) async {
+    // 1. Fetch current settings from DB
     final settings = await getSecuritySettings();
     String storedPass = settings?['master_password'] ?? "";
 
     if (storedPass.isEmpty) {
+      await _showDialog(Get.context!, title: "Not Configured", message: "No password found to change. Please create a password first.");
+      return;
+    }
+
+    if (newPass.isEmpty) {
       await _showDialog(
         Get.context!,
-        title: "Error",
-        message: "Password not set up.",
+        title: "Input Required",
+        message: "New password cannot be empty. Please enter a valid password.",
       );
       return;
     }
 
     if (currentInput != storedPass) {
-      await _showDialog(
-        Get.context!,
-        title: "Error",
-        message: "Current password incorrect.",
-      );
+      await _showDialog(Get.context!, title: "Verification Failed", message: "The current password you entered is incorrect.");
       return;
     }
+
     if (newPass != confirmPass) {
-      await _showDialog(
-        Get.context!,
-        title: "Error",
-        message: "New passwords do not match.",
-      );
+      await _showDialog(Get.context!, title: "Mismatch", message: "New password and confirmation do not match.");
       return;
     }
 
     try {
       final db = await DatabaseService.db;
+
+      // If user input is empty, use the data already in the database
+      String finalQuestion = (question != null && question.isNotEmpty) ? question : (settings?['security_question'] ?? "");
+
+      String finalAnswer = (answer != null && answer.isNotEmpty) ? answer.trim().toLowerCase() : (settings?['security_answer'] ?? "");
+
+      // Update with "merged" data
       await db.update(
           'security',
           {
             'master_password': newPass,
-            'password_hint': hint,
-            'security_question': question,
-            'security_answer': answer.trim().toLowerCase(),
+            'password_hint': hint.isNotEmpty ? hint : (settings?['password_hint'] ?? ""),
+            'security_question': finalQuestion,
+            'security_answer': finalAnswer,
           },
           where: 'id = 1');
 
       Get.back();
-      _showSuccess("Password Updated");
+      _showSuccess("Password updated successfully.");
     } catch (e) {
-      await _showDialog(
-        Get.context!,
-        title: "Error",
-        message: "Update failed.",
-      );
+      _showError("Update failed. Please try again.");
     }
   }
 
   // FORGET PASSWORD VERIFICATION
-  Future<void> handleForgetPasswordVerify({
-    required String userAnswer,
-  }) async {
-    final settings = await getSecuritySettings();
-    String storedAnswer = settings?['security_answer'] ?? "";
+  // Future<void> handleForgetPasswordVerify({required String userAnswer}) async {
+  //   final settings = await getSecuritySettings();
+  //   String storedAnswer = (settings?['security_answer'] ?? "").toString().trim().toLowerCase();
 
-    if (storedAnswer.isEmpty) {
+  //   if (storedAnswer.isEmpty) {
+  //     await _showDialog(
+  //       Get.context!,
+  //       title: "",
+  //       message: "Recovery not set up.",
+  //     );
+  //     return;
+  //   }
+
+  //   if (userAnswer.trim().toLowerCase() == storedAnswer) {
+  //     _showSuccess("Identity Verified");
+  //     Get.off(() => const CreatePasswordScreen());
+  //   } else {
+  //     await _showDialog(
+  //       Get.context!,
+  //       title: "",
+  //       message: "Incorrect answer.",
+  //     );
+  //   }
+  // }
+
+  Future<void> handleForgetPasswordVerify({required String userAnswer}) async {
+    if (userAnswer.trim().isEmpty) {
       await _showDialog(
         Get.context!,
-        title: "Error",
-        message: "Recovery not set up.",
+        title: "Field Required",
+        message: "Please enter your security answer.",
       );
       return;
     }
 
-    if (userAnswer.trim().toLowerCase() == storedAnswer) {
-      _showSuccess("Identity Verified");
-      Get.off(() => const CreatePasswordScreen()); // Redirect to reset
-    } else {
-      await _showDialog(
-        Get.context!,
-        title: "Error",
-        message: "Incorrect answer.",
-      );
+    try {
+      final settings = await getSecuritySettings();
+      String storedAnswer = (settings?['security_answer'] ?? "").toString().trim().toLowerCase();
+
+      // Handle "Not Set Up" case
+      if (storedAnswer.isEmpty) {
+        await _showDialog(
+          Get.context!,
+          title: "Setup Required",
+          message: "Security recovery has not been configured for this account.",
+        );
+        return;
+      }
+
+      if (userAnswer.trim().toLowerCase() == storedAnswer) {
+        _showSuccess("Identity verified successfully!");
+
+        Get.off(() => const CreatePasswordScreen());
+      } else {
+        await _showDialog(
+          Get.context!,
+          title: "Verification Failed",
+          message: "The answer you entered is incorrect. Please try again.",
+        );
+      }
+    } catch (e) {
+      _showError("An error occurred while verifying. Please try again later.");
     }
   }
 
-  // REMOVE ALL SECURITY & UNLOCK NOTES
   Future<void> handleRemoveAllLock({
     required String currentInput,
     required String confirmPass,
@@ -160,28 +206,29 @@ class LockController extends GetxController {
     if (storedPass.isEmpty) {
       await _showDialog(
         Get.context!,
-        title: "Error",
-        message: "Remove password not set up.",
+        title: "Field Required",
+        message: "No password is currently set.",
       );
       return;
     }
 
-    if (currentInput != storedPass || currentInput != confirmPass) {
-      await _showDialog(
-        Get.context!,
-        title: "Error",
-        message: "Verification failed.",
-      );
+    if (currentInput != storedPass) {
+      await _showDialog(Get.context!, title: "Verification Failed", message: "Current password is incorrect.");
+      return;
+    }
+
+    if (currentInput != confirmPass) {
+      await _showDialog(Get.context!, title: "Verification Failed", message: "Passwords do not match.");
       return;
     }
 
     try {
       final db = await DatabaseService.db;
 
-      // 1. Bulk Unlock all notes in SQLite
+      // Bulk Unlock all notes in SQLite
       await db.update('notes', {'is_locked': 0});
 
-      // 2. Clear security table
+      // Clear security table
       await db.update(
           'security',
           {
@@ -192,14 +239,14 @@ class LockController extends GetxController {
           },
           where: 'id = 1');
 
-      // 3. Refresh UI
+      // Refresh UI
       final NoteController noteController = Get.find<NoteController>();
       await noteController.fetchAllNotes();
 
       Get.back();
-      _showSuccess("Security removed and notes unlocked.");
+      _showSuccess("Security removed and all notes unlocked.");
     } catch (e) {
-      _showError("Removal failed.");
+      _showError("Failed to remove security. Please try again.");
     }
   }
 

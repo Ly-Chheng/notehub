@@ -58,10 +58,8 @@ void showFolderSheet(BuildContext context, {FolderModel? folder}) {
                     }
 
                     if (folder != null) {
-                      // Logic for Update (SQLite)
                       await controller.updateFolder(folder.id!, newName);
                     } else {
-                      // Logic for Create (SQLite)
                       await controller.addFolder(newName);
                     }
                     Get.back();

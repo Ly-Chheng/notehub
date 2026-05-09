@@ -40,7 +40,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
           context: context,
           title: "Exit App",
           subTitle: "Are you sure you want to exit the app?",
-          type: DialogType.warning,
           confirmText: "Yes",
           onConfirm: () {
             shouldExit = true;

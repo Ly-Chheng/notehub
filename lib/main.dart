@@ -81,8 +81,6 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeService().getThemeMode(),
       initialRoute: '/',
       getPages: appRoute,
-
-      /// GETX CONTROLLERS
       initialBinding: BindingsBuilder(() {
         Get.put(NoteController());
         Get.put(FolderController());

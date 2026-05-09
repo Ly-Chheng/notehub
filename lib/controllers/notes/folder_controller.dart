@@ -118,7 +118,7 @@ class FolderController extends GetxController {
     folders.removeAt(index);
   }
 
-  // Helper: Check default
+  // Check default
   bool isDefaultFolder(FolderModel folder) {
     return folder.title == defaultFolderName;
   }
@@ -190,4 +190,36 @@ class FolderController extends GetxController {
 
     print("Note moved → $newFolderId");
   }
+
+  // Inside FolderController class
+
+  Future<void> clearAllFolderLocks() async {
+    final db = await DatabaseService.db;
+
+    // Update the database: Set isLocked to 0 for all folders
+    await db.update(
+      'folders',
+      {'isLocked': 0},
+    );
+
+    // 2. Update the local GetX state
+    for (var folder in folders) {
+      folder.isLocked = false;
+    }
+
+    folders.refresh();
+  }
+
+  Future<void> forceUnlockAll() async {
+    final db = await DatabaseService.db;
+    // Update all folders to be unlocked in DB
+    await db.update('folders', {'isLocked': 0});
+
+    // Update local state
+    for (var f in folders) {
+      f.isLocked = false;
+    }
+    folders.refresh();
+  }
+  
 }

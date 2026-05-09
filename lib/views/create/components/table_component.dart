@@ -155,7 +155,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                                   TextPosition(offset: widget.tableData[rowIndex][colIndex].length),
                                 ),
                               onChanged: (value) => widget.onCellChanged(rowIndex, colIndex, value),
-
                               //   AUTO HEIGHT LOGIC
                               maxLines: null,
                               keyboardType: TextInputType.multiline,

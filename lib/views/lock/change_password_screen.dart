@@ -34,13 +34,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     _loadExistingData();
   }
 
-  // Optional: Prefill existing hint and question
   void _loadExistingData() async {
     final settings = await _lockController.getSecuritySettings();
     if (settings != null) {
       setState(() {
         _hintController.text = settings['password_hint'] ?? "";
-        // Only set question if it matches one in the controller's list
         if (_lockController.questions.contains(settings['security_question'])) {
           _selectedQuestion = settings['security_question'];
         }
@@ -90,7 +88,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
             child: Column(
               children: [
                 Center(child: customHeader("Change Password", context)),
@@ -98,7 +96,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 Text(
                   "Update the password to protect your notes.",
                   textAlign: TextAlign.center,
-                  style: text14(context).copyWith(
+                  style: text16(context).copyWith(
                     color: AppColor().gray,
                   ),
                 ),
@@ -119,6 +117,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   "New Hint",
                   false,
                   null,
+                  type: TextInputType.number,
                   controller: _hintController,
                   trailing: Text(
                     "Optional",

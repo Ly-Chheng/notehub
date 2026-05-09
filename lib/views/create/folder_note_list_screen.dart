@@ -44,7 +44,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     controller.fetchNotesByFolder(widget.folderId);
   }
 
-  // --- NEW: NAVIGATION LOGIC WITH LOCK ---
+  // NAVIGATION LOGIC WITH LOCK
   void _handleNoteTap(NoteModel note) async {
     if (isSelectionMode) {
       setState(() {
@@ -155,16 +155,40 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
-          IconButton(
-            icon: Icon(isSelectionMode ? Icons.close : Icons.more_vert_outlined),
-            color: AppColor().primaryColor,
-            onPressed: () {
-              setState(() {
-                isSelectionMode = !isSelectionMode;
-                selectedNoteIds.clear();
-              });
-            },
+          // IconButton(
+          //   icon: Icon(isSelectionMode ? Icons.close : Icons.more_vert_outlined),
+          //   color: AppColor().primaryColor,
+          //   onPressed: () {
+          //     setState(() {
+          //       isSelectionMode = !isSelectionMode;
+          //       selectedNoteIds.clear();
+          //     });
+          //   },
+          // ),
+          Container(
+            height: 24,
+            width: 24,
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              border: Border.all(color: AppColor().primaryColor, width: 1),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              alignment: Alignment.center,
+              constraints: const BoxConstraints(),
+              iconSize: 18,
+              color: AppColor().primaryColor,
+              onPressed: () {
+                setState(() {
+                  isSelectionMode = !isSelectionMode;
+                  selectedNoteIds.clear();
+                });
+              },
+              icon: Icon(isSelectionMode ? Icons.close : Icons.more_vert_outlined),
+            ),
           ),
+          SizedBox(width: 10),
         ],
       ),
       body: Column(
@@ -180,7 +204,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               }
 
               if (controller.notes.isEmpty) {
-                return const CustomNoData(message: "No notes found");
+                return const CustomNoData(message: "No data");
               }
 
               final pinnedNotes = controller.notes.where((n) => n.isPinned).toList();
@@ -241,10 +265,10 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         children: [
           Text(
             title,
-            style: text20(context),
+            style: text20(context).copyWith(color: AppColor().primaryColor),
           ),
           const Spacer(),
-          if (title == "Pinned") Icon(Icons.keyboard_arrow_down, color: AppColor().orange, size: 22),
+          // if (title == "Pinned") Icon(Icons.keyboard_arrow_down, color: AppColor().primaryColor, size: 22),
         ],
       ),
     );
@@ -263,7 +287,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     final Color itemSubTextColor = itemTextColor.withOpacity(0.7);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
       child: Slidable(
         key: ValueKey(note.id),
         enabled: !isSelectionMode,
@@ -280,7 +304,14 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
             ),
             SlidableAction(
-              onPressed: (context) => _showMoveSheet([note.id!]),
+              // onPressed: (context) => _showMoveSheet([note.id!]),
+              onPressed: (context) {
+                if (note.isLocked == true) {
+                  _verifyAndMove([note.id!]);
+                } else {
+                  _showMoveSheet([note.id!]);
+                }
+              },
               backgroundColor: AppColor().primaryColor,
               foregroundColor: AppColor().white,
               icon: Icons.folder,
@@ -324,7 +355,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               ],
             ),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 12),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -438,7 +469,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           // }),
           _buildBottomAction(Icons.folder, AppColor().primaryColor, () {
             if (selectedNoteIds.isNotEmpty) {
-              _handleMoveWithLock(); 
+              _handleMoveWithLock();
             }
           }),
           Column(
@@ -446,7 +477,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             children: [
               Text(
                 "${selectedNoteIds.length} selected",
-                style: TextStyle(fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-ENGULAR'),
+                style: TextStyle(fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-ENGULAR', color: AppColor().gray),
               ),
             ],
           ),
@@ -457,7 +488,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       ),
     );
   }
-  
+
   void _handleBulkDeleteProtection() async {
     bool containsLockedNotes = controller.notes.where((n) => selectedNoteIds.contains(n.id)).any((n) => n.isLocked == true);
 
@@ -542,6 +573,36 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     );
   }
 
+  void _verifyAndMove(List<int> noteIds) async {
+    final TextEditingController verifyPassController = TextEditingController();
+    final settings = await lockController.getSecuritySettings();
+    String storedPass = settings?['master_password'] ?? "";
+
+    if (!mounted) return;
+
+    showConfirmDialog(
+      context: context,
+      title: "Verify Password",
+      subTitle: "You are moving locked content. Please enter your password.",
+      confirmText: "Verify",
+      controller: verifyPassController,
+      obscureText: true,
+      hintText: "Password",
+      onConfirm: () {
+        if (verifyPassController.text == storedPass) {
+          _showMoveSheet(noteIds);
+        } else {
+          Get.snackbar(
+            "Access Denied",
+            "Incorrect Password",
+            backgroundColor: AppColor().red,
+            colorText: Colors.white,
+          );
+        }
+      },
+    );
+  }
+
   void _showMoveSheet(List<int> noteIds) {
     showModalBottomSheet(
       context: context,
@@ -557,6 +618,11 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             Flexible(
               child: Obx(() {
                 final otherFolders = folderController.folders.where((f) => f.id != widget.folderId).toList();
+                if (otherFolders.isEmpty) {
+                  return const CustomNoData(
+                    message: "No data",
+                  );
+                }
                 return ListView.builder(
                   shrinkWrap: true,
                   itemCount: otherFolders.length,

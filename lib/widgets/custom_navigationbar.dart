@@ -11,13 +11,17 @@ Widget customNavigationBar({
   final void Function(int)? onTap,
   final int chatBadgeCount = 0,
 }) {
-  final double iconSize = context.isPhone ? 26 : 32;
-  final double timerIconSize = context.isPhone ? 29 : 34;
+  final double iconSize = context.isPhone ? 25 : 32;
+  final double timerIconSize = context.isPhone ? 32 : 34;
   final Color activeColor = selectedItemColor ?? AppColor().primaryColor;
   final Color inactiveColor = unselectedItemColor ?? AppColor().gray;
 
   return Padding(
-    padding: EdgeInsets.only(left: context.isPhone ? 50 : 90, right: context.isPhone ? 50 : 90, bottom: 10),
+    padding: EdgeInsets.only(
+      left: context.isPhone ? 50 : 90,
+      right: context.isPhone ? 50 : 90,
+      bottom: context.isPhone ? 10 : 20,
+    ),
     child: Container(
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
@@ -83,8 +87,8 @@ Widget customNavigationBar({
                   ),
                   child: Image.asset(
                     currentIndex == 2 ? 'assets/images/more_active.png' : 'assets/images/more.png',
-                    width: iconSize,
-                    height: iconSize,
+                    width: context.isPhone ? 26 : 32,
+                    height: context.isPhone ? 26 : 32,
                     color: currentIndex == 2 ? activeColor : inactiveColor,
                   ),
                 ),

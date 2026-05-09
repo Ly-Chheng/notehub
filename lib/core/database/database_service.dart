@@ -103,6 +103,8 @@ class DatabaseService {
     }
   }
 }
+
+//=DB SERVICE ADDED TO EXPORT DB FUNCTION
 // import 'dart:io'; //  ADD THIS
 // import 'package:sqflite/sqflite.dart';
 // import 'package:path/path.dart';

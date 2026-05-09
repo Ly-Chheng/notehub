@@ -266,8 +266,6 @@ class NoteController extends GetxController {
     }
   }
 
-  // USE FOR LOCK
-  // --- ADD THIS: Generic Update for any NoteModel ---
   Future<void> updateNote(NoteModel note) async {
     try {
       final db = await DatabaseService.db;
@@ -283,7 +281,6 @@ class NoteController extends GetxController {
     }
   }
 
-  // --- ADD THIS: Fetch ALL notes (across all folders) ---
   Future<void> fetchAllNotes() async {
     isLoading.value = true;
     try {
@@ -297,9 +294,6 @@ class NoteController extends GetxController {
     }
   }
 
-  // --- ADD THIS: Refresh currently displayed folder ---
-  // Since your screen calls fetchNotesByFolder(folderId),
-  // you can call this if you know which folder is open.
   void refreshNotes(int folderId) {
     fetchNotesByFolder(folderId);
   }

@@ -34,7 +34,7 @@ Future<void> showConfirmDialog({
       icon = Icons.warning;
       break;
     default:
-      confirmColor = AppColor().red;
+      confirmColor = AppColor().primaryColor;
       icon = null;
   }
 
@@ -51,24 +51,32 @@ Future<void> showConfirmDialog({
           opacity: animation,
           child: AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(15),
             ),
             backgroundColor: Theme.of(context).cardColor,
-            title: Column(
-              children: [
-                if (icon != null) Icon(icon, size: 50, color: confirmColor),
-                if (icon != null) const SizedBox(height: 8),
-                Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: context.isPhone ? 18 : 20,
-                    fontFamily: 'EN-BOLD',
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+            title: (title.isNotEmpty || icon != null)
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (icon != null)
+                        Icon(
+                          icon,
+                          size: 50,
+                          color: confirmColor,
+                        ),
+                      if (icon != null && title.isNotEmpty) const SizedBox(height: 8),
+                      if (title.isNotEmpty)
+                        Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: context.isPhone ? 18 : 20,
+                            fontFamily: 'EN-BOLD',
+                          ),
+                        ),
+                    ],
+                  )
+                : null,
             content: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -106,6 +114,12 @@ Future<void> showConfirmDialog({
                         ),
                       ),
                     ),
+                    // customTextField(
+                    //     "Password",
+                    //     false,
+                    //     null,
+                    //     controller: controller,
+                    //   ),
                   ],
                 ],
               ),

@@ -28,7 +28,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     _loadSecurityData();
   }
 
-  // FETCH FROM SQLITE ---
   Future<void> _loadSecurityData() async {
     final settings = await _controller.getSecuritySettings();
     if (mounted) {
@@ -74,7 +73,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: Column(
                   children: [
                     Center(child: customHeader("Forget Password", context)),
@@ -82,7 +81,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     Text(
                       "Verify your identity using your security question to reset your password.",
                       textAlign: TextAlign.center,
-                      style: text14(context).copyWith(
+                      style: text16(context).copyWith(
                         color: AppColor().gray,
                       ),
                     ),
@@ -92,10 +91,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Text(
-                          //   storedQuestion ?? "No security question set up.",
-                          //   style: text16(context),
-                          // ),
                           Text(
                             (storedQuestion == null || storedQuestion!.trim().isEmpty) ? "No security question set up." : storedQuestion!,
                             style: text16(context),

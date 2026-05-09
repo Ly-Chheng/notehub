@@ -47,7 +47,6 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              // Updated: Removed 'context: context' to match the SQLite LockController
               _controller.handleCreatePassword(
                 password: _newPassController.text,
                 confirmPassword: _confirmPassController.text,
@@ -67,7 +66,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Column(
               children: [
                 Center(child: customHeader("Create New Password", context)),
@@ -75,7 +74,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 Text(
                   "Create a secure password to protect your personal notes.",
                   textAlign: TextAlign.center,
-                  style: text14(context).copyWith(
+                  style: text16(context).copyWith(
                     color: AppColor().gray,
                   ),
                 ),
@@ -98,6 +97,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   "Hint",
                   false,
                   null,
+                  type: TextInputType.number,
                   controller: _hintController,
                   trailing: Text(
                     "Optional",

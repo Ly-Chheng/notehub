@@ -16,6 +16,7 @@ Widget customTextField(
   double? hintFontSize,
   double? fontSize,
   Widget? trailing,
+  TextInputType? type,
 }) {
   return Container(
     decoration: BoxDecoration(
@@ -27,6 +28,7 @@ Widget customTextField(
       obscureText: obscure,
       validator: validator,
       onChanged: onChanged,
+      keyboardType: type,
       cursorColor: AppColor().primaryColor,
       style: TextStyle(
         color: Theme.of(Get.context!).textTheme.bodyLarge?.color,
@@ -50,6 +52,7 @@ Widget customTextField(
               )
             : InputBorder.none,
         prefixIcon: prefixIcon,
+        prefixIconColor: AppColor().gray,
         enabledBorder: InputBorder.none,
         focusedBorder: InputBorder.none,
         errorBorder: InputBorder.none,

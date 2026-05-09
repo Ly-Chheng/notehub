@@ -78,7 +78,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           motion: const DrawerMotion(),
                           children: [
                             SlidableAction(
-                              // onPressed: (c) => showFolderSheet(context, folder: folder),
                               onPressed: (c) => _handleEditFolder(context, folder),
                               backgroundColor: AppColor().primaryColor,
                               icon: Icons.edit,
@@ -124,9 +123,6 @@ class _MyHomePageState extends State<MyHomePage> {
     await controller.togglePin(folder.id!);
   }
 
-  // void _toggleLock(FolderModel folder) async {
-  //   await controller.toggleLock(folder.id!);
-  // }
   void _toggleLock(FolderModel folder) async {
     final settings = await lockController.getSecuritySettings();
     String storedPass = settings?['master_password'] ?? "";
@@ -143,8 +139,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
       showConfirmDialog(
         context: context,
-        title: "Remove Protection",
-        subTitle: "Enter password to permanently unlock '${folder.title}'.",
+        title: "Verify Password",
+        subTitle: "Enter password to permanently unlock ${folder.title}.",
         confirmText: "Unlock",
         controller: verifyPassController,
         obscureText: true,
@@ -158,10 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
           }
         },
       );
-    }
-
-    // Folder is open and password exists (Just lock it)
-    else {
+    } else {
       await controller.toggleLock(folder.id!);
     }
   }
@@ -179,8 +172,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
     showConfirmDialog(
       context: context,
-      title: "Verify Identity",
-      subTitle: "Enter password to edit '${folder.title}'.",
+      title: "Verify Password",
+      subTitle: "Enter password to edit ${folder.title}.",
       confirmText: "Verify",
       controller: verifyPassController,
       obscureText: true,
@@ -196,11 +189,41 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _confirmDelete(BuildContext context, FolderModel folder) {
+  void _confirmDelete(BuildContext context, FolderModel folder) async {
+    if (folder.isLocked) {
+      final settings = await lockController.getSecuritySettings();
+      String storedPass = settings?['master_password'] ?? "";
+      final TextEditingController verifyPassController = TextEditingController();
+
+      if (!mounted) return;
+
+      showConfirmDialog(
+        context: context,
+        title: "Verify Password",
+        subTitle: "The folder ${folder.title} is locked. Enter password to delete it and all its contents.",
+        confirmText: "Verify",
+        controller: verifyPassController,
+        obscureText: true,
+        hintText: "Password",
+        onConfirm: () {
+          if (verifyPassController.text == storedPass) {
+            Get.back();
+            _proceedWithDeletion(folder);
+          } else {
+            Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+          }
+        },
+      );
+    } else {
+      _proceedWithDeletion(folder);
+    }
+  }
+
+  void _proceedWithDeletion(FolderModel folder) {
     showConfirmDialog(
       context: context,
       title: "Delete Folder?",
-      subTitle: "This folder contains ${folder.title} notes. All data inside will be permanently lost.",
+      subTitle: "All notes inside ${folder.title} will be permanently lost. This cannot be undone.",
       confirmText: "Delete",
       onConfirm: () async {
         await controller.deleteFolder(folder.id!);
@@ -217,24 +240,29 @@ class _MyHomePageState extends State<MyHomePage> {
       //       ));
       //   controller.folders.refresh();
       // },
-      onTap: () async {
-        if (folder.isLocked) {
-          final TextEditingController verifyPassController = TextEditingController();
-          final settings = await lockController.getSecuritySettings();
-          String storedPass = settings?['master_password'] ?? "";
 
-          if (!mounted) return;
+      onTap: () async {
+        final settings = await lockController.getSecuritySettings();
+        String storedPass = settings?['master_password'] ?? "";
+
+        bool needsVerification = folder.isLocked && storedPass.isNotEmpty;
+
+        if (needsVerification) {
+          final TextEditingController verifyPassController = TextEditingController();
+
+          if (!context.mounted) return;
 
           showConfirmDialog(
             context: context,
             title: "Locked Folder",
-            subTitle: "Please enter your password to access '${folder.title}'.",
+            subTitle: "Please enter your password to access ${folder.title}.",
             confirmText: "Unlock",
             controller: verifyPassController,
             obscureText: true,
-            hintText: "Password",
+            hintText: "Passwor",
             onConfirm: () {
               if (verifyPassController.text == storedPass) {
+                Get.back();
                 Get.to(() => FolderNoteListScreen(
                       folderId: folder.id!,
                       folderName: folder.title,
@@ -246,6 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   "Incorrect Password",
                   backgroundColor: AppColor().red,
                   colorText: Colors.white,
+                  snackPosition: SnackPosition.TOP,
                 );
               }
             },

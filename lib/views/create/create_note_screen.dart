@@ -26,7 +26,6 @@ import 'package:project_structure/views/lock/create_password_screen.dart';
 
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
-import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
@@ -179,7 +178,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
-  // --- UPDATED: LOCK LOGIC FOR SQLITE ---
+  //  UPDATED: LOCK LOGIC FOR SQLITE
   Future<void> _handleLockToggle() async {
     // 1. Fetch settings from SQLite
     final settings = await lockController.getSecuritySettings();
@@ -199,15 +198,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       if (isLocked) {
         // If note is currently locked, verify password before unlocking
         _showVerifyUnlockDialog(
-          storedPass: storedPass, 
-          onSuccess: () {
-            setState(() {
-              isLocked = false;
-              _isSessionUnlocked = true;
+            storedPass: storedPass,
+            onSuccess: () {
+              setState(() {
+                isLocked = false;
+                _isSessionUnlocked = true;
+              });
+              _triggerAutoSave();
             });
-            _triggerAutoSave();
-          }
-        );
       } else {
         // If note is open, just lock it
         setState(() {
@@ -219,7 +217,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
-  // --- UPDATED: VERIFICATION DIALOG ---
+  // VERIFICATION DIALOG 
   void _showVerifyUnlockDialog({required String storedPass, required VoidCallback onSuccess}) {
     final verifyController = TextEditingController();
 
@@ -237,9 +235,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           onSuccess();
         } else {
           Get.snackbar(
-            "Error", 
-            "Incorrect Password", 
-            backgroundColor: AppColor().red, 
+            "Error",
+            "Incorrect Password",
+            backgroundColor: AppColor().red,
             colorText: Colors.white,
             snackPosition: SnackPosition.TOP,
           );
@@ -248,13 +246,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  // --- UPDATED: MENU SELECTION HANDLER ---
   void _handleMenuSelection(String value) {
     _forceUnfocus();
     switch (value) {
       case 'Lock Note':
       case 'Unlock Note':
-        _handleLockToggle(); // This is now an async call internally
+        _handleLockToggle();
         break;
       case 'Pin':
         setState(() => isPinned = true);
@@ -275,8 +272,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         break;
     }
   }
-
-// ... rest of the code remains the same ...
 
   void _forceUnfocus() {
     _editorFocusNode.unfocus();
@@ -598,70 +593,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       ),
     );
   }
-
-  // void _handleMenuSelection(String value, BuildContext context) {
-  //   _forceUnfocus();
-
-  //   switch (value) {
-  //     case 'Pin':
-  //       setState(() => isPinned = true);
-  //       _triggerAutoSave();
-  //       break;
-
-  //     case 'Unpin':
-  //       setState(() => isPinned = false);
-  //       _triggerAutoSave();
-  //       break;
-
-  //     case 'Lock Note':
-  //       setState(() => isLocked = true);
-  //       _triggerAutoSave();
-  //       break;
-
-  //     case 'Unlock Note':
-  //       setState(() => isLocked = false);
-  //       _triggerAutoSave();
-  //       break;
-
-  //     case 'Move Note':
-  //       _showMoveSheet();
-  //       break;
-
-  //     case 'Delete':
-  //       _showDeleteDialog();
-  //       break;
-
-  //     case 'Share':
-  //       _shareNote();
-  //       break;
-  //   }
-  // }
-  // void _handleMenuSelection(String value) {
-  //   _forceUnfocus();
-  //   switch (value) {
-  //     case 'Lock Note':
-  //     case 'Unlock Note':
-  //       _handleLockToggle();
-  //       break;
-  //     case 'Pin':
-  //       setState(() => isPinned = true);
-  //       _triggerAutoSave();
-  //       break;
-  //     case 'Unpin':
-  //       setState(() => isPinned = false);
-  //       _triggerAutoSave();
-  //       break;
-  //     case 'Delete':
-  //       _showDeleteDialog();
-  //       break;
-  //     case 'Share':
-  //       _shareNote();
-  //       break;
-  //     case 'Move Note':
-  //       _showMoveSheet();
-  //       break;
-  //   }
-  // }
 
   bool get _isNoteEmpty => titleController.text.trim().isEmpty && _quillController.document.isEmpty() && selectedImages.isEmpty && !showTable && drawingLayers.isEmpty;
 

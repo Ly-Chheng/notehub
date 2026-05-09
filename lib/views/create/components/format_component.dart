@@ -105,7 +105,14 @@ void showFormatSheet({
               SheetHeader(
                 title: "Format",
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 15),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: context.isPhone ? 10 : 20),
+                child: Text(
+                  "Text Alignment",
+                  style: text14(context).copyWith(fontWeight: FontWeight.w600),
+                ),
+              ),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
@@ -167,6 +174,13 @@ void showFormatSheet({
                 ),
               ),
               const SizedBox(height: 15),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: context.isPhone ? 10 : 20),
+                child: Text(
+                  "Text Style",
+                  style: text14(context).copyWith(fontWeight: FontWeight.w600),
+                ),
+              ),
               Row(
                 children: [
                   _buildContainer(
@@ -250,11 +264,12 @@ void showFormatSheet({
                           : const SizedBox.shrink(key: ValueKey('none')),
                 ),
               ),
+              const SizedBox(height: 15),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: context.isPhone ? 10 : 20),
                 child: Text(
                   "Font Size",
-                  style: text18(context),
+                  style: text14(context).copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
               _buildContainer(
