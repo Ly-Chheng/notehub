@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import '../core/utils/app_color.dart';
 
 class CustomButton extends StatelessWidget {
@@ -44,6 +45,7 @@ class CustomButton extends StatelessWidget {
               vertical: context.isPhone ? 12 : 16,
             ),
         elevation: 0,
+        shadowColor: Colors.transparent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(borderRadius ?? 12),
           side: borderColor != null
@@ -69,14 +71,14 @@ class CustomButton extends StatelessWidget {
               children: [
                 if (icon != null) ...[
                   icon!,
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 10),
                 ],
                 Text(
                   text,
                   style: TextStyle(
                     color: textColor ?? AppColor().white,
-                    fontSize: context.isPhone ? 16 : 18,
-                    fontFamily: 'EN-SEMIBOLD',
+                    fontSize: AppFontSize(context).subTitleSize,
+                    fontFamily: 'EN-REGULAR',
                   ),
                 ),
               ],

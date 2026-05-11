@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/widgets/custom_button.dart';
+import 'package:project_structure/widgets/custom_text_field.dart';
 
 enum DialogType { normal, success, error, warning }
 
@@ -91,35 +93,35 @@ Future<void> showConfirmDialog({
                   ),
                   if (controller != null) ...[
                     const SizedBox(height: 16),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: TextFormField(
-                        controller: controller,
-                        obscureText: obscureText,
-                        decoration: InputDecoration(
-                          hintText: hintText ?? "Enter text",
-                          hintStyle: TextStyle(
-                            color: AppColor().gray,
-                            fontFamily: 'EN-REGULAR',
-                            fontFamilyFallback: const ['KH-REGULAR'],
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                          enabledBorder: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                        ),
-                      ),
-                    ),
-                    // customTextField(
-                    //     "Password",
-                    //     false,
-                    //     null,
-                    //     controller: controller,
+                    // Container(
+                    //   decoration: BoxDecoration(
+                    //     color: Colors.grey.withValues(alpha: 0.1),
+                    //     borderRadius: BorderRadius.circular(12),
                     //   ),
+                    //   child: TextFormField(
+                    //     controller: controller,
+                    //     obscureText: obscureText,
+                    //     decoration: InputDecoration(
+                    //       hintText: hintText ?? "Enter text",
+                    //       hintStyle: TextStyle(
+                    //         color: AppColor().gray,
+                    //         fontFamily: 'EN-REGULAR',
+                    //         fontFamilyFallback: const ['KH-REGULAR'],
+                    //       ),
+                    //       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    //       enabledBorder: InputBorder.none,
+                    //       focusedBorder: InputBorder.none,
+                    //       errorBorder: InputBorder.none,
+                    //       disabledBorder: InputBorder.none,
+                    //     ),
+                    //   ),
+                    // ),
+                    customTextField(
+                      "Password",
+                      false,
+                      null,
+                      controller: controller,
+                    ),
                   ],
                 ],
               ),
@@ -134,53 +136,24 @@ Future<void> showConfirmDialog({
                 children: [
                   if (showCancel)
                     Expanded(
-                      child: ElevatedButton(
+                      child: CustomButton(
+                        text: "Cancel",
                         onPressed: () => Navigator.pop(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.grey.shade50,
-                          padding: EdgeInsets.symmetric(
-                            vertical: kIsWeb ? 16 : 10,
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          shadowColor: Colors.transparent,
-                        ),
-                        child: Text(
-                          'Cancel',
-                          style: TextStyle(
-                            fontSize: context.isPhone ? 16 : 18,
-                            color: AppColor().black,
-                            fontFamily: 'EN-REGULAR',
-                          ),
-                        ),
+                        backgroundColor: Colors.grey.shade50,
+                        textColor: AppColor().black,
+                        borderRadius: 12,
                       ),
                     ),
                   if (showCancel) const SizedBox(width: 10),
                   Expanded(
-                    child: ElevatedButton(
+                    child: CustomButton(
+                      text: confirmText ?? 'OK',
                       onPressed: () {
                         Navigator.pop(context);
                         onConfirm();
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: confirmColor,
-                        padding: EdgeInsets.symmetric(
-                          vertical: kIsWeb ? 16 : 10,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        shadowColor: Colors.transparent,
-                      ),
-                      child: Text(
-                        confirmText ?? 'OK',
-                        style: TextStyle(
-                          fontSize: context.isPhone ? 16 : 18,
-                          color: AppColor().white,
-                          fontFamily: 'EN-REGULAR',
-                        ),
-                      ),
+                      backgroundColor: confirmColor,
+                      borderRadius: 12,
                     ),
                   ),
                 ],

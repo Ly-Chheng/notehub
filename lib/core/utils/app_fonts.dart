@@ -5,40 +5,50 @@ const String rengular = 'EN-REGULAR';
 const String sumibold = 'EN-SEMIBOLD';
 const String bold = 'EN-BOLD';
 
-appbarTextSyle() {
-  return TextStyle(
-    fontFamily: rengular,
-    fontSize: 18,
-  );
-}
+// Font Size Custom
+class AppFontSize {
+  late double extraLargeSize;
+  late double titleSize;
+  late double subTitleSize;
+  late double mediumLargeSize;
+  late double largeSize;
+  late double descriptionLargeSize;
+  late double normalTextSize;
+  late double subNormalSize;
+  late double smallSize;
 
-dashboardTextStyle() {
-  return const TextStyle(
-    fontFamily: rengular,
-    fontSize: 14,
-  );
+  AppFontSize(BuildContext context) {
+    extraLargeSize = Get.context!.isPhone ? 22 : 24;
+    titleSize = Get.context!.isPhone ? 20 : 22;
+    mediumLargeSize = Get.context!.isPhone ? 18 : 20;
+    subTitleSize = Get.context!.isPhone ? 16 : 18;
+    descriptionLargeSize = Get.context!.isPhone ? 14 : 16;
+    normalTextSize = Get.context!.isPhone ? 12 : 14;
+    subNormalSize = Get.context!.isPhone ? 10 : 12;
+    smallSize = Get.context!.isPhone ? 8 : 10;
+  }
 }
 
 titleTextSyle() {
-  return const TextStyle(
+  return TextStyle(
     fontFamily: rengular,
-    fontSize: 16,
+    fontSize: AppFontSize(Get.context!).subTitleSize,
   );
 }
 
-TextStyle text10 = const TextStyle(
-  fontSize: 10,
+TextStyle text10 = TextStyle(
+  fontSize: AppFontSize(Get.context!).subNormalSize,
   fontFamily: rengular,
 );
 
-TextStyle text12 = const TextStyle(
-  fontSize: 12,
+TextStyle text12 = TextStyle(
+  fontSize: AppFontSize(Get.context!).normalTextSize,
   fontFamily: rengular,
 );
 
 TextStyle text14(BuildContext context) {
   return TextStyle(
-    fontSize: context.isPhone ? 14 : 16,
+    fontSize: AppFontSize(Get.context!).descriptionLargeSize,
     fontFamily: rengular,
     fontFamilyFallback: const ['KH-REGULAR'],
   );
@@ -46,7 +56,7 @@ TextStyle text14(BuildContext context) {
 
 TextStyle text16(BuildContext context) {
   return TextStyle(
-    fontSize: context.isPhone ? 16 : 18,
+    fontSize: AppFontSize(Get.context!).subTitleSize,
     fontFamily: rengular,
     fontFamilyFallback: const ['KH-REGULAR'],
     color: Theme.of(context).textTheme.bodyLarge?.color,
@@ -55,7 +65,7 @@ TextStyle text16(BuildContext context) {
 
 TextStyle text18(BuildContext context) {
   return TextStyle(
-    fontSize: context.isPhone ? 18 : 20,
+    fontSize: AppFontSize(context).mediumLargeSize,
     fontFamily: bold,
     fontFamilyFallback: const ['KH-BOLD'],
     color: Theme.of(context).textTheme.bodyLarge?.color,
@@ -64,7 +74,7 @@ TextStyle text18(BuildContext context) {
 
 TextStyle text20(BuildContext context) {
   return TextStyle(
-    fontSize: context.isPhone ? 20 : 22,
+    fontSize: AppFontSize(Get.context!).titleSize,
     fontFamily: bold,
     fontFamilyFallback: const ['KH-BOLD'],
     color: Theme.of(context).textTheme.bodyLarge?.color,
@@ -73,8 +83,27 @@ TextStyle text20(BuildContext context) {
 
 TextStyle text22(BuildContext context) {
   return TextStyle(
-    fontSize: context.isPhone ? 22 : 25,
+    fontSize: AppFontSize(context).extraLargeSize,
     fontFamily: bold,
     color: Theme.of(context).textTheme.bodyLarge?.color,
+  );
+}
+
+TextStyle custom({
+  required BuildContext context,
+  required double phone,
+  required double tablet,
+  String fontFamily = rengular,
+  FontWeight? weight,
+  Color? color,
+}) {
+  final isPhone = Get.context!.isPhone;
+  final size = isPhone ? phone : tablet;
+
+  return TextStyle(
+    fontSize: size,
+    fontFamily: fontFamily,
+    fontWeight: weight,
+    color: color ?? Theme.of(context).textTheme.bodyLarge?.color,
   );
 }

@@ -243,7 +243,6 @@ void showFormatSheet({
                 ],
               ),
 
-              // Text Color Picker
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOutCubic,

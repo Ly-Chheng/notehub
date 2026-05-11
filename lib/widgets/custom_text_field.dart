@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 Widget customTextField(
   String hint,
@@ -32,7 +33,7 @@ Widget customTextField(
       cursorColor: AppColor().primaryColor,
       style: TextStyle(
         color: Theme.of(Get.context!).textTheme.bodyLarge?.color,
-        fontSize: 16,
+        fontSize: AppFontSize(Get.context!).subTitleSize,
         fontFamily: 'EN-REGULAR',
         fontFamilyFallback: const ['KH-REGULAR'],
       ),

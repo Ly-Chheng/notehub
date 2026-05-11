@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
-
 import 'package:project_structure/models/note/folder_model.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
@@ -14,6 +13,7 @@ void showFolderSheet(BuildContext context, {FolderModel? folder}) {
     text: folder != null ? folder.title : "",
   );
   void showDuplicateNameDialog(BuildContext context) {
+    Get.back();
     showConfirmDialog(
       context: context,
       title: "Duplicate Name",

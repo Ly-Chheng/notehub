@@ -107,7 +107,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       context: context,
       title: "Verify Password",
       subTitle: "This note is locked. Please enter your password to delete it.",
-      confirmText: "Delete",
+      confirmText: "Verify",
       controller: verifyPassController,
       obscureText: true,
       hintText: "Password",
@@ -155,16 +155,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         context: context,
         leadingColor: AppColor().primaryColor,
         actions: [
-          // IconButton(
-          //   icon: Icon(isSelectionMode ? Icons.close : Icons.more_vert_outlined),
-          //   color: AppColor().primaryColor,
-          //   onPressed: () {
-          //     setState(() {
-          //       isSelectionMode = !isSelectionMode;
-          //       selectedNoteIds.clear();
-          //     });
-          //   },
-          // ),
           Container(
             height: 24,
             width: 24,
@@ -268,7 +258,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             style: text20(context).copyWith(color: AppColor().primaryColor),
           ),
           const Spacer(),
-          // if (title == "Pinned") Icon(Icons.keyboard_arrow_down, color: AppColor().primaryColor, size: 22),
         ],
       ),
     );
@@ -304,7 +293,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               borderRadius: const BorderRadius.horizontal(left: Radius.circular(12)),
             ),
             SlidableAction(
-              // onPressed: (context) => _showMoveSheet([note.id!]),
               onPressed: (context) {
                 if (note.isLocked == true) {
                   _verifyAndMove([note.id!]);
@@ -318,7 +306,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               label: 'Folder',
             ),
             SlidableAction(
-              // onPressed: (context) => _showDeleteConfirmation(note),
               onPressed: (context) {
                 if (note.isLocked == true) {
                   _showUnlockBeforeDelete(note);
@@ -378,7 +365,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                               Padding(
                                 padding: EdgeInsets.only(right: 8.0),
                                 child: Icon(
-                                  Icons.lock_outline,
+                                  Icons.lock,
                                   size: 18,
                                   color: AppColor().primaryColor,
                                 ),
@@ -464,9 +451,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // _buildBottomAction(Icons.folder, AppColor().primaryColor, () {
-          //   if (selectedNoteIds.isNotEmpty) _showMoveSheet(selectedNoteIds.toList());
-          // }),
           _buildBottomAction(Icons.folder, AppColor().primaryColor, () {
             if (selectedNoteIds.isNotEmpty) {
               _handleMoveWithLock();
@@ -477,7 +461,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             children: [
               Text(
                 "${selectedNoteIds.length} selected",
-                style: TextStyle(fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-ENGULAR', color: AppColor().gray),
+                style: TextStyle(fontSize: AppFontSize(context).normalTextSize, fontFamily: 'EN-ENGULAR', color: AppColor().gray),
               ),
             ],
           ),
@@ -503,7 +487,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         context: context,
         title: "Verify Password",
         subTitle: "Some selected notes are locked. Enter password to delete all.",
-        confirmText: "Delete",
+        confirmText: "Verify",
         controller: verifyPassController,
         obscureText: true,
         hintText: "Password",
@@ -660,7 +644,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     showConfirmDialog(
       context: context,
       title: "Delete Notes?",
-      subTitle: "Are you sure you want to delete ${selectedNoteIds.length} selected notes?",
+      subTitle: "Are you sure you want to delete ${selectedNoteIds.length} selected ${selectedNoteIds.length > 1 ? 'notes' : 'note'}?",
       confirmText: "Delete",
       onConfirm: () async {
         for (var id in selectedNoteIds) {

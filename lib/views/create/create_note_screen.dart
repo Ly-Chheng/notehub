@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
@@ -11,10 +10,8 @@ import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/models/note/note_model.dart';
-
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
-
 import 'package:project_structure/views/create/components/background_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/image_detail_component.dart';
@@ -23,7 +20,6 @@ import 'package:project_structure/views/create/components/quill_editor_component
 import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/views/create/components/handwriting_component.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
-
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
@@ -180,12 +176,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   //  UPDATED: LOCK LOGIC FOR SQLITE
   Future<void> _handleLockToggle() async {
-    // 1. Fetch settings from SQLite
+    // Fetch settings from SQLite
     final settings = await lockController.getSecuritySettings();
     String? storedPass = settings?['master_password'];
 
     if (storedPass == null || storedPass.isEmpty) {
-      // No password set yet, send user to create one
       final result = await Get.to(() => const CreatePasswordScreen());
       if (result == true) {
         setState(() {
@@ -196,7 +191,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       }
     } else {
       if (isLocked) {
-        // If note is currently locked, verify password before unlocking
         _showVerifyUnlockDialog(
             storedPass: storedPass,
             onSuccess: () {
@@ -207,7 +201,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               _triggerAutoSave();
             });
       } else {
-        // If note is open, just lock it
         setState(() {
           isLocked = true;
           _isSessionUnlocked = false;
@@ -217,7 +210,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
-  // VERIFICATION DIALOG 
   void _showVerifyUnlockDialog({required String storedPass, required VoidCallback onSuccess}) {
     final verifyController = TextEditingController();
 
@@ -231,7 +223,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       hintText: "Password",
       onConfirm: () {
         if (verifyController.text == storedPass) {
-          Get.back(); // Close dialog
+          Get.back();
           onSuccess();
         } else {
           Get.snackbar(
