@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
@@ -154,31 +155,67 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
+        // actions: [
+        //   Container(
+        //     height: 24,
+        //     width: 24,
+        //     padding: const EdgeInsets.all(2),
+        //     decoration: BoxDecoration(
+        //       border: Border.all(color: AppColor().primaryColor, width: 1),
+        //       borderRadius: BorderRadius.circular(5),
+        //     ),
+        //     child: IconButton(
+        //       padding: EdgeInsets.zero,
+        //       alignment: Alignment.center,
+        //       constraints: const BoxConstraints(),
+        //       iconSize: 18,
+        //       color: AppColor().primaryColor,
+        //       onPressed: () {
+        //         setState(() {
+        //           isSelectionMode = !isSelectionMode;
+        //           selectedNoteIds.clear();
+        //         });
+        //       },
+        //       icon: Icon(isSelectionMode ? Icons.close : Icons.more_vert_outlined),
+        //     ),
+        //   ),
+        //   SizedBox(width: 10),
+        // ],
         actions: [
-          Container(
-            height: 24,
-            width: 24,
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColor().primaryColor, width: 1),
-              borderRadius: BorderRadius.circular(5),
-            ),
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              alignment: Alignment.center,
-              constraints: const BoxConstraints(),
-              iconSize: 18,
-              color: AppColor().primaryColor,
-              onPressed: () {
-                setState(() {
-                  isSelectionMode = !isSelectionMode;
-                  selectedNoteIds.clear();
-                });
-              },
-              icon: Icon(isSelectionMode ? Icons.close : Icons.more_vert_outlined),
-            ),
-          ),
-          SizedBox(width: 10),
+          Obx(() {
+            // Check if the list is empty (true or false)
+            final bool hasNoData = controller.notes.isEmpty;
+
+            return Container(
+              height: 24,
+              width: 24,
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                // If hasNoData is true, use gray border, else use primary color
+                border: Border.all(color: hasNoData ? AppColor().gray : AppColor().primaryColor, width: 1),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                alignment: Alignment.center,
+                constraints: const BoxConstraints(),
+                iconSize: 18,
+                // If hasNoData is true, icon is gray, else primary color
+                color: hasNoData ? AppColor().gray : AppColor().primaryColor,
+                // If hasNoData is true, onPressed is null (disables the button)
+                onPressed: hasNoData
+                    ? null
+                    : () {
+                        setState(() {
+                          isSelectionMode = !isSelectionMode;
+                          selectedNoteIds.clear();
+                        });
+                      },
+                icon: Icon(isSelectionMode ? Icons.close : Icons.more_vert_outlined),
+              ),
+            );
+          }),
+          const SizedBox(width: 10),
         ],
       ),
       body: Column(
@@ -325,22 +362,22 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           onTap: () => _handleNoteTap(note),
           child: Container(
             decoration: BoxDecoration(
-              color: noteBgColor,
-              borderRadius: BorderRadius.circular(12),
-              border: isSelected
-                  ? Border.all(
-                      color: AppColor().primaryColor,
-                      width: 1.5,
-                    )
-                  : null,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
+                color: noteBgColor,
+                borderRadius: BorderRadius.circular(12),
+                border: isSelected
+                    ? Border.all(
+                        color: AppColor().primaryColor,
+                        width: 1.5,
+                      )
+                    : null,
+                boxShadow: [
+                  BoxShadow(
+                    color: Color.fromRGBO(0, 0, 0, 0.04),
+                    blurRadius: 5,
+                    spreadRadius: 0,
+                    offset: Offset(0, 3),
+                  )
+                ]),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 12),
               child: Row(
@@ -362,14 +399,21 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         Row(
                           children: [
                             if (note.isLocked == true)
-                              Padding(
-                                padding: EdgeInsets.only(right: 8.0),
+                              Container(
+                                width: 26,
+                                height: 26,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColor().primaryColor.withOpacity(0.1),
+                                ),
+                                padding: EdgeInsets.all(4),
                                 child: Icon(
                                   Icons.lock,
                                   size: 18,
                                   color: AppColor().primaryColor,
                                 ),
                               ),
+                            SizedBox(width: note.isLocked == true ? 6 : 0),
                             Text(
                               (note.title.trim().isNotEmpty)
                                   ? note.title
@@ -421,6 +465,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         ),
                       ),
                     ),
+                  if (imagePaths.isNotEmpty) SizedBox(width: 5),
                 ],
               ),
             ),
@@ -531,7 +576,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               "Access Denied",
               "Incorrect Password",
               backgroundColor: AppColor().red,
-              colorText: Colors.white,
+              colorText: AppColor().white,
             );
           }
         },
@@ -580,7 +625,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             "Access Denied",
             "Incorrect Password",
             backgroundColor: AppColor().red,
-            colorText: Colors.white,
+            colorText: AppColor().white,
           );
         }
       },

@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
       showConfirmDialog(
         context: context,
-        title: "Verify Password",
+        title: "Unlock Folder?",
         subTitle: "Enter password to permanently unlock ${folder.title}.",
         confirmText: "Unlock",
         controller: verifyPassController,
@@ -150,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
             await controller.toggleLock(folder.id!);
             Get.back();
           } else {
-            Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+            Get.snackbar("Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
           }
         },
       );
@@ -171,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!mounted) return;
 
     showConfirmDialog(
-      context: context,
+      context: Get.context!,
       title: "Verify Password",
       subTitle: "Enter password to edit ${folder.title}.",
       confirmText: "Verify",
@@ -183,24 +183,62 @@ class _MyHomePageState extends State<MyHomePage> {
           Get.back();
           showFolderSheet(context, folder: folder);
         } else {
-          Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+          Get.snackbar("Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
         }
       },
     );
   }
 
+  // void _confirmDelete(BuildContext context, FolderModel folder) async {
+  //   if (folder.isLocked) {
+  //     final settings = await lockController.getSecuritySettings();
+  //     String storedPass = settings?['master_password'] ?? "";
+  //     final TextEditingController verifyPassController = TextEditingController();
+
+  //     if (!context.mounted) return;
+
+  //     showConfirmDialog(
+  //       context: context,
+  //       title: "Verify Password",
+  //       subTitle: "The folder ${folder.title} is locked. Enter password to delete it and all its contents.",
+  //       confirmText: "Verify",
+  //       controller: verifyPassController,
+  //       obscureText: true,
+  //       hintText: "Password",
+  //       onConfirm: () {
+  //         if (verifyPassController.text == storedPass) {
+  //           Get.back();
+  //           _proceedWithDeletion(folder);
+  //         } else {
+  //           Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+  //         }
+  //       },
+  //     );
+  //   } else {
+  //     _proceedWithDeletion(folder);
+  //   }
+  // }
+
   void _confirmDelete(BuildContext context, FolderModel folder) async {
-    if (folder.isLocked) {
+    // Check if folder itself is locked
+    bool folderLocked = folder.isLocked;
+
+    // Check if there are any locked notes inside
+    bool containsLockedNotes = await noteController.hasLockedNotesInFolder(folder.id!);
+
+    // If either is true, we must verify the password
+    if (folderLocked || containsLockedNotes) {
       final settings = await lockController.getSecuritySettings();
       String storedPass = settings?['master_password'] ?? "";
       final TextEditingController verifyPassController = TextEditingController();
 
-      if (!mounted) return;
+      if (!context.mounted) return;
 
       showConfirmDialog(
         context: context,
         title: "Verify Password",
-        subTitle: "The folder ${folder.title} is locked. Enter password to delete it and all its contents.",
+        // Change the message based on what is actually locked
+        subTitle: containsLockedNotes ? "This folder contains locked notes. Enter password to delete everything." : "This folder is locked. Enter password to delete.",
         confirmText: "Verify",
         controller: verifyPassController,
         obscureText: true,
@@ -210,11 +248,12 @@ class _MyHomePageState extends State<MyHomePage> {
             Get.back();
             _proceedWithDeletion(folder);
           } else {
-            Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+            Get.snackbar("Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
           }
         },
       );
     } else {
+      // Standard delete confirmation for unlocked content
       _proceedWithDeletion(folder);
     }
   }
@@ -253,7 +292,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (!context.mounted) return;
 
           showConfirmDialog(
-            context: context,
+            context: Get.context!,
             title: "Locked Folder",
             subTitle: "Please enter your password to access ${folder.title}.",
             confirmText: "Unlock",
@@ -270,7 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller.folders.refresh();
               } else {
                 Get.snackbar(
-                  "Error",
+                  "Failed",
                   "Incorrect Password",
                   backgroundColor: AppColor().red,
                   colorText: Colors.white,
@@ -288,19 +327,22 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       },
       child: Container(
-        color: Theme.of(context).cardColor,
-        padding: const EdgeInsets.all(15),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+        ),
+        padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            Icon(Icons.folder, color: AppColor().primaryColor, size: 35),
+            // Icon(Icons.folder, color: AppColor().primaryColor, size: 35),
+            buildFolderIcon(folder, isDefault),
             const SizedBox(width: 12),
-            if (folder.isLocked)
-              Padding(
-                padding: EdgeInsets.only(
-                  right: context.isPhone ? 2 : 5,
-                ),
-                child: Icon(Icons.lock, size: 18, color: AppColor().primaryColor),
-              ),
+            // if (folder.isLocked == true)
+            //   Padding(
+            //     padding: EdgeInsets.only(
+            //       right: context.isPhone ? 2 : 5,
+            //     ),
+            //     child: Icon(Icons.lock, size: 18, color: AppColor().primaryColor),
+            //   ),
             Expanded(
               child: Text(
                 folder.title,
@@ -309,7 +351,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: TextStyle(
                   fontFamily: 'EN-SEMIBOLD',
                   fontFamilyFallback: const ['KH-BOLD'],
-                  fontSize: context.isPhone ? 16 : 18,
+                  fontSize: AppFontSize(context).mediumLargeSize,
                   color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
@@ -320,19 +362,48 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Icon(Icons.push_pin, size: 18, color: AppColor().orange),
               ),
-            FutureBuilder<int>(
-              future: noteController.getCountForFolder(folder.id!),
-              builder: (context, snapshot) {
-                final count = snapshot.data ?? 0;
-                return Text(
-                  "$count",
-                  style: text16(context).copyWith(color: AppColor().gray),
-                );
-              },
-            ),
+
+            Obx(() {
+              noteController.notes.length;
+
+              return FutureBuilder<int>(
+                future: noteController.getCountForFolder(folder.id!),
+                builder: (context, snapshot) {
+                  return Text(
+                    "${snapshot.data ?? 0}",
+                    style: text16(context).copyWith(color: AppColor().gray),
+                  );
+                },
+              );
+            })
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildFolderIcon(FolderModel folder, bool isDefault) {
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        Icon(
+          Icons.folder,
+          color: isDefault ? AppColor().primaryColor : AppColor().primaryColor,
+          size: 35,
+        ),
+        if (!isDefault && folder.isLocked)
+          Icon(
+            Icons.lock,
+            size: 16,
+            color: Colors.white,
+          ),
+        // if (!isDefault && !folder.isLocked)
+        //   Icon(
+        //     Icons.lock_open,
+        //     size: 16,
+        //     color: Colors.green,
+        //   ),
+      ],
     );
   }
 }

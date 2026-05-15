@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_structure/controllers/notes/folder_controller.dart';
 import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
@@ -11,6 +12,9 @@ class LockController extends GetxController {
     "What was the name of your first school?",
     "What is your mother's maiden name?",
     "In which city were you born?",
+    "What was your dream job as a child?",
+    "What is your favorite teacher's name?",
+    "What is the name of your childhood best friend?"
   ];
 
   // Fetch current security settings
@@ -76,7 +80,7 @@ class LockController extends GetxController {
     String? question, // Optional
     String? answer, // Optional
   }) async {
-    // 1. Fetch current settings from DB
+    // Fetch current settings from DB
     final settings = await getSecuritySettings();
     String storedPass = settings?['master_password'] ?? "";
 
@@ -129,32 +133,6 @@ class LockController extends GetxController {
       _showError("Update failed. Please try again.");
     }
   }
-
-  // FORGET PASSWORD VERIFICATION
-  // Future<void> handleForgetPasswordVerify({required String userAnswer}) async {
-  //   final settings = await getSecuritySettings();
-  //   String storedAnswer = (settings?['security_answer'] ?? "").toString().trim().toLowerCase();
-
-  //   if (storedAnswer.isEmpty) {
-  //     await _showDialog(
-  //       Get.context!,
-  //       title: "",
-  //       message: "Recovery not set up.",
-  //     );
-  //     return;
-  //   }
-
-  //   if (userAnswer.trim().toLowerCase() == storedAnswer) {
-  //     _showSuccess("Identity Verified");
-  //     Get.off(() => const CreatePasswordScreen());
-  //   } else {
-  //     await _showDialog(
-  //       Get.context!,
-  //       title: "",
-  //       message: "Incorrect answer.",
-  //     );
-  //   }
-  // }
 
   Future<void> handleForgetPasswordVerify({required String userAnswer}) async {
     if (userAnswer.trim().isEmpty) {
@@ -228,6 +206,9 @@ class LockController extends GetxController {
       // Bulk Unlock all notes in SQLite
       await db.update('notes', {'is_locked': 0});
 
+      // Bulk Unlock all folders in SQLite
+      await db.update('folders', {'isLocked': 0});
+
       // Clear security table
       await db.update(
           'security',
@@ -241,9 +222,15 @@ class LockController extends GetxController {
 
       // Refresh UI
       final NoteController noteController = Get.find<NoteController>();
+      final FolderController folderController = Get.find<FolderController>();
+
+      // Fetch updated data after unlocking
       await noteController.fetchAllNotes();
+      await folderController.loadFolders();
 
       Get.back();
+      Get.offAllNamed('mainHome');
+
       _showSuccess("Security removed and all notes unlocked.");
     } catch (e) {
       _showError("Failed to remove security. Please try again.");

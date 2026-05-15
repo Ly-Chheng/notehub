@@ -492,11 +492,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               vertical: 10,
             ),
             padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 15 : 40, vertical: context.isPhone ? 3 : 10),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(40),
-              boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 10)],
-            ),
+            decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(40), boxShadow: [
+              BoxShadow(
+                color: Color.fromRGBO(0, 0, 0, 0.04),
+                blurRadius: 5,
+                spreadRadius: 0,
+                offset: Offset(0, 3),
+              )
+            ]),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -672,9 +675,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   focusedBorder: InputBorder.none,
                   errorBorder: InputBorder.none,
                   border: InputBorder.none,
-                  hintStyle: TextStyle(fontSize: context.isPhone ? 22 : 26, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
+                  hintStyle: TextStyle(fontSize: AppFontSize(context).titleSize, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
                 ),
-                style: TextStyle(fontSize: context.isPhone ? 20 : 22, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
+                style: TextStyle(fontSize: AppFontSize(context).titleSize, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
               ),
               if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
               QuillEditorComponent(

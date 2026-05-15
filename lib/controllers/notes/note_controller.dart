@@ -297,4 +297,20 @@ class NoteController extends GetxController {
   void refreshNotes(int folderId) {
     fetchNotesByFolder(folderId);
   }
+
+  // Inside NoteController class
+  Future<bool> hasLockedNotesInFolder(int folderId) async {
+    try {
+      final db = await DatabaseService.db;
+      final result = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM notes WHERE folder_id = ? AND is_locked = 1',
+        [folderId],
+      );
+      int count = Sqflite.firstIntValue(result) ?? 0;
+      return count > 0;
+    } catch (e) {
+      debugPrint("Error checking for locked notes: $e");
+      return false;
+    }
+  }
 }

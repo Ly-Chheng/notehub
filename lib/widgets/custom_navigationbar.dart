@@ -25,11 +25,19 @@ Widget customNavigationBar({
     child: Container(
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
+          // boxShadow: [
+          //   BoxShadow(
+          //     color: Colors.black12,
+          //     blurRadius: 10,
+          //   ),
+          // ],
           boxShadow: [
             BoxShadow(
-              color: Colors.black12,
-              blurRadius: 10,
-            ),
+              color: Color.fromRGBO(0, 0, 0, 0.04),
+              blurRadius: 5,
+              spreadRadius: 0,
+              offset: Offset(0, 3),
+            )
           ],
           borderRadius: BorderRadius.circular(context.isPhone ? 35 : 50)),
       padding: EdgeInsets.symmetric(

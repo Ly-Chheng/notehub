@@ -66,7 +66,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(width: 1.5, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
+                    border: Border.all(width: 1, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
                   ),
                   child: Icon(
                     Icons.add,
@@ -82,7 +82,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(width: 1.5, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
+                    border: Border.all(width: 1, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
                   ),
                   child: Icon(Icons.add, size: context.isPhone ? 24 : 25),
                 ),

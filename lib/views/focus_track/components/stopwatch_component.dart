@@ -78,9 +78,13 @@ class StopwatchScreen extends StatelessWidget {
       child: Obx(() => Column(
             children: [
               Container(
-                decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(5)),
+                decoration: BoxDecoration(
+                  // color: Colors.grey.withValues(alpha: 0.1),
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(5),
+                ),
                 child: Padding(
-                  padding: EdgeInsets.all(context.isPhone ? 8 : 14),
+                  padding: EdgeInsets.all(context.isPhone ? 12 : 14),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
