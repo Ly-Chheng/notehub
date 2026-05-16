@@ -106,9 +106,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
     showConfirmDialog(
       context: context,
-      title: "Verify Password",
-      subTitle: "This note is locked. Please enter your password to delete it.",
-      confirmText: "Verify",
+      title: "Locked Note",
+      subTitle: "Enter your password to delete this locked note.",
+      confirmText: "Unlock",
       controller: verifyPassController,
       obscureText: true,
       hintText: "Password",
@@ -155,32 +155,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
-        // actions: [
-        //   Container(
-        //     height: 24,
-        //     width: 24,
-        //     padding: const EdgeInsets.all(2),
-        //     decoration: BoxDecoration(
-        //       border: Border.all(color: AppColor().primaryColor, width: 1),
-        //       borderRadius: BorderRadius.circular(5),
-        //     ),
-        //     child: IconButton(
-        //       padding: EdgeInsets.zero,
-        //       alignment: Alignment.center,
-        //       constraints: const BoxConstraints(),
-        //       iconSize: 18,
-        //       color: AppColor().primaryColor,
-        //       onPressed: () {
-        //         setState(() {
-        //           isSelectionMode = !isSelectionMode;
-        //           selectedNoteIds.clear();
-        //         });
-        //       },
-        //       icon: Icon(isSelectionMode ? Icons.close : Icons.more_vert_outlined),
-        //     ),
-        //   ),
-        //   SizedBox(width: 10),
-        // ],
         actions: [
           Obx(() {
             // Check if the list is empty (true or false)
@@ -200,9 +174,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 alignment: Alignment.center,
                 constraints: const BoxConstraints(),
                 iconSize: 18,
-                // If hasNoData is true, icon is gray, else primary color
                 color: hasNoData ? AppColor().gray : AppColor().primaryColor,
-                // If hasNoData is true, onPressed is null (disables the button)
                 onPressed: hasNoData
                     ? null
                     : () {
@@ -248,24 +220,26 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 groupedNotes[dateKey]!.add(note);
               }
 
-              return ListView(
-                padding: const EdgeInsets.only(bottom: 20),
-                children: [
-                  if (pinnedNotes.isNotEmpty) ...[
-                    _buildSectionHeader("Pinned"),
-                    ...pinnedNotes.map((note) => _buildSlidableNote(note)),
-                    const SizedBox(height: 10),
+              return SlidableAutoCloseBehavior(
+                child: ListView(
+                  padding: const EdgeInsets.only(bottom: 20),
+                  children: [
+                    if (pinnedNotes.isNotEmpty) ...[
+                      _buildSectionHeader("Pinned"),
+                      ...pinnedNotes.map((note) => _buildSlidableNote(note)),
+                      const SizedBox(height: 10),
+                    ],
+                    ...groupedNotes.entries.map((entry) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSectionHeader(entry.key),
+                          ...entry.value.map((note) => _buildSlidableNote(note)),
+                        ],
+                      );
+                    }),
                   ],
-                  ...groupedNotes.entries.map((entry) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildSectionHeader(entry.key),
-                        ...entry.value.map((note) => _buildSlidableNote(note)),
-                      ],
-                    );
-                  }),
-                ],
+                ),
               );
             }),
           ),
@@ -311,6 +285,10 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         : (ThemeData.estimateBrightnessForColor(noteBgColor) == Brightness.dark ? AppColor().white : AppColor().black);
 
     final Color itemSubTextColor = itemTextColor.withOpacity(0.7);
+
+    final String titleText = note.title.trim().isNotEmpty ? note.title : controller.getPlainTextFromNote(note.content ?? "").trim();
+    final String plainContent = controller.getPlainTextFromNote(note.content ?? "").trim();
+    final String subtitleText = note.title.trim().isNotEmpty ? plainContent : "";
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
@@ -415,11 +393,12 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                               ),
                             SizedBox(width: note.isLocked == true ? 6 : 0),
                             Text(
-                              (note.title.trim().isNotEmpty)
-                                  ? note.title
-                                  : (controller.getPlainTextFromNote(note.content ?? "").trim().isNotEmpty)
-                                      ? controller.getPlainTextFromNote(note.content ?? "")
-                                      : "Untitled",
+                              // (note.title.trim().isNotEmpty)
+                              //     ? note.title
+                              //     : (controller.getPlainTextFromNote(note.content ?? "").trim().isNotEmpty)
+                              //         ? controller.getPlainTextFromNote(note.content ?? "")
+                              //         : "Untitled",
+                              titleText.isNotEmpty ? titleText : "Untitled",
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: text18(context).copyWith(
@@ -436,14 +415,25 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                               style: text14(context).copyWith(color: itemSubTextColor),
                             ),
                             const SizedBox(width: 8),
-                            Flexible(
-                              child: Text(
-                                controller.getPlainTextFromNote(note.content ?? ""),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: text14(context).copyWith(color: itemSubTextColor),
+                            // Flexible(
+                            //   child: Text(
+                            //     controller.getPlainTextFromNote(note.content ?? ""),
+                            //     maxLines: 1,
+                            //     overflow: TextOverflow.ellipsis,
+                            //     style: text14(context).copyWith(color: itemSubTextColor),
+                            //   ),
+                            // ),
+                            if (subtitleText.isNotEmpty) ...[
+                              const SizedBox(width: 8),
+                              Flexible(
+                                child: Text(
+                                  subtitleText,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: text14(context).copyWith(color: itemSubTextColor),
+                                ),
                               ),
-                            ),
+                            ]
                           ],
                         ),
                       ],
@@ -563,9 +553,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
       showConfirmDialog(
         context: context,
-        title: "Verify Password",
-        subTitle: "You are moving locked notes. Please enter your password.",
-        confirmText: "Verify",
+        title: "Locked Notes",
+        subTitle: "Enter your password to move locked notes.",
+        confirmText: "Unlock",
         controller: verifyPassController,
         obscureText: true,
         onConfirm: () {
@@ -611,9 +601,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
     showConfirmDialog(
       context: context,
-      title: "Verify Password",
-      subTitle: "You are moving locked content. Please enter your password.",
-      confirmText: "Verify",
+      title: "Locked Note",
+      subTitle: "Enter your password to move this locked note.",
+      confirmText: "Unlock",
       controller: verifyPassController,
       obscureText: true,
       hintText: "Password",
@@ -688,7 +678,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   void _showBulkDeleteConfirm() {
     showConfirmDialog(
       context: context,
-      title: "Delete Notes?",
+      title: "Delete Notes",
       subTitle: "Are you sure you want to delete ${selectedNoteIds.length} selected ${selectedNoteIds.length > 1 ? 'notes' : 'note'}?",
       confirmText: "Delete",
       onConfirm: () async {

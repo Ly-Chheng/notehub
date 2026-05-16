@@ -174,9 +174,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
-  //  UPDATED: LOCK LOGIC FOR SQLITE
   Future<void> _handleLockToggle() async {
-    // Fetch settings from SQLite
     final settings = await lockController.getSecuritySettings();
     String? storedPass = settings?['master_password'];
 
@@ -223,7 +221,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       hintText: "Password",
       onConfirm: () {
         if (verifyController.text == storedPass) {
-          Get.back();
+          // Get.back();
           onSuccess();
         } else {
           Get.snackbar(
@@ -648,7 +646,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 offset: const Offset(0, 50),
                 onSelected: (v) => _handleMenuSelection(v),
                 itemBuilder: (context) => [
-                  buildPopupItem(context, isPinned ? 'Unpin' : 'Pin', isPinned ? Icons.push_pin : Icons.push_pin_outlined),
+                  buildPopupItem(context, isPinned ? 'Unpin' : 'Pin', isPinned ? Icons.push_pin_outlined : Icons.push_pin_outlined),
                   buildPopupItem(context, 'Share', Icons.share_outlined),
                   buildPopupItem(context, 'Move Note', Icons.folder_outlined),
                   buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),

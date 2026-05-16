@@ -40,13 +40,13 @@ class _MoreScreenState extends State<MoreScreen> {
                   onTap: () {},
                   isLast: true,
                 ),
-                _buildMenuTile(
-                  Icons.delete_outline,
-                  "Recently Deleted",
-                  onTap: () {
-                   // Get.toNamed('/recentyDelete');
-                  },
-                ),
+                // _buildMenuTile(
+                //   Icons.delete_outline,
+                //   "Recently Deleted",
+                //   onTap: () {
+                //    // Get.toNamed('/recentyDelete');
+                //   },
+                // ),
               ]),
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 60),

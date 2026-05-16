@@ -58,7 +58,7 @@ class NoteController extends GetxController {
 
     final row = {
       'folder_id': folderId,
-      'title': title.isEmpty ? "Untitled" : title,
+      'title': title.isEmpty ? "" : title,
       'content': contentJson,
       'date': date,
       'is_locked': isLocked ? 1 : 0,
@@ -313,4 +313,5 @@ class NoteController extends GetxController {
       return false;
     }
   }
+  
 }

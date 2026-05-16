@@ -42,60 +42,62 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text("No folders yet"),
                 );
               }
-              return ListView.builder(
-                itemCount: controller.folders.length,
-                padding: const EdgeInsets.only(bottom: 100),
-                itemBuilder: (context, index) {
-                  final folder = controller.folders[index];
-                  final isDefault = controller.isDefaultFolder(folder);
+              return SlidableAutoCloseBehavior(
+                child: ListView.builder(
+                  itemCount: controller.folders.length,
+                  padding: const EdgeInsets.only(bottom: 100),
+                  itemBuilder: (context, index) {
+                    final folder = controller.folders[index];
+                    final isDefault = controller.isDefaultFolder(folder);
 
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Slidable(
-                        enabled: !isDefault,
-                        key: ValueKey(folder.id),
-                        startActionPane: ActionPane(
-                          motion: const BehindMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (c) => _togglePin(folder),
-                              backgroundColor: AppColor().orange,
-                              foregroundColor: AppColor().white,
-                              icon: folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-                              label: folder.isPinned ? 'Unpin' : 'Pin',
-                            ),
-                            SlidableAction(
-                              onPressed: (c) => _toggleLock(folder),
-                              backgroundColor: AppColor().green,
-                              icon: folder.isLocked ? Icons.lock_open : Icons.lock,
-                              label: folder.isLocked ? 'Unlock' : 'Lock',
-                            ),
-                          ],
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Slidable(
+                          enabled: !isDefault,
+                          key: ValueKey(folder.id),
+                          startActionPane: ActionPane(
+                            motion: const BehindMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (c) => _togglePin(folder),
+                                backgroundColor: AppColor().orange,
+                                foregroundColor: AppColor().white,
+                                icon: folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
+                                label: folder.isPinned ? 'Unpin' : 'Pin',
+                              ),
+                              SlidableAction(
+                                onPressed: (c) => _toggleLock(folder),
+                                backgroundColor: AppColor().green,
+                                icon: folder.isLocked ? Icons.lock_open : Icons.lock,
+                                label: folder.isLocked ? 'Unlock' : 'Lock',
+                              ),
+                            ],
+                          ),
+                          endActionPane: ActionPane(
+                            motion: const DrawerMotion(),
+                            children: [
+                              SlidableAction(
+                                onPressed: (c) => _handleEditFolder(context, folder),
+                                backgroundColor: AppColor().primaryColor,
+                                icon: Icons.edit,
+                                label: 'Edit',
+                              ),
+                              SlidableAction(
+                                onPressed: (c) => _confirmDelete(context, folder),
+                                backgroundColor: AppColor().red,
+                                icon: Icons.delete,
+                                label: 'Delete',
+                              ),
+                            ],
+                          ),
+                          child: folderTile(folder, isDefault),
                         ),
-                        endActionPane: ActionPane(
-                          motion: const DrawerMotion(),
-                          children: [
-                            SlidableAction(
-                              onPressed: (c) => _handleEditFolder(context, folder),
-                              backgroundColor: AppColor().primaryColor,
-                              icon: Icons.edit,
-                              label: 'Edit',
-                            ),
-                            SlidableAction(
-                              onPressed: (c) => _confirmDelete(context, folder),
-                              backgroundColor: AppColor().red,
-                              icon: Icons.delete,
-                              label: 'Delete',
-                            ),
-                          ],
-                        ),
-                        child: folderTile(folder, isDefault),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                ),
               );
             }),
           ),
@@ -139,8 +141,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
       showConfirmDialog(
         context: context,
-        title: "Unlock Folder?",
-        subTitle: "Enter password to permanently unlock ${folder.title}.",
+        title: "Unlock Folder",
+        subTitle: "Enter your password to unlock ${folder.title}.",
         confirmText: "Unlock",
         controller: verifyPassController,
         obscureText: true,
@@ -150,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
             await controller.toggleLock(folder.id!);
             Get.back();
           } else {
-            Get.snackbar("Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+            Get.snackbar("Verification Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
           }
         },
       );
@@ -173,7 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
     showConfirmDialog(
       context: Get.context!,
       title: "Verify Password",
-      subTitle: "Enter password to edit ${folder.title}.",
+      subTitle: "Enter your password to edit ${folder.title}.",
       confirmText: "Verify",
       controller: verifyPassController,
       obscureText: true,
@@ -183,41 +185,11 @@ class _MyHomePageState extends State<MyHomePage> {
           Get.back();
           showFolderSheet(context, folder: folder);
         } else {
-          Get.snackbar("Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
+          Get.snackbar("Verification Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
         }
       },
     );
   }
-
-  // void _confirmDelete(BuildContext context, FolderModel folder) async {
-  //   if (folder.isLocked) {
-  //     final settings = await lockController.getSecuritySettings();
-  //     String storedPass = settings?['master_password'] ?? "";
-  //     final TextEditingController verifyPassController = TextEditingController();
-
-  //     if (!context.mounted) return;
-
-  //     showConfirmDialog(
-  //       context: context,
-  //       title: "Verify Password",
-  //       subTitle: "The folder ${folder.title} is locked. Enter password to delete it and all its contents.",
-  //       confirmText: "Verify",
-  //       controller: verifyPassController,
-  //       obscureText: true,
-  //       hintText: "Password",
-  //       onConfirm: () {
-  //         if (verifyPassController.text == storedPass) {
-  //           Get.back();
-  //           _proceedWithDeletion(folder);
-  //         } else {
-  //           Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
-  //         }
-  //       },
-  //     );
-  //   } else {
-  //     _proceedWithDeletion(folder);
-  //   }
-  // }
 
   void _confirmDelete(BuildContext context, FolderModel folder) async {
     // Check if folder itself is locked
@@ -236,10 +208,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
       showConfirmDialog(
         context: context,
-        title: "Verify Password",
-        // Change the message based on what is actually locked
+        title: "Locked Folder",
         subTitle: containsLockedNotes ? "This folder contains locked notes. Enter password to delete everything." : "This folder is locked. Enter password to delete.",
-        confirmText: "Verify",
+        confirmText: "Unlock",
         controller: verifyPassController,
         obscureText: true,
         hintText: "Password",
@@ -248,12 +219,11 @@ class _MyHomePageState extends State<MyHomePage> {
             Get.back();
             _proceedWithDeletion(folder);
           } else {
-            Get.snackbar("Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
+            Get.snackbar("Verification Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
           }
         },
       );
     } else {
-      // Standard delete confirmation for unlocked content
       _proceedWithDeletion(folder);
     }
   }
@@ -261,8 +231,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _proceedWithDeletion(FolderModel folder) {
     showConfirmDialog(
       context: context,
-      title: "Delete Folder?",
-      subTitle: "All notes inside ${folder.title} will be permanently lost. This cannot be undone.",
+      title: "Delete Folder",
+      // subTitle: "All notes inside ${folder.title} will be permanently lost. This cannot be undone.",
+      subTitle: "All notes inside ${folder.title} will be permanently deleted. This action cannot be undone.",
       confirmText: "Delete",
       onConfirm: () async {
         await controller.deleteFolder(folder.id!);
@@ -309,7 +280,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller.folders.refresh();
               } else {
                 Get.snackbar(
-                  "Failed",
+                  "Verification Failed",
                   "Incorrect Password",
                   backgroundColor: AppColor().red,
                   colorText: Colors.white,

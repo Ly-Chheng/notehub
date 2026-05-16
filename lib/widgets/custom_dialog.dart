@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
@@ -72,7 +73,7 @@ Future<void> showConfirmDialog({
                           title,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontSize: context.isPhone ? 18 : 20,
+                            fontSize: AppFontSize(context).mediumLargeSize,
                             fontFamily: 'EN-BOLD',
                           ),
                         ),
@@ -87,7 +88,7 @@ Future<void> showConfirmDialog({
                     subTitle,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: context.isPhone ? 16 : 18,
+                      fontSize: AppFontSize(Get.context!).subTitleSize,
                       fontFamily: 'EN-REGULAR',
                     ),
                   ),
