@@ -18,22 +18,86 @@ class NoteController extends GetxController {
   var trashNotes = <NoteModel>[].obs;
   var isLoading = false.obs;
 
-  //   FETCH NOTES
+  // //   FETCH NOTES
+  // Future<void> fetchNotesByFolder(int folderId) async {
+  //   isLoading.value = true;
+  //   try {
+  //     final db = await DatabaseService.db;
+  //     final maps = await db.query(
+  //       'notes',
+  //       where: 'folder_id = ?',
+  //       whereArgs: [folderId],
+  //       orderBy: 'is_pinned DESC, id DESC',
+  //     );
+
+  //     notes.assignAll(maps.map((e) => NoteModel.fromMap(e)).toList());
+  //     debugPrint(" Fetched ${notes.length} note(s) from folder ID: $folderId");
+  //   } catch (e) {
+  //     debugPrint(" Error fetching notes: $e");
+  //   } finally {
+  //     isLoading.value = false;
+  //   }
+  // }
+
+  // FETCH NOTES (Only active, non-deleted records)
   Future<void> fetchNotesByFolder(int folderId) async {
     isLoading.value = true;
     try {
       final db = await DatabaseService.db;
       final maps = await db.query(
         'notes',
-        where: 'folder_id = ?',
+        where: 'folder_id = ? AND is_deleted = 0',
         whereArgs: [folderId],
         orderBy: 'is_pinned DESC, id DESC',
       );
 
       notes.assignAll(maps.map((e) => NoteModel.fromMap(e)).toList());
-      debugPrint(" Fetched ${notes.length} note(s) from folder ID: $folderId");
     } catch (e) {
       debugPrint(" Error fetching notes: $e");
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /// Soft-deletes notes and moves them to a fallback structural folder safety net
+  Future<void> bulkMoveToTrashByFolder(int folderId, int fallbackFolderId) async {
+    try {
+      final db = await DatabaseService.db;
+
+      // Update notes: change ownership to default folder AND mark as deleted
+      await db.update(
+        'notes',
+        {
+          'is_deleted': 1,
+          'folder_id': fallbackFolderId, // Changes ownership away from deleted folder
+        },
+        where: 'folder_id = ? AND (is_deleted = 0 OR is_deleted IS NULL)',
+        whereArgs: [folderId],
+      );
+
+      // Clear local state tracking list
+      notes.clear();
+
+      // Pull fresh data directly into the global trash stream
+      await fetchTrashNotes();
+    } catch (e) {
+      debugPrint("Error executing protected batch folder trash migration: $e");
+    }
+  }
+
+  // FETCH TRASH NOTES
+  Future<void> fetchTrashNotes() async {
+    isLoading.value = true;
+    try {
+      final db = await DatabaseService.db;
+      final maps = await db.query(
+        'notes',
+        where: 'is_deleted = 1',
+        orderBy: 'id DESC',
+      );
+      trashNotes.assignAll(maps.map((e) => NoteModel.fromMap(e)).toList());
+    } catch (e) {
+      debugPrint(" Error fetching trash notes: $e");
     } finally {
       isLoading.value = false;
     }
@@ -63,6 +127,7 @@ class NoteController extends GetxController {
       'date': date,
       'is_locked': isLocked ? 1 : 0,
       'is_pinned': isPinned ? 1 : 0,
+      'is_deleted': 0,
       'bg_color': bgColor,
       'image_paths': jsonEncode(imagePaths),
       'show_table': showTable ? 1 : 0,
@@ -96,6 +161,95 @@ class NoteController extends GetxController {
         snackPosition: SnackPosition.BOTTOM,
       );
       return null;
+    }
+  }
+
+  // MOVE TO TRASH (Soft Delete)
+  Future<void> moveToTrash(int id, int folderId) async {
+    try {
+      final db = await DatabaseService.db;
+      await db.update(
+        'notes',
+        {'is_deleted': 1, 'is_pinned': 0},
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      notes.removeWhere((element) => element.id == id);
+    } catch (e) {
+      debugPrint(' Error moving note to trash: $e');
+    }
+  }
+
+  // BULK MOVE TO TRASH
+  Future<void> bulkMoveToTrash(List<int> ids, int folderId) async {
+    try {
+      final db = await DatabaseService.db;
+      final batch = db.batch();
+      for (var id in ids) {
+        batch.update(
+          'notes',
+          {'is_deleted': 1, 'is_pinned': 0},
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+      }
+      await batch.commit(noResult: true);
+      notes.removeWhere((element) => ids.contains(element.id));
+    } catch (e) {
+      debugPrint(" Bulk move to trash error: $e");
+    }
+  }
+
+  // RESTORE NOTE
+  Future<void> restoreNote(int id) async {
+    try {
+      final db = await DatabaseService.db;
+      await db.update('notes', {'is_deleted': 0}, where: 'id = ?', whereArgs: [id]);
+      trashNotes.removeWhere((note) => note.id == id);
+    } catch (e) {
+      debugPrint(' Error restoring note: $e');
+    }
+  }
+
+  // PERMANENT HARD DELETE
+  Future<void> permanentDeleteNote(int id) async {
+    try {
+      final db = await DatabaseService.db;
+      await db.delete('notes', where: 'id = ?', whereArgs: [id]);
+      trashNotes.removeWhere((note) => note.id == id);
+    } catch (e) {
+      debugPrint(' Error permanently deleting note: $e');
+    }
+  }
+
+  // EMPTY TRASH
+  Future<void> emptyTrash() async {
+    try {
+      final db = await DatabaseService.db;
+      await db.delete('notes', where: 'is_deleted = 1');
+      trashNotes.clear();
+    } catch (e) {
+      debugPrint(' Error emptying trash: $e');
+    }
+  }
+
+  // BULK MOVE FOLDER (Optimized Transaction)
+  Future<void> bulkMoveNotes(List<int> noteIds, int newFolderId) async {
+    try {
+      final db = await DatabaseService.db;
+      final batch = db.batch();
+      for (var id in noteIds) {
+        batch.update(
+          'notes',
+          {'folder_id': newFolderId},
+          where: 'id = ?',
+          whereArgs: [id],
+        );
+      }
+      await batch.commit(noResult: true);
+      notes.removeWhere((element) => noteIds.contains(element.id));
+    } catch (e) {
+      debugPrint(" Bulk Move Error: $e");
     }
   }
 
@@ -256,10 +410,23 @@ class NoteController extends GetxController {
     }
   }
 
+  // Future<int> getCountForFolder(int folderId) async {
+  //   try {
+  //     final db = await DatabaseService.db;
+  //     final result = await db.rawQuery('SELECT COUNT(*) as count FROM notes WHERE folder_id = ?', [folderId]);
+  //     return Sqflite.firstIntValue(result) ?? 0;
+  //   } catch (e) {
+  //     return 0;
+  //   }
+  // }
   Future<int> getCountForFolder(int folderId) async {
     try {
       final db = await DatabaseService.db;
-      final result = await db.rawQuery('SELECT COUNT(*) as count FROM notes WHERE folder_id = ?', [folderId]);
+      // AND is_deleted = 0 to ignore recently deleted notes
+      final result = await db.rawQuery(
+        'SELECT COUNT(*) as count FROM notes WHERE folder_id = ? AND is_deleted = 0',
+        [folderId],
+      );
       return Sqflite.firstIntValue(result) ?? 0;
     } catch (e) {
       return 0;
@@ -313,5 +480,4 @@ class NoteController extends GetxController {
       return false;
     }
   }
-  
 }

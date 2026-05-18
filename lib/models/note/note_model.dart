@@ -8,6 +8,7 @@ class NoteModel {
   String date;
   bool isLocked;
   bool isPinned;
+  bool isDeleted;
   int bgColor;
   List<String> imagePaths;
   bool showTable;
@@ -22,6 +23,7 @@ class NoteModel {
     required this.date,
     this.isLocked = false,
     this.isPinned = false,
+    this.isDeleted = false,
     this.bgColor = 0,
     this.imagePaths = const [],
     this.showTable = false,
@@ -38,6 +40,7 @@ class NoteModel {
       'date': date,
       'is_locked': isLocked ? 1 : 0,
       'is_pinned': isPinned ? 1 : 0,
+      'is_deleted': isDeleted ? 1 : 0,
       'bg_color': bgColor,
       'image_paths': jsonEncode(imagePaths),
       'show_table': showTable ? 1 : 0,
@@ -49,18 +52,18 @@ class NoteModel {
   factory NoteModel.fromMap(Map<String, dynamic> map) {
     return NoteModel(
       id: map['id'],
-      folderId: map['folder_id'],
+      // folderId: map['folder_id'],
+      folderId: map['folder_id'] ?? 0,
       title: map['title'] ?? "",
       content: map['content'] ?? "",
       date: map['date'] ?? "",
       isLocked: map['is_locked'] == 1,
       isPinned: map['is_pinned'] == 1,
+      isDeleted: map['is_deleted'] == 1,
       bgColor: map['bg_color'] ?? 0,
       imagePaths: List<String>.from(jsonDecode(map['image_paths'] ?? '[]')),
       showTable: map['show_table'] == 1,
-      tableData: (jsonDecode(map['table_data'] ?? '[[]]') as List)
-          .map((row) => List<String>.from(row))
-          .toList(),
+      tableData: (jsonDecode(map['table_data'] ?? '[[]]') as List).map((row) => List<String>.from(row)).toList(),
       drawingLayers: List<Map<String, dynamic>>.from(jsonDecode(map['drawing_layers'] ?? '[]')),
     );
   }

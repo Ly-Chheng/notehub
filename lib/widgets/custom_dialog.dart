@@ -54,7 +54,7 @@ Future<void> showConfirmDialog({
           opacity: animation,
           child: AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(18),
             ),
             backgroundColor: Theme.of(context).cardColor,
             title: (title.isNotEmpty || icon != null)

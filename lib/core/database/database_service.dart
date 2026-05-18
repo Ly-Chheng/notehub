@@ -15,7 +15,7 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 5,
+      version: 6,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -41,6 +41,7 @@ class DatabaseService {
             date TEXT,
             is_locked INTEGER DEFAULT 0,
             is_pinned INTEGER DEFAULT 0,
+            is_deleted INTEGER DEFAULT 0,
             bg_color INTEGER DEFAULT 0,
             image_paths TEXT DEFAULT '[]',
             show_table INTEGER DEFAULT 0,
@@ -91,6 +92,9 @@ class DatabaseService {
             await db.insert('security', {'id': 1, 'master_password': ''});
           }
         }
+        if (oldVersion < 6) {
+          await _addColumnIfNotExists(db, 'notes', 'is_deleted', "INTEGER DEFAULT 0");
+        }
       },
     );
   }
@@ -103,6 +107,118 @@ class DatabaseService {
     }
   }
 }
+
+// import 'package:sqflite/sqflite.dart';
+// import 'package:path/path.dart';
+
+// class DatabaseService {
+//   static Database? _db;
+//   static Future<Database>? _initFuture;
+
+//   static Future<Database> get db async {
+//     if (_db != null) return _db!;
+//     _initFuture ??= initDB();
+//     _db = await _initFuture;
+//     return _db!;
+//   }
+
+//   static Future<Database> initDB() async {
+//     final path = join(await getDatabasesPath(), 'notes_app.db');
+
+//     return await openDatabase(
+//       path,
+//       version: 6, // Incremented to version 6
+//       onConfigure: (db) async {
+//         await db.execute('PRAGMA foreign_keys = ON');
+//       },
+//       onCreate: (db, version) async {
+//         // Folders Table
+//         await db.execute('''
+//           CREATE TABLE folders (
+//             id INTEGER PRIMARY KEY AUTOINCREMENT,
+//             title TEXT NOT NULL,
+//             date TEXT,
+//             isPinned INTEGER DEFAULT 0,
+//             isLocked INTEGER DEFAULT 0
+//           )
+//         ''');
+
+//         // Notes Table (Includes is_deleted column)
+//         await db.execute('''
+//           CREATE TABLE notes (
+//             id INTEGER PRIMARY KEY AUTOINCREMENT,
+//             folder_id INTEGER,
+//             title TEXT,
+//             content TEXT,
+//             date TEXT,
+//             is_locked INTEGER DEFAULT 0,
+//             is_pinned INTEGER DEFAULT 0,
+//             is_deleted INTEGER DEFAULT 0,
+//             bg_color INTEGER DEFAULT 0,
+//             image_paths TEXT DEFAULT '[]',
+//             show_table INTEGER DEFAULT 0,
+//             table_data TEXT DEFAULT '[]',
+//             drawing_layers TEXT DEFAULT '[]',
+//             FOREIGN KEY (folder_id) REFERENCES folders (id) ON DELETE CASCADE
+//           )
+//         ''');
+
+//         // Security Table
+//         await db.execute('''
+//           CREATE TABLE security (
+//             id INTEGER PRIMARY KEY DEFAULT 1,
+//             master_password TEXT DEFAULT '',
+//             security_question TEXT DEFAULT '',
+//             security_answer TEXT DEFAULT '',
+//             password_hint TEXT DEFAULT ''
+//           )
+//         ''');
+
+//         await db.insert('security', {'id': 1, 'master_password': ''});
+//       },
+//       onUpgrade: (db, oldVersion, newVersion) async {
+//         if (oldVersion < 2) {
+//           await db.execute("ALTER TABLE folders ADD COLUMN isPinned INTEGER DEFAULT 0");
+//         }
+//         if (oldVersion < 3) {
+//           await db.execute("ALTER TABLE folders ADD COLUMN isLocked INTEGER DEFAULT 0");
+//         }
+//         if (oldVersion < 4) {
+//           await _addColumnIfNotExists(db, 'notes', 'image_paths', "TEXT DEFAULT '[]'");
+//           await _addColumnIfNotExists(db, 'notes', 'show_table', "INTEGER DEFAULT 0");
+//           await _addColumnIfNotExists(db, 'notes', 'table_data', "TEXT DEFAULT '[]'");
+//           await _addColumnIfNotExists(db, 'notes', 'drawing_layers', "TEXT DEFAULT '[]'");
+//         }
+//         if (oldVersion < 5) {
+//           await db.execute('''
+//             CREATE TABLE IF NOT EXISTS security (
+//               id INTEGER PRIMARY KEY DEFAULT 1,
+//               master_password TEXT DEFAULT '',
+//               security_question TEXT DEFAULT '',
+//               security_answer TEXT DEFAULT '',
+//               password_hint TEXT DEFAULT ''
+//             )
+//           ''');
+//           final List<Map<String, dynamic>> existing = await db.query('security', where: 'id = 1');
+//           if (existing.isEmpty) {
+//             await db.insert('security', {'id': 1, 'master_password': ''});
+//           }
+//         }
+//         if (oldVersion < 6) {
+//           await _addColumnIfNotExists(db, 'notes', 'is_deleted', "INTEGER DEFAULT 0");
+//         }
+//       },
+//     );
+//   }
+
+//   static Future<void> _addColumnIfNotExists(Database db, String table, String column, String definition) async {
+//     final tableInfo = await db.rawQuery("PRAGMA table_info($table)");
+//     final exists = tableInfo.any((col) => col['name'] == column);
+//     if (!exists) {
+//       await db.execute("ALTER TABLE $table ADD COLUMN $column $definition");
+//     }
+//   }
+// }
 
 //=DB SERVICE ADDED TO EXPORT DB FUNCTION
 // import 'dart:io'; //  ADD THIS

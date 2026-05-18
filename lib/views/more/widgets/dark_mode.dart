@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/services/themes_services.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 
 class DarkModeView extends GetView<DarkModeController> {
   @override
@@ -12,18 +13,27 @@ class DarkModeView extends GetView<DarkModeController> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-        child: Column(
-          children: [
-            Row(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.light_mode_outlined,
-                      color: Theme.of(context).iconTheme.color,
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColor().primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(
+                        Icons.light_mode_outlined,
+                        color: AppColor().primaryColor,
+                        size: context.isPhone ? 20 : 24,
+                      ),
                     ),
                     const SizedBox(width: 15),
                     Text(
@@ -31,7 +41,8 @@ class DarkModeView extends GetView<DarkModeController> {
                       style: TextStyle(
                         // fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-MEDIUM',
                         fontFamily: 'EN-REGULAR',
-                        fontSize: context.isPhone ? 16 : 18,
+                        fontWeight: FontWeight.w500,
+                        fontSize: context.isPhone ? 15 : 17,
                         color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
                     ),
@@ -50,8 +61,15 @@ class DarkModeView extends GetView<DarkModeController> {
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 60),
+            child: Divider(
+              height: 1,
+              color: Colors.grey.shade200,
+            ),
+          ),
+        ],
       ),
     );
   }

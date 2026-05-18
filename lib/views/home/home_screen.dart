@@ -228,15 +228,35 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  // void _proceedWithDeletion(FolderModel folder) {
+  //   showConfirmDialog(
+  //     context: context,
+  //     title: "Delete Folder",
+  //     subTitle: "All notes inside ${folder.title} will be permanently deleted. This action cannot be undone.",
+  //     confirmText: "Delete",
+  //     onConfirm: () async {
+  //       await controller.deleteFolder(folder.id!);
+  //     },
+  //   );
+  // }
+
   void _proceedWithDeletion(FolderModel folder) {
     showConfirmDialog(
       context: context,
       title: "Delete Folder",
-      // subTitle: "All notes inside ${folder.title} will be permanently lost. This cannot be undone.",
-      subTitle: "All notes inside ${folder.title} will be permanently deleted. This action cannot be undone.",
+      subTitle: "Are you sure you want to delete '${folder.title}'? All notes inside will be moved directly to Recently Deleted.",
       confirmText: "Delete",
       onConfirm: () async {
+        // Move notes to default folder and flag as trash (Prevents ON DELETE CASCADE purge)
+        await noteController.bulkMoveToTrashByFolder(folder.id!, controller.defaultFolderId);
+
+        // Safely remove the folder frame structure row from the database
         await controller.deleteFolder(folder.id!);
+
+        // Make sure the global trash screen syncs its UI metrics instantly
+        await noteController.fetchTrashNotes();
+
+        Get.back(); 
       },
     );
   }
@@ -321,8 +341,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontFamily: 'EN-SEMIBOLD',
-                  fontFamilyFallback: const ['KH-BOLD'],
-                  fontSize: AppFontSize(context).mediumLargeSize,
+                  fontFamilyFallback: const ['KH-SEMIBOLD'],
+                  fontSize: AppFontSize(context).subTitleSize,
                   color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),

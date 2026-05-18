@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
-import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
 
 class MoreScreen extends StatefulWidget {
@@ -21,7 +20,7 @@ class _MoreScreenState extends State<MoreScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 20),
+        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 10),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
@@ -38,15 +37,15 @@ class _MoreScreenState extends State<MoreScreen> {
                   Icons.share_outlined,
                   "Share App",
                   onTap: () {},
+                ),
+                _buildMenuTile(
+                  Icons.delete_outline,
+                  "Recently Deleted",
+                  onTap: () {
+                    Get.toNamed('/recentyDelete');
+                  },
                   isLast: true,
                 ),
-                // _buildMenuTile(
-                //   Icons.delete_outline,
-                //   "Recently Deleted",
-                //   onTap: () {
-                //    // Get.toNamed('/recentyDelete');
-                //   },
-                // ),
               ]),
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 60),
@@ -78,7 +77,14 @@ class _MoreScreenState extends State<MoreScreen> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          )
+        ],
       ),
       child: Column(children: children),
     );
@@ -87,18 +93,57 @@ class _MoreScreenState extends State<MoreScreen> {
   Widget _buildMenuTile(IconData icon, String title, {required VoidCallback onTap, bool isLast = false}) {
     return Column(
       children: [
+        // ListTile(
+        //   leading: Icon(
+        //     icon,
+        //     color: Theme.of(context).iconTheme.color,
+        //   ),
+        //   title: Text(title, style: text16(context)),
+        //   trailing: Icon(
+        //     Icons.arrow_forward_ios,
+        //     size: context.isPhone ? 14 : 16,
+        //   ),
+        //   onTap: onTap,
+        // ),
         ListTile(
-          leading: Icon(
-            icon,
-            color: Theme.of(context).iconTheme.color,
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColor().primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: AppColor().primaryColor,
+              size: context.isPhone ? 20 : 24,
+            ),
           ),
-          title: Text(title, style: text16(context)),
+          title: Text(
+            title,
+            style: TextStyle(
+              fontSize: context.isPhone ? 15 : 17,
+              fontFamily: 'EN-REGULAR',
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+          ),
           trailing: Icon(
             Icons.arrow_forward_ios,
-            size: context.isPhone ? 14 : 16,
+            size: context.isPhone ? 14 : 18,
+            color: Colors.grey,
           ),
           onTap: onTap,
         ),
+
+        /// DIVIDER (clean UI)
+        if (!isLast)
+          Padding(
+            padding: const EdgeInsets.only(left: 60),
+            child: Divider(
+              height: 1,
+              color: Colors.grey.shade200,
+            ),
+          ),
       ],
     );
   }

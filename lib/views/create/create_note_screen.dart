@@ -22,6 +22,7 @@ import 'package:project_structure/views/create/components/handwriting_component.
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
@@ -141,7 +142,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     if (isEmpty) {
       if (isAuto && currentNoteId != null) {
-        await noteController.deleteNote(currentNoteId!, widget.folderId);
+        // await noteController.deleteNote(currentNoteId!, widget.folderId);
+        // SWAPPED: Redirect to soft trash placement instead of direct database purge
+        await noteController.moveToTrash(currentNoteId!, widget.folderId);
         currentNoteId = null;
       }
 
@@ -753,7 +756,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       confirmText: "Delete",
       onConfirm: () async {
         if (currentNoteId != null) {
-          await noteController.deleteNote(currentNoteId!, widget.folderId);
+          // await noteController.deleteNote(currentNoteId!, widget.folderId);
+          await noteController.moveToTrash(currentNoteId!, widget.folderId);
         }
         Get.back(result: true);
       },
@@ -766,6 +770,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Theme.of(context).cardColor,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -781,7 +786,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 final folders = folderController.folders.where((f) => f.id != widget.folderId).toList();
 
                 if (folders.isEmpty) {
-                  return const Text("No other folders");
+                  return const CustomNoData(
+                    message: "No data",
+                  );
                 }
 
                 return ListView.builder(
