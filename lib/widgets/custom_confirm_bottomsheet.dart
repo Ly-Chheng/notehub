@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 
 class ConfirmBottomSheet {
@@ -39,18 +40,11 @@ class ConfirmBottomSheet {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text(title, style: text18(context)),
                 const SizedBox(height: 10),
                 Text(
                   subtitle,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.grey),
+                  style: text16(context).copyWith(color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
                 Row(

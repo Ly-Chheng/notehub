@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 class CustomNoData extends StatelessWidget {
   final String message;
@@ -24,13 +24,7 @@ class CustomNoData extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-          Text(
-            message,
-            style: TextStyle(
-              fontSize: context.isPhone ? 16 : 18,
-              fontFamily: 'EN-REGULAR',
-            ),
-          ),
+          Text(message, style: text16(context)),
         ],
       ),
     );

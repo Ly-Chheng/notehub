@@ -85,13 +85,13 @@ flutter:
         - asset: assets/fonts/Battambang-Bold.ttf
     - family: EN-REGULAR
       fonts:
-        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Nunito-Regular.ttf
     - family: EN-SEMIBOLD
       fonts:
-        - asset: assets/fonts/Roboto-SemiBold.ttf
+        - asset: assets/fonts/Nunito-Medium.ttf
     - family: EN-BOLD
       fonts:
-        - asset: assets/fonts/Roboto-Bold.ttf
+        - asset: assets/fonts/Nunito-Bold.ttf
 
 
 

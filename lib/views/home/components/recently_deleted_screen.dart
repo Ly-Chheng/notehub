@@ -9,6 +9,7 @@ import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
@@ -79,48 +80,48 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
       ),
       body: Column(
         children: [
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(18),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 5),
-                )
-              ],
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Deleted Notes",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey.shade800,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColor().primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    "${controller.trashNotes.length} items",
-                    style: TextStyle(
-                      color: AppColor().primaryColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                )
-              ],
-            ),
-          ),
+          // Container(
+          //   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          //   padding: const EdgeInsets.all(16),
+          //   decoration: BoxDecoration(
+          //     color: Colors.white,
+          //     borderRadius: BorderRadius.circular(18),
+          //     boxShadow: [
+          //       BoxShadow(
+          //         color: Colors.black.withOpacity(0.05),
+          //         blurRadius: 10,
+          //         offset: const Offset(0, 5),
+          //       )
+          //     ],
+          //   ),
+          //   child: Row(
+          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //     children: [
+          //       Text(
+          //         "Deleted Notes",
+          //         style: TextStyle(
+          //           fontSize: 16,
+          //           fontWeight: FontWeight.bold,
+          //           color: Colors.grey.shade800,
+          //         ),
+          //       ),
+          //       Container(
+          //         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          //         decoration: BoxDecoration(
+          //           color: AppColor().primaryColor.withOpacity(0.1),
+          //           borderRadius: BorderRadius.circular(20),
+          //         ),
+          //         child: Text(
+          //           "${controller.trashNotes.length} items",
+          //           style: TextStyle(
+          //             color: AppColor().primaryColor,
+          //             fontWeight: FontWeight.w600,
+          //           ),
+          //         ),
+          //       )
+          //     ],
+          //   ),
+          // ),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
@@ -150,26 +151,25 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                           motion: const ScrollMotion(),
                           extentRatio: 0.7,
                           children: [
-                            SlidableAction(
-                              onPressed: (context) => _showMoveRestoreSheet(note.id!),
-                              backgroundColor: AppColor().primaryColor,
-                              foregroundColor: AppColor().white,
-                              borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
+                            AppSlidableAction(
+                              onPressed: () {
+                                _showMoveRestoreSheet(note.id!);
+                              },
                               icon: Icons.folder,
                               label: 'Move',
+                              backgroundColor: AppColor().primaryColor,
+                              borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
                             ),
-                            SlidableAction(
-                              onPressed: (context) async {
+                            AppSlidableAction(
+                              onPressed: () async {
                                 await controller.restoreNote(note.id!);
-                                Get.snackbar("Restored", "Note moved back to its folder");
                               },
-                              backgroundColor: Colors.green,
-                              foregroundColor: AppColor().white,
                               icon: Icons.restore_from_trash,
                               label: 'Restore',
+                              backgroundColor: AppColor().green,
                             ),
-                            SlidableAction(
-                              onPressed: (context) {
+                            AppSlidableAction(
+                              onPressed: () {
                                 showConfirmDialog(
                                   context: context,
                                   title: "Delete Permanently",
@@ -180,10 +180,9 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                   },
                                 );
                               },
-                              backgroundColor: AppColor().red,
-                              foregroundColor: AppColor().white,
                               icon: Icons.delete,
                               label: 'Delete',
+                              backgroundColor: AppColor().red,
                               borderRadius: const BorderRadius.horizontal(right: Radius.circular(18)),
                             ),
                           ],
@@ -231,11 +230,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                         contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                         title: Text(
                                           titleText.isNotEmpty ? titleText : "Untitled Note",
-                                          style: text18(context).copyWith(
-                                            color: Theme.of(context).textTheme.bodyLarge?.color,
-                                            decoration: TextDecoration.lineThrough,
-                                            decorationColor: AppColor().gray,
-                                          ),
+                                          style: text18(context),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),
@@ -350,24 +345,6 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
       },
     );
   }
-
-  // void _handleBulkPermanentDelete() {
-  //   showConfirmDialog(
-  //     context: context,
-  //     title: "Delete Permanently",
-  //     subTitle: "Permanently purge ${selectedNoteIds.length} selected items? This cannot be undone.",
-  //     confirmText: "Purge",
-  //     onConfirm: () async {
-  //       for (var id in selectedNoteIds) {
-  //         await controller.permanentDeleteNote(id);
-  //       }
-  //       setState(() {
-  //         isSelectionMode = false;
-  //         selectedNoteIds.clear();
-  //       });
-  //     },
-  //   );
-  // }
 
   void _showMoveRestoreSheet(int noteId) {
     showModalBottomSheet(

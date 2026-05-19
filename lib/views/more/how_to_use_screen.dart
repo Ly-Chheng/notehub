@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
 class HowToUseScreen extends StatelessWidget {
@@ -70,8 +71,7 @@ class HowToUseScreen extends StatelessWidget {
             context,
             step: "01",
             title: "Create Your First Note",
-            description:
-                "Tap the '+' button to quickly create notes and add your important study materials.",
+            description: "Tap the '+' button to quickly create notes and add your important study materials.",
             icon: Icons.edit_note_rounded,
             color: AppColor().primaryColor,
           ),
@@ -80,8 +80,7 @@ class HowToUseScreen extends StatelessWidget {
             context,
             step: "02",
             title: "Organize with Folders",
-            description:
-                "Group your notes into folders like Homework, Exams, or Projects.",
+            description: "Group your notes into folders like Homework, Exams, or Projects.",
             icon: Icons.folder_copy_rounded,
             color: AppColor().orange,
           ),
@@ -90,8 +89,7 @@ class HowToUseScreen extends StatelessWidget {
             context,
             step: "03",
             title: "Secure Your Notes",
-            description:
-                "Lock important notes to protect private or sensitive information.",
+            description: "Lock important notes to protect private or sensitive information.",
             icon: Icons.lock_rounded,
             color: AppColor().red,
           ),
@@ -100,8 +98,7 @@ class HowToUseScreen extends StatelessWidget {
             context,
             step: "04",
             title: "Study with Stopwatch",
-            description:
-                "Track your study time and improve focus using the stopwatch feature.",
+            description: "Track your study time and improve focus using the stopwatch feature.",
             icon: Icons.timer_rounded,
             color: AppColor().green,
           ),
@@ -187,19 +184,9 @@ class HowToUseScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 14),
-
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontFamily: 'EN-BOLD',
-                    ),
-                  ),
-
+                  Text(title, style: text20(context)),
                   const SizedBox(height: 10),
-
                   Text(
                     description,
                     style: TextStyle(

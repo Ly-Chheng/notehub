@@ -60,35 +60,94 @@ class _MyHomePageState extends State<MyHomePage> {
                           startActionPane: ActionPane(
                             motion: const BehindMotion(),
                             children: [
-                              SlidableAction(
+                              CustomSlidableAction(
                                 onPressed: (c) => _togglePin(folder),
                                 backgroundColor: AppColor().orange,
-                                foregroundColor: AppColor().white,
-                                icon: folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-                                label: folder.isPinned ? 'Unpin' : 'Pin',
+                                autoClose: true,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
+                                      color: Colors.white,
+                                      size: 22,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      folder.isPinned ? 'Unpin' : 'Pin',
+                                      style: text14(context).copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              SlidableAction(
+                              CustomSlidableAction(
                                 onPressed: (c) => _toggleLock(folder),
                                 backgroundColor: AppColor().green,
-                                icon: folder.isLocked ? Icons.lock_open : Icons.lock,
-                                label: folder.isLocked ? 'Unlock' : 'Lock',
+                                autoClose: true,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      folder.isLocked ? Icons.lock_open : Icons.lock,
+                                      color: Colors.white,
+                                      size: 22,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      folder.isLocked ? 'Unlock' : 'Lock',
+                                      style: text14(context).copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
                           endActionPane: ActionPane(
                             motion: const DrawerMotion(),
                             children: [
-                              SlidableAction(
+                              CustomSlidableAction(
                                 onPressed: (c) => _handleEditFolder(context, folder),
                                 backgroundColor: AppColor().primaryColor,
-                                icon: Icons.edit,
-                                label: 'Edit',
+                                autoClose: true,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.edit, color: Colors.white),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Edit',
+                                      style: text14(context).copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              SlidableAction(
+                              CustomSlidableAction(
                                 onPressed: (c) => _confirmDelete(context, folder),
                                 backgroundColor: AppColor().red,
-                                icon: Icons.delete,
-                                label: 'Delete',
+                                autoClose: true,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    const Icon(Icons.delete, color: Colors.white),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      'Delete',
+                                      style: text14(context).copyWith(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ],
                           ),
@@ -198,7 +257,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // Check if there are any locked notes inside
     bool containsLockedNotes = await noteController.hasLockedNotesInFolder(folder.id!);
 
-    // If either is true, we must verify the password
     if (folderLocked || containsLockedNotes) {
       final settings = await lockController.getSecuritySettings();
       String storedPass = settings?['master_password'] ?? "";
@@ -228,18 +286,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  // void _proceedWithDeletion(FolderModel folder) {
-  //   showConfirmDialog(
-  //     context: context,
-  //     title: "Delete Folder",
-  //     subTitle: "All notes inside ${folder.title} will be permanently deleted. This action cannot be undone.",
-  //     confirmText: "Delete",
-  //     onConfirm: () async {
-  //       await controller.deleteFolder(folder.id!);
-  //     },
-  //   );
-  // }
-
   void _proceedWithDeletion(FolderModel folder) {
     showConfirmDialog(
       context: context,
@@ -247,16 +293,11 @@ class _MyHomePageState extends State<MyHomePage> {
       subTitle: "Are you sure you want to delete '${folder.title}'? All notes inside will be moved directly to Recently Deleted.",
       confirmText: "Delete",
       onConfirm: () async {
-        // Move notes to default folder and flag as trash (Prevents ON DELETE CASCADE purge)
         await noteController.bulkMoveToTrashByFolder(folder.id!, controller.defaultFolderId);
-
-        // Safely remove the folder frame structure row from the database
         await controller.deleteFolder(folder.id!);
-
-        // Make sure the global trash screen syncs its UI metrics instantly
         await noteController.fetchTrashNotes();
 
-        Get.back(); 
+        Get.back();
       },
     );
   }
@@ -335,17 +376,7 @@ class _MyHomePageState extends State<MyHomePage> {
             //     child: Icon(Icons.lock, size: 18, color: AppColor().primaryColor),
             //   ),
             Expanded(
-              child: Text(
-                folder.title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontFamily: 'EN-SEMIBOLD',
-                  fontFamilyFallback: const ['KH-SEMIBOLD'],
-                  fontSize: AppFontSize(context).subTitleSize,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
-              ),
+              child: Text(folder.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: text16(context).copyWith(fontWeight: FontWeight.w600)),
             ),
             const SizedBox(width: 10),
             if (folder.isPinned)
@@ -388,12 +419,6 @@ class _MyHomePageState extends State<MyHomePage> {
             size: 16,
             color: Colors.white,
           ),
-        // if (!isDefault && !folder.isLocked)
-        //   Icon(
-        //     Icons.lock_open,
-        //     size: 16,
-        //     color: Colors.green,
-        //   ),
       ],
     );
   }
