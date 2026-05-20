@@ -21,6 +21,7 @@ import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/views/create/components/handwriting_component.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
@@ -224,7 +225,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       hintText: "Password",
       onConfirm: () {
         if (verifyController.text == storedPass) {
-          // Get.back();
           onSuccess();
         } else {
           Get.snackbar(
@@ -375,7 +375,15 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         onSave: (path, layers) {
           setState(() {
             drawingLayers = layers;
-            if (path != null) selectedImages.add(File(path));
+
+            if (layers.isEmpty) {
+              // 1. If layers are deleted, purge all handwriting images from selection list
+              selectedImages.removeWhere((file) => file.path.contains('draw_'));
+            } else if (path != null) {
+              // 2. Clear old drawing entries first to avoid stacking duplicate drawing paths
+              selectedImages.removeWhere((file) => file.path.contains('draw_'));
+              selectedImages.add(File(path));
+            }
           });
           _triggerAutoSave();
         },
@@ -767,59 +775,46 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   void _showMoveSheet() {
     if (currentNoteId == null) return;
 
-    showModalBottomSheet(
+    ConfirmBottomSheet.show(
       context: context,
-      backgroundColor: Theme.of(context).cardColor,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SheetHeader(title: "Move to Folder"),
-              const SizedBox(height: 10),
-              Obx(() {
-                final folders = folderController.folders.where((f) => f.id != widget.folderId).toList();
+      title: "Move to Folder",
+      showTopCancel: true,
+      content: Flexible(
+        child: Obx(() {
+          final folders = folderController.folders.where((f) => f.id != widget.folderId).toList();
 
-                if (folders.isEmpty) {
-                  return const CustomNoData(
-                    message: "No data",
+          if (folders.isEmpty) {
+            return const CustomNoData(
+              message: "No data",
+            );
+          }
+
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: folders.length,
+            itemBuilder: (context, index) {
+              final folder = folders[index];
+
+              return ListTile(
+                leading: Icon(
+                  Icons.folder,
+                  color: AppColor().primaryColor,
+                ),
+                title: Text(folder.title),
+                onTap: () async {
+                  await noteController.moveNote(
+                    currentNoteId!,
+                    folder.id!,
                   );
-                }
 
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: folders.length,
-                  itemBuilder: (context, index) {
-                    final folder = folders[index];
-
-                    return ListTile(
-                      leading: Icon(
-                        Icons.folder,
-                        color: AppColor().primaryColor,
-                      ),
-                      title: Text(folder.title),
-                      onTap: () async {
-                        await noteController.moveNote(
-                          currentNoteId!,
-                          folder.id!,
-                        );
-
-                        Get.back();
-                        Get.back(result: true);
-                      },
-                    );
-                  },
-                );
-              }),
-            ],
-          ),
-        );
-      },
+                  Get.back();
+                  Get.back(result: true);
+                },
+              );
+            },
+          );
+        }),
+      ),
     );
   }
 

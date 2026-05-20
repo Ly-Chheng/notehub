@@ -12,6 +12,7 @@ import 'package:project_structure/views/create/folder_note_list_screen.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_header.dart';
+import 'package:project_structure/widgets/custom_slidableasction.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -60,93 +61,63 @@ class _MyHomePageState extends State<MyHomePage> {
                           startActionPane: ActionPane(
                             motion: const BehindMotion(),
                             children: [
-                              CustomSlidableAction(
-                                onPressed: (c) => _togglePin(folder),
+                              // CustomSlidableAction(
+                              //   onPressed: (c) => _togglePin(folder),
+                              //   backgroundColor: AppColor().orange,
+                              //   autoClose: true,
+                              //   child: Column(
+                              //     mainAxisAlignment: MainAxisAlignment.center,
+                              //     children: [
+                              //       Icon(
+                              //         folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
+                              //         color: Colors.white,
+                              //         size: 20,
+                              //       ),
+                              //       const SizedBox(height: 4),
+                              //       Text(
+                              //         folder.isPinned ? 'Unpin' : 'Pin',
+                              //         style: text14(context).copyWith(
+                              //           color: Colors.white,
+                              //           fontWeight: FontWeight.w600,
+                              //         ),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
+                              AppSlidableAction(
+                                onPressed: () => _togglePin(folder),
+                                icon: folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
+                                label: folder.isPinned ? 'Unpin' : 'Pin',
+                                iconSize: 20,
                                 backgroundColor: AppColor().orange,
-                                autoClose: true,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-                                      color: Colors.white,
-                                      size: 22,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      folder.isPinned ? 'Unpin' : 'Pin',
-                                      style: text14(context).copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
-                              CustomSlidableAction(
-                                onPressed: (c) => _toggleLock(folder),
+                              AppSlidableAction(
+                                onPressed: () => _toggleLock(folder),
+                                icon: folder.isLocked ? Icons.lock_open : Icons.lock,
+                                label: folder.isLocked ? 'Unlock' : 'Lock',
+                                iconSize: 20,
                                 backgroundColor: AppColor().green,
-                                autoClose: true,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      folder.isLocked ? Icons.lock_open : Icons.lock,
-                                      color: Colors.white,
-                                      size: 22,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      folder.isLocked ? 'Unlock' : 'Lock',
-                                      style: text14(context).copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
                             ],
                           ),
                           endActionPane: ActionPane(
                             motion: const DrawerMotion(),
                             children: [
-                              CustomSlidableAction(
-                                onPressed: (c) => _handleEditFolder(context, folder),
+                              AppSlidableAction(
+                                onPressed: () => _handleEditFolder(context, folder),
+                                icon: Icons.edit,
+                                label: 'Edit',
+                                iconSize: 20,
                                 backgroundColor: AppColor().primaryColor,
-                                autoClose: true,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.edit, color: Colors.white),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Edit',
-                                      style: text14(context).copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
                               ),
-                              CustomSlidableAction(
-                                onPressed: (c) => _confirmDelete(context, folder),
+                              AppSlidableAction(
+                                onPressed: () => _confirmDelete(context, folder),
+                                icon: Icons.delete,
+                                label: 'Delete',
+                                iconSize: 20,
                                 backgroundColor: AppColor().red,
-                                autoClose: true,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    const Icon(Icons.delete, color: Colors.white),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Delete',
-                                      style: text14(context).copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
+                                borderRadius: const BorderRadius.horizontal(
+                                  right: Radius.circular(16),
                                 ),
                               ),
                             ],

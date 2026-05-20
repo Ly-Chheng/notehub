@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 Widget customNavigationBar({
   required BuildContext context,
@@ -114,7 +115,7 @@ Widget customNavigationBar({
                       child: Center(
                         child: Text(
                           '$chatBadgeCount',
-                          style: TextStyle(color: AppColor().white, fontSize: 10),
+                          style: TextStyle(color: AppColor().white, fontSize: AppFontSize(context).subNormalSize, fontFamily: 'EN-REGULAR'),
                         ),
                       ),
                     ),

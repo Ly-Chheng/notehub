@@ -16,7 +16,10 @@ class DarkModeView extends GetView<DarkModeController> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: context.isPhone ? 5 : 12,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -26,7 +29,7 @@ class DarkModeView extends GetView<DarkModeController> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: AppColor().primaryColor.withOpacity(0.1),
+                        color: AppColor().primaryColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(
@@ -66,7 +69,7 @@ class DarkModeView extends GetView<DarkModeController> {
             padding: const EdgeInsets.only(left: 60),
             child: Divider(
               height: 1,
-              color: Colors.grey.shade200,
+              color: AppColor().gray.withValues(alpha: 0.1),
             ),
           ),
         ],

@@ -109,7 +109,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
           .toList();
 
       widget.onSave(path, exportData);
-      Navigator.pop(context);
+      Get.back();
     } catch (e) {
       debugPrint("Save error: $e");
     }

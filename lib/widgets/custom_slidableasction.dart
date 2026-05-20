@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 class AppSlidableAction extends StatelessWidget {
   final VoidCallback onPressed;
@@ -9,6 +11,7 @@ class AppSlidableAction extends StatelessWidget {
   final Color iconColor;
   final TextStyle? textStyle;
   final BorderRadius? borderRadius;
+  final double? iconSize;
 
   const AppSlidableAction({
     super.key,
@@ -19,6 +22,7 @@ class AppSlidableAction extends StatelessWidget {
     this.iconColor = Colors.white,
     this.textStyle,
     this.borderRadius,
+    this.iconSize,
   });
 
   @override
@@ -30,14 +34,18 @@ class AppSlidableAction extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: iconColor, size: 24),
+          Icon(
+            icon,
+            color: iconColor,
+            size: iconSize ?? 24,
+          ),
           const SizedBox(height: 4),
           Text(
             label,
             style: textStyle ??
-                const TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
+                TextStyle(
+                  color: AppColor().white,
+                  fontSize: AppFontSize(context).descriptionLargeSize,
                   fontFamily: 'EN-REGULAR',
                   fontWeight: FontWeight.w600,
                 ),

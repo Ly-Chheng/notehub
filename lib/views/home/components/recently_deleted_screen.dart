@@ -11,7 +11,6 @@ import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
-import 'package:project_structure/widgets/sheet_header.dart';
 
 class RecentlyDeletedScreen extends StatefulWidget {
   const RecentlyDeletedScreen({super.key});
@@ -46,32 +45,34 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
           Obx(() {
             final bool hasNoData = controller.trashNotes.isEmpty;
 
-            return Container(
-              height: 24,
-              width: 24,
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: hasNoData ? AppColor().gray : AppColor().primaryColor,
-                  width: 1,
+            return InkWell(
+              onTap: hasNoData
+                  ? null
+                  : () {
+                      setState(() {
+                        isSelectionMode = !isSelectionMode;
+                        selectedNoteIds.clear();
+                      });
+                    },
+              borderRadius: BorderRadius.circular(5),
+              child: Container(
+                height: 24,
+                width: 24,
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: hasNoData ? AppColor().gray : AppColor().primaryColor,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(5),
                 ),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                alignment: Alignment.center,
-                constraints: const BoxConstraints(),
-                iconSize: 18,
-                color: hasNoData ? AppColor().gray : AppColor().primaryColor,
-                onPressed: hasNoData
-                    ? null
-                    : () {
-                        setState(() {
-                          isSelectionMode = !isSelectionMode;
-                          selectedNoteIds.clear();
-                        });
-                      },
-                icon: Icon(isSelectionMode ? Icons.close : Icons.more_vert_outlined),
+                child: Center(
+                  child: Icon(
+                    isSelectionMode ? Icons.close : Icons.more_vert_outlined,
+                    size: 18,
+                    color: hasNoData ? AppColor().gray : AppColor().primaryColor,
+                  ),
+                ),
               ),
             );
           }),
@@ -80,48 +81,6 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
       ),
       body: Column(
         children: [
-          // Container(
-          //   margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          //   padding: const EdgeInsets.all(16),
-          //   decoration: BoxDecoration(
-          //     color: Colors.white,
-          //     borderRadius: BorderRadius.circular(18),
-          //     boxShadow: [
-          //       BoxShadow(
-          //         color: Colors.black.withOpacity(0.05),
-          //         blurRadius: 10,
-          //         offset: const Offset(0, 5),
-          //       )
-          //     ],
-          //   ),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //     children: [
-          //       Text(
-          //         "Deleted Notes",
-          //         style: TextStyle(
-          //           fontSize: 16,
-          //           fontWeight: FontWeight.bold,
-          //           color: Colors.grey.shade800,
-          //         ),
-          //       ),
-          //       Container(
-          //         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          //         decoration: BoxDecoration(
-          //           color: AppColor().primaryColor.withOpacity(0.1),
-          //           borderRadius: BorderRadius.circular(20),
-          //         ),
-          //         child: Text(
-          //           "${controller.trashNotes.length} items",
-          //           style: TextStyle(
-          //             color: AppColor().primaryColor,
-          //             fontWeight: FontWeight.w600,
-          //           ),
-          //         ),
-          //       )
-          //     ],
-          //   ),
-          // ),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
@@ -138,12 +97,13 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                   itemCount: controller.trashNotes.length,
                   itemBuilder: (context, index) {
                     final note = controller.trashNotes[index];
-                    final String titleText = note.title.trim().isNotEmpty ? note.title : controller.getPlainTextFromNote(note.content ?? "").trim();
+                    final String plainContent = controller.getPlainTextFromNote(note.content).trim();
+                    final String displayTitle = (note.title.trim().isNotEmpty) ? note.title : (plainContent.isNotEmpty ? plainContent : "Untitled");
 
                     bool isSelected = selectedNoteIds.contains(note.id);
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                       child: Slidable(
                         key: ValueKey(note.id),
                         enabled: !isSelectionMode,
@@ -229,7 +189,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                     child: ListTile(
                                         contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                         title: Text(
-                                          titleText.isNotEmpty ? titleText : "Untitled Note",
+                                          displayTitle,
                                           style: text18(context),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
@@ -306,32 +266,31 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
     );
   }
 
-  void _handleBulkRestore() {
-    showConfirmDialog(
-      context: context,
-      title: "Restore Notes",
-      subTitle: "Restore ${selectedNoteIds.length} selected items back to active notes?",
-      confirmText: "Restore",
-      onConfirm: () async {
-        for (var id in selectedNoteIds) {
-          await controller.restoreNote(id);
-        }
-        setState(() {
-          isSelectionMode = false;
-          selectedNoteIds.clear();
-        });
-      },
-    );
-  }
+  // void _handleBulkRestore() {
+  //   showConfirmDialog(
+  //     context: context,
+  //     title: "Restore Notes",
+  //     subTitle: "Restore ${selectedNoteIds.length} selected items back to active notes?",
+  //     confirmText: "Restore",
+  //     onConfirm: () async {
+  //       for (var id in selectedNoteIds) {
+  //         await controller.restoreNote(id);
+  //       }
+  //       setState(() {
+  //         isSelectionMode = false;
+  //         selectedNoteIds.clear();
+  //       });
+  //     },
+  //   );
+  // }
 
   void _handleBulkPermanentDelete() {
     ConfirmBottomSheet.show(
       context: context,
       title: "Delete Permanently",
       subtitle: "Are you sure you want to delete ${selectedNoteIds.length} selected items forever? This cannot be undone.",
-      confirmText: "Purge",
+      confirmText: "Delete",
       confirmColor: Colors.red,
-      icon: Icons.delete_forever,
       itemCount: selectedNoteIds.length,
       onConfirm: () async {
         for (var id in selectedNoteIds) {
@@ -347,102 +306,83 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
   }
 
   void _showMoveRestoreSheet(int noteId) {
-    showModalBottomSheet(
+    ConfirmBottomSheet.show(
       context: context,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      backgroundColor: Theme.of(context).cardColor,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SheetHeader(title: "Restore Note to Folder"),
-            const SizedBox(height: 10),
-            Flexible(
-              child: Obx(() {
-                if (folderController.folders.isEmpty) {
-                  return const CustomNoData(message: "No folders available");
-                }
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: folderController.folders.length,
-                  itemBuilder: (context, index) {
-                    final folder = folderController.folders[index];
-                    return ListTile(
-                      leading: Icon(Icons.folder, color: AppColor().primaryColor),
-                      title: Text(folder.title, style: text16(context)),
-                      onTap: () async {
-                        await controller.bulkMoveNotes([noteId], folder.id!);
+      title: "Restore to Folder",
+      showTopCancel: true,
+      content: Flexible(
+        child: Obx(() {
+          if (folderController.folders.isEmpty) {
+            return const CustomNoData(
+              message: "No data",
+            );
+          }
 
-                        await controller.restoreNote(noteId);
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: folderController.folders.length,
+            itemBuilder: (context, index) {
+              final folder = folderController.folders[index];
+              return ListTile(
+                leading: Icon(Icons.folder, color: AppColor().primaryColor),
+                title: Text(folder.title, style: text16(context)),
+                onTap: () async {
+                  await controller.bulkMoveNotes([noteId], folder.id!);
 
-                        if (!mounted) return;
-                        Get.back();
-                        Get.snackbar("Success", "Note restored to ${folder.title}");
-                      },
-                    );
-                  },
-                );
-              }),
-            ),
-          ],
-        ),
+                  await controller.restoreNote(noteId);
+
+                  if (!mounted) return;
+                  Get.back();
+                  Get.snackbar("Success", "Note restored to ${folder.title}");
+                },
+              );
+            },
+          );
+        }),
       ),
     );
   }
 
   void _handleBulkMoveRestore() {
-    showModalBottomSheet(
+    ConfirmBottomSheet.show(
       context: context,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      backgroundColor: Theme.of(context).cardColor,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SheetHeader(title: "Restore to Folder"),
-            const SizedBox(height: 10),
-            Flexible(
-              child: Obx(() {
-                if (folderController.folders.isEmpty) {
-                  return const CustomNoData(message: "No folders available");
-                }
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: folderController.folders.length,
-                  itemBuilder: (context, index) {
-                    final folder = folderController.folders[index];
-                    return ListTile(
-                      leading: Icon(Icons.folder, color: AppColor().primaryColor),
-                      title: Text(folder.title, style: text16(context)),
-                      onTap: () async {
-                        final List<int> idsToMove = selectedNoteIds.toList();
+      title: "Restore to Folder",
+      showTopCancel: true,
+      content: Flexible(
+        child: Obx(() {
+          if (folderController.folders.isEmpty) {
+            return const CustomNoData(message: "No folders available");
+          }
+          return ListView.builder(
+            shrinkWrap: true,
+            itemCount: folderController.folders.length,
+            itemBuilder: (context, index) {
+              final folder = folderController.folders[index];
+              return ListTile(
+                leading: Icon(Icons.folder, color: AppColor().primaryColor),
+                title: Text(folder.title, style: text16(context)),
+                onTap: () async {
+                  final List<int> idsToMove = selectedNoteIds.toList();
 
-                        await controller.bulkMoveNotes(idsToMove, folder.id!);
+                  await controller.bulkMoveNotes(idsToMove, folder.id!);
 
-                        for (var id in idsToMove) {
-                          await controller.restoreNote(id);
-                        }
+                  for (var id in idsToMove) {
+                    await controller.restoreNote(id);
+                  }
 
-                        if (!mounted) return;
-                        Get.back();
-                        setState(() {
-                          isSelectionMode = false;
-                          selectedNoteIds.clear();
-                        });
+                  if (!mounted) return;
+                  Get.back();
+                  setState(() {
+                    isSelectionMode = false;
+                    selectedNoteIds.clear();
+                  });
 
-                        Get.snackbar("Success", "${idsToMove.length} notes restored to ${folder.title}");
-                      },
-                    );
-                  },
-                );
-              }),
-            ),
-          ],
-        ),
+                  Get.snackbar("Success", "${idsToMove.length} notes restored to ${folder.title}");
+                },
+              );
+            },
+          );
+        }),
       ),
     );
   }

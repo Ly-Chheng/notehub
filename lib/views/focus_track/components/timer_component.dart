@@ -4,10 +4,12 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/controllers/focus_track/timer_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 import 'package:project_structure/views/focus_track/components/timer_detail_screen.dart';
 import 'package:project_structure/widgets/custom_header.dart';
+import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 
 class TimerComponent extends StatelessWidget {
@@ -96,20 +98,20 @@ class TimerComponent extends StatelessWidget {
           endActionPane: ActionPane(
             motion: const DrawerMotion(),
             children: [
-              SlidableAction(
-                onPressed: (_) {
+              AppSlidableAction(
+                onPressed: () {
                   controller.activeTimerKeys.remove(timer.key);
                   Get.to(() => CreateTimerScreen(isEditing: true, timerKey: timer.key, existingTimer: timer));
                 },
-                backgroundColor: AppColor().primaryColor,
                 icon: Icons.edit,
                 label: 'Edit',
+                backgroundColor: AppColor().primaryColor,
               ),
-              SlidableAction(
-                onPressed: (_) => controller.deleteTimer(timer.key),
-                backgroundColor: AppColor().red,
+              AppSlidableAction(
+                onPressed: () => controller.deleteTimer(timer.key),
                 icon: Icons.delete,
                 label: 'Delete',
+                backgroundColor: AppColor().red,
               ),
             ],
           ),
@@ -129,7 +131,7 @@ class TimerComponent extends StatelessWidget {
                         Text(timer.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface, fontSize: context.isPhone ? 16 : 18, fontFamily: 'EN-REGULAR')),
+                            style: TextStyle(color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface, fontSize: AppFontSize(context).subTitleSize, fontFamily: 'EN-REGULAR')),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
                               fontSize: context.isPhone ? 28 : 32,
@@ -137,8 +139,8 @@ class TimerComponent extends StatelessWidget {
                               fontFamily: 'EN-SEMIBOLD',
                             )),
                         Text("${controller.formatToHMS(timer.totalSeconds)} total",
-                            style:
-                                TextStyle(color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface.withAlpha(150), fontSize: context.isPhone ? 12 : 14, fontFamily: 'EN-REGULAR')),
+                            style: TextStyle(
+                                color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface.withAlpha(150), fontSize: AppFontSize(context).normalTextSize, fontFamily: 'EN-REGULAR')),
                       ],
                     ),
                   ),

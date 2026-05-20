@@ -10,6 +10,7 @@ import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_header.dart';
+import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/sheet_header.dart';
 
 class CreateTimerScreen extends StatefulWidget {
@@ -197,14 +198,11 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
-            onPressed: _saveTimer,
-            child: Text("Save",
-                style: TextStyle(
-                  color: AppColor().primaryColor,
-                  fontSize: 20,
-                  fontFamily: 'EN-SEMIBOLD',
-                )),
-          ),
+              onPressed: _saveTimer,
+              child: Text(
+                "Save",
+                style: text18(context).copyWith(color: AppColor().primaryColor),
+              )),
         ],
       ),
       body: SafeArea(
@@ -255,7 +253,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         onSelectedItemChanged: (index) {
           setState(() => onSelect(index));
         },
-        children: List.generate(count, (i) => Center(child: Text("$i $unit", style: const TextStyle(fontSize: 20)))),
+        children: List.generate(count, (i) => Center(child: Text("$i $unit", style: TextStyle(fontSize: AppFontSize(context).titleSize, fontFamily: 'EN-REGULAR')))),
       ),
     );
   }
@@ -272,14 +270,11 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: TextField(
+            child: customTextField(
+              "Password",
+              false,
+              null,
               controller: _labelController,
-              decoration: InputDecoration(
-                contentPadding: const EdgeInsets.symmetric(horizontal: 15),
-                filled: true,
-                fillColor: Colors.grey.withValues(alpha: 0.1),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
-              ),
             ),
           ),
         ],

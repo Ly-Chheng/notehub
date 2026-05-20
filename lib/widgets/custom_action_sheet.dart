@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 class ActionSheetItem {
   final String label;
@@ -38,7 +39,7 @@ class ActionSheet {
           title,
           style: TextStyle(
             color: AppColor().gray,
-            fontSize: context.isPhone ? 12 : 14,
+            fontSize: AppFontSize(context).normalTextSize,
             fontFamily: 'EN-REGULAR',
           ),
         ),
@@ -66,7 +67,7 @@ class ActionSheet {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   color: item.color ?? Theme.of(context).hoverColor,
-                                  fontSize: context.isPhone ? 14 : 16,
+                                  fontSize: AppFontSize(context).descriptionLargeSize,
                                   fontFamily: 'EN-BOLD',
                                 ),
                               ),
@@ -109,7 +110,7 @@ class ActionSheet {
                   item.label,
                   style: TextStyle(
                     color: item.color ?? Theme.of(context).hoverColor,
-                    fontSize: context.isPhone ? 14 : 16,
+                    fontSize: AppFontSize(context).descriptionLargeSize,
                     fontFamily: 'EN-BOLD',
                   ),
                 ),
@@ -127,7 +128,7 @@ class ActionSheet {
             'cancel'.tr,
             style: TextStyle(
               color: AppColor().red,
-              fontSize: context.isPhone ? 16 : 18,
+              fontSize: AppFontSize(context).subTitleSize,
               fontFamily: 'EN-BOLD',
             ),
           ),

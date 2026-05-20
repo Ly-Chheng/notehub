@@ -112,22 +112,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       controller: verifyPassController,
       obscureText: true,
       hintText: "Password",
-      // onConfirm: () async {
-      //   if (verifyPassController.text == storedPass) {
-      //     await controller.deleteNote(note.id!, widget.folderId);
-      //     controller.fetchNotesByFolder(widget.folderId);
-      //   } else {
-      //     Get.snackbar(
-      //       "Access Denied",
-      //       "Incorrect Password. Note was not deleted.",
-      //       backgroundColor: AppColor().red,
-      //       colorText: Colors.white,
-      //     );
-      //   }
-      // },
       onConfirm: () async {
         if (verifyPassController.text == storedPass) {
-          // SWAPPED: Soft delete method removes local flickering automatically
           await controller.moveToTrash(note.id!, widget.folderId);
         } else {
           Get.snackbar(
@@ -172,29 +158,34 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           Obx(() {
             final bool hasNoData = controller.notes.isEmpty;
 
-            return Container(
-              height: 24,
-              width: 24,
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                border: Border.all(color: hasNoData ? AppColor().gray : AppColor().primaryColor, width: 1),
-                borderRadius: BorderRadius.circular(5),
-              ),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                alignment: Alignment.center,
-                constraints: const BoxConstraints(),
-                iconSize: 18,
-                color: hasNoData ? AppColor().gray : AppColor().primaryColor,
-                onPressed: hasNoData
-                    ? null
-                    : () {
-                        setState(() {
-                          isSelectionMode = !isSelectionMode;
-                          selectedNoteIds.clear();
-                        });
-                      },
-                icon: Icon(isSelectionMode ? Icons.close : Icons.more_vert_outlined),
+            return InkWell(
+              onTap: hasNoData
+                  ? null
+                  : () {
+                      setState(() {
+                        isSelectionMode = !isSelectionMode;
+                        selectedNoteIds.clear();
+                      });
+                    },
+              borderRadius: BorderRadius.circular(5),
+              child: Container(
+                height: 24,
+                width: 24,
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: hasNoData ? AppColor().gray : AppColor().primaryColor,
+                    width: 1,
+                  ),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Center(
+                  child: Icon(
+                    isSelectionMode ? Icons.close : Icons.more_vert_outlined,
+                    size: 18,
+                    color: hasNoData ? AppColor().gray : AppColor().primaryColor,
+                  ),
+                ),
               ),
             );
           }),
@@ -204,56 +195,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       body: Column(
         children: [
           _buildSearchBar(),
-          // Expanded(
-          //   child: Obx(() {
-          //     if (controller.isLoading.value) {
-          //       return Center(
-          //           child: CircularProgressIndicator(
-          //         color: AppColor().primaryColor,
-          //       ));
-          //     }
-
-          //     if (controller.notes.isEmpty) {
-          //       return const CustomNoData(message: "No data");
-          //     }
-
-          //     final pinnedNotes = controller.notes.where((n) => n.isPinned).toList();
-          //     final otherNotes = controller.notes.where((n) => !n.isPinned).toList();
-
-          //     Map<String, List<NoteModel>> groupedNotes = {};
-
-          //     for (var note in otherNotes) {
-          //       String dateKey = controller.getDateHeader(note.date.toString());
-
-          //       if (groupedNotes[dateKey] == null) {
-          //         groupedNotes[dateKey] = [];
-          //       }
-          //       groupedNotes[dateKey]!.add(note);
-          //     }
-
-          //     return SlidableAutoCloseBehavior(
-          //       child: ListView(
-          //         padding: const EdgeInsets.only(bottom: 20),
-          //         children: [
-          //           if (pinnedNotes.isNotEmpty) ...[
-          //             _buildSectionHeader("Pinned"),
-          //             ...pinnedNotes.map((note) => _buildSlidableNote(note)),
-          //             const SizedBox(height: 10),
-          //           ],
-          //           ...groupedNotes.entries.map((entry) {
-          //             return Column(
-          //               crossAxisAlignment: CrossAxisAlignment.start,
-          //               children: [
-          //                 _buildSectionHeader(entry.key),
-          //                 ...entry.value.map((note) => _buildSlidableNote(note)),
-          //               ],
-          //             );
-          //           }),
-          //         ],
-          //       ),
-          //     );
-          //   }),
-          // ),
           Expanded(
             child: Obx(() {
               if (controller.isLoading.value) {
@@ -353,7 +294,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         ? (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black)
         : (ThemeData.estimateBrightnessForColor(noteBgColor) == Brightness.dark ? AppColor().white : AppColor().black);
 
-    final Color itemSubTextColor = itemTextColor.withOpacity(0.7);
+    final Color itemSubTextColor = itemTextColor.withValues(alpha: 0.7);
 
     final String titleText = note.title.trim().isNotEmpty ? note.title : controller.getPlainTextFromNote(note.content ?? "").trim();
     final String plainContent = controller.getPlainTextFromNote(note.content ?? "").trim();
@@ -368,14 +309,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           motion: const ScrollMotion(),
           extentRatio: 0.7,
           children: [
-            // SlidableAction(
-            //   onPressed: (context) => controller.togglePinNote(note, widget.folderId),
-            //   backgroundColor: AppColor().orange,
-            //   foregroundColor: AppColor().white,
-            //   icon: note.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-            //   label: note.isPinned ? 'Unpin' : 'Pin',
-            //   borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
-            // ),
             AppSlidableAction(
               onPressed: () => controller.togglePinNote(note, widget.folderId),
               icon: note.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
@@ -385,19 +318,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 left: Radius.circular(16),
               ),
             ),
-            // SlidableAction(
-            //   onPressed: (context) {
-            //     if (note.isLocked == true) {
-            //       _verifyAndMove([note.id!]);
-            //     } else {
-            //       _showMoveSheet([note.id!]);
-            //     }
-            //   },
-            //   backgroundColor: AppColor().primaryColor,
-            //   foregroundColor: AppColor().white,
-            //   icon: Icons.folder,
-            //   label: 'Folder',
-            // ),
             AppSlidableAction(
               onPressed: () {
                 if (note.isLocked == true) {
@@ -410,15 +330,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               label: 'Folder',
               backgroundColor: AppColor().primaryColor,
             ),
-            // UPDATED: Triggers soft-delete confirmation sheet loops
-            // SlidableAction(
-            //   onPressed: (context) => note.isLocked ? _showUnlockBeforeDelete(note) : _showDeleteConfirmation(note),
-            //   backgroundColor: AppColor().red,
-            //   foregroundColor: AppColor().white,
-            //   icon: Icons.delete,
-            //   label: 'Delete',
-            //   borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)),
-            // ),
             AppSlidableAction(
               onPressed: () {
                 note.isLocked ? _showUnlockBeforeDelete(note) : _showDeleteConfirmation(note);
@@ -476,10 +387,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                               Container(
                                 width: 26,
                                 height: 26,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppColor().primaryColor.withOpacity(0.1),
-                                ),
+                                decoration: BoxDecoration(shape: BoxShape.circle, color: AppColor().primaryColor.withValues(alpha: 0.1)),
                                 padding: EdgeInsets.all(4),
                                 child: Icon(
                                   Icons.lock,
@@ -739,7 +647,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         style: text16(context),
                       ),
                       onTap: () async {
-                        // OPTIMIZATION: Cleared loop await calls; uses fast single SQL block transaction
+                        //  Cleared loop await calls; uses fast single SQL block transaction
                         await controller.bulkMoveNotes(noteIds, folder.id!);
                         if (!mounted) return;
                         Get.back();
@@ -782,7 +690,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       subTitle: "Are you sure you want to delete this note?",
       confirmText: "Delete",
       onConfirm: () async {
-        // SWAPPED: Soft delete target
         await controller.moveToTrash(note.id!, widget.folderId);
       },
     );

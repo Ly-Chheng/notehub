@@ -33,6 +33,7 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: () async {
         bool shouldExit = false;

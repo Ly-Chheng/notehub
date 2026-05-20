@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 class NotificationView extends StatelessWidget {
   const NotificationView({super.key});
@@ -22,13 +23,13 @@ class NotificationView extends StatelessWidget {
                     Icon(
                       Icons.notifications_none,
                       color: Theme.of(context).iconTheme.color,
-                    ), // Updated icon
+                    ),
                     const SizedBox(width: 15),
                     Text(
                       'Notification',
                       style: TextStyle(
                         fontFamily: 'EN-REGULAR',
-                        fontSize: context.isPhone ? 16 : 18,
+                        fontSize: AppFontSize(context).subTitleSize,
                       ),
                     ),
                   ],

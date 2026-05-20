@@ -97,13 +97,12 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                   "Hint",
                   false,
                   null,
-                  type: TextInputType.number,
                   controller: _hintController,
                   trailing: Text(
                     "Optional",
                     style: TextStyle(
                       color: AppColor().gray,
-                      fontSize: context.isPhone ? 14 : 16,
+                      fontSize: AppFontSize(context).normalTextSize,
                       fontFamily: 'EN-REGULAR',
                     ),
                   ),
@@ -129,18 +128,12 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          "Security Question Verification",
-          style: TextStyle(
-            fontSize: context.isPhone ? 16 : 18,
-            fontFamily: 'EN-REGULAR',
-          ),
-        ),
+        Text("Security Question Verification", style: text16(context)),
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
           decoration: BoxDecoration(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: DropdownButtonHideUnderline(
@@ -151,7 +144,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 "Select Security Question",
                 style: TextStyle(
                   color: AppColor().gray,
-                  fontSize: context.isPhone ? 14 : 16,
+                  fontSize: AppFontSize(context).subTitleSize,
                   fontFamily: 'EN-REGULAR',
                 ),
               ),
@@ -163,7 +156,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                         child: Text(
                           q,
                           style: TextStyle(
-                            fontSize: context.isPhone ? 16 : 16,
+                            fontSize: AppFontSize(context).normalTextSize,
                             fontFamily: 'EN-REGULAR',
                           ),
                         ),

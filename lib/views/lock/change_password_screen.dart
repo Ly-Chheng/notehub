@@ -117,13 +117,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   "New Hint",
                   false,
                   null,
-                  type: TextInputType.number,
                   controller: _hintController,
                   trailing: Text(
                     "Optional",
                     style: TextStyle(
                       color: AppColor().gray,
-                      fontSize: context.isPhone ? 14 : 16,
+                      fontSize: AppFontSize(context).normalTextSize,
                       fontFamily: 'EN-REGULAR',
                     ),
                   ),
@@ -156,7 +155,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           "Optional",
           style: TextStyle(
             color: AppColor().gray,
-            fontSize: context.isPhone ? 14 : 16,
+            fontSize: AppFontSize(context).normalTextSize,
             fontFamily: 'EN-REGULAR',
           ),
         ),
@@ -168,7 +167,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.1),
+        color: Colors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: DropdownButtonHideUnderline(
@@ -179,7 +178,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             "Select question",
             style: TextStyle(
               color: AppColor().gray,
-              fontSize: context.isPhone ? 14 : 18,
+              fontSize: AppFontSize(context).subTitleSize,
               fontFamily: 'EN-REGULAR',
             ),
           ),
@@ -191,7 +190,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               child: Text(
                 q,
                 style: TextStyle(
-                  fontSize: context.isPhone ? 16 : 18,
+                  fontSize: AppFontSize(context).descriptionLargeSize,
                   fontFamily: 'EN-REGULAR',
                 ),
               ),

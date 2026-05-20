@@ -44,18 +44,39 @@ class TimerController extends GetxController {
     runningSeconds.remove(key);
   }
 
-  void toggleTimer(dynamic key) {
-    if (activeTimerKeys.contains(key)) {
-      activeTimerKeys.remove(key);
-      _updateHiveSeconds(key, runningSeconds[key]!);
+  // void toggleTimer(dynamic key) {
+  //   if (activeTimerKeys.contains(key)) {
+  //     activeTimerKeys.remove(key);
+  //     _updateHiveSeconds(key, runningSeconds[key]!);
+  //   } else {
+  //     TimerModel? timer = timerBox.get(key);
+  //     if (timer != null) {
+  //       if (runningSeconds[key] == null || runningSeconds[key]! <= 0) {
+  //         runningSeconds[key] = timer.totalSeconds;
+  //       }
+  //       activeTimerKeys.add(key);
+  //     }
+  //   }
+  // }
+  void toggleTimer(dynamic timerKey) {
+    // Find the original timer from your Hive box
+    final timer = timerBox.get(timerKey);
+    if (timer == null) return;
+
+    if (activeTimerKeys.contains(timerKey)) {
+      // If it's running, pause it
+      activeTimerKeys.remove(timerKey);
     } else {
-      TimerModel? timer = timerBox.get(key);
-      if (timer != null) {
-        if (runningSeconds[key] == null || runningSeconds[key]! <= 0) {
-          runningSeconds[key] = timer.totalSeconds;
-        }
-        activeTimerKeys.add(key);
+      // If it's finished or canceled (0 seconds remaining), reset its time before starting!
+      int currentSec = runningSeconds[timerKey] ?? timer.remainingSeconds;
+      if (currentSec <= 0) {
+        runningSeconds[timerKey] = timer.totalSeconds;
+        timer.remainingSeconds = timer.totalSeconds;
+        timer.save();
       }
+
+      // Add to active keys to start the tick loop
+      activeTimerKeys.add(timerKey);
     }
   }
 
