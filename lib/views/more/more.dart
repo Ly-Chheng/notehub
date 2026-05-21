@@ -62,7 +62,7 @@ class _MoreScreenState extends State<MoreScreen> {
                 ]),
               ),
               Text(
-                "Copyright © 2026 Student Note App.\nVersion 1.0.0 (5)",
+                "Copyright © 2026 Student Note App.\nVersion 1.0.0 (6)",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: AppColor().gray,
@@ -96,49 +96,6 @@ class _MoreScreenState extends State<MoreScreen> {
   }
 
   Widget _buildMenuTile(IconData icon, String title, {required VoidCallback onTap, bool isLast = false}) {
-    // return Column(
-    //   children: [
-    //     ListTile(
-    //       leading: Container(
-    //         padding: const EdgeInsets.all(8),
-    //         decoration: BoxDecoration(
-    //           color: AppColor().primaryColor.withOpacity(0.1),
-    //           borderRadius: BorderRadius.circular(10),
-    //         ),
-    //         child: Icon(
-    //           icon,
-    //           color: AppColor().primaryColor,
-    //           size: context.isPhone ? 20 : 24,
-    //         ),
-    //       ),
-    //       title: Text(
-    //         title,
-    //         style: TextStyle(
-    //           fontSize: context.isPhone ? 15 : 17,
-    //           fontFamily: 'EN-REGULAR',
-    //           fontWeight: FontWeight.w500,
-    //           color: Theme.of(context).textTheme.bodyLarge?.color,
-    //         ),
-    //       ),
-    //       trailing: Icon(
-    //         Icons.arrow_forward_ios,
-    //         size: context.isPhone ? 14 : 18,
-    //         color: Colors.grey,
-    //       ),
-    //       onTap: onTap,
-    //     ),
-
-    //     /// DIVIDER
-    //     if (!isLast)
-    //       Padding(
-    //         padding: const EdgeInsets.only(left: 60),
-    //         child: Divider(
-    //           height: 1,
-    //           color: Colors.grey.shade200,
-    //         ),
-    //       ),
-    //   ],
-    // );
     return Column(
       children: [
         InkWell(
@@ -185,14 +142,14 @@ class _MoreScreenState extends State<MoreScreen> {
             ),
           ),
         ),
-        if (!isLast)
-          Padding(
-            padding: const EdgeInsets.only(left: 60),
-            child: Divider(
-              height: 1,
-              color: AppColor().gray.withValues(alpha: 0.1),
-            ),
-          ),
+        // if (!isLast)
+        //   Padding(
+        //     padding: const EdgeInsets.only(left: 60),
+        //     child: Divider(
+        //       height: 1,
+        //       color: AppColor().gray.withValues(alpha: 0.1),
+        //     ),
+        //   ),
       ],
     );
   }

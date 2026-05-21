@@ -367,28 +367,59 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  // void _openDrawing() {
+  //   _forceUnfocus();
+  //   Get.bottomSheet(
+  //     HandwritingCanvas(
+  //       initialLayers: drawingLayers,
+  //       onSave: (path, layers) {
+  //         setState(() {
+  //           drawingLayers = layers;
+
+  //           if (layers.isEmpty) {
+  //             // 1. If layers are deleted, purge all handwriting images from selection list
+  //             selectedImages.removeWhere((file) => file.path.contains('draw_'));
+  //           } else if (path != null) {
+  //             // 2. Clear old drawing entries first to avoid stacking duplicate drawing paths
+  //             selectedImages.removeWhere((file) => file.path.contains('draw_'));
+  //             selectedImages.add(File(path));
+  //           }
+  //         });
+  //         _triggerAutoSave();
+  //       },
+  //     ),
+  //     isScrollControlled: true,
+  //   );
+  // }
+
   void _openDrawing() {
     _forceUnfocus();
-    Get.bottomSheet(
-      HandwritingCanvas(
-        initialLayers: drawingLayers,
-        onSave: (path, layers) {
-          setState(() {
-            drawingLayers = layers;
-
-            if (layers.isEmpty) {
-              // 1. If layers are deleted, purge all handwriting images from selection list
-              selectedImages.removeWhere((file) => file.path.contains('draw_'));
-            } else if (path != null) {
-              // 2. Clear old drawing entries first to avoid stacking duplicate drawing paths
-              selectedImages.removeWhere((file) => file.path.contains('draw_'));
-              selectedImages.add(File(path));
-            }
-          });
-          _triggerAutoSave();
-        },
-      ),
+    showModalBottomSheet(
+      context: context,
       isScrollControlled: true,
+      constraints: BoxConstraints(maxWidth: double.infinity),
+      backgroundColor: Theme.of(context).cardColor,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (BuildContext context) {
+        return HandwritingCanvas(
+          initialLayers: drawingLayers,
+          onSave: (path, layers) {
+            setState(() {
+              drawingLayers = layers;
+
+              if (layers.isEmpty) {
+                // 1. If layers are deleted, purge all handwriting images from selection list
+                selectedImages.removeWhere((file) => file.path.contains('draw_'));
+              } else if (path != null) {
+                // 2. Clear old drawing entries first to avoid stacking duplicate drawing paths
+                selectedImages.removeWhere((file) => file.path.contains('draw_'));
+                selectedImages.add(File(path));
+              }
+            });
+            _triggerAutoSave();
+          },
+        );
+      },
     );
   }
 

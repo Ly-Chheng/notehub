@@ -261,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
     showConfirmDialog(
       context: context,
       title: "Delete Folder",
-      subTitle: "Are you sure you want to delete '${folder.title}'? All notes inside will be moved directly to Recently Deleted.",
+      subTitle: "Are you sure you want to delete ${folder.title}? All notes inside will be moved directly to Recently Deleted.",
       confirmText: "Delete",
       onConfirm: () async {
         await noteController.bulkMoveToTrashByFolder(folder.id!, controller.defaultFolderId);

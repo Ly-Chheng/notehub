@@ -65,13 +65,13 @@ class DarkModeView extends GetView<DarkModeController> {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(left: 60),
-            child: Divider(
-              height: 1,
-              color: AppColor().gray.withValues(alpha: 0.1),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(left: 60),
+          //   child: Divider(
+          //     height: 1,
+          //     color: AppColor().gray.withValues(alpha: 0.1),
+          //   ),
+          // ),
         ],
       ),
     );

@@ -79,8 +79,7 @@ class StopwatchScreen extends StatelessWidget {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  // color: Colors.grey.withValues(alpha: 0.1),
-                  color: Theme.of(context).cardColor,
+                  color: Colors.grey.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Padding(
