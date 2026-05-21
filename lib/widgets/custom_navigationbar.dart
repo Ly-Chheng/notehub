@@ -26,12 +26,6 @@ Widget customNavigationBar({
     child: Container(
       decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
-          // boxShadow: [
-          //   BoxShadow(
-          //     color: Colors.black12,
-          //     blurRadius: 10,
-          //   ),
-          // ],
           boxShadow: [
             BoxShadow(
               color: Color.fromRGBO(0, 0, 0, 0.04),

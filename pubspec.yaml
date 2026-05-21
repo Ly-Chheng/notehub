@@ -64,15 +64,12 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
   assets:
     - assets/fonts/
     - assets/icons/
     - assets/images/
     - assets/.env
 
-  # To add custom fonts to your application, add a fonts section here,
-  # "family" key with the font family name, and a "fonts" key with a
   fonts:
     - family: KH-LIGHT
       fonts:

@@ -336,16 +336,8 @@ class _MyHomePageState extends State<MyHomePage> {
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
-            // Icon(Icons.folder, color: AppColor().primaryColor, size: 35),
             buildFolderIcon(folder, isDefault),
             const SizedBox(width: 12),
-            // if (folder.isLocked == true)
-            //   Padding(
-            //     padding: EdgeInsets.only(
-            //       right: context.isPhone ? 2 : 5,
-            //     ),
-            //     child: Icon(Icons.lock, size: 18, color: AppColor().primaryColor),
-            //   ),
             Expanded(
               child: Text(folder.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: text16(context).copyWith(fontWeight: FontWeight.w600)),
             ),
@@ -355,7 +347,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 child: Icon(Icons.push_pin, size: 18, color: AppColor().orange),
               ),
-
             Obx(() {
               noteController.notes.length;
 

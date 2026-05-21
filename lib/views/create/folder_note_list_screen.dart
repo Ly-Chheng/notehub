@@ -647,7 +647,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         style: text16(context),
                       ),
                       onTap: () async {
-                        //  Cleared loop await calls; uses fast single SQL block transaction
                         await controller.bulkMoveNotes(noteIds, folder.id!);
                         if (!mounted) return;
                         Get.back();

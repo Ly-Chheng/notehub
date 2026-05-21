@@ -143,8 +143,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     if (isEmpty) {
       if (isAuto && currentNoteId != null) {
-        // await noteController.deleteNote(currentNoteId!, widget.folderId);
-        // SWAPPED: Redirect to soft trash placement instead of direct database purge
         await noteController.moveToTrash(currentNoteId!, widget.folderId);
         currentNoteId = null;
       }
@@ -367,31 +365,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  // void _openDrawing() {
-  //   _forceUnfocus();
-  //   Get.bottomSheet(
-  //     HandwritingCanvas(
-  //       initialLayers: drawingLayers,
-  //       onSave: (path, layers) {
-  //         setState(() {
-  //           drawingLayers = layers;
-
-  //           if (layers.isEmpty) {
-  //             // 1. If layers are deleted, purge all handwriting images from selection list
-  //             selectedImages.removeWhere((file) => file.path.contains('draw_'));
-  //           } else if (path != null) {
-  //             // 2. Clear old drawing entries first to avoid stacking duplicate drawing paths
-  //             selectedImages.removeWhere((file) => file.path.contains('draw_'));
-  //             selectedImages.add(File(path));
-  //           }
-  //         });
-  //         _triggerAutoSave();
-  //       },
-  //     ),
-  //     isScrollControlled: true,
-  //   );
-  // }
-
   void _openDrawing() {
     _forceUnfocus();
     showModalBottomSheet(
@@ -408,10 +381,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               drawingLayers = layers;
 
               if (layers.isEmpty) {
-                // 1. If layers are deleted, purge all handwriting images from selection list
                 selectedImages.removeWhere((file) => file.path.contains('draw_'));
               } else if (path != null) {
-                // 2. Clear old drawing entries first to avoid stacking duplicate drawing paths
                 selectedImages.removeWhere((file) => file.path.contains('draw_'));
                 selectedImages.add(File(path));
               }

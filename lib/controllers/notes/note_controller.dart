@@ -69,16 +69,14 @@ class NoteController extends GetxController {
         'notes',
         {
           'is_deleted': 1,
-          'folder_id': fallbackFolderId, // Changes ownership away from deleted folder
+          'folder_id': fallbackFolderId,
         },
         where: 'folder_id = ? AND (is_deleted = 0 OR is_deleted IS NULL)',
         whereArgs: [folderId],
       );
 
-      // Clear local state tracking list
       notes.clear();
 
-      // Pull fresh data directly into the global trash stream
       await fetchTrashNotes();
     } catch (e) {
       debugPrint("Error executing protected batch folder trash migration: $e");
@@ -410,15 +408,6 @@ class NoteController extends GetxController {
     }
   }
 
-  // Future<int> getCountForFolder(int folderId) async {
-  //   try {
-  //     final db = await DatabaseService.db;
-  //     final result = await db.rawQuery('SELECT COUNT(*) as count FROM notes WHERE folder_id = ?', [folderId]);
-  //     return Sqflite.firstIntValue(result) ?? 0;
-  //   } catch (e) {
-  //     return 0;
-  //   }
-  // }
   Future<int> getCountForFolder(int folderId) async {
     try {
       final db = await DatabaseService.db;

@@ -58,7 +58,7 @@ Future<void> main() async {
   Hive.registerAdapter(TimerModelAdapter());
 
   await Hive.deleteFromDisk();
-  await GetStorage().erase();
+  // await GetStorage().erase();
 
   await Hive.openBox<TimerModel>('timer_box');
   await Hive.openBox('create_timer_box');

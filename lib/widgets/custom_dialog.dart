@@ -37,7 +37,7 @@ Future<void> showConfirmDialog({
       icon = Icons.warning;
       break;
     default:
-      confirmColor = AppColor().primaryColor;
+      confirmColor = AppColor().red;
       icon = null;
   }
 
