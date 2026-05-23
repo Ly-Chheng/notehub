@@ -7,11 +7,10 @@ import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
-import 'package:project_structure/widgets/custom_button.dart';
+import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
-import 'package:project_structure/widgets/sheet_header.dart';
 
 class CreateTimerScreen extends StatefulWidget {
   final bool isEditing;
@@ -73,12 +72,58 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     secController.animateToItem(s, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
   }
 
-  void _finalizePresetSave(int h, int m, int s) async {
-    if (h == 0 && m == 0 && s == 0) return;
-    bool isFixedDuplicate = (h == 0 && m == 10 && s == 0) || (h == 0 && m == 30 && s == 0) || (h == 1 && m == 0 && s == 0);
+  // void _finalizePresetSave(int h, int m, int s) async {
+  //   if (h == 0 && m == 0 && s == 0) return;
+  //   bool isFixedDuplicate = (h == 0 && m == 10 && s == 0) || (h == 0 && m == 30 && s == 0) || (h == 1 && m == 0 && s == 0);
+
+  //   if (isFixedDuplicate) {
+  //     Get.back();
+  //     showConfirmDialog(
+  //       context: context,
+  //       title: "Already Exists",
+  //       subTitle: "This time is already available in your presets.",
+  //       showCancel: false,
+  //       onConfirm: () {},
+  //       confirmText: "OK",
+  //     );
+
+  //     return;
+  //   }
+
+  //   final settingsBox = Hive.box('create_timer_box');
+  //   List rawList = settingsBox.get('user_presets', defaultValue: []);
+  //   List customPresets = List.from(rawList);
+
+  //   bool isUserDuplicate = customPresets.any((p) => p['h'] == h && p['m'] == m && p['s'] == s);
+
+  //   if (isUserDuplicate) {
+  //     Get.back();
+
+  //     showConfirmDialog(
+  //       context: context,
+  //       title: "Already Exists",
+  //       subTitle: "This time is already available in your presets.",
+  //       showCancel: false,
+  //       onConfirm: () {},
+  //       confirmText: "OK",
+  //     );
+  //     return;
+  //   }
+
+  //   String label = "${h > 0 ? '${h}h ' : ''}${m > 0 ? '${m}m ' : ''}${s > 0 ? '${s}s' : ''}".trim();
+  //   Map<String, dynamic> newPreset = {"label": label, "h": h, "m": m, "s": s};
+
+  //   customPresets.add(newPreset);
+  //   await settingsBox.put('user_presets', customPresets);
+  //   setState(() {});
+  // }
+  
+  Future<bool> _finalizePresetSave(int h, int m, int s) async {
+    if (h == 0 && m == 0 && s == 0) return false;
+
+    bool isFixedDuplicate = (h == 0 && m == 10 && s == 0) || (h == 0 && m == 30 && s == 0) || (h == 0 && m == 50 && s == 0);
 
     if (isFixedDuplicate) {
-      Get.back();
       showConfirmDialog(
         context: context,
         title: "Already Exists",
@@ -87,8 +132,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         onConfirm: () {},
         confirmText: "OK",
       );
-
-      return;
+      return false;
     }
 
     final settingsBox = Hive.box('create_timer_box');
@@ -98,8 +142,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     bool isUserDuplicate = customPresets.any((p) => p['h'] == h && p['m'] == m && p['s'] == s);
 
     if (isUserDuplicate) {
-      Get.back();
-
       showConfirmDialog(
         context: context,
         title: "Already Exists",
@@ -108,7 +150,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         onConfirm: () {},
         confirmText: "OK",
       );
-      return;
+      return false;
     }
 
     String label = "${h > 0 ? '${h}h ' : ''}${m > 0 ? '${m}m ' : ''}${s > 0 ? '${s}s' : ''}".trim();
@@ -117,6 +159,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     customPresets.add(newPreset);
     await settingsBox.put('user_presets', customPresets);
     setState(() {});
+    return true;
   }
 
   void _saveTimer() async {
@@ -290,7 +333,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         children: [
           customHeader("Quick Presets", context),
           IconButton(
-            onPressed: () => _showAddPresetSheet(),
+            onPressed: () => showAddPresetSheet(),
             icon: Icon(Icons.add_circle_outline, color: AppColor().primaryColor, size: context.isPhone ? 28 : 32),
           ),
         ],
@@ -350,63 +393,35 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     );
   }
 
-  void _showAddPresetSheet() {
+  void showAddPresetSheet() {
     int tempH = selectedHours;
     int tempM = selectedMinutes;
     int tempS = selectedSeconds;
 
-    showModalBottomSheet(
+    ConfirmBottomSheet.show(
       context: context,
-      isScrollControlled: true,
-      constraints: BoxConstraints(maxWidth: double.infinity),
-      backgroundColor: Theme.of(context).cardColor,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            return SafeArea(
-              child: Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SheetHeader(title: "Add Quick Preset"),
-                    const SizedBox(height: 20),
-                    Container(
-                      height: context.isPhone ? 200 : 300,
-                      decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.01), borderRadius: BorderRadius.circular(20)),
-                      child: Row(
-                        children: [
-                          _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
-                          _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v), initial: tempM),
-                          _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v), initial: tempS),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 25),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: CustomButton(
-                            text: "Save Preset",
-                            onPressed: () {
-                              _finalizePresetSave(tempH, tempM, tempS);
-                              Get.back();
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
+      title: "Add Quick Preset",
+      content: StatefulBuilder(
+        builder: (context, setSheetState) {
+          return Container(
+            height: context.isPhone ? 200 : 300,
+            decoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: 0.01),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
+                _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v), initial: tempM),
+                _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v), initial: tempS),
+              ],
+            ),
+          );
+        },
+      ),
+      confirmText: "Save Preset",
+      onConfirm: () async {
+        await _finalizePresetSave(tempH, tempM, tempS);
       },
     );
   }

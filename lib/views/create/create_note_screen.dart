@@ -144,7 +144,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     if (isEmpty) {
       if (isAuto && currentNoteId != null) {
         await noteController.moveToTrash(currentNoteId!, widget.folderId);
-        currentNoteId = null;
+        // currentNoteId = null;
       }
 
       if (!isAuto) Get.back();
@@ -730,8 +730,19 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     });
                     _triggerAutoSave();
                   },
+                  // onDeleteTable: () {
+                  //   setState(() => showTable = false);
+                  //   _triggerAutoSave();
+                  // },
                   onDeleteTable: () {
-                    setState(() => showTable = false);
+                    setState(() {
+                      showTable = false;
+                      // Reset table structure back to a clean, empty 2x2 grid
+                      tableData = [
+                        ["", ""],
+                        ["", ""]
+                      ];
+                    });
                     _triggerAutoSave();
                   },
                 ),
@@ -766,7 +777,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       confirmText: "Delete",
       onConfirm: () async {
         if (currentNoteId != null) {
-          // await noteController.deleteNote(currentNoteId!, widget.folderId);
           await noteController.moveToTrash(currentNoteId!, widget.folderId);
         }
         Get.back(result: true);

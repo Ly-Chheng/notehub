@@ -117,12 +117,14 @@ Future<void> showConfirmDialog({
                       child: CustomButton(
                         text: "Cancel",
                         onPressed: () => Navigator.pop(context),
-                        backgroundColor: Colors.grey.shade50,
-                        textColor: AppColor().black,
-                        borderRadius: 12,
+                        // backgroundColor: Colors.grey.shade50,
+                        backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.grey.shade50,
+                        // textColor: AppColor().black,
+                        textColor: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().black,
+                        borderRadius: 14,
                       ),
                     ),
-                  if (showCancel) const SizedBox(width: 10),
+                  if (showCancel) const SizedBox(width: 15),
                   Expanded(
                     child: CustomButton(
                       text: confirmText ?? 'OK',

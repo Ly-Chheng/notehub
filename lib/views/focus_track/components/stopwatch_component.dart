@@ -141,6 +141,7 @@ class StopwatchScreen extends StatelessWidget {
 
   Widget _roundButton(IconData icon, VoidCallback? onTap, BuildContext context) {
     bool isDisabled = onTap == null;
+    final activeIconColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
 
     return GestureDetector(
       onTap: onTap,
@@ -153,7 +154,7 @@ class StopwatchScreen extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          color: isDisabled ? AppColor().gray : Colors.black87,
+          color: isDisabled ? AppColor().gray : activeIconColor,
           size: context.isPhone ? 24 : 30,
         ),
       ),
