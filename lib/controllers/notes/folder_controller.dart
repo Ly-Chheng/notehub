@@ -4,6 +4,7 @@ import 'package:project_structure/models/note/folder_model.dart';
 
 class FolderController extends GetxController {
   var folders = <FolderModel>[].obs;
+  var searchQuery = ''.obs;
 
   final String defaultFolderName = "My Note";
 
@@ -221,5 +222,16 @@ class FolderController extends GetxController {
     }
     folders.refresh();
   }
-  
+
+  void searchFolders(String query) {
+    searchQuery.value = query;
+  }
+
+// A computed list that automatically updates when folders or searchQuery changes
+  List<FolderModel> get filteredFolders {
+    if (searchQuery.isEmpty) {
+      return folders;
+    }
+    return folders.where((folder) => folder.title.toLowerCase().contains(searchQuery.value.toLowerCase())).toList();
+  }
 }

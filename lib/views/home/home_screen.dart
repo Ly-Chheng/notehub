@@ -13,6 +13,7 @@ import 'package:project_structure/views/home/components/create_folder_component.
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
+import 'package:project_structure/widgets/custom_text_field.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -25,6 +26,13 @@ class _MyHomePageState extends State<MyHomePage> {
   final FolderController controller = Get.put(FolderController());
   final NoteController noteController = Get.put(NoteController());
   final LockController lockController = Get.put(LockController());
+  final TextEditingController folderSearchController = TextEditingController();
+
+  @override
+  void dispose() {
+    folderSearchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,17 +40,26 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          _buildFolderSearchBar(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
             child: customHeader("Folders", context),
           ),
           Expanded(
             child: Obx(() {
-              if (controller.folders.isEmpty) {
-                return const Center(
-                  child: Text("No folders yet"),
+              // Read from the filtered list in your controller instead of raw folders
+              final displayedFolders = controller.filteredFolders;
+
+              if (displayedFolders.isEmpty) {
+                return Center(
+                  child: Text(controller.searchQuery.isEmpty ? "No folders yet" : "No matching folders found"),
                 );
               }
+              // if (controller.folders.isEmpty) {
+              //   return const Center(
+              //     child: Text("No folders yet"),
+              //   );
+              // }
               return SlidableAutoCloseBehavior(
                 child: ListView.builder(
                   itemCount: controller.folders.length,
@@ -382,6 +399,20 @@ class _MyHomePageState extends State<MyHomePage> {
             color: Colors.white,
           ),
       ],
+    );
+  }
+
+  Widget _buildFolderSearchBar() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 12),
+      child: customTextField(
+        "Search",
+        false,
+        null,
+        controller: folderSearchController,
+        onChanged: (v) => controller.searchFolders(v),
+        prefixIcon: const Icon(Icons.search),
+      ),
     );
   }
 }
