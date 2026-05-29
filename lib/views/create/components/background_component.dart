@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
-import 'package:project_structure/widgets/sheet_header.dart';
+import 'package:project_structure/widgets/multi_style.dart';
 
 void showPaletteSheet({
   required BuildContext context,

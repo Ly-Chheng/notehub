@@ -19,7 +19,6 @@ class ConfirmBottomSheet {
     VoidCallback? onSave,
     Future<void> Function()? onConfirm,
   }) {
-    // Check if the save action feature is actively requested
     final bool hasSaveButton = saveText != null && onSave != null;
 
     showModalBottomSheet(

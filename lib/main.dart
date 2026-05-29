@@ -19,6 +19,8 @@ import 'package:project_structure/firebase_options.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/route.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -88,6 +90,16 @@ class MyApp extends StatelessWidget {
       translations: AppTranslations(),
       fallbackLocale: AppTranslations().fallbackLocale,
       locale: storage.read('langCode') != null ? Locale(storage.read('langCode'), storage.read('countryCode')) : const Locale('km', 'KM'),
+      localizationsDelegates: const [
+        FlutterQuillLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      // supportedLocales: const [
+      //   Locale('en'),
+      //   Locale('km', 'KM'),
+      // ],
     );
   }
 }

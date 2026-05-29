@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 class SheetHeader extends StatelessWidget {
   final String title;
@@ -72,4 +73,58 @@ class SheetHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget divider(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Divider(
+      height: 1,
+      color: Colors.grey.withValues(alpha: 0.08),
+    ),
+  );
+}
+
+Widget buildActionItem(
+  BuildContext context, {
+  required IconData icon,
+  required String title,
+  required VoidCallback onTap,
+  required Color color,
+  bool isDestructive = false,
+}) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+    child: Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, size: 24, color: color),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: AppFontSize(context).descriptionLargeSize,
+                  fontFamily: rengular,
+                  color: isDestructive ? AppColor().red : null,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }

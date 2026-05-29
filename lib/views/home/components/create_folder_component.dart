@@ -4,7 +4,7 @@ import 'package:project_structure/controllers/notes/folder_controller.dart';
 import 'package:project_structure/models/note/folder_model.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
-import 'package:project_structure/widgets/sheet_header.dart';
+import 'package:project_structure/widgets/multi_style.dart';
 
 void showFolderSheet(BuildContext context, {FolderModel? folder}) {
   final FolderController controller = Get.find<FolderController>();

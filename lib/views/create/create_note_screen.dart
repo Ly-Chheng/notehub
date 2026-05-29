@@ -14,7 +14,6 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/create/components/background_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
-import 'package:project_structure/views/create/components/image_detail_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/views/create/components/quill_editor_component.dart';
 import 'package:project_structure/views/create/components/table_component.dart';
@@ -25,7 +24,7 @@ import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/popup_lists_menu.dart';
-import 'package:project_structure/widgets/sheet_header.dart';
+import 'package:project_structure/widgets/multi_style.dart';
 
 class CreateNoteScreen extends StatefulWidget {
   final bool isEditing;
@@ -139,7 +138,30 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final String title = titleController.text.trim();
     final bool isContentEmpty = _quillController.document.isEmpty();
 
-    bool isEmpty = title.isEmpty && isContentEmpty && selectedImages.isEmpty && !showTable && drawingLayers.isEmpty;
+    // 1. DYNAMICALLY EXTRACT IMAGES CURRENTLY PRESENT IN THE QUILL EDITOR
+    final List<String> activeImagePaths = [];
+
+    // Also look for drawing paths that are managed outside the editor content if applicable
+    final drawingPaths = selectedImages.map((f) => f.path).where((path) => path.contains('draw_')).toList();
+    activeImagePaths.addAll(drawingPaths);
+
+    // Parse the Delta document to find image blocks
+    for (final operation in _quillController.document.toDelta().toJson()) {
+      if (operation.containsKey('insert') && operation['insert'] is Map) {
+        final insertMap = operation['insert'] as Map;
+        if (insertMap.containsKey('image')) {
+          final String imagePath = insertMap['image'].toString();
+          activeImagePaths.add(imagePath);
+        }
+      }
+    }
+
+    // 2. Synchronize your state list so the rest of the UI matches
+    setState(() {
+      selectedImages = activeImagePaths.map((path) => File(path)).toList();
+    });
+
+    bool isEmpty = title.isEmpty && isContentEmpty && activeImagePaths.isEmpty && !showTable && drawingLayers.isEmpty;
 
     if (isEmpty) {
       if (isAuto && currentNoteId != null) {
@@ -161,7 +183,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       isLocked: isLocked,
       isPinned: isPinned,
       bgColor: noteBgColor?.value ?? 0,
-      imagePaths: selectedImages.map((f) => f.path).toList(),
+      // imagePaths: selectedImages.map((f) => f.path).toList(),
+      imagePaths: activeImagePaths,
       showTable: showTable,
       tableData: tableData,
       drawingLayers: drawingLayers,
@@ -283,34 +306,120 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   void _handleImageSelection() {
     _forceUnfocus();
-    final int photoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
 
-    if (photoCount >= 2) {
-      showConfirmDialog(
-        context: context,
-        title: "Image Limit",
-        subTitle: "You can only select up to 2 images.",
-        showCancel: false,
-        confirmText: "OK",
-        onConfirm: () {},
+    // final int photoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
+
+    // if (photoCount >= 2) {
+    //   showConfirmDialog(
+    //     context: context,
+    //     title: "Image Limit",
+    //     subTitle: "You can only select up to 2 images.",
+    //     showCancel: false,
+    //     confirmText: "OK",
+    //     onConfirm: () {},
+    //   );
+    //   return;
+    // }
+
+    // showMediaSheet(
+    //   context: context,
+    //   onImageSelected: (File tempImage) async {
+    //     // final int currentCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
+
+    //     // if (currentCount < 2) {
+    //     //   File permanentFile = await _moveFileToPermanentStorage(tempImage);
+
+    //     //   setState(() {
+    //     //     selectedImages.add(permanentFile);
+    //     //   });
+
+    //     //   // Insert image at cursor position
+    //     //   final index = _quillController.selection.baseOffset;
+
+    //     //   _quillController.document.insert(index, '\n');
+
+    //     //   _quillController.document.insert(
+    //     //     index + 1,
+    //     //     BlockEmbed.image(permanentFile.path),
+    //     //   );
+
+    //     //   _quillController.document.insert(index + 2, '\n');
+
+    //     //   _quillController.updateSelection(
+    //     //     TextSelection.collapsed(offset: index + 3),
+    //     //     ChangeSource.local,
+    //     //   );
+
+    //     //   _triggerAutoSave();
+    //     // }
+    //     File permanentFile = await _moveFileToPermanentStorage(tempImage);
+
+    //     setState(() {
+    //       selectedImages.add(permanentFile);
+    //     });
+
+    //     // Insert image at cursor position
+    //     final index = _quillController.selection.baseOffset;
+
+    //     _quillController.document.insert(index, '\n');
+
+    //     _quillController.document.insert(
+    //       index + 1,
+    //       BlockEmbed.image(permanentFile.path),
+    //     );
+
+    //     _quillController.document.insert(index + 2, '\n');
+
+    //     _quillController.updateSelection(
+    //       TextSelection.collapsed(offset: index + 3),
+    //       ChangeSource.local,
+    //     );
+
+    //     _triggerAutoSave();
+    //   },
+    // );
+    showMediaSheet(
+  context: context,
+  onMediaSelected: (File tempMedia, String type) async {
+    // Move the file (image or video) to permanent storage
+    File permanentFile = await _moveFileToPermanentStorage(tempMedia);
+
+    setState(() {
+      selectedImages.add(permanentFile); 
+      // Note: You might want to rename 'selectedImages' to 'selectedMedia' later if it holds videos too!
+    });
+
+    // Insert media at the current cursor position
+    final index = _quillController.selection.baseOffset;
+
+    // 1. Insert a newline before the media block to ensure proper spacing
+    _quillController.document.insert(index, '\n');
+
+    // 2. Insert the correct block embedding based on the media type
+    if (type == 'image') {
+      _quillController.document.insert(
+        index + 1,
+        BlockEmbed.image(permanentFile.path),
       );
-      return;
+    } else if (type == 'video') {
+      _quillController.document.insert(
+        index + 1,
+        BlockEmbed.video(permanentFile.path),
+      );
     }
 
-    showMediaSheet(
-      context: context,
-      onImageSelected: (File tempImage) async {
-        final int currentCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
+    // 3. Insert a newline after the media block
+    _quillController.document.insert(index + 2, '\n');
 
-        if (currentCount < 2) {
-          File permanentFile = await _moveFileToPermanentStorage(tempImage);
-          setState(() {
-            selectedImages.add(permanentFile);
-          });
-          _triggerAutoSave();
-        }
-      },
+    // 4. Move the cursor safely past the newly injected content
+    _quillController.updateSelection(
+      TextSelection.collapsed(offset: index + 3),
+      ChangeSource.local,
     );
+
+    _triggerAutoSave();
+  },
+);
   }
 
   Future<File> _moveFileToPermanentStorage(File sourceFile) async {
@@ -554,52 +663,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  Widget _buildImagePreview() {
-    final photoOnlyList = selectedImages.where((file) => !file.path.contains('draw_')).toList();
-
-    if (photoOnlyList.isEmpty) return const SizedBox.shrink();
-
-    return SizedBox(
-      height: 120,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: photoOnlyList.length,
-        itemBuilder: (context, index) {
-          final imageFile = photoOnlyList[index];
-          return Stack(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Get.to(() => ImageDetailScreen(imageFile: imageFile));
-                },
-                child: Container(
-                  margin: const EdgeInsets.all(8),
-                  width: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(image: FileImage(imageFile), fit: BoxFit.cover),
-                  ),
-                ),
-              ),
-              Positioned(
-                right: 0,
-                child: IconButton(
-                  icon: Icon(Icons.cancel, color: AppColor().red),
-                  onPressed: () {
-                    setState(() {
-                      selectedImages.removeWhere((file) => file.path == imageFile.path);
-                    });
-                    _triggerAutoSave();
-                  },
-                ),
-              )
-            ],
-          );
-        },
-      ),
-    );
-  }
-
   bool get _isNoteEmpty => titleController.text.trim().isEmpty && _quillController.document.isEmpty() && selectedImages.isEmpty && !showTable && drawingLayers.isEmpty;
 
   @override
@@ -690,7 +753,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 ),
                 style: TextStyle(fontSize: AppFontSize(context).titleSize, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
               ),
-              if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
+              // if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
+              // QuillEditorComponent(
+              //   controller: _quillController,
+              //   focusNode: _editorFocusNode,
+              //   textColor: textColor,
+              // ),
               QuillEditorComponent(
                 controller: _quillController,
                 focusNode: _editorFocusNode,

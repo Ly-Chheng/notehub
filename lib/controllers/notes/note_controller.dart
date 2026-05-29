@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
@@ -336,15 +337,30 @@ class NoteController extends GetxController {
     }
   }
 
-  String getPlainTextFromNote(String? jsonContent) {
-    if (jsonContent == null || jsonContent.isEmpty || jsonContent == '[]') {
-      return "";
-    }
+  // String getPlainTextFromNote(String? jsonContent) {
+  //   if (jsonContent == null || jsonContent.isEmpty || jsonContent == '[]') {
+  //     return "";
+  //   }
+  //   try {
+  //     final doc = quill.Document.fromJson(jsonDecode(jsonContent));
+  //     return doc.toPlainText().replaceAll('\n', ' ').trim();
+  //   } catch (e) {
+  //     return "";
+  //   }
+  // }
+  String getPlainTextFromNote(String content) {
     try {
-      final doc = quill.Document.fromJson(jsonDecode(jsonContent));
-      return doc.toPlainText().replaceAll('\n', ' ').trim();
+      final decoded = jsonDecode(content);
+      final doc = Document.fromJson(decoded);
+
+      return doc
+          .toPlainText()
+          .replaceAll('￼', '') // remove image embed text
+          .replaceAll('OBJ', '')
+          .replaceAll('\n', ' ')
+          .trim();
     } catch (e) {
-      return "";
+      return '';
     }
   }
 
