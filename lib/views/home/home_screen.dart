@@ -11,7 +11,6 @@ import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/views/create/folder_note_list_screen.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
-import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
@@ -55,11 +54,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Text(controller.searchQuery.isEmpty ? "No folders yet" : "No matching folders found"),
                 );
               }
-              // if (controller.folders.isEmpty) {
-              //   return const Center(
-              //     child: Text("No folders yet"),
-              //   );
-              // }
               return SlidableAutoCloseBehavior(
                 child: ListView.builder(
                   itemCount: controller.folders.length,
@@ -299,7 +293,6 @@ class _MyHomePageState extends State<MyHomePage> {
       //       ));
       //   controller.folders.refresh();
       // },
-
       onTap: () async {
         final settings = await lockController.getSecuritySettings();
         String storedPass = settings?['master_password'] ?? "";

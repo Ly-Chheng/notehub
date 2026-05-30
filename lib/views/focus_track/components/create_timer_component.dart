@@ -9,7 +9,6 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
-import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
 class CreateTimerScreen extends StatefulWidget {
@@ -72,52 +71,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     secController.animateToItem(s, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
   }
 
-  // void _finalizePresetSave(int h, int m, int s) async {
-  //   if (h == 0 && m == 0 && s == 0) return;
-  //   bool isFixedDuplicate = (h == 0 && m == 10 && s == 0) || (h == 0 && m == 30 && s == 0) || (h == 1 && m == 0 && s == 0);
-
-  //   if (isFixedDuplicate) {
-  //     Get.back();
-  //     showConfirmDialog(
-  //       context: context,
-  //       title: "Already Exists",
-  //       subTitle: "This time is already available in your presets.",
-  //       showCancel: false,
-  //       onConfirm: () {},
-  //       confirmText: "OK",
-  //     );
-
-  //     return;
-  //   }
-
-  //   final settingsBox = Hive.box('create_timer_box');
-  //   List rawList = settingsBox.get('user_presets', defaultValue: []);
-  //   List customPresets = List.from(rawList);
-
-  //   bool isUserDuplicate = customPresets.any((p) => p['h'] == h && p['m'] == m && p['s'] == s);
-
-  //   if (isUserDuplicate) {
-  //     Get.back();
-
-  //     showConfirmDialog(
-  //       context: context,
-  //       title: "Already Exists",
-  //       subTitle: "This time is already available in your presets.",
-  //       showCancel: false,
-  //       onConfirm: () {},
-  //       confirmText: "OK",
-  //     );
-  //     return;
-  //   }
-
-  //   String label = "${h > 0 ? '${h}h ' : ''}${m > 0 ? '${m}m ' : ''}${s > 0 ? '${s}s' : ''}".trim();
-  //   Map<String, dynamic> newPreset = {"label": label, "h": h, "m": m, "s": s};
-
-  //   customPresets.add(newPreset);
-  //   await settingsBox.put('user_presets', customPresets);
-  //   setState(() {});
-  // }
-  
   Future<bool> _finalizePresetSave(int h, int m, int s) async {
     if (h == 0 && m == 0 && s == 0) return false;
 

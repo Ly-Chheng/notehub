@@ -97,10 +97,13 @@ Widget buildActionItem(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
     child: Material(
       color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(14),
+      child: GestureDetector(
         onTap: onTap,
         child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            color: Colors.transparent,
+          ),
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           child: Row(
             children: [
@@ -125,6 +128,22 @@ Widget buildActionItem(
           ),
         ),
       ),
+    ),
+  );
+}
+
+PopupMenuItem<String> buildPopupItem(BuildContext context, String title, IconData icon, {Color? color}) {
+  return PopupMenuItem<String>(
+    value: title,
+    child: Row(
+      children: [
+        Icon(icon, size: context.isPhone ? 20 : 25),
+        SizedBox(width: context.isPhone ? 20 : 25),
+        Text(
+          title,
+          style: text14(context),
+        ),
+      ],
     ),
   );
 }

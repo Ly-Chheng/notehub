@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
+import 'package:project_structure/core/functions/format_file_size.dart';
 import 'package:project_structure/models/note/note_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
@@ -23,7 +24,6 @@ import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
-import 'package:project_structure/widgets/popup_lists_menu.dart';
 import 'package:project_structure/widgets/multi_style.dart';
 
 class CreateNoteScreen extends StatefulWidget {
@@ -53,7 +53,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   Timer? _autoSaveTimer;
   bool isAutoSaveEnabled = true;
-  bool _isSessionUnlocked = false;
+  bool isSessionUnlocked = false;
 
   // Note State
   Color? noteBgColor;
@@ -87,17 +87,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       noteBgColor = (note.bgColor != null && note.bgColor! > 0) ? Color(note.bgColor!) : null;
       showTable = note.showTable ?? false;
 
-      // Table Data
       if (note.tableData != null && note.tableData!.isNotEmpty) {
         tableData = note.tableData!.map((row) => List<String>.from(row as List)).toList();
       }
 
-      // Drawing Layers
       if (note.drawingLayers != null && note.drawingLayers!.isNotEmpty) {
         drawingLayers = List<Map<String, dynamic>>.from(note.drawingLayers!);
       }
 
-      // Images
       if (note.imagePaths != null && note.imagePaths!.isNotEmpty) {
         selectedImages = note.imagePaths!.map((path) => File(path)).toList();
       }
@@ -115,12 +112,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         _quillController = QuillController.basic();
       }
     } else {
-      // New Note
       titleController = TextEditingController();
       _quillController = QuillController.basic();
     }
 
-    // Both Title and Body must have the listener for Auto-Save
     titleController.addListener(_triggerAutoSave);
     _quillController.addListener(_triggerAutoSave);
   }
@@ -134,34 +129,69 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     });
   }
 
-  Future<void> _saveNote({bool isAuto = false}) async {
-    final String title = titleController.text.trim();
-    final bool isContentEmpty = _quillController.document.isEmpty();
+  // Helper method to look deeply for all content embeddings inside Quill document
+  Map<String, List<String>> _extractEmbeddedMedia() {
+    final List<String> images = [];
+    final List<String> videos = [];
+    final List<String> files = [];
 
-    // 1. DYNAMICALLY EXTRACT IMAGES CURRENTLY PRESENT IN THE QUILL EDITOR
-    final List<String> activeImagePaths = [];
-
-    // Also look for drawing paths that are managed outside the editor content if applicable
-    final drawingPaths = selectedImages.map((f) => f.path).where((path) => path.contains('draw_')).toList();
-    activeImagePaths.addAll(drawingPaths);
-
-    // Parse the Delta document to find image blocks
     for (final operation in _quillController.document.toDelta().toJson()) {
       if (operation.containsKey('insert') && operation['insert'] is Map) {
         final insertMap = operation['insert'] as Map;
+
+        // Check for Image
         if (insertMap.containsKey('image')) {
-          final String imagePath = insertMap['image'].toString();
-          activeImagePaths.add(imagePath);
+          images.add(insertMap['image'].toString());
+        }
+        // Check for Video
+        if (insertMap.containsKey('video')) {
+          videos.add(insertMap['video'].toString());
+        }
+        // Check for Custom File block type
+        if (insertMap.containsKey('custom')) {
+          final customData = insertMap['custom'];
+          if (customData is Map && customData['type'] == 'file') {
+            files.add(customData['data']?.toString() ?? '');
+          }
         }
       }
     }
+    return {'images': images, 'videos': videos, 'files': files};
+  }
 
-    // 2. Synchronize your state list so the rest of the UI matches
+  Future<void> _saveNote({bool isAuto = false}) async {
+    final String title = titleController.text.trim();
+    // final bool isContentEmpty = _quillController.document.isEmpty();
+
+    // Check clean text absence (Quill document is always at minimum \n)
+    final String plainText = _quillController.document.toPlainText().replaceAll('\n', '').trim();
+    final bool isTextContentEmpty = plainText.isEmpty;
+
+    // final List<String> activeImagePaths = [];
+    final mediaData = _extractEmbeddedMedia();
+    final List<String> activeImagePaths = mediaData['images']!;
+    final List<String> activeVideoPaths = mediaData['videos']!;
+    final List<String> activeFilePaths = mediaData['files']!;
+
+    final drawingPaths = selectedImages.map((f) => f.path).where((path) => path.contains('draw_')).toList();
+    activeImagePaths.addAll(drawingPaths);
+
+    // for (final operation in _quillController.document.toDelta().toJson()) {
+    //   if (operation.containsKey('insert') && operation['insert'] is Map) {
+    //     final insertMap = operation['insert'] as Map;
+    //     if (insertMap.containsKey('image')) {
+    //       final String imagePath = insertMap['image'].toString();
+    //       activeImagePaths.add(imagePath);
+    //     }
+    //   }
+    // }
+
     setState(() {
       selectedImages = activeImagePaths.map((path) => File(path)).toList();
     });
 
-    bool isEmpty = title.isEmpty && isContentEmpty && activeImagePaths.isEmpty && !showTable && drawingLayers.isEmpty;
+    // bool isEmpty = title.isEmpty && isContentEmpty && activeImagePaths.isEmpty && !showTable && drawingLayers.isEmpty;
+    bool isEmpty = title.isEmpty && isTextContentEmpty && activeImagePaths.isEmpty && activeVideoPaths.isEmpty && activeFilePaths.isEmpty && !showTable && drawingLayers.isEmpty;
 
     if (isEmpty) {
       if (isAuto && currentNoteId != null) {
@@ -183,7 +213,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       isLocked: isLocked,
       isPinned: isPinned,
       bgColor: noteBgColor?.value ?? 0,
-      // imagePaths: selectedImages.map((f) => f.path).toList(),
       imagePaths: activeImagePaths,
       showTable: showTable,
       tableData: tableData,
@@ -208,7 +237,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       if (result == true) {
         setState(() {
           isLocked = true;
-          _isSessionUnlocked = true;
+          isSessionUnlocked = true;
         });
         _triggerAutoSave();
       }
@@ -219,14 +248,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             onSuccess: () {
               setState(() {
                 isLocked = false;
-                _isSessionUnlocked = true;
+                isSessionUnlocked = true;
               });
               _triggerAutoSave();
             });
       } else {
         setState(() {
           isLocked = true;
-          _isSessionUnlocked = false;
+          isSessionUnlocked = false;
         });
         _triggerAutoSave();
       }
@@ -307,119 +336,66 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   void _handleImageSelection() {
     _forceUnfocus();
 
-    // final int photoCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
-
-    // if (photoCount >= 2) {
-    //   showConfirmDialog(
-    //     context: context,
-    //     title: "Image Limit",
-    //     subTitle: "You can only select up to 2 images.",
-    //     showCancel: false,
-    //     confirmText: "OK",
-    //     onConfirm: () {},
-    //   );
-    //   return;
-    // }
-
-    // showMediaSheet(
-    //   context: context,
-    //   onImageSelected: (File tempImage) async {
-    //     // final int currentCount = selectedImages.where((file) => !file.path.contains('draw_')).length;
-
-    //     // if (currentCount < 2) {
-    //     //   File permanentFile = await _moveFileToPermanentStorage(tempImage);
-
-    //     //   setState(() {
-    //     //     selectedImages.add(permanentFile);
-    //     //   });
-
-    //     //   // Insert image at cursor position
-    //     //   final index = _quillController.selection.baseOffset;
-
-    //     //   _quillController.document.insert(index, '\n');
-
-    //     //   _quillController.document.insert(
-    //     //     index + 1,
-    //     //     BlockEmbed.image(permanentFile.path),
-    //     //   );
-
-    //     //   _quillController.document.insert(index + 2, '\n');
-
-    //     //   _quillController.updateSelection(
-    //     //     TextSelection.collapsed(offset: index + 3),
-    //     //     ChangeSource.local,
-    //     //   );
-
-    //     //   _triggerAutoSave();
-    //     // }
-    //     File permanentFile = await _moveFileToPermanentStorage(tempImage);
-
-    //     setState(() {
-    //       selectedImages.add(permanentFile);
-    //     });
-
-    //     // Insert image at cursor position
-    //     final index = _quillController.selection.baseOffset;
-
-    //     _quillController.document.insert(index, '\n');
-
-    //     _quillController.document.insert(
-    //       index + 1,
-    //       BlockEmbed.image(permanentFile.path),
-    //     );
-
-    //     _quillController.document.insert(index + 2, '\n');
-
-    //     _quillController.updateSelection(
-    //       TextSelection.collapsed(offset: index + 3),
-    //       ChangeSource.local,
-    //     );
-
-    //     _triggerAutoSave();
-    //   },
-    // );
     showMediaSheet(
-  context: context,
-  onMediaSelected: (File tempMedia, String type) async {
-    // Move the file (image or video) to permanent storage
-    File permanentFile = await _moveFileToPermanentStorage(tempMedia);
+      context: context,
+      onMediaSelected: (File tempMedia, String type) async {
+        File permanentFile = await _moveFileToPermanentStorage(tempMedia);
 
-    setState(() {
-      selectedImages.add(permanentFile); 
-      // Note: You might want to rename 'selectedImages' to 'selectedMedia' later if it holds videos too!
-    });
+        setState(() {
+          selectedImages.add(permanentFile);
+        });
 
-    // Insert media at the current cursor position
-    final index = _quillController.selection.baseOffset;
+        int insertionIndex = _quillController.selection.baseOffset;
 
-    // 1. Insert a newline before the media block to ensure proper spacing
-    _quillController.document.insert(index, '\n');
+        _quillController.document.insert(insertionIndex, '\n');
+        insertionIndex += 1;
 
-    // 2. Insert the correct block embedding based on the media type
-    if (type == 'image') {
-      _quillController.document.insert(
-        index + 1,
-        BlockEmbed.image(permanentFile.path),
-      );
-    } else if (type == 'video') {
-      _quillController.document.insert(
-        index + 1,
-        BlockEmbed.video(permanentFile.path),
-      );
-    }
+        if (type == 'image') {
+          _quillController.document.insert(
+            insertionIndex,
+            BlockEmbed.image(permanentFile.path),
+          );
+          insertionIndex += 1;
+        } else if (type == 'video') {
+          _quillController.document.insert(
+            insertionIndex,
+            BlockEmbed.video(permanentFile.path),
+          );
+          insertionIndex += 1;
+        } else if (type == 'file') {
+          final String fileName = p.basename(permanentFile.path);
+          final int fileSizeBytes = await permanentFile.length();
+          final String formattedSize = formatFileSize(fileSizeBytes);
 
-    // 3. Insert a newline after the media block
-    _quillController.document.insert(index + 2, '\n');
+          final String fileDataJson = jsonEncode({
+            'path': permanentFile.path,
+            'name': fileName,
+            'size': formattedSize,
+          });
 
-    // 4. Move the cursor safely past the newly injected content
-    _quillController.updateSelection(
-      TextSelection.collapsed(offset: index + 3),
-      ChangeSource.local,
+          _quillController.document.insert(
+            insertionIndex,
+            BlockEmbed.custom(
+              CustomBlockEmbed(
+                'file',
+                fileDataJson,
+              ),
+            ),
+          );
+          insertionIndex += 1;
+        }
+
+        _quillController.document.insert(insertionIndex, '\n');
+        insertionIndex += 1;
+
+        _quillController.updateSelection(
+          TextSelection.collapsed(offset: insertionIndex),
+          ChangeSource.local,
+        );
+
+        _triggerAutoSave();
+      },
     );
-
-    _triggerAutoSave();
-  },
-);
   }
 
   Future<File> _moveFileToPermanentStorage(File sourceFile) async {
@@ -663,7 +639,21 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  bool get _isNoteEmpty => titleController.text.trim().isEmpty && _quillController.document.isEmpty() && selectedImages.isEmpty && !showTable && drawingLayers.isEmpty;
+  // bool get _isNoteEmpty => titleController.text.trim().isEmpty && _quillController.document.isEmpty() && selectedImages.isEmpty && !showTable && drawingLayers.isEmpty;
+  // Used for enabling or disabling the action items menu conditionally
+  bool get _isNoteEmpty {
+    final String plainText = _quillController.document.toPlainText().replaceAll('\n', '').trim();
+    final mediaData = _extractEmbeddedMedia();
+
+    return titleController.text.trim().isEmpty &&
+        plainText.isEmpty &&
+        mediaData['images']!.isEmpty &&
+        mediaData['videos']!.isEmpty &&
+        mediaData['files']!.isEmpty &&
+        !showTable &&
+        drawingLayers.isEmpty &&
+        !selectedImages.any((file) => file.path.contains('draw_'));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -753,12 +743,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 ),
                 style: TextStyle(fontSize: AppFontSize(context).titleSize, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
               ),
-              // if (selectedImages.any((file) => !file.path.contains('draw_'))) _buildImagePreview(),
-              // QuillEditorComponent(
-              //   controller: _quillController,
-              //   focusNode: _editorFocusNode,
-              //   textColor: textColor,
-              // ),
               QuillEditorComponent(
                 controller: _quillController,
                 focusNode: _editorFocusNode,
@@ -798,14 +782,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     });
                     _triggerAutoSave();
                   },
-                  // onDeleteTable: () {
-                  //   setState(() => showTable = false);
-                  //   _triggerAutoSave();
-                  // },
                   onDeleteTable: () {
                     setState(() {
                       showTable = false;
-                      // Reset table structure back to a clean, empty 2x2 grid
                       tableData = [
                         ["", ""],
                         ["", ""]

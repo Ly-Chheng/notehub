@@ -8,7 +8,6 @@ import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 import 'package:project_structure/views/focus_track/components/timer_detail_screen.dart';
-import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 

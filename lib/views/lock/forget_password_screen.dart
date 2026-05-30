@@ -4,7 +4,6 @@ import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
-import 'package:project_structure/widgets/custom_header.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
@@ -56,7 +55,6 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         actions: [
           TextButton(
             onPressed: () {
-              // Logic now handled inside controller using SQLite
               _controller.handleForgetPasswordVerify(
                 userAnswer: _answerController.text,
               );

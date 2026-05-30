@@ -107,3 +107,14 @@ TextStyle custom({
     color: color ?? Theme.of(context).textTheme.bodyLarge?.color,
   );
 }
+
+Widget customHeader(String title, BuildContext context) {
+  return Text(
+    title,
+    style: TextStyle(
+      fontSize: AppFontSize(context).titleSize,
+      fontFamily: 'EN-BOLD',
+      color: Theme.of(context).textTheme.bodyLarge?.color,
+    ),
+  );
+}
