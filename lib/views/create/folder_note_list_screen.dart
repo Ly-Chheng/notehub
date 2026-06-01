@@ -227,7 +227,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 child: ListView(
                   padding: const EdgeInsets.only(bottom: 100),
                   children: [
-                    // Pinned Section
                     if (pinnedNotes.isNotEmpty) ...[
                       _buildSectionHeader("Pinned"),
                       ...pinnedNotes.map(
@@ -235,8 +234,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       ),
                       const SizedBox(height: 12),
                     ],
-
-                    // Grouped Notes
                     ...groupedNotes.entries.map((entry) {
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

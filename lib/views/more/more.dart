@@ -33,6 +33,7 @@ class _MoreScreenState extends State<MoreScreen> {
                 _buildMenuTile(Icons.help_outline, "How to use", onTap: () {
                   Get.toNamed('/howToUse');
                 }),
+                // ChangeLanguageView(),
                 _buildMenuTile(
                   Icons.share_outlined,
                   "Share App",

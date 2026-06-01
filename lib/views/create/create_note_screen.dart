@@ -347,20 +347,27 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
         int insertionIndex = _quillController.selection.baseOffset;
 
-        _quillController.document.insert(insertionIndex, '\n');
-        insertionIndex += 1;
-
         if (type == 'image') {
+          // FIX: No '\n' added above the image block
           _quillController.document.insert(
             insertionIndex,
             BlockEmbed.image(permanentFile.path),
           );
           insertionIndex += 1;
+
+          // Append a newline AFTER the block component so users can type beneath it
+          _quillController.document.insert(insertionIndex, '\n');
+          insertionIndex += 1;
         } else if (type == 'video') {
+          // FIX: No '\n' added above the video block
           _quillController.document.insert(
             insertionIndex,
             BlockEmbed.video(permanentFile.path),
           );
+          insertionIndex += 1;
+
+          // Append a newline AFTER the block component
+          _quillController.document.insert(insertionIndex, '\n');
           insertionIndex += 1;
         } else if (type == 'file') {
           final String fileName = p.basename(permanentFile.path);
@@ -373,6 +380,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             'size': formattedSize,
           });
 
+          // FIX: Insert the custom file element directly at the cursor index
+          // with NO '\n' added above it.
           _quillController.document.insert(
             insertionIndex,
             BlockEmbed.custom(
@@ -383,10 +392,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             ),
           );
           insertionIndex += 1;
-        }
 
-        _quillController.document.insert(insertionIndex, '\n');
-        insertionIndex += 1;
+          // Only append a newline AFTER the block component layout so
+          // that users can select line text right beneath it.
+          _quillController.document.insert(insertionIndex, '\n');
+          insertionIndex += 1;
+        }
 
         _quillController.updateSelection(
           TextSelection.collapsed(offset: insertionIndex),

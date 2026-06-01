@@ -331,8 +331,6 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                   ),
                   divider(context),
                 ],
-
-                // Share Action: Handles both .jpg and .mp4 paths properly
                 buildActionItem(
                   context,
                   icon: Icons.share_outlined,
@@ -346,7 +344,6 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                       final response = await http.get(Uri.parse(mediaPath));
                       final tempDir = await getTemporaryDirectory();
 
-                      // Appends extension dynamically depending on file profile
                       final String ext = widget.isVideo ? 'mp4' : 'jpg';
                       final file = File('${tempDir.path}/shared_media.$ext');
 
@@ -358,7 +355,6 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                   },
                 ),
                 divider(context),
-
                 buildActionItem(
                   context,
                   icon: Icons.delete_outline,
@@ -398,7 +394,6 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
   @override
   bool get expanded => false;
 
-  // Helper method to preview the document safely
   Future<void> _viewFile(String filePath) async {
     if (filePath.isEmpty) {
       Get.snackbar("Error", "File path is empty.");
@@ -446,28 +441,29 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
     return Align(
       alignment: Alignment.centerLeft,
       child: FractionallySizedBox(
-        widthFactor: context.isPhone ? 0.95 : 0.65,
+        widthFactor: context.isPhone ? 0.85 : 0.65,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 1.0),
           child: GestureDetector(
-            onTap: () => _viewFile(filePath), // Tapping the card opens the file viewer automatically
+            onTap: () => _viewFile(filePath),
             behavior: HitTestBehavior.opaque,
             child: Container(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
                   width: 1,
                 ),
               ),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
                     padding: EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius: BorderRadius.circular(6),
                       color: AppColor().primaryColor.withValues(alpha: 0.1),
                     ),
                     child: Icon(
@@ -497,28 +493,8 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(Icons.share_outlined, size: context.isPhone ? 20 : 24),
-                    onPressed: () async {
-                      if (filePath.isNotEmpty && await File(filePath).exists()) {
-                        await Share.shareXFiles([XFile(filePath)], text: fileName);
-                      } else {
-                        Get.snackbar("Error", "File path doesn't exist anymore.");
-                      }
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.delete_outline, color: AppColor().red, size: 20),
-                    onPressed: () {
-                      final offset = embedContext.node.documentOffset;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        embedContext.controller.replaceText(
-                          offset,
-                          1,
-                          '',
-                          TextSelection.collapsed(offset: offset),
-                        );
-                      });
-                    },
+                    icon: Icon(Icons.more_vert, size: context.isPhone ? 24 : 26, color: AppColor().gray),
+                    onPressed: () => _showFileActionSheet(context, embedContext, filePath, fileName),
                   ),
                 ],
               ),
@@ -529,19 +505,98 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
     );
   }
 
+  void _showFileActionSheet(BuildContext context, EmbedContext embedContext, String filePath, String fileName) {
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    ConfirmBottomSheet.show(
+      context: context,
+      title: "File Options",
+      content: Padding(
+        padding: const EdgeInsets.only(top: 10),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 20,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              buildActionItem(
+                context,
+                icon: Icons.share_outlined,
+                color: AppColor().primaryColor,
+                title: "Share",
+                onTap: () async {
+                  Get.back();
+                  if (filePath.isNotEmpty && await File(filePath).exists()) {
+                    await Share.shareXFiles(
+                      [XFile(filePath)],
+                    );
+                  } else {
+                    Get.snackbar("Error", "File path doesn't exist anymore.");
+                  }
+                },
+              ),
+              divider(context),
+
+              // Remove Option Item
+              buildActionItem(
+                context,
+                icon: Icons.delete_outline,
+                color: AppColor().red,
+                title: "Remove",
+                isDestructive: true,
+                onTap: () {
+                  Get.back();
+                  final offset = embedContext.node.documentOffset;
+
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    embedContext.controller.replaceText(
+                      offset,
+                      1,
+                      '',
+                      TextSelection.collapsed(offset: offset),
+                    );
+
+                    embedContext.controller.updateSelection(
+                      const TextSelection.collapsed(offset: -1),
+                      ChangeSource.local,
+                    );
+                    FocusManager.instance.primaryFocus?.unfocus();
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   String toPlainText(Embed node) {
     try {
       final data = jsonDecode(node.value.data.toString());
-      return "[File: ${data['name'] ?? ''}]";
+      return "[File: ${data['name'] ?? ''}]\n";
     } catch (_) {
-      return "[File]";
+      return "[File]\n";
     }
   }
 
   @override
   WidgetSpan buildWidgetSpan(Widget child) {
-    return WidgetSpan(child: child);
+    return WidgetSpan(
+      alignment: PlaceholderAlignment.middle,
+      child: child,
+    );
   }
 }
 
@@ -592,7 +647,6 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
         });
       }
 
-      // Automatically pop controls overlay back up if video hits track completion
       if (value.position >= value.duration && value.duration != Duration.zero) {
         setState(() {
           _showControls = true;
@@ -607,6 +661,10 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
     super.dispose();
   }
 
+  void _closeKeyboard() {
+    FocusScope.of(context).unfocus();
+  }
+
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
@@ -615,6 +673,7 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
   }
 
   void _handleFullScreenToggle(VideoPlayerController controller) {
+    _closeKeyboard();
     if (widget.isFullScreenMode) {
       Get.back();
     } else {
@@ -654,26 +713,24 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
     final bool isFinished = controller.value.position >= controller.value.duration && controller.value.duration != Duration.zero;
 
     return GestureDetector(
-      onTap: () => setState(() => _showControls = !_showControls),
+      onTap: () {
+        _closeKeyboard();
+        setState(() => _showControls = !_showControls);
+      },
       onLongPress: _isLocked ? null : widget.onLongPress,
       child: Container(
         color: Colors.black,
         child: Stack(
           alignment: Alignment.center,
           children: [
-            // Video Frame Viewport View
             AspectRatio(
               aspectRatio: controller.value.aspectRatio,
               child: VideoPlayer(controller),
             ),
-
-            // Translucent Control Dimming Plate
             if (_showControls)
               Positioned.fill(
                 child: Container(color: Colors.black26),
               ),
-
-            // Screen Lock Shield Overlay Layout
             if (_isLocked && _showControls)
               Positioned(
                 left: 0,
@@ -688,11 +745,12 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
                       size: context.isPhone ? 20 : 25,
                     ),
                   ),
-                  onPressed: () => setState(() => _isLocked = false),
+                  onPressed: () {
+                    _closeKeyboard();
+                    setState(() => _isLocked = false);
+                  },
                 ),
               ),
-
-            // Top Utility Options Deck
             if (_showControls && !_isLocked)
               Positioned(
                 top: 12,
@@ -717,7 +775,10 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
                             color: AppColor().white,
                             size: context.isPhone ? 20 : 30,
                           ),
-                          onPressed: () => setState(() => _isLocked = true),
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            setState(() => _isLocked = true);
+                          },
                         ),
                       ],
                     ),
@@ -728,6 +789,7 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
                         color: AppColor().white,
                       ),
                       onPressed: () {
+                        _closeKeyboard();
                         setState(() {
                           if (_isMuted) {
                             controller.setVolume(1.0);
@@ -742,8 +804,6 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
                   ],
                 ),
               ),
-
-            // Center Playback Control Module
             if (_showControls && !_isLocked)
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -755,6 +815,7 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
                       color: AppColor().white,
                     ),
                     onPressed: () {
+                      _closeKeyboard();
                       final target = controller.value.position - const Duration(seconds: 10);
                       controller.seekTo(target < Duration.zero ? Duration.zero : target);
                     },
@@ -767,6 +828,7 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
                       color: AppColor().white,
                     ),
                     onPressed: () {
+                      _closeKeyboard();
                       setState(() {
                         if (isFinished) {
                           controller.seekTo(Duration.zero).then((_) => controller.play());
@@ -786,14 +848,13 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
                       color: AppColor().white,
                     ),
                     onPressed: () {
+                      _closeKeyboard();
                       final target = controller.value.position + const Duration(seconds: 10);
                       controller.seekTo(target > controller.value.duration ? controller.value.duration : target);
                     },
                   ),
                 ],
               ),
-
-            // Audio/Video Timeline Progression Scrubber
             if (_showControls && !_isLocked)
               Positioned(
                 bottom: 10,
@@ -827,6 +888,9 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
                               value: currentSecs.clamp(0.0, totalSecs > 0 ? totalSecs : 1.0),
                               min: 0.0,
                               max: totalSecs > 0 ? totalSecs : 1.0,
+                              onChangeStart: (_) {
+                                _closeKeyboard();
+                              },
                               onChanged: (val) {
                                 controller.seekTo(Duration(seconds: val.toInt()));
                               },
@@ -841,6 +905,9 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
                         PopupMenuButton<double>(
                           icon: Icon(Icons.more_horiz, color: AppColor().white, size: context.isPhone ? 20 : 24),
                           tooltip: 'Playback Speed',
+                          onOpened: () {
+                            _closeKeyboard();
+                          },
                           onSelected: (double speed) {
                             setState(() {
                               _currentSpeed = speed;

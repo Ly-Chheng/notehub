@@ -125,7 +125,7 @@ class ActionSheet {
           },
           isDefaultAction: true,
           child: Text(
-            'cancel'.tr,
+            'cancel',
             style: TextStyle(
               color: AppColor().red,
               fontSize: AppFontSize(context).subTitleSize,
