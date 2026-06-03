@@ -122,11 +122,11 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     if (totalSec <= 0) {
       showConfirmDialog(
         context: context,
-        title: "Duration",
+        title: "duration".tr,
         subTitle: "Duration cannot be zero",
         showCancel: false,
         onConfirm: () {},
-        confirmText: "OK",
+        confirmText: "ok".tr,
       );
       return;
     }
@@ -136,11 +136,11 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     if (isDuplicate) {
       showConfirmDialog(
         context: context,
-        title: "Duplicate",
+        title: "duplicate".tr,
         subTitle: "A timer with this duration and name already exists.",
         showCancel: false,
         onConfirm: () {},
-        confirmText: "OK",
+        confirmText: "ok".tr,
       );
       return;
     }
@@ -188,7 +188,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        title: widget.isEditing ? "Edit Timer" : "New Timer",
+        title: widget.isEditing ? "edit_timer".tr : "new_timer".tr,
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
@@ -196,7 +196,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           TextButton(
               onPressed: _saveTimer,
               child: Text(
-                "Save",
+                "save".tr,
                 style: text18(context).copyWith(color: AppColor().primaryColor),
               )),
         ],
@@ -210,7 +210,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: customHeader("Duration", context),
+                  child: customHeader("duration".tr, context),
                 ),
                 _buildPickerSection(),
                 const SizedBox(height: 25),
@@ -262,12 +262,12 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
             decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-            child: Text("Label", style: text16(context)),
+            child: Text("label".tr, style: text16(context)),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: customTextField(
-              "Password",
+              "password".tr,
               false,
               null,
               controller: _labelController,
@@ -284,7 +284,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          customHeader("Quick Presets", context),
+          customHeader("quick_presets".tr, context),
           IconButton(
             onPressed: () => showAddPresetSheet(),
             icon: Icon(Icons.add_circle_outline, color: AppColor().primaryColor, size: context.isPhone ? 28 : 32),
@@ -353,7 +353,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
 
     ConfirmBottomSheet.show(
       context: context,
-      title: "Add Quick Preset",
+      title: "add_quick_preset".tr,
       content: StatefulBuilder(
         builder: (context, setSheetState) {
           return Container(
@@ -372,7 +372,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           );
         },
       ),
-      confirmText: "Save Preset",
+      confirmText: "save_preset".tr,
       onConfirm: () async {
         await _finalizePresetSave(tempH, tempM, tempS);
       },

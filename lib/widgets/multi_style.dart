@@ -40,10 +40,11 @@ class SheetHeader extends StatelessWidget {
               TextButton(
                 onPressed: onCancel ?? () => Get.back(),
                 child: Text(
-                  "Cancel",
+                  "cancel".tr,
                   style: TextStyle(
                     color: AppColor().red,
-                    fontFamily: 'EN-ENGINEER',
+                    // fontFamily: 'EN-ENGINEER',
+                    fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                     fontSize: context.isPhone ? 16 : 18,
                   ),
                 ),
@@ -52,7 +53,8 @@ class SheetHeader extends StatelessWidget {
                 title,
                 style: TextStyle(
                   fontSize: context.isPhone ? 18 : 20,
-                  fontFamily: 'EN-BOLD',
+                  // fontFamily: 'EN-BOLD',
+                  fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
                   color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
@@ -62,7 +64,8 @@ class SheetHeader extends StatelessWidget {
                   saveText,
                   style: TextStyle(
                     color: AppColor().primaryColor,
-                    fontFamily: 'EN-ENGINEER',
+                    // fontFamily: 'EN-ENGINEER',
+                    fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                     fontSize: context.isPhone ? 16 : 18,
                   ),
                 ),

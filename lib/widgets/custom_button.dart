@@ -78,7 +78,7 @@ class CustomButton extends StatelessWidget {
                   style: TextStyle(
                     color: textColor ?? AppColor().white,
                     fontSize: AppFontSize(context).subTitleSize,
-                    fontFamily: 'EN-REGULAR',
+                    fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                   ),
                 ),
               ],

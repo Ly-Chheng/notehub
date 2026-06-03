@@ -46,7 +46,7 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
               );
             },
             child: Text(
-              "Save",
+              "save".tr,
               style: text18(context).copyWith(color: AppColor().primaryColor),
             ),
           ),
@@ -58,19 +58,19 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           child: Column(
             children: [
-              Center(child: customHeader("Reset Password", context)),
+              Center(child: customHeader("reset_password".tr, context)),
               const SizedBox(height: 8),
               Text(
-                "Please enter your current password to remove all protection.",
+                "remove_lock_desc".tr,
                 textAlign: TextAlign.center,
                 style: text16(context).copyWith(
                   color: AppColor().gray,
                 ),
               ),
               const SizedBox(height: 30),
-              customTextField("Current Password", _obscureCurrent, () => setState(() => _obscureCurrent = !_obscureCurrent), controller: _currentPassController),
+              customTextField("current_password".tr, _obscureCurrent, () => setState(() => _obscureCurrent = !_obscureCurrent), controller: _currentPassController),
               const SizedBox(height: 15),
-              customTextField("Confirm Password", _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
+              customTextField("confirm_password".tr, _obscureConfirm, () => setState(() => _obscureConfirm = !_obscureConfirm), controller: _confirmPassController),
             ],
           ),
         ),

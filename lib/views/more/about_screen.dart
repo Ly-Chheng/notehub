@@ -26,6 +26,7 @@
 //   }
 // }
 import 'package:flutter/material.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
@@ -38,7 +39,7 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "About",
+        title: "about".tr,
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,

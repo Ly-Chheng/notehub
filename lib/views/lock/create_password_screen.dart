@@ -55,7 +55,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
               );
             },
             child: Text(
-              "Create",
+              "create".tr,
               style: text18(context).copyWith(color: AppColor().primaryColor),
             ),
           )
@@ -68,7 +68,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
             child: Column(
               children: [
-                Center(child: customHeader("Create New Password", context)),
+                Center(child: customHeader("create_new_password".tr, context)),
                 const SizedBox(height: 8),
                 Text(
                   "Create a secure password to protect your personal notes.",
@@ -79,30 +79,31 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 ),
                 const SizedBox(height: 30),
                 customTextField(
-                  "New Password",
+                  "new_password".tr,
                   _obscureNew,
                   () => setState(() => _obscureNew = !_obscureNew),
                   controller: _newPassController,
                 ),
                 const SizedBox(height: 15),
                 customTextField(
-                  "Confirm Password",
+                  "confirm_password".tr,
                   _obscureConfirm,
                   () => setState(() => _obscureConfirm = !_obscureConfirm),
                   controller: _confirmPassController,
                 ),
                 const SizedBox(height: 15),
                 customTextField(
-                  "Hint",
+                  "hint".tr,
                   false,
                   null,
                   controller: _hintController,
                   trailing: Text(
-                    "Optional",
+                    "optional".tr,
                     style: TextStyle(
                       color: AppColor().gray,
                       fontSize: AppFontSize(context).normalTextSize,
-                      fontFamily: 'EN-REGULAR',
+                      // fontFamily: 'EN-REGULAR',
+                      fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                     ),
                   ),
                 ),
@@ -110,7 +111,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 _buildDropdown(),
                 const SizedBox(height: 15),
                 customTextField(
-                  "Security Answer",
+                  "security_answer".tr,
                   false,
                   null,
                   controller: _answerController,
@@ -127,7 +128,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Security Question Verification", style: text16(context)),
+        Text("security_question_verification".tr, style: text16(context)),
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
@@ -140,11 +141,12 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
               value: _selectedQuestion,
               dropdownColor: Theme.of(context).cardColor,
               hint: Text(
-                "Select Security Question",
+                "select_security_question".tr,
                 style: TextStyle(
                   color: AppColor().gray,
                   fontSize: AppFontSize(context).subTitleSize,
-                  fontFamily: 'EN-REGULAR',
+                  // fontFamily: 'EN-REGULAR',
+                  fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                 ),
               ),
               isExpanded: true,
@@ -156,7 +158,8 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                           q,
                           style: TextStyle(
                             fontSize: AppFontSize(context).normalTextSize,
-                            fontFamily: 'EN-REGULAR',
+                            // fontFamily: 'EN-REGULAR',
+                            fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                           ),
                         ),
                       ))

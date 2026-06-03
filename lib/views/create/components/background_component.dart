@@ -21,7 +21,7 @@ void showPaletteSheet({
           mainAxisSize: MainAxisSize.min,
           children: [
             SheetHeader(
-              title: "Backgrounds",
+              title: "backgrounds".tr,
             ),
             const SizedBox(height: 10),
             Wrap(

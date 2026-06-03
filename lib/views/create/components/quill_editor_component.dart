@@ -26,20 +26,20 @@ class QuillEditorComponent extends StatelessWidget {
     super.key,
     required this.controller,
     required this.focusNode,
-    this.placeholder = "Start typing...",
+    this.placeholder = 'start_typing',
     this.textColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final Color effectiveColor = textColor ?? Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
-
+    final String effectivePlaceholder = placeholder.tr;
     return QuillEditor(
       controller: controller,
       scrollController: ScrollController(),
       focusNode: focusNode,
       config: QuillEditorConfig(
-        placeholder: placeholder,
+        placeholder: effectivePlaceholder,
         padding: EdgeInsets.zero,
         autoFocus: false,
         showCursor: true,

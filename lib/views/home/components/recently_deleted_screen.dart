@@ -37,7 +37,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "Recently Deleted",
+        title: "recently_deleted".tr,
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
@@ -116,7 +116,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                 _showMoveRestoreSheet(note.id!);
                               },
                               icon: Icons.folder,
-                              label: 'Move',
+                              label: 'move'.tr,
                               backgroundColor: AppColor().primaryColor,
                               borderRadius: const BorderRadius.horizontal(left: Radius.circular(18)),
                             ),
@@ -125,23 +125,23 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                 await controller.restoreNote(note.id!);
                               },
                               icon: Icons.restore_from_trash,
-                              label: 'Restore',
+                              label: 'restore'.tr,
                               backgroundColor: AppColor().green,
                             ),
                             AppSlidableAction(
                               onPressed: () {
                                 showConfirmDialog(
                                   context: context,
-                                  title: "Delete Permanently",
-                                  subTitle: "Are you sure you want to permanently delete this note? This action cannot be undone.",
-                                  confirmText: "Delete",
+                                  title: "delete_permanently".tr,
+                                  subTitle: "perm_delete_confirm".tr,
+                                  confirmText: "delete".tr,
                                   onConfirm: () async {
                                     await controller.permanentDeleteNote(note.id!);
                                   },
                                 );
                               },
                               icon: Icons.delete,
-                              label: 'Delete',
+                              label: 'delete'.tr,
                               backgroundColor: AppColor().red,
                               borderRadius: const BorderRadius.horizontal(right: Radius.circular(18)),
                             ),
@@ -241,10 +241,6 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // IconButton(
-          //   icon: Icon(Icons.restore_from_trash, color: AppColor().primaryColor, size: context.isPhone ? 25 : 30),
-          //   onPressed: selectedNoteIds.isEmpty ? null : _handleBulkRestore,
-          // ),
           IconButton(
             icon: Icon(Icons.folder, color: AppColor().primaryColor, size: context.isPhone ? 25 : 30),
             onPressed: selectedNoteIds.isEmpty ? null : _handleBulkMoveRestore,
@@ -266,30 +262,12 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
     );
   }
 
-  // void _handleBulkRestore() {
-  //   showConfirmDialog(
-  //     context: context,
-  //     title: "Restore Notes",
-  //     subTitle: "Restore ${selectedNoteIds.length} selected items back to active notes?",
-  //     confirmText: "Restore",
-  //     onConfirm: () async {
-  //       for (var id in selectedNoteIds) {
-  //         await controller.restoreNote(id);
-  //       }
-  //       setState(() {
-  //         isSelectionMode = false;
-  //         selectedNoteIds.clear();
-  //       });
-  //     },
-  //   );
-  // }
-
   void _handleBulkPermanentDelete() {
     ConfirmBottomSheet.show(
       context: context,
-      title: "Delete Permanently",
+      title: "delete_permanently".tr,
       subtitle: "Are you sure you want to delete ${selectedNoteIds.length} selected items forever? This cannot be undone.",
-      confirmText: "Delete",
+      confirmText: "delete".tr,
       confirmColor: Colors.red,
       itemCount: selectedNoteIds.length,
       onConfirm: () async {
@@ -308,13 +286,13 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
   void _showMoveRestoreSheet(int noteId) {
     ConfirmBottomSheet.show(
       context: context,
-      title: "Restore to Folder",
+      title: "restore_to_folder".tr,
       showTopCancel: true,
       content: Flexible(
         child: Obx(() {
           if (folderController.folders.isEmpty) {
-            return const CustomNoData(
-              message: "No data",
+            return CustomNoData(
+              message: "no_data".tr,
             );
           }
 
@@ -346,7 +324,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
   void _handleBulkMoveRestore() {
     ConfirmBottomSheet.show(
       context: context,
-      title: "Restore to Folder",
+      title: "restore_to_folder".tr,
       showTopCancel: true,
       content: Flexible(
         child: Obx(() {

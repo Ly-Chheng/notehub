@@ -80,23 +80,23 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     if (widget.isEditing && widget.existingNote != null) {
       final note = widget.existingNote!;
 
-      titleController = TextEditingController(text: note.title ?? '');
+      titleController = TextEditingController(text: note.title);
 
-      isPinned = note.isPinned ?? false;
-      isLocked = note.isLocked ?? false;
-      noteBgColor = (note.bgColor != null && note.bgColor! > 0) ? Color(note.bgColor!) : null;
-      showTable = note.showTable ?? false;
+      isPinned = note.isPinned;
+      isLocked = note.isLocked;
+      noteBgColor = (note.bgColor > 0) ? Color(note.bgColor) : null;
+      showTable = note.showTable;
 
-      if (note.tableData != null && note.tableData!.isNotEmpty) {
-        tableData = note.tableData!.map((row) => List<String>.from(row as List)).toList();
+      if (note.tableData.isNotEmpty) {
+        tableData = note.tableData.map((row) => List<String>.from(row as List)).toList();
       }
 
-      if (note.drawingLayers != null && note.drawingLayers!.isNotEmpty) {
-        drawingLayers = List<Map<String, dynamic>>.from(note.drawingLayers!);
+      if (note.drawingLayers.isNotEmpty) {
+        drawingLayers = List<Map<String, dynamic>>.from(note.drawingLayers);
       }
 
-      if (note.imagePaths != null && note.imagePaths!.isNotEmpty) {
-        selectedImages = note.imagePaths!.map((path) => File(path)).toList();
+      if (note.imagePaths.isNotEmpty) {
+        selectedImages = note.imagePaths.map((path) => File(path)).toList();
       }
 
       // Quill Editor Content
@@ -161,13 +161,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   Future<void> _saveNote({bool isAuto = false}) async {
     final String title = titleController.text.trim();
-    // final bool isContentEmpty = _quillController.document.isEmpty();
 
-    // Check clean text absence (Quill document is always at minimum \n)
     final String plainText = _quillController.document.toPlainText().replaceAll('\n', '').trim();
     final bool isTextContentEmpty = plainText.isEmpty;
 
-    // final List<String> activeImagePaths = [];
     final mediaData = _extractEmbeddedMedia();
     final List<String> activeImagePaths = mediaData['images']!;
     final List<String> activeVideoPaths = mediaData['videos']!;
@@ -176,21 +173,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final drawingPaths = selectedImages.map((f) => f.path).where((path) => path.contains('draw_')).toList();
     activeImagePaths.addAll(drawingPaths);
 
-    // for (final operation in _quillController.document.toDelta().toJson()) {
-    //   if (operation.containsKey('insert') && operation['insert'] is Map) {
-    //     final insertMap = operation['insert'] as Map;
-    //     if (insertMap.containsKey('image')) {
-    //       final String imagePath = insertMap['image'].toString();
-    //       activeImagePaths.add(imagePath);
-    //     }
-    //   }
-    // }
-
     setState(() {
       selectedImages = activeImagePaths.map((path) => File(path)).toList();
     });
-
-    // bool isEmpty = title.isEmpty && isContentEmpty && activeImagePaths.isEmpty && !showTable && drawingLayers.isEmpty;
     bool isEmpty = title.isEmpty && isTextContentEmpty && activeImagePaths.isEmpty && activeVideoPaths.isEmpty && activeFilePaths.isEmpty && !showTable && drawingLayers.isEmpty;
 
     if (isEmpty) {
@@ -267,12 +252,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     showConfirmDialog(
       context: context,
-      title: "Unlock Note",
-      subTitle: "Please enter your password to remove protection.",
-      confirmText: "Verify",
+      title: "unlock_note".tr,
+      subTitle: "remove_protection_desc".tr,
+      confirmText: "verify".tr,
       controller: verifyController,
       obscureText: true,
-      hintText: "Password",
+      hintText: "password".tr,
       onConfirm: () {
         if (verifyController.text == storedPass) {
           onSuccess();
@@ -281,7 +266,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             "Error",
             "Incorrect Password",
             backgroundColor: AppColor().red,
-            colorText: Colors.white,
+            colorText: AppColor().white,
             snackPosition: SnackPosition.TOP,
           );
         }
@@ -527,7 +512,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           size: context.isPhone ? 20 : 25,
                         ),
                         title: Text(
-                          "Text",
+                          "text".tr,
                           style: text16(context),
                         ),
                         onTap: () {
@@ -548,7 +533,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           size: context.isPhone ? 20 : 25,
                         ),
                         title: Text(
-                          "Photos",
+                          "photos".tr,
                           style: text16(context),
                         ),
                         onTap: () {
@@ -568,7 +553,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           color: AppColor().orange,
                           size: context.isPhone ? 20 : 25,
                         ),
-                        title: Text("File (txt)", style: text16(context)),
+                        title: Text("file_txt".tr, style: text16(context)),
                         onTap: () {
                           Get.back();
                           noteController.shareNote(
@@ -650,8 +635,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  // bool get _isNoteEmpty => titleController.text.trim().isEmpty && _quillController.document.isEmpty() && selectedImages.isEmpty && !showTable && drawingLayers.isEmpty;
-  // Used for enabling or disabling the action items menu conditionally
   bool get _isNoteEmpty {
     final String plainText = _quillController.document.toPlainText().replaceAll('\n', '').trim();
     final mediaData = _extractEmbeddedMedia();
@@ -674,7 +657,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     return Scaffold(
       backgroundColor: effectiveBg,
       appBar: customAppBar(
-        title: widget.isEditing ? "Edit Note" : "Create Note",
+        title: widget.isEditing ? "edit_note".tr : "create_note".tr,
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
@@ -745,7 +728,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 controller: titleController,
                 maxLines: null,
                 decoration: InputDecoration(
-                  hintText: 'Title',
+                  hintText: 'title'.tr,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   errorBorder: InputBorder.none,
@@ -830,9 +813,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   void _showDeleteDialog() {
     showConfirmDialog(
       context: context,
-      title: "Delete Note",
-      subTitle: "Are you sure you want to delete this note?",
-      confirmText: "Delete",
+      title: "delete_note".tr,
+      subTitle: "delete_note_confirm".tr,
+      confirmText: "delete".tr,
       onConfirm: () async {
         if (currentNoteId != null) {
           await noteController.moveToTrash(currentNoteId!, widget.folderId);
@@ -847,7 +830,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     ConfirmBottomSheet.show(
       context: context,
-      title: "Move to Folder",
+      title: "move_to_folder".tr,
       showTopCancel: true,
       content: Flexible(
         child: Obx(() {

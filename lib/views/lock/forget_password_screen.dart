@@ -60,7 +60,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
               );
             },
             child: Text(
-              "Submit",
+              "submit".tr,
               style: text18(context).copyWith(color: AppColor().primaryColor),
             ),
           ),
@@ -74,10 +74,10 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
                 child: Column(
                   children: [
-                    Center(child: customHeader("Forget Password", context)),
+                    Center(child: customHeader("forget_password".tr, context)),
                     const SizedBox(height: 8),
                     Text(
-                      "Verify your identity using your security question to reset your password.",
+                      "forget_password_desc".tr,
                       textAlign: TextAlign.center,
                       style: text16(context).copyWith(
                         color: AppColor().gray,
@@ -90,7 +90,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            (storedQuestion == null || storedQuestion!.trim().isEmpty) ? "No security question set up." : storedQuestion!,
+                            (storedQuestion == null || storedQuestion!.trim().isEmpty) ? "no_security_question".tr : storedQuestion!,
                             style: text16(context),
                           ),
                         ],
@@ -98,7 +98,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                     ),
                     const SizedBox(height: 10),
                     customTextField(
-                      "Enter your answer",
+                      "enter_your_answer".tr,
                       false,
                       null,
                       controller: _answerController,

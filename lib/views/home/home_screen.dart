@@ -42,7 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _buildFolderSearchBar(),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            child: customHeader("Folders", context),
+            child: customHeader("folders".tr, context),
           ),
           Expanded(
             child: Obx(() {
@@ -51,7 +51,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
               if (displayedFolders.isEmpty) {
                 return Center(
-                  child: Text(controller.searchQuery.isEmpty ? "No folders yet" : "No matching folders found"),
+                  child: Text(
+                    controller.searchQuery.isEmpty ? "no_folders_yet".tr : "no_matching_folders".tr,
+                    style: TextStyle(
+                      fontSize: AppFontSize(context).normalTextSize,
+                      fontFamily: Get.locale?.languageCode == 'km' ? 'KH-REGULAR' : 'EN-REGULAR',
+                      color: AppColor().gray,
+                    ),
+                  ),
                 );
               }
               return SlidableAutoCloseBehavior(
@@ -72,40 +79,17 @@ class _MyHomePageState extends State<MyHomePage> {
                           startActionPane: ActionPane(
                             motion: const BehindMotion(),
                             children: [
-                              // CustomSlidableAction(
-                              //   onPressed: (c) => _togglePin(folder),
-                              //   backgroundColor: AppColor().orange,
-                              //   autoClose: true,
-                              //   child: Column(
-                              //     mainAxisAlignment: MainAxisAlignment.center,
-                              //     children: [
-                              //       Icon(
-                              //         folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-                              //         color: Colors.white,
-                              //         size: 20,
-                              //       ),
-                              //       const SizedBox(height: 4),
-                              //       Text(
-                              //         folder.isPinned ? 'Unpin' : 'Pin',
-                              //         style: text14(context).copyWith(
-                              //           color: Colors.white,
-                              //           fontWeight: FontWeight.w600,
-                              //         ),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
                               AppSlidableAction(
                                 onPressed: () => _togglePin(folder),
                                 icon: folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-                                label: folder.isPinned ? 'Unpin' : 'Pin',
+                                label: folder.isPinned ? 'unpin'.tr : 'pin'.tr,
                                 iconSize: 20,
                                 backgroundColor: AppColor().orange,
                               ),
                               AppSlidableAction(
                                 onPressed: () => _toggleLock(folder),
                                 icon: folder.isLocked ? Icons.lock_open : Icons.lock,
-                                label: folder.isLocked ? 'Unlock' : 'Lock',
+                                label: folder.isLocked ? 'unlock'.tr : 'lock'.tr,
                                 iconSize: 20,
                                 backgroundColor: AppColor().green,
                               ),
@@ -117,14 +101,14 @@ class _MyHomePageState extends State<MyHomePage> {
                               AppSlidableAction(
                                 onPressed: () => _handleEditFolder(context, folder),
                                 icon: Icons.edit,
-                                label: 'Edit',
+                                label: 'edit'.tr,
                                 iconSize: 20,
                                 backgroundColor: AppColor().primaryColor,
                               ),
                               AppSlidableAction(
                                 onPressed: () => _confirmDelete(context, folder),
                                 icon: Icons.delete,
-                                label: 'Delete',
+                                label: 'delete'.tr,
                                 iconSize: 20,
                                 backgroundColor: AppColor().red,
                                 borderRadius: const BorderRadius.horizontal(
@@ -182,18 +166,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
       showConfirmDialog(
         context: context,
-        title: "Unlock Folder",
-        subTitle: "Enter your password to unlock ${folder.title}.",
-        confirmText: "Unlock",
+        title: "unlock_folder".tr,
+        // subTitle: "Enter your password to unlock ${folder.title}.",
+        subTitle: "enter_password_unlock_folder".tr.trParams({'name': folder.title}),
+        confirmText: "unlock".tr,
         controller: verifyPassController,
         obscureText: true,
-        hintText: "Password",
+        hintText: "password".tr,
         onConfirm: () async {
           if (verifyPassController.text == storedPass) {
             await controller.toggleLock(folder.id!);
             Get.back();
           } else {
-            Get.snackbar("Verification Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+            Get.snackbar("verification_failed".tr, "incorrect_password".tr, backgroundColor: AppColor().red, colorText: Colors.white,);
           }
         },
       );
@@ -215,18 +200,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
     showConfirmDialog(
       context: Get.context!,
-      title: "Verify Password",
-      subTitle: "Enter your password to edit ${folder.title}.",
-      confirmText: "Verify",
+      title: "verify_password".tr,
+      subTitle: "enter_password_edit_folder".tr,
+      confirmText: "verify".tr,
       controller: verifyPassController,
       obscureText: true,
-      hintText: "Password",
+      hintText: "password".tr,
       onConfirm: () {
         if (verifyPassController.text == storedPass) {
           Get.back();
           showFolderSheet(context, folder: folder);
         } else {
-          Get.snackbar("Verification Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
+          Get.snackbar("verification_failed".tr, "incorrect_password".tr, backgroundColor: AppColor().red, colorText: AppColor().white);
         }
       },
     );
@@ -248,18 +233,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
       showConfirmDialog(
         context: context,
-        title: "Locked Folder",
-        subTitle: containsLockedNotes ? "This folder contains locked notes. Enter password to delete everything." : "This folder is locked. Enter password to delete.",
-        confirmText: "Unlock",
+        title: "locked_folder".tr,
+        subTitle: containsLockedNotes ? "locked_folder_with_notes".tr : "locked_folder_no_notes".tr,
+        confirmText: "unlock".tr,
         controller: verifyPassController,
         obscureText: true,
-        hintText: "Password",
+        hintText: "password".tr,
         onConfirm: () {
           if (verifyPassController.text == storedPass) {
             Get.back();
             _proceedWithDeletion(folder);
           } else {
-            Get.snackbar("Verification Failed", "Incorrect Password", backgroundColor: AppColor().red, colorText: AppColor().white);
+            Get.snackbar("verification_failed".tr, "incorrect_password".tr, backgroundColor: AppColor().red, colorText: AppColor().white);
           }
         },
       );
@@ -271,9 +256,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _proceedWithDeletion(FolderModel folder) {
     showConfirmDialog(
       context: context,
-      title: "Delete Folder",
+      title: "delete_folder".tr,
       subTitle: "Are you sure you want to delete ${folder.title}? All notes inside will be moved directly to Recently Deleted.",
-      confirmText: "Delete",
+      confirmText: "delete".tr,
       onConfirm: () async {
         await noteController.bulkMoveToTrashByFolder(folder.id!, controller.defaultFolderId);
         await controller.deleteFolder(folder.id!);
@@ -306,12 +291,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
           showConfirmDialog(
             context: Get.context!,
-            title: "Locked Folder",
-            subTitle: "Please enter your password to access ${folder.title}.",
-            confirmText: "Unlock",
+            title: "locked_folder".tr,
+            subTitle: "enter_password_unlock_folder".tr,
+            confirmText: "unlock".tr,
             controller: verifyPassController,
             obscureText: true,
-            hintText: "Passwor",
+            hintText: "password".tr,
             onConfirm: () {
               if (verifyPassController.text == storedPass) {
                 Get.back();
@@ -322,8 +307,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 controller.folders.refresh();
               } else {
                 Get.snackbar(
-                  "Verification Failed",
-                  "Incorrect Password",
+                  "verification_failed".tr,
+                  "incorrect_password".tr,
                   backgroundColor: AppColor().red,
                   colorText: Colors.white,
                   snackPosition: SnackPosition.TOP,
@@ -399,7 +384,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Padding(
       padding: const EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 12),
       child: customTextField(
-        "Search",
+        "search".tr,
         false,
         null,
         controller: folderSearchController,
@@ -408,4 +393,5 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+  
 }

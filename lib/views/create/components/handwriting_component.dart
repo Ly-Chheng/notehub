@@ -143,7 +143,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                   onTap: () => Navigator.pop(context),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: Text('Cancel', style: text18(context).copyWith(color: Colors.red)),
+                    child: Text('cancel'.tr, style: text18(context).copyWith(color: Colors.red)),
                   ),
                 ),
                 Row(
@@ -181,7 +181,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                     TextButton(
                         onPressed: _saveAndExit,
                         child: Text(
-                          "Save",
+                          "save".tr,
                           style: text18(context).copyWith(color: AppColor().primaryColor),
                         ))
                   ],

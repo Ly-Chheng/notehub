@@ -9,8 +9,8 @@ class BottomNavigationBarController extends GetxController {
   int selectedIndex = 0;
   List listTitle = [
     'Student Notes',
-    'Focus Track',
-    'More',
+    'focus_track'.tr,
+    'more'.tr,
   ];
   List screenWidget = [
     const MyHomePage(),

@@ -87,8 +87,8 @@ class StopwatchScreen extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Lap", style: text16(context)),
-                      Text("Lap Time", style: text16(context)),
+                      Text("lap".tr, style: text16(context)),
+                      Text("lap_time".tr, style: text16(context)),
                     ],
                   ),
                 ),

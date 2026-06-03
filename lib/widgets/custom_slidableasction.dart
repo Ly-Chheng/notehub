@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
@@ -46,7 +47,8 @@ class AppSlidableAction extends StatelessWidget {
                 TextStyle(
                   color: AppColor().white,
                   fontSize: AppFontSize(context).descriptionLargeSize,
-                  fontFamily: 'EN-REGULAR',
+                  // fontFamily: 'EN-REGULAR',
+                  fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                   fontWeight: FontWeight.w600,
                 ),
           ),

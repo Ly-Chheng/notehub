@@ -78,7 +78,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
               );
             },
             child: Text(
-              "Save",
+              "save".tr,
               style: text18(context).copyWith(color: AppColor().primaryColor),
             ),
           ),
@@ -91,39 +91,40 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
             child: Column(
               children: [
-                Center(child: customHeader("Change Password", context)),
+                Center(child: customHeader("change_password".tr, context)),
                 const SizedBox(height: 8),
                 Text(
-                  "Update the password to protect your notes.",
+                  "change_password_desc".tr,
                   textAlign: TextAlign.center,
                   style: text16(context).copyWith(
                     color: AppColor().gray,
                   ),
                 ),
                 const SizedBox(height: 30),
-                customTextField("Current Password", _obscureCurrent, () {
+                customTextField("current_password".tr, _obscureCurrent, () {
                   setState(() => _obscureCurrent = !_obscureCurrent);
                 }, controller: _currentPassController),
                 const SizedBox(height: 15),
-                customTextField("New Password", _obscureNew, () {
+                customTextField("new_password".tr, _obscureNew, () {
                   setState(() => _obscureNew = !_obscureNew);
                 }, controller: _newPassController),
                 const SizedBox(height: 15),
-                customTextField("Confirm New Password", _obscureConfirm, () {
+                customTextField("confirm_new_password".tr, _obscureConfirm, () {
                   setState(() => _obscureConfirm = !_obscureConfirm);
                 }, controller: _confirmPassController),
                 const SizedBox(height: 15),
                 customTextField(
-                  "New Hint",
+                  "new_hint".tr,
                   false,
                   null,
                   controller: _hintController,
                   trailing: Text(
-                    "Optional",
+                    "optional".tr,
                     style: TextStyle(
                       color: AppColor().gray,
                       fontSize: AppFontSize(context).normalTextSize,
-                      fontFamily: 'EN-REGULAR',
+                      // fontFamily: 'EN-REGULAR',
+                      fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                     ),
                   ),
                 ),
@@ -133,7 +134,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                 _buildDropdown(),
                 const SizedBox(height: 15),
                 customTextField(
-                  "Enter your answer",
+                  "enter_your_answer".tr,
                   false,
                   null,
                   controller: _answerController,
@@ -150,13 +151,14 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text("Security Question Verification", style: text16(context)),
+        Text("security_question_verification".tr, style: text16(context)),
         Text(
-          "Optional",
+          "optional".tr,
           style: TextStyle(
             color: AppColor().gray,
             fontSize: AppFontSize(context).normalTextSize,
-            fontFamily: 'EN-REGULAR',
+            // fontFamily: 'EN-REGULAR',
+            fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
           ),
         ),
       ],
@@ -175,11 +177,12 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           value: _selectedQuestion,
           dropdownColor: Theme.of(context).cardColor,
           hint: Text(
-            "Select question",
+            "select_question".tr,
             style: TextStyle(
               color: AppColor().gray,
               fontSize: AppFontSize(context).subTitleSize,
-              fontFamily: 'EN-REGULAR',
+              // fontFamily: 'EN-REGULAR',
+              fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
             ),
           ),
           isExpanded: true,

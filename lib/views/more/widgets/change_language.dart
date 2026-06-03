@@ -46,6 +46,7 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
                 ),
                 Icon(
                   Icons.keyboard_arrow_right_rounded,
+                  color: Colors.grey,
                   size: context.isPhone ? 24 : 34,
                 ),
               ],
@@ -65,15 +66,6 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
       builder: (builder) {
         return AlertDialog(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-          title: Text(
-            'change_language'.tr,
-            style: TextStyle(
-              fontSize: 18, fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
-              // fontFamily: Get.locale == const Locale('km', 'KM')
-              //     ? 'KH-REGULAR'
-              //     : 'EN-REGULAR',
-            ),
-          ),
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(10),

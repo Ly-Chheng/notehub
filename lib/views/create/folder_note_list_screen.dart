@@ -75,12 +75,12 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
     showConfirmDialog(
       context: context,
-      title: "Locked Note",
-      subTitle: "Please enter your password to view this note.",
-      confirmText: "Unlock",
+      title: "locked_note".tr,
+      subTitle: "view_note_locked_desc".tr,
+      confirmText: "unlock".tr,
       controller: verifyPassController,
       obscureText: true,
-      hintText: "Password",
+      hintText: "password".tr,
       onConfirm: () {
         if (verifyPassController.text == storedPass) {
           _navigateToCreateNote(note);
@@ -106,12 +106,12 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
     showConfirmDialog(
       context: context,
-      title: "Locked Note",
-      subTitle: "Enter your password to delete this locked note.",
-      confirmText: "Unlock",
+      title: "locked_note",
+      subTitle: "delete_locked_note_desc".tr,
+      confirmText: "unlock".tr,
       controller: verifyPassController,
       obscureText: true,
-      hintText: "Password",
+      hintText: "password".tr,
       onConfirm: () async {
         if (verifyPassController.text == storedPass) {
           await controller.moveToTrash(note.id!, widget.folderId);
@@ -209,7 +209,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 return const CustomNoData(message: "No data");
               }
 
-              final sortedNotes = [...controller.notes]..sort((a, b) => b.date!.compareTo(a.date!));
+              final sortedNotes = [...controller.notes]..sort((a, b) => b.date.compareTo(a.date));
 
               final pinnedNotes = sortedNotes.where((n) => n.isPinned).toList();
               final otherNotes = sortedNotes.where((n) => !n.isPinned).toList();
@@ -228,7 +228,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                   padding: const EdgeInsets.only(bottom: 100),
                   children: [
                     if (pinnedNotes.isNotEmpty) ...[
-                      _buildSectionHeader("Pinned"),
+                      _buildSectionHeader("pinned_header".tr),
                       ...pinnedNotes.map(
                         (note) => _buildSlidableNote(note),
                       ),
@@ -309,7 +309,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             AppSlidableAction(
               onPressed: () => controller.togglePinNote(note, widget.folderId),
               icon: note.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-              label: note.isPinned ? 'Unpin' : 'Pin',
+              label: note.isPinned ? 'unpin'.tr : 'pin'.tr,
               backgroundColor: AppColor().orange,
               borderRadius: const BorderRadius.horizontal(
                 left: Radius.circular(16),
@@ -324,7 +324,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 }
               },
               icon: Icons.folder,
-              label: 'Folder',
+              label: 'folder'.tr,
               backgroundColor: AppColor().primaryColor,
             ),
             AppSlidableAction(
@@ -332,7 +332,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 note.isLocked ? _showUnlockBeforeDelete(note) : _showDeleteConfirmation(note);
               },
               icon: Icons.delete,
-              label: 'Delete',
+              label: 'delete'.tr,
               backgroundColor: AppColor().red,
               borderRadius: const BorderRadius.horizontal(
                 right: Radius.circular(16),
@@ -395,7 +395,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                             SizedBox(width: note.isLocked == true ? 6 : 0),
                             Flexible(
                               child: Text(
-                                titleText.isNotEmpty ? titleText : "Untitled",
+                                titleText.isNotEmpty ? titleText : "untitled".tr,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: text18(context).copyWith(
@@ -459,7 +459,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     return Padding(
       padding: const EdgeInsets.only(left: 15, right: 15, top: 15, bottom: 5),
       child: customTextField(
-        "Search notes...",
+        "search".tr,
         false,
         null,
         controller: searchController,
@@ -510,12 +510,12 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
       showConfirmDialog(
         context: context,
-        title: "Verify Password",
-        subTitle: "Some selected notes are locked. Enter password to delete all.",
-        confirmText: "Verify",
+        title: "verify_password",
+        subTitle: "locked_notes_bulk_delete_warning".tr,
+        confirmText: "verify".tr,
         controller: verifyPassController,
         obscureText: true,
-        hintText: "Password",
+        hintText: "password".tr,
         onConfirm: () {
           if (verifyPassController.text == storedPass) {
             _showBulkDeleteConfirm();
@@ -543,9 +543,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
       showConfirmDialog(
         context: context,
-        title: "Locked Notes",
-        subTitle: "Enter your password to move locked notes.",
-        confirmText: "Unlock",
+        title: "locked_notes",
+        subTitle: "locked_notes_bulk_move_warning".tr,
+        confirmText: "unlock".tr,
         controller: verifyPassController,
         obscureText: true,
         onConfirm: () {
@@ -591,12 +591,12 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
     showConfirmDialog(
       context: context,
-      title: "Locked Note",
-      subTitle: "Enter your password to move this locked note.",
-      confirmText: "Unlock",
+      title: "locked_note",
+      subTitle: "enter_password_move_note".tr,
+      confirmText: "unlock".tr,
       controller: verifyPassController,
       obscureText: true,
-      hintText: "Password",
+      hintText: "password".tr,
       onConfirm: () {
         if (verifyPassController.text == storedPass) {
           _showMoveSheet(noteIds);
@@ -623,13 +623,13 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SheetHeader(title: "Move to Folder"),
+            SheetHeader(title: "move_to_folder".tr),
             Flexible(
               child: Obx(() {
                 final otherFolders = folderController.folders.where((f) => f.id != widget.folderId).toList();
                 if (otherFolders.isEmpty) {
                   return const CustomNoData(
-                    message: "No data",
+                    message: "no_data",
                   );
                 }
                 return ListView.builder(
@@ -666,9 +666,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   void _showBulkDeleteConfirm() {
     showConfirmDialog(
       context: context,
-      title: "Delete Notes",
+      title: "delete_notes",
       subTitle: "Are you sure you want to delete ${selectedNoteIds.length} selected ${selectedNoteIds.length > 1 ? 'notes' : 'note'}?",
-      confirmText: "Delete",
+      confirmText: "delete".tr,
       onConfirm: () async {
         await controller.bulkMoveToTrash(selectedNoteIds.toList(), widget.folderId);
         setState(() {
@@ -682,9 +682,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   void _showDeleteConfirmation(NoteModel note) {
     showConfirmDialog(
       context: context,
-      title: "Delete Note",
-      subTitle: "Are you sure you want to delete this note?",
-      confirmText: "Delete",
+      title: "delete_note".tr,
+      subTitle: "delete_note_confirm".tr,
+      confirmText: "delete".tr,
       onConfirm: () async {
         await controller.moveToTrash(note.id!, widget.folderId);
       },

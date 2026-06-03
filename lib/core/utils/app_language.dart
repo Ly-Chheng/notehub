@@ -9,6 +9,8 @@ class AppTranslations extends Translations {
   Map<String, Map<String, String>> get keys => {
         'en_US': {
           // General
+          'more': 'More',
+          'focus_track': 'Focus Track',
           'locale': 'en',
           'home': 'HomeScreen',
           'search': 'Search',
@@ -31,22 +33,31 @@ class AppTranslations extends Translations {
           // Footer
           'copyright': 'Copyright © 2026 Student Note App.\nVersion 1.0.0 (6)',
 
+          // Format
+          'format': 'Format',
+          'text_alignment': 'Text Alignment',
+          'text_style': 'Text Style',
+          'font_size': 'Font Size',
+          'small': 'Small',
+          'normal': 'Normal',
+          'large': 'Large',
+          'huge': 'Huge',
+
           // Editor
           'title': 'Title',
           'start_typing': 'Start typing...',
           'add_media': 'Add Media',
           'cancel': 'Cancel',
           'backgrounds': 'Backgrounds',
-          'format': 'Format',
-          'text_alignment': 'Text Alignment',
-          'text_style': 'Text Style',
-          'font_size': 'Font Size',
           'save': 'Save',
           'pin': 'Pin',
+          'unpin': 'Unpin',
+          'pinned_header': 'Pinned',
           'share': 'Share',
           'move_note': 'Move Note',
           'lock_note': 'Lock Note',
           'delete': 'Delete',
+          'edit': 'Edit',
 
           // Auth / Password
           'create': 'Create',
@@ -66,10 +77,12 @@ class AppTranslations extends Translations {
           'select_question': 'Select Question',
           'enter_your_answer': 'Enter your answer',
           'remove_lock_desc': 'Please enter your current password to remove all protection.',
+
           'submit': 'Submit',
           'forget_password_desc': 'Verify your identity using your security question to reset your password.',
           'no_security_question': 'No security question set up.',
           'loading': 'Loading...',
+          'selected': 'Selected',
 
           // Folder
           'create_folder': 'Create Folder',
@@ -78,9 +91,89 @@ class AppTranslations extends Translations {
           'duplicate_name': 'Duplicate Name',
           'folder_exists': 'A folder with this name already exists.',
           'ok': 'OK',
+
+          // Multi-Selection / Bulk actions inside specific folders
+          'notes_selected': '{{count}} selected',
+          'locked_notes_bulk_delete_warning': 'Some selected notes are locked. Enter password to delete all.',
+          'locked_notes_bulk_move_warning': 'Enter your password to move locked notes.',
+          'enter_password_move_note': 'Enter your password to move this locked note.',
+          'delete_notes_bulk_confirm': 'Are you sure you want to delete {{count}} selected notes?',
+
+          // Create Note Screen
+          'create_note': 'Create Note',
+          'edit_note': 'Edit Note',
+          'unlock_note': 'Unlock Note',
+          'delete_note': 'Delete Note',
+          'delete_note_confirm': 'Are you sure you want to delete this note?',
+          'move_to_folder': 'Move to Folder',
+          'enter_password_unlock': 'Please enter your password to unlock this note.',
+          'remove_protection_desc': 'Please enter your password to remove protection.',
+          'verify': 'Verify',
+          'password': 'Password',
+          'text': 'Text',
+          'photos': 'Photos',
+          'file_txt': 'File (txt)',
+          'untitled': 'Untitled',
+
+          // Folder security
+          'folder': 'Folder',
+          'lock': 'Lock',
+          'unlock': 'Unlock',
+          'locked_notes': 'Locked Notes',
+          'locked_note': 'Locked Note',
+          'lock_folder': 'Lock Folder',
+          'unlock_folder': 'Unlock Folder',
+          'verify_password': 'Verify Password',
+          'delete_folder': 'Delete Folder',
+          'locked_folder': 'Locked Folder',
+          'enter_password_unlock_folder': 'Please enter your password to unlock',
+          'enter_password_edit_folder': 'Please enter your password to edit ',
+          'delete_folder_confirm': 'Are you sure you want to delete ?',
+          'locked_folder_with_notes': 'This folder contains locked notes. Enter password to delete everything.',
+          'locked_folder_no_notes': 'Please enter your password to delete.',
+          'verification_failed': 'Verification Failed',
+          'incorrect_password': 'Incorrect Password',
+          'no_folders_yet': 'No folders yet',
+          'no_matching_folders': 'No matching folders found',
+          'view_note_locked_desc': 'Please enter your password to view this note.',
+          'delete_locked_note_desc': 'Please enter your password to delete this locked note.',
+
+          // Timer
+          'stopwatch': 'Stopwatch',
+          'timer': 'Timer',
+          'duration': 'Duration',
+          'quick_presets': 'Quick Presets',
+          'add_quick_preset': 'Add Quick Preset',
+          'save_preset': 'Save Preset',
+          'new_timer': 'New Timer',
+          'edit_timer': 'Edit Timer',
+          'already_exists': 'Already Exists',
+          'preset_exists_msg': 'This time is already available in your presets.',
+          'duration_zero_msg': 'Duration cannot be zero.',
+          'duplicate_timer_msg': 'A timer with this duration and name already exists.',
+          'timer_default_label': 'Timer',
+          'lap': 'Lap',
+          'lap_time': 'Lap Time',
+          'label': 'Label',
+          'no_time': 'No active timers',
+          'running': 'Running',
+          'recents': 'Recents',
+          'total': 'total',
+          'duplicate': 'Duplicate',
+
+          //recently deleted
+          'restore': 'Restore',
+          'move': 'Move',
+          'delete_permanently': 'Delete Permanently',
+          'restore_to_folder': 'Restore to Folder',
+          'perm_delete_confirm': 'Are you sure you want to permanently delete this note? This action cannot be undone.',
+          'no_folders_available': 'No folders available',
+          'success': 'Success',
         },
         'km_KM': {
           // General
+          'more': 'បន្ថែម',
+          'focus_track': 'កម្មវិធីផ្ដោតអារម្មណ៍', // "Focus Program/Track"
           'locale': 'km',
           'home': 'ទំព័រដើម',
           'search': 'ស្វែងរក',
@@ -89,36 +182,44 @@ class AppTranslations extends Translations {
 
           // More Screen
           'about': 'អំពីកម្មវិធី',
-          'dark_mode': 'របៀបងងឹត',
+          'dark_mode': 'ទម្រង់ពេលយប់',
           'how_to_use': 'របៀបប្រើប្រាស់',
-          'change_language': 'ប្ដូរភាសា',
+          'change_language': 'ផ្លាស់ប្ដូរភាសា',
           'share_app': 'ចែករំលែកកម្មវិធី',
           'recently_deleted': 'បានលុបថ្មីៗ',
 
           // Security
-          'change_password': 'ប្ដូរពាក្យសម្ងាត់',
+          'change_password': 'ផ្លាស់ប្ដូរពាក្យសម្ងាត់',
           'reset_password': 'កំណត់ពាក្យសម្ងាត់ឡើងវិញ',
           'forget_password': 'ភ្លេចពាក្យសម្ងាត់',
 
           // Footer
-          'copyright': 'រក្សាសិទ្ធិ © 2026 កម្មវិធី Student Note\nកំណែ 1.0.0 (6)',
+          'copyright': 'រក្សាសិទ្ធិ © ២០២៦ កម្មវិធី Quick Note\nកំណែ ១.០.០ (៦)',
 
+          // Format
+          'format': 'ទម្រង់',
+          'text_alignment': 'តម្រឹមអត្ថបទ',
+          'text_style': 'រចនាប័ទ្មអត្ថបទ',
+          'font_size': 'ទំហំអក្សរ',
+          'small': 'តូច',
+          'normal': 'ធម្មតា',
+          'large': 'ធំ',
+          'huge': 'ធំខ្លាំង',
           // Editor
           'title': 'ចំណងជើង',
           'start_typing': 'ចាប់ផ្តើមវាយអត្ថបទ...',
           'add_media': 'បន្ថែមមេឌៀ',
           'cancel': 'បោះបង់',
           'backgrounds': 'ផ្ទៃខាងក្រោយ',
-          'format': 'ទម្រង់',
-          'text_alignment': 'តម្រឹមអត្ថបទ',
-          'text_style': 'រចនាប័ទ្មអត្ថបទ',
-          'font_size': 'ទំហំអក្សរ',
           'save': 'រក្សាទុក',
           'pin': 'បិទភ្ជាប់',
+          'unpin': 'ដកការបិទភ្ជាប់',
+          'pinned_header': 'បានបិទភ្ជាប់',
           'share': 'ចែករំលែក',
           'move_note': 'ផ្លាស់ទីកំណត់ចំណាំ',
           'lock_note': 'ចាក់សោកំណត់ចំណាំ',
           'delete': 'លុប',
+          'edit': 'កែប្រែ',
 
           // Auth / Password
           'create': 'បង្កើត',
@@ -142,6 +243,7 @@ class AppTranslations extends Translations {
           'forget_password_desc': 'ផ្ទៀងផ្ទាត់អត្តសញ្ញាណរបស់អ្នកដោយប្រើសំណួរសុវត្ថិភាព ដើម្បីកំណត់ពាក្យសម្ងាត់ឡើងវិញ។',
           'no_security_question': 'មិនទាន់បានកំណត់សំណួរសុវត្ថិភាពទេ',
           'loading': 'កំពុងផ្ទុក...',
+          'selected': 'បានជ្រើសរើស',
 
           // Folder
           'create_folder': 'បង្កើតថតឯកសារ',
@@ -150,6 +252,84 @@ class AppTranslations extends Translations {
           'duplicate_name': 'ឈ្មោះស្ទួន',
           'folder_exists': 'មានថតឯកសារដែលមានឈ្មោះនេះរួចហើយ។',
           'ok': 'យល់ព្រម',
+
+          // Multi-Selection / Bulk actions inside specific folders
+          'notes_selected': 'បានជ្រើសរើស',
+          'locked_notes_bulk_delete_warning': 'កំណត់ចំណាំដែលបានជ្រើសរើសមួយចំនួនត្រូវបានចាក់សោ។ សូមបញ្ចូលពាក្យសម្ងាត់ដើម្បីលុបទាំងអស់។',
+          'locked_notes_bulk_move_warning': 'សូមបញ្ចូលពាក្យសម្ងាត់របស់អ្នក ដើម្បីផ្លាស់ទីកំណត់ចំណាំដែលបានចាក់សោ។',
+          'enter_password_move_note': 'សូមបញ្ចូលពាក្យសម្ងាត់របស់អ្នក ដើម្បីផ្លាស់ទីកំណត់ចំណាំដែលបានចាក់សោនេះ។',
+          'delete_notes_bulk_confirm': 'តើអ្នកពិតជាចង់លុបកំណត់ចំណាំដែលបានជ្រើសរើសទាំង {{count}} នេះមែនទេ?',
+
+          // Create Note Screen
+          'create_note': 'បង្កើតកំណត់ចំណាំ',
+          'edit_note': 'កែប្រែកំណត់ចំណាំ',
+          'delete_note': 'លុបកំណត់ចំណាំ',
+          'delete_note_confirm': 'តើអ្នកពិតជាចង់លុបកំណត់ចំណាំនេះមែនទេ?',
+          'move_to_folder': 'ផ្លាស់ទីទៅថតឯកសារ',
+          'unlock_note': 'ដោះសោកំណត់ចំណាំ',
+          'verify': 'ផ្ទៀងផ្ទាត់',
+          'enter_password_unlock': 'សូមបញ្ចូលពាក្យសម្ងាត់ដើម្បីដោះសោ។',
+          'remove_protection_desc': 'សូមបញ្ចូលពាក្យសម្ងាត់របស់អ្នកដើម្បីដកការការពារ។',
+          'password': 'ពាក្យសម្ងាត់',
+          'text': 'អត្ថបទ',
+          'photos': 'រូបថត',
+          'file_txt': 'ឯកសារ (txt)',
+          'lock': 'ចាក់សោ',
+          'untitled': 'គ្មានចំណងជើង',
+
+          // Folder security
+          'folder': 'ថតឯកសារ',
+          'unlock': 'ដោះសោ',
+          'lock_folder': 'ចាក់សោថតឯកសារ',
+          'locked_notes': 'កំណត់ចំណាំដែលបានចាក់សោ',
+          'locked_note': 'កំណត់ចំណាំដែលបានចាក់សោ',
+          'unlock_folder': 'ដោះសោថតឯកសារ',
+          'verify_password': 'ផ្ទៀងផ្ទាត់ពាក្យសម្ងាត់',
+          'delete_folder': 'លុបថតឯកសារ',
+          'locked_folder': 'ថតឯកសារត្រូវបានចាក់សោ',
+          'enter_password_unlock_folder': 'សូមបញ្ចូលបពាក្យសម្ងាត់ដើម្បីដោះសោ',
+          'enter_password_edit_folder': 'សូមបញ្ចូលពាក្យសម្ងាត់ដើម្បីកែប្រែ',
+          'delete_folder_confirm': 'តើអ្នកពិតជាចង់លុប មែនទេ?',
+          'locked_folder_with_notes': 'ថតនេះមានកំណត់ចំណាំដែលបានចាក់សោ។ សូមបញ្ចូលពាក្យសម្ងាត់ដើម្បីលុបទាំងអស់។',
+          'locked_folder_no_notes': 'សូមបញ្ចូលពាក្យសម្ងាត់ដើម្បីលុប។',
+          'verification_failed': 'ការផ្ទៀងផ្ទាត់បានបរាជ័យ',
+          'incorrect_password': 'ពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ',
+          'no_folders_yet': 'មិនទាន់មានថតឯកសារទេ',
+          'no_matching_folders': 'រកមិនឃើញថតឯកសារដែលត្រូវគ្នាទេ',
+          'view_note_locked_desc': 'សូមបញ្ចូលពាក្យសម្ងាត់ដើម្បីមើលកំណត់ចំណាំនេះ។',
+          'delete_locked_note_desc': 'សូមបញ្ចូលពាក្យសម្ងាត់ដើម្បីលុបកំណត់ចំណាំដែលបានចាក់សោនេះ។',
+
+          // Timer
+          'stopwatch': 'នាឡិកាវាស់ពេល',
+          'timer': 'នាឡិការាប់ថយក្រោយ',
+          'duration': 'រយៈពេល',
+          'quick_presets': 'ការកំណត់ទុកជាមុន',
+          'add_quick_preset': 'បន្ថែមការកំណត់រហ័ស',
+          'save_preset': 'រក្សាទុកការកំណត់',
+          'new_timer': 'កម្មវិធីវាស់ពេលថ្មី',
+          'edit_timer': 'កែប្រែកម្មវិធីវាស់ពេល',
+          'already_exists': 'មានរួចហើយ',
+          'preset_exists_msg': 'ពេលវេលានេះមាននៅក្នុងបញ្ជីកំណត់រួចហើយ។',
+          'duration_zero_msg': 'រយៈពេលមិនអាចសូន្យបានទេ។',
+          'duplicate_timer_msg': 'មានកម្មវិធីវាស់ពេលដែលមានឈ្មោះ និងរយៈពេលនេះរួចហើយ។',
+          'timer_default_label': 'កម្មវិធីវាស់ពេល',
+          'lap': 'ជុំ',
+          'lap_time': 'រយៈពេលជុំ',
+          'label': 'ស្លាកឈ្មោះ',
+          'no_time': 'មិនមានកម្មវិធីវាស់ពេលសកម្មទេ',
+          'running': 'កំពុងដំណើរការ',
+          'recents': 'ប្រវត្តិថ្មីៗ',
+          'total': 'សរុប',
+          'duplicate': 'ស្ទួន',
+
+          //recently deleted
+          'restore': 'ស្ដារ',
+          'move': 'ផ្លាស់ទី',
+          'delete_permanently': 'លុបជាអចិន្ត្រៃយ៍',
+          'restore_to_folder': 'ស្ដារទៅកាន់ថតឯកសារ',
+          'perm_delete_confirm': 'តើអ្នកប្រាកដជាចង់លុបកំណត់ចំណាំនេះជាអចិន្ត្រៃយ៍មែនទេ? សកម្មភាពនេះមិនអាចបញ្ច្រាសបានទេ។',
+          'no_folders_available': 'មិនមានថតឯកសារទេ',
+          'success': 'ជោគជ័យ',
         },
       };
 }

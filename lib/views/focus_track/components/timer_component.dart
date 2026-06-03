@@ -31,7 +31,7 @@ class TimerComponent extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomNoData(
-                    message: "No time",
+                    message: "no_time",
                     imagePath: "assets/images/no_time.png",
                   ),
                 ],
@@ -59,7 +59,7 @@ class TimerComponent extends StatelessWidget {
                 if (activeTimers.isNotEmpty) ...[
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: customHeader("Running", context),
+                    child: customHeader("running".tr, context),
                   ),
                   ...activeTimers.map((timer) => _buildTimerTile(context, controller, timer)),
                 ],
@@ -71,7 +71,7 @@ class TimerComponent extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(
                       horizontal: 10,
                     ),
-                    child: customHeader("Recents", context),
+                    child: customHeader("recents".tr, context),
                   ),
                   ...recentTimers.map((timer) => _buildTimerTile(context, controller, timer)),
                 ],
@@ -103,13 +103,13 @@ class TimerComponent extends StatelessWidget {
                   Get.to(() => CreateTimerScreen(isEditing: true, timerKey: timer.key, existingTimer: timer));
                 },
                 icon: Icons.edit,
-                label: 'Edit',
+                label: 'edit'.tr,
                 backgroundColor: AppColor().primaryColor,
               ),
               AppSlidableAction(
                 onPressed: () => controller.deleteTimer(timer.key),
                 icon: Icons.delete,
-                label: 'Delete',
+                label: 'delete'.tr,
                 backgroundColor: AppColor().red,
               ),
             ],

@@ -66,10 +66,11 @@ class ConfirmBottomSheet {
                                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                 ),
                                 child: Text(
-                                  "Cancel",
+                                  "cancel".tr,
                                   style: TextStyle(
                                     color: AppColor().red,
-                                    fontFamily: 'EN-ENGINEER',
+                                    // fontFamily: 'EN-ENGINEER',
+                                    fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                                     fontSize: AppFontSize(context).descriptionLargeSize,
                                   ),
                                 ),
@@ -101,7 +102,9 @@ class ConfirmBottomSheet {
                                   saveText,
                                   style: TextStyle(
                                     color: AppColor().primaryColor,
-                                    fontFamily: 'EN-ENGINEER',
+                                    // fontFamily: 'EN-ENGINEER',
+
+                                    fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                                     fontSize: AppFontSize(context).descriptionLargeSize,
                                   ),
                                 ),
@@ -131,7 +134,7 @@ class ConfirmBottomSheet {
                     children: [
                       Expanded(
                         child: CustomButton(
-                          text: "Cancel",
+                          text: "cancel".tr,
                           backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.grey.shade100,
                           textColor: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().black,
                           onPressed: onCancel ?? () => Navigator.pop(context),

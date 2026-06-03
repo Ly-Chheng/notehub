@@ -72,8 +72,8 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
           ),
           Row(
             children: [
-              _toggleItem("Stopwatch", 0),
-              _toggleItem("Timer", 1),
+              _toggleItem("stopwatch".tr, 0),
+              _toggleItem("timer".tr, 1),
             ],
           ),
         ],
@@ -92,7 +92,8 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
           child: Text(
             label,
             style: TextStyle(
-              fontFamily: 'EN-SEMIBOLD',
+              // fontFamily: 'EN-SEMIBOLD',
+              fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
               color: selectedIndex == index ? activeColor : AppColor().gray,
               fontSize: context.isPhone ? 16 : 18,
             ),

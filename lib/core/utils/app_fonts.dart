@@ -113,7 +113,8 @@ Widget customHeader(String title, BuildContext context) {
     title,
     style: TextStyle(
       fontSize: AppFontSize(context).titleSize,
-      fontFamily: 'EN-BOLD',
+      // fontFamily: 'EN-BOLD',
+      fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
       color: Theme.of(context).textTheme.bodyLarge?.color,
     ),
   );

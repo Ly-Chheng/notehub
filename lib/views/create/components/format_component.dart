@@ -103,13 +103,13 @@ void showFormatSheet({
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SheetHeader(
-                title: "Format",
+                title: "format".tr,
               ),
               const SizedBox(height: 15),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: context.isPhone ? 10 : 20),
                 child: Text(
-                  "Text Alignment",
+                  "text_alignment".tr,
                   style: text14(context).copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
@@ -177,7 +177,7 @@ void showFormatSheet({
               Padding(
                 padding: EdgeInsets.symmetric(vertical: context.isPhone ? 10 : 20),
                 child: Text(
-                  "Text Style",
+                  "text_style".tr,
                   style: text14(context).copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
@@ -242,7 +242,6 @@ void showFormatSheet({
                   ),
                 ],
               ),
-
               AnimatedSize(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOutCubic,
@@ -267,7 +266,7 @@ void showFormatSheet({
               Padding(
                 padding: EdgeInsets.symmetric(vertical: context.isPhone ? 10 : 20),
                 child: Text(
-                  "Font Size",
+                  "font_size".tr,
                   style: text14(context).copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
@@ -301,12 +300,14 @@ void showFormatSheet({
                               ),
                             ),
                             child: Text(
-                              size,
+                              // size,
+                              size.toLowerCase().tr,
                               style: TextStyle(
                                 color: isSelected ? AppColor().white : Colors.grey.shade700,
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                 fontSize: context.isPhone ? 14 : 16,
-                                fontFamily: 'EN-REGULAR',
+                                // fontFamily: 'EN-REGULAR',
+                                fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                               ),
                             ),
                           ),

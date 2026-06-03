@@ -70,11 +70,12 @@ Future<void> showConfirmDialog({
                       if (icon != null && title.isNotEmpty) const SizedBox(height: 8),
                       if (title.isNotEmpty)
                         Text(
-                          title,
+                          title.tr,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: AppFontSize(context).mediumLargeSize,
-                            fontFamily: 'EN-BOLD',
+                            // fontFamily: 'EN-BOLD',
+                            fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
                           ),
                         ),
                     ],
@@ -89,13 +90,14 @@ Future<void> showConfirmDialog({
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: AppFontSize(Get.context!).subTitleSize,
-                      fontFamily: 'EN-REGULAR',
+                      // fontFamily: 'EN-REGULAR',
+                      fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                     ),
                   ),
                   if (controller != null) ...[
                     const SizedBox(height: 16),
                     customTextField(
-                      "Password",
+                      "password".tr,
                       false,
                       null,
                       controller: controller,
@@ -115,7 +117,7 @@ Future<void> showConfirmDialog({
                   if (showCancel)
                     Expanded(
                       child: CustomButton(
-                        text: "Cancel",
+                        text: "cancel".tr,
                         onPressed: () => Navigator.pop(context),
                         backgroundColor: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.grey.shade50,
                         textColor: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().black,
@@ -125,7 +127,7 @@ Future<void> showConfirmDialog({
                   if (showCancel) const SizedBox(width: 15),
                   Expanded(
                     child: CustomButton(
-                      text: confirmText ?? 'OK',
+                      text: confirmText ?? 'ok'.tr,
                       onPressed: () {
                         Navigator.pop(context);
                         onConfirm();

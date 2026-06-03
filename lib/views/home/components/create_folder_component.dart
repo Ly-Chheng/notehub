@@ -44,8 +44,8 @@ void showFolderSheet(BuildContext context, {FolderModel? folder}) {
             Padding(
               padding: const EdgeInsets.all(15),
               child: SheetHeader(
-                title: folder == null ? "Create Folder" : "Update Folder",
-                saveText: "Save",
+                title: folder == null ? "create_folder".tr : "update_folder".tr,
+                saveText: "save".tr,
                 onSave: () async {
                   String newName = folderController.text.trim();
 
@@ -70,7 +70,7 @@ void showFolderSheet(BuildContext context, {FolderModel? folder}) {
             Padding(
               padding: const EdgeInsets.only(left: 20, right: 20, bottom: 30),
               child: customTextField(
-                "Folder Name",
+                "folder_name".tr,
                 false,
                 null,
                 controller: folderController,
