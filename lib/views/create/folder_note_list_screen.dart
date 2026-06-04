@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
+import 'package:project_structure/core/functions/fomat_date.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/note/note_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
@@ -85,12 +86,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         if (verifyPassController.text == storedPass) {
           _navigateToCreateNote(note);
         } else {
-          Get.snackbar(
-            "Error",
-            "Incorrect Password",
-            backgroundColor: AppColor().red,
-            colorText: Colors.white,
-            snackPosition: SnackPosition.TOP,
+          AppSnackbar.showError(
+            title: "error".tr,
+            message: "incorrect_password".tr,
           );
         }
       },
@@ -116,11 +114,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         if (verifyPassController.text == storedPass) {
           await controller.moveToTrash(note.id!, widget.folderId);
         } else {
-          Get.snackbar(
-            "Access Denied",
-            "Incorrect Password.",
-            backgroundColor: AppColor().red,
-            colorText: Colors.white,
+          AppSnackbar.showError(
+            title: "access_denied".tr,
+            message: "incorrect_password".tr,
           );
         }
       },
@@ -283,18 +279,18 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
   Widget _buildSlidableNote(NoteModel note) {
     bool isSelected = selectedNoteIds.contains(note.id);
-    final List<String> imagePaths = note.imagePaths ?? [];
+    final List<String> imagePaths = note.imagePaths;
 
-    final Color noteBgColor = (note.bgColor == null || note.bgColor == 0) ? Theme.of(context).cardColor : Color(note.bgColor!);
+    final Color noteBgColor = (note.bgColor == 0) ? Theme.of(context).cardColor : Color(note.bgColor);
 
-    final Color itemTextColor = (note.bgColor == null || note.bgColor == 0)
+    final Color itemTextColor = (note.bgColor == 0)
         ? (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black)
         : (ThemeData.estimateBrightnessForColor(noteBgColor) == Brightness.dark ? AppColor().white : AppColor().black);
 
     final Color itemSubTextColor = itemTextColor.withValues(alpha: 0.7);
 
-    final String titleText = note.title.trim().isNotEmpty ? note.title : controller.getPlainTextFromNote(note.content ?? "").trim();
-    final String plainContent = controller.getPlainTextFromNote(note.content ?? "").trim();
+    final String titleText = note.title.trim().isNotEmpty ? note.title : controller.getPlainTextFromNote(note.content).trim();
+    final String plainContent = controller.getPlainTextFromNote(note.content).trim();
     final String subtitleText = note.title.trim().isNotEmpty ? plainContent : "";
 
     return Padding(
@@ -409,7 +405,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         Row(
                           children: [
                             Text(
-                              note.date.toString(),
+                              // note.date.toString(),
+                              formatDateForLocale(note.date),
                               style: text14(context).copyWith(color: itemSubTextColor),
                             ),
                             const SizedBox(width: 8),
@@ -485,8 +482,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "${selectedNoteIds.length} selected",
-                style: TextStyle(fontSize: AppFontSize(context).normalTextSize, fontFamily: 'EN-ENGULAR', color: AppColor().gray),
+                '${selectedNoteIds.length} ${'selected'.tr} ',
+                style: text10,
               ),
             ],
           ),
@@ -520,7 +517,10 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           if (verifyPassController.text == storedPass) {
             _showBulkDeleteConfirm();
           } else {
-            Get.snackbar("Error", "Incorrect Password", backgroundColor: AppColor().red, colorText: Colors.white);
+            AppSnackbar.showError(
+              title: "error".tr,
+              message: "incorrect_password".tr,
+            );
           }
         },
       );
@@ -552,11 +552,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           if (verifyPassController.text == storedPass) {
             _showMoveSheet(selectedNoteIds.toList());
           } else {
-            Get.snackbar(
-              "Access Denied",
-              "Incorrect Password",
-              backgroundColor: AppColor().red,
-              colorText: AppColor().white,
+            AppSnackbar.showError(
+              title: "access_denied".tr,
+              message: "incorrect_password".tr,
             );
           }
         },
@@ -601,11 +599,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
         if (verifyPassController.text == storedPass) {
           _showMoveSheet(noteIds);
         } else {
-          Get.snackbar(
-            "Access Denied",
-            "Incorrect Password",
-            backgroundColor: AppColor().red,
-            colorText: AppColor().white,
+          AppSnackbar.showError(
+            title: "access_denied".tr,
+            message: "incorrect_password".tr,
           );
         }
       },
@@ -666,8 +662,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   void _showBulkDeleteConfirm() {
     showConfirmDialog(
       context: context,
-      title: "delete_notes",
-      subTitle: "Are you sure you want to delete ${selectedNoteIds.length} selected ${selectedNoteIds.length > 1 ? 'notes' : 'note'}?",
+      title: "delete_note".tr,
+      // subTitle: "Are you sure you want to delete ${selectedNoteIds.length} selected ${selectedNoteIds.length > 1 ? 'notes' : 'note'}?",
+      subTitle: selectedNoteIds.length > 1 ? 'delete_notes_bulk_confirm'.tr : 'delete_note_confirm'.tr,
       confirmText: "delete".tr,
       onConfirm: () async {
         await controller.bulkMoveToTrash(selectedNoteIds.toList(), widget.folderId);

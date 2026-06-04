@@ -306,9 +306,11 @@ void showFormatSheet({
                                 color: isSelected ? AppColor().white : Colors.grey.shade700,
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                                 fontSize: context.isPhone ? 14 : 16,
-                                // fontFamily: 'EN-REGULAR',
                                 fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                               ),
+                              // style: text14(context).copyWith(
+                              //   color: isSelected ? AppColor().white : Colors.grey.shade700,
+                              // ),
                             ),
                           ),
                         ),

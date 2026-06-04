@@ -188,8 +188,6 @@ class FolderController extends GetxController {
       where: 'id = ?',
       whereArgs: [noteId],
     );
-
-    print("Note moved → $newFolderId");
   }
 
   // Inside FolderController class

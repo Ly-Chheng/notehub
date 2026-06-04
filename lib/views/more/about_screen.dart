@@ -1,37 +1,15 @@
-// import 'package:flutter/material.dart';
-// import 'package:project_structure/core/utils/app_color.dart';
-// import 'package:project_structure/widgets/custom_appbar.dart';
-// import 'package:project_structure/widgets/custome_no_data.dart';
-
-// class AboutScreen extends StatelessWidget {
-//   const AboutScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-//       appBar: customAppBar(
-//         title: "About",
-//         titleColor: AppColor().primaryColor,
-//         context: context,
-//         leadingColor: AppColor().primaryColor,
-//         actions: [],
-//       ),
-//       body: Center(
-//         child: CustomNoData(
-//           message: "No Data",
-//         ),
-//       ),
-//     );
-//   }
-// }
 import 'package:flutter/material.dart';
-import 'package:get/get_utils/src/extensions/internacionalization.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
+
+  // Helper to switch fonts based on current locale
+  String get _bodyFont => Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR';
+  String get _boldFont => Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD';
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +27,7 @@ class AboutScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            /// Hero Section
+            /// HERO CARD
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(28),
@@ -58,10 +36,7 @@ class AboutScreen extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: [
-                    primaryColor,
-                    primaryColor.withValues(alpha: 0.75),
-                  ],
+                  colors: [primaryColor, primaryColor.withValues(alpha: 0.75)],
                 ),
               ),
               child: Column(
@@ -73,48 +48,17 @@ class AboutScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: AppColor().white.withValues(alpha: 0.18),
                     ),
-                    child: Icon(
-                      Icons.auto_stories_rounded,
-                      size: 50,
-                      color: AppColor().white,
-                    ),
+                    child: Icon(Icons.auto_stories_rounded, size: 50, color: AppColor().white),
                   ),
                   const SizedBox(height: 18),
-                  Text(
-                    "Student Note App",
-                    style: TextStyle(
-                      fontSize: 28,
-                      color: AppColor().white,
-                      fontFamily: 'EN-BOLD',
-                    ),
-                  ),
+                  Text("about_app_name".tr, style: TextStyle(fontSize: 28, color: AppColor().white, fontFamily: _boldFont)),
                   const SizedBox(height: 8),
-                  Text(
-                    "Study smarter, stay organized",
-                    style: TextStyle(
-                      color: AppColor().white.withValues(alpha: 0.9),
-                      fontSize: 15,
-                      fontFamily: 'EN-BOLD',
-                    ),
-                  ),
+                  Text("about_slogan".tr, style: TextStyle(color: AppColor().white.withValues(alpha: 0.9), fontSize: 15, fontFamily: _boldFont)),
                   const SizedBox(height: 22),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: AppColor().white.withValues(alpha: 0.16),
-                    ),
-                    child: Text(
-                      "Version 1.0.0",
-                      style: TextStyle(
-                        color: AppColor().white,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'EN-BOLD',
-                      ),
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: AppColor().white.withValues(alpha: 0.16)),
+                    child: Text("about_version".tr, style: TextStyle(color: AppColor().white, fontWeight: FontWeight.w600, fontFamily: _boldFont)),
                   ),
                 ],
               ),
@@ -122,221 +66,111 @@ class AboutScreen extends StatelessWidget {
 
             const SizedBox(height: 22),
 
-            /// About App Card
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline_rounded,
-                        color: AppColor().primaryColor,
-                      ),
-                      const SizedBox(width: 10),
-                      const Text(
-                        "About Application",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontFamily: 'EN-BOLD',
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    "Student Note App helps students organize notes, "
-                    "manage study materials, and improve productivity "
-                    "through a clean, simple, and modern experience. "
-                    "You can create, edit, and manage notes anytime "
-                    "to support better learning and organization.",
-                    style: TextStyle(
-                      fontSize: 15,
-                      height: 1.7,
-                      fontFamily: 'EN-REGULAR',
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            /// ABOUT CARD
+            _buildCard(context, Icons.info_outline_rounded, "about_application".tr, "about_description".tr),
 
             const SizedBox(height: 20),
 
-            /// Features Card
+            /// FEATURES CARD
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4))]),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.star_outline_rounded,
-                        color: AppColor().primaryColor,
-                      ),
+                      Icon(Icons.star_outline_rounded, color: AppColor().primaryColor),
                       const SizedBox(width: 10),
-                      const Text(
-                        "Features",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Text("about_features".tr, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: _boldFont)),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  _buildFeatureItem(
-                    icon: Icons.note_alt_outlined,
-                    title: "Create Notes",
-                    subtitle: "Write and save study notes easily",
-                  ),
-                  _buildFeatureItem(
-                    icon: Icons.edit_note_rounded,
-                    title: "Edit Anytime",
-                    subtitle: "Update notes whenever needed",
-                  ),
-                  _buildFeatureItem(
-                    icon: Icons.school_outlined,
-                    title: "Study Smarter",
-                    subtitle: "Organize subjects and materials",
-                  ),
+                  _buildFeatureItem(Icons.note_alt_outlined, "about_create_notes".tr, "about_create_notes_sub".tr),
+                  _buildFeatureItem(Icons.edit_note_rounded, "about_edit_anytime".tr, "about_edit_anytime_sub".tr),
+                  _buildFeatureItem(Icons.school_outlined, "about_study_smarter".tr, "about_study_smarter_sub".tr),
                 ],
               ),
             ),
 
             const SizedBox(height: 20),
 
-            /// Contact Card
+            /// CONTACT CARD
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4))]),
               child: Column(
                 children: [
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundColor: AppColor().primaryColor.withValues(alpha: 0.1),
-                      child: Icon(
-                        Icons.email_outlined,
-                        color: AppColor().primaryColor,
-                      ),
-                    ),
-                    title: const Text("Email"),
-                    subtitle: const Text("support@studentnoteapp.com"),
-                  ),
-                  Divider(
-                    color: Colors.grey.withValues(alpha: 0.2),
-                  ),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: CircleAvatar(
-                      backgroundColor: AppColor().primaryColor.withValues(alpha: 0.1),
-                      child: Icon(
-                        Icons.language_rounded,
-                        color: AppColor().primaryColor,
-                      ),
-                    ),
-                    title: const Text("Website"),
-                    subtitle: const Text("www.studentnoteapp.com"),
-                  ),
+                  _buildContactTile(Icons.email_outlined, "contact_email".tr, "support@studentnoteapp.com"),
+                  Divider(color: Colors.grey.withValues(alpha: 0.2)),
+                  _buildContactTile(Icons.language_rounded, "contact_website".tr, "www.studentnoteapp.com"),
                 ],
               ),
             ),
 
             const SizedBox(height: 30),
-
-            /// Footer
-            Text(
-              "© 2026 Student Note App",
-              style: TextStyle(
-                color: Colors.grey.shade500,
-                fontSize: 13,
-              ),
-            ),
-
-            const SizedBox(height: 10),
+            Text("copyright_footer".tr, style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontFamily: _bodyFont)),
           ],
         ),
       ),
     );
   }
 
-  static Widget _buildFeatureItem({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-  }) {
+  Widget _buildCard(BuildContext context, IconData icon, String title, String desc) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+          color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4))]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [Icon(icon, color: AppColor().primaryColor), const SizedBox(width: 10), Text(title, style: TextStyle(fontSize: 18, fontFamily: _boldFont))]),
+          const SizedBox(height: 16),
+          Text(desc, style: TextStyle(fontSize: 15, height: 1.7, fontFamily: _bodyFont, color: Colors.grey.shade600)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureItem(IconData icon, String title, String subtitle) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppColor().primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Icon(
-              icon,
-              color: AppColor().primaryColor,
-            ),
-          ),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(color: AppColor().primaryColor.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(14)),
+              child: Icon(icon, color: AppColor().primaryColor)),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: 'EN-BOLD'),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 14, fontFamily: 'EN-REGULAR'),
-                ),
+                Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: _boldFont)),
+                Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 14, fontFamily: _bodyFont)),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildContactTile(IconData icon, String title, String subtitle) {
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: CircleAvatar(backgroundColor: AppColor().primaryColor.withValues(alpha: 0.1), child: Icon(icon, color: AppColor().primaryColor)),
+      title: Text(title, style: TextStyle(fontFamily: _bodyFont)),
+      subtitle: Text(subtitle, style: TextStyle(fontFamily: _bodyFont)),
     );
   }
 }

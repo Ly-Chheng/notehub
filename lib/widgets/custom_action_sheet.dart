@@ -40,7 +40,7 @@ class ActionSheet {
           style: TextStyle(
             color: AppColor().gray,
             fontSize: AppFontSize(context).normalTextSize,
-            fontFamily: 'EN-REGULAR',
+            fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
           ),
         ),
         actions: actions.map((item) {
@@ -68,7 +68,7 @@ class ActionSheet {
                                 style: TextStyle(
                                   color: item.color ?? Theme.of(context).hoverColor,
                                   fontSize: AppFontSize(context).descriptionLargeSize,
-                                  fontFamily: 'EN-BOLD',
+                                  fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
                                 ),
                               ),
                             ),
@@ -111,7 +111,7 @@ class ActionSheet {
                   style: TextStyle(
                     color: item.color ?? Theme.of(context).hoverColor,
                     fontSize: AppFontSize(context).descriptionLargeSize,
-                    fontFamily: 'EN-BOLD',
+                    fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
                   ),
                 ),
               ],
@@ -125,11 +125,11 @@ class ActionSheet {
           },
           isDefaultAction: true,
           child: Text(
-            'cancel',
+            'cancel'.tr,
             style: TextStyle(
               color: AppColor().red,
               fontSize: AppFontSize(context).subTitleSize,
-              fontFamily: 'EN-BOLD',
+              fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
             ),
           ),
         ),

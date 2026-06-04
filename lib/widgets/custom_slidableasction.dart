@@ -47,7 +47,6 @@ class AppSlidableAction extends StatelessWidget {
                 TextStyle(
                   color: AppColor().white,
                   fontSize: AppFontSize(context).descriptionLargeSize,
-                  // fontFamily: 'EN-REGULAR',
                   fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                   fontWeight: FontWeight.w600,
                 ),

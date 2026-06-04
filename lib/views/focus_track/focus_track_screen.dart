@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/focus_track/components/timer_component.dart';
 import 'package:project_structure/views/focus_track/components/stopwatch_component.dart';
 
@@ -91,11 +92,8 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
           color: Colors.transparent,
           child: Text(
             label,
-            style: TextStyle(
-              // fontFamily: 'EN-SEMIBOLD',
-              fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
+            style: text16(context).copyWith(
               color: selectedIndex == index ? activeColor : AppColor().gray,
-              fontSize: context.isPhone ? 16 : 18,
             ),
           ),
         ),

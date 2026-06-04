@@ -71,22 +71,22 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
   void _showAddMenu(BuildContext context) {
     ActionSheet.show(
       context,
-      title: 'Table Options',
+      title: 'table_options'.tr,
       actions: [
         ActionSheetItem(
-          label: 'Add Row',
+          label: 'add_row'.tr,
           icon: CupertinoIcons.add_circled,
           color: AppColor().primaryColor,
           onTap: () => widget.onAddRow(),
         ),
         ActionSheetItem(
-          label: 'Add Column',
+          label: 'add_column'.tr,
           icon: CupertinoIcons.add_circled,
           color: AppColor().primaryColor,
           onTap: () => widget.onAddColumn(),
         ),
         ActionSheetItem(
-          label: 'Delete Table',
+          label: 'delete_table'.tr,
           icon: CupertinoIcons.delete,
           color: AppColor().red,
           onTap: () => widget.onDeleteTable(),
@@ -155,7 +155,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                                   TextPosition(offset: widget.tableData[rowIndex][colIndex].length),
                                 ),
                               onChanged: (value) => widget.onCellChanged(rowIndex, colIndex, value),
-                              //   AUTO HEIGHT LOGIC
                               maxLines: null,
                               keyboardType: TextInputType.multiline,
                               textInputAction: TextInputAction.newline,

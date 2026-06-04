@@ -107,9 +107,13 @@ class TimerController extends GetxController {
     int m = (totalSeconds % 3600) ~/ 60;
     int s = totalSeconds % 60;
     List<String> parts = [];
-    if (h > 0) parts.add("${h}h");
-    if (m > 0) parts.add("${m}m");
-    if (s > 0 || parts.isEmpty) parts.add("${s}s");
+    // if (h > 0) parts.add("${h}h");
+    // if (m > 0) parts.add("${m}m");
+    // if (s > 0 || parts.isEmpty) parts.add("${s}s");
+    if (h > 0) parts.add("$h ${'h'.tr}");
+    if (m > 0) parts.add("$m ${'m'.tr}");
+    if (s > 0 || parts.isEmpty) parts.add("$s ${'s'.tr}");
+
     return parts.join(" ");
   }
 

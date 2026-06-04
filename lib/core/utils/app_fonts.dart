@@ -38,7 +38,8 @@ titleTextSyle() {
 
 TextStyle text10 = TextStyle(
   fontSize: AppFontSize(Get.context!).subNormalSize,
-  fontFamily: rengular,
+  // fontFamily: rengular,
+  fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
 );
 
 TextStyle text12 = TextStyle(

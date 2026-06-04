@@ -4,6 +4,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
+import 'package:project_structure/core/functions/fomat_date.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
@@ -195,7 +196,8 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         subtitle: Text(
-                                          "Deleted on: ${note.date}",
+                                          // "Deleted on: ${note.date}",
+                                          '${'deleted_on'.tr} ${formatDateForLocale(note.date)}',
                                           style: text14(context).copyWith(color: AppColor().gray),
                                         ),
                                         trailing: note.imagePaths.isNotEmpty
@@ -246,12 +248,8 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
             onPressed: selectedNoteIds.isEmpty ? null : _handleBulkMoveRestore,
           ),
           Text(
-            "${selectedNoteIds.length} selected",
-            style: TextStyle(
-              fontSize: AppFontSize(context).normalTextSize,
-              fontFamily: 'EN-ENGULAR',
-              color: AppColor().gray,
-            ),
+            '${selectedNoteIds.length} ${'selected'.tr} ',
+            style: text10,
           ),
           IconButton(
             icon: Icon(Icons.delete, color: AppColor().red, size: context.isPhone ? 25 : 30),
@@ -266,7 +264,8 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
     ConfirmBottomSheet.show(
       context: context,
       title: "delete_permanently".tr,
-      subtitle: "Are you sure you want to delete ${selectedNoteIds.length} selected items forever? This cannot be undone.",
+      // subtitle: "Are you sure you want to delete ${selectedNoteIds.length} selected items forever? This cannot be undone.",
+      subtitle: 'delete_bulk_confirm_subtitle'.tr,
       confirmText: "delete".tr,
       confirmColor: Colors.red,
       itemCount: selectedNoteIds.length,
@@ -311,7 +310,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
 
                   if (!mounted) return;
                   Get.back();
-                  Get.snackbar("Success", "Note restored to ${folder.title}");
+                  Get.snackbar("success".tr, "Note restored to ${folder.title}");
                 },
               );
             },

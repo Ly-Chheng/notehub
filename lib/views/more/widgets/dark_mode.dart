@@ -43,9 +43,6 @@ class DarkModeView extends GetView<DarkModeController> {
                       'dark_mode'.tr,
                       style: TextStyle(
                         fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
-
-                        // fontFamily: 'EN-REGULAR',
-                        // fontWeight: FontWeight.w500,
                         fontSize: context.isPhone ? 15 : 17,
                         color: Theme.of(context).textTheme.bodyLarge?.color,
                       ),
@@ -66,13 +63,6 @@ class DarkModeView extends GetView<DarkModeController> {
               ],
             ),
           ),
-          // Padding(
-          //   padding: const EdgeInsets.only(left: 60),
-          //   child: Divider(
-          //     height: 1,
-          //     color: AppColor().gray.withValues(alpha: 0.1),
-          //   ),
-          // ),
         ],
       ),
     );

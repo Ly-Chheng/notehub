@@ -101,7 +101,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
       // Quill Editor Content
       try {
-        final contentJson = note.content ?? '[]';
+        final contentJson = note.content;
         final decoded = jsonDecode(contentJson);
         _quillController = QuillController(
           document: Document.fromJson(decoded),
@@ -139,15 +139,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       if (operation.containsKey('insert') && operation['insert'] is Map) {
         final insertMap = operation['insert'] as Map;
 
-        // Check for Image
         if (insertMap.containsKey('image')) {
           images.add(insertMap['image'].toString());
         }
-        // Check for Video
+
         if (insertMap.containsKey('video')) {
           videos.add(insertMap['video'].toString());
         }
-        // Check for Custom File block type
+
         if (insertMap.containsKey('custom')) {
           final customData = insertMap['custom'];
           if (customData is Map && customData['type'] == 'file') {
@@ -277,25 +276,25 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   void _handleMenuSelection(String value) {
     _forceUnfocus();
     switch (value) {
-      case 'Lock Note':
-      case 'Unlock Note':
+      case 'lock_note':
+      case 'unlock_note':
         _handleLockToggle();
         break;
-      case 'Pin':
+      case 'pin':
         setState(() => isPinned = true);
         _triggerAutoSave();
         break;
-      case 'Unpin':
+      case 'unpin':
         setState(() => isPinned = false);
         _triggerAutoSave();
         break;
-      case 'Delete':
+      case 'delete':
         _showDeleteDialog();
         break;
-      case 'Share':
+      case 'share':
         _shareNote();
         break;
-      case 'Move Note':
+      case 'move_note':
         _showMoveSheet();
         break;
     }
@@ -333,25 +332,21 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         int insertionIndex = _quillController.selection.baseOffset;
 
         if (type == 'image') {
-          // FIX: No '\n' added above the image block
           _quillController.document.insert(
             insertionIndex,
             BlockEmbed.image(permanentFile.path),
           );
           insertionIndex += 1;
 
-          // Append a newline AFTER the block component so users can type beneath it
           _quillController.document.insert(insertionIndex, '\n');
           insertionIndex += 1;
         } else if (type == 'video') {
-          // FIX: No '\n' added above the video block
           _quillController.document.insert(
             insertionIndex,
             BlockEmbed.video(permanentFile.path),
           );
           insertionIndex += 1;
 
-          // Append a newline AFTER the block component
           _quillController.document.insert(insertionIndex, '\n');
           insertionIndex += 1;
         } else if (type == 'file') {
@@ -365,8 +360,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             'size': formattedSize,
           });
 
-          // FIX: Insert the custom file element directly at the cursor index
-          // with NO '\n' added above it.
           _quillController.document.insert(
             insertionIndex,
             BlockEmbed.custom(
@@ -378,8 +371,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           );
           insertionIndex += 1;
 
-          // Only append a newline AFTER the block component layout so
-          // that users can select line text right beneath it.
           _quillController.document.insert(insertionIndex, '\n');
           insertionIndex += 1;
         }
@@ -706,11 +697,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 offset: const Offset(0, 50),
                 onSelected: (v) => _handleMenuSelection(v),
                 itemBuilder: (context) => [
-                  buildPopupItem(context, isPinned ? 'Unpin' : 'Pin', isPinned ? Icons.push_pin_outlined : Icons.push_pin_outlined),
-                  buildPopupItem(context, 'Share', Icons.share_outlined),
-                  buildPopupItem(context, 'Move Note', Icons.folder_outlined),
-                  buildPopupItem(context, isLocked ? 'Unlock Note' : 'Lock Note', isLocked ? Icons.lock_open : Icons.lock_outline),
-                  buildPopupItem(context, 'Delete', Icons.delete_outline, color: AppColor().red),
+                  buildPopupItem(context, isPinned ? 'unpin' : 'pin', isPinned ? Icons.push_pin_outlined : Icons.push_pin_outlined),
+                  buildPopupItem(context, 'share', Icons.share_outlined),
+                  buildPopupItem(context, 'move_note', Icons.folder_outlined),
+                  buildPopupItem(context, isLocked ? 'unlock_note' : 'lock_note', isLocked ? Icons.lock_open : Icons.lock_outline),
+                  buildPopupItem(context, 'delete', Icons.delete_outline, color: AppColor().red),
                 ],
               );
             },

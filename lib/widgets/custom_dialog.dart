@@ -74,7 +74,6 @@ Future<void> showConfirmDialog({
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: AppFontSize(context).mediumLargeSize,
-                            // fontFamily: 'EN-BOLD',
                             fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
                           ),
                         ),
@@ -90,7 +89,6 @@ Future<void> showConfirmDialog({
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: AppFontSize(Get.context!).subTitleSize,
-                      // fontFamily: 'EN-REGULAR',
                       fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                     ),
                   ),

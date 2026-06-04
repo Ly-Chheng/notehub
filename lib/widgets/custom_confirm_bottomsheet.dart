@@ -69,7 +69,6 @@ class ConfirmBottomSheet {
                                   "cancel".tr,
                                   style: TextStyle(
                                     color: AppColor().red,
-                                    // fontFamily: 'EN-ENGINEER',
                                     fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                                     fontSize: AppFontSize(context).descriptionLargeSize,
                                   ),
@@ -102,8 +101,6 @@ class ConfirmBottomSheet {
                                   saveText,
                                   style: TextStyle(
                                     color: AppColor().primaryColor,
-                                    // fontFamily: 'EN-ENGINEER',
-
                                     fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                                     fontSize: AppFontSize(context).descriptionLargeSize,
                                   ),

@@ -237,7 +237,7 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
 
     ConfirmBottomSheet.show(
       context: context,
-      title: widget.isVideo ? "Video Options" : "Image Options",
+      title: widget.isVideo ? "video_options".tr : "image_options".tr,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -266,7 +266,7 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("Resize", style: text16(context)),
+                              Text("resize".tr, style: text16(context)),
                               Text(
                                 "${(_widthPercentage * 100).round()}%",
                                 style: TextStyle(fontWeight: FontWeight.bold, color: AppColor().primaryColor, fontFamily: rengular),
@@ -317,7 +317,7 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                     context,
                     icon: Icons.zoom_in_outlined,
                     color: AppColor().primaryColor,
-                    title: "Zoom",
+                    title: "zoom".tr,
                     onTap: () {
                       FocusManager.instance.primaryFocus?.unfocus();
                       Get.back();
@@ -335,7 +335,7 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                   context,
                   icon: Icons.share_outlined,
                   color: AppColor().primaryColor,
-                  title: "Share",
+                  title: "share".tr,
                   onTap: () async {
                     final mediaPath = widget.node.value.data.toString();
                     Get.back();
@@ -359,7 +359,7 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                   context,
                   icon: Icons.delete_outline,
                   color: AppColor().red,
-                  title: "Remove",
+                  title: "remove".tr,
                   isDestructive: true,
                   onTap: () {
                     Get.back();
@@ -396,7 +396,7 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
 
   Future<void> _viewFile(String filePath) async {
     if (filePath.isEmpty) {
-      Get.snackbar("Error", "File path is empty.");
+      Get.snackbar("error".tr, "error_file_empty".tr);
       return;
     }
 
@@ -406,7 +406,7 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
         final result = await OpenFilex.open(filePath);
         if (result.type != ResultType.done) {
           Get.snackbar(
-            "Cannot Open File",
+            "error_cannot_open".tr,
             "No compatible application found on your device to open this file.",
             snackPosition: SnackPosition.TOP,
           );
@@ -416,7 +416,7 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
       }
     } else {
       Get.snackbar(
-        "File Not Found",
+        "file_not_found".tr,
         "The file no longer exists at its recorded path storage directory.",
         snackPosition: SnackPosition.TOP,
       );
@@ -510,7 +510,7 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
 
     ConfirmBottomSheet.show(
       context: context,
-      title: "File Options",
+      title: "file_options".tr,
       content: Padding(
         padding: const EdgeInsets.only(top: 10),
         child: Container(
@@ -533,7 +533,7 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
                 context,
                 icon: Icons.share_outlined,
                 color: AppColor().primaryColor,
-                title: "Share",
+                title: "share".tr,
                 onTap: () async {
                   Get.back();
                   if (filePath.isNotEmpty && await File(filePath).exists()) {
@@ -541,7 +541,7 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
                       [XFile(filePath)],
                     );
                   } else {
-                    Get.snackbar("Error", "File path doesn't exist anymore.");
+                    Get.snackbar("eror".tr, "File path doesn't exist anymore.");
                   }
                 },
               ),
@@ -552,7 +552,7 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
                 context,
                 icon: Icons.delete_outline,
                 color: AppColor().red,
-                title: "Remove",
+                title: "remove".tr,
                 isDestructive: true,
                 onTap: () {
                   Get.back();

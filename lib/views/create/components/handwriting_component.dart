@@ -216,7 +216,10 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Pick a color'),
+          title: Text(
+            'pick_a_color'.tr,
+            style: text18(context),
+          ),
           content: SingleChildScrollView(
             child: ColorPicker(
               pickerColor: currentPenColor,
@@ -229,13 +232,13 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  child: Text('Cancel', style: text18(context)),
+                  child: Text('cancel'.tr, style: text16(context)),
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: Text('Applay', style: text18(context)),
+                  child: Text('apply'.tr, style: text16(context)),
                   onPressed: () {
                     _updateBrush(color: tempColor);
                     Navigator.of(context).pop();

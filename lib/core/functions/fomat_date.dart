@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class FormateDate {
@@ -44,5 +45,50 @@ class FormateDate {
       }
     }
     return bufferString.toString();
+  }
+}
+
+String formatDateForLocale(String dateString) {
+  final String lang = Get.locale?.languageCode ?? 'km';
+  final String localeString = lang == 'km' ? 'km_KH' : 'en_US';
+
+  final DateTime date = DateFormat('dd/MM/yyyy HH:mm').parse(dateString);
+
+  return DateFormat('d MMM yyyy', localeString).format(date);
+}
+
+DateTime parseNoteDate(String dateString) {
+  return DateFormat('dd/MM/yyyy HH:mm').parse(dateString);
+}
+
+String toKhmerNumerals(String input) {
+  const english = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+  const khmer = ['០', '១', '២', '៣', '៤', '៥', '៦', '៧', '៨', '៩'];
+  String output = input;
+  for (int i = 0; i < english.length; i++) {
+    output = output.replaceAll(english[i], khmer[i]);
+  }
+  return output;
+}
+
+String getDateHeader(String dateStr) {
+  try {
+    DateTime noteDate = DateFormat('dd/MM/yyyy').parse(dateStr);
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    DateTime yesterday = today.subtract(const Duration(days: 1));
+    DateTime noteDateMidnight = DateTime(noteDate.year, noteDate.month, noteDate.day);
+
+    if (noteDateMidnight.isAtSameMomentAs(today)) {
+      return 'today'.tr;
+    } else if (noteDateMidnight.isAtSameMomentAs(yesterday)) {
+      return 'yesterday'.tr;
+    } else if (noteDate.year == now.year) {
+      return DateFormat('MMMM d', Get.locale.toString()).format(noteDate);
+    } else {
+      return DateFormat('MMMM d, y', Get.locale.toString()).format(noteDate);
+    }
+  } catch (e) {
+    return 'earlier'.tr;
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/more/widgets/change_language.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
 
@@ -126,13 +127,7 @@ class _MoreScreenState extends State<MoreScreen> {
                 Expanded(
                   child: Text(
                     title,
-                    style: TextStyle(
-                      fontSize: context.isPhone ? 15 : 17,
-                      
-                      fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
-                      fontWeight: FontWeight.w500,
-                      color: Theme.of(context).textTheme.bodyLarge?.color,
-                    ),
+                    style: text16(context),
                   ),
                 ),
                 const SizedBox(width: 16),

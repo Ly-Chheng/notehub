@@ -34,8 +34,8 @@ class LockController extends GetxController {
     if (password.isEmpty || question == null || answer.isEmpty) {
       await _showDialog(
         Get.context!,
-        title: "Field Required",
-        message: "Please fill in the password, security question, and answer.",
+        title: "field_required".tr,
+        message: "field_required_msg".tr,
       );
       return;
     }
@@ -43,8 +43,8 @@ class LockController extends GetxController {
     if (password != confirmPassword) {
       await _showDialog(
         Get.context!,
-        title: "Mismatch",
-        message: "Passwords do not match. Please re-type your password.",
+        title: "mismatch".tr,
+        message: "mismatch_msg".tr,
       );
       return;
     }
@@ -62,12 +62,12 @@ class LockController extends GetxController {
           where: 'id = 1');
 
       Get.back(result: true);
-      _showSuccess("Security settings saved successfully!");
+      _showSuccess("security_saved".tr);
     } catch (e) {
       await _showDialog(
         Get.context!,
-        title: "Database Error",
-        message: "We couldn't save your settings. Please try again.",
+        title: "db_error_title".tr,
+        message: "db_error_msg",
       );
     }
   }
@@ -85,26 +85,26 @@ class LockController extends GetxController {
     String storedPass = settings?['master_password'] ?? "";
 
     if (storedPass.isEmpty) {
-      await _showDialog(Get.context!, title: "Not Configured", message: "No password found to change. Please create a password first.");
+      await _showDialog(Get.context!, title: "not_configured".tr, message: "not_configured_msg".tr);
       return;
     }
 
     if (newPass.isEmpty) {
       await _showDialog(
         Get.context!,
-        title: "Input Required",
-        message: "New password cannot be empty. Please enter a valid password.",
+        title: "input_required".tr,
+        message: "input_required_msg".tr,
       );
       return;
     }
 
     if (currentInput != storedPass) {
-      await _showDialog(Get.context!, title: "Verification Failed", message: "The current password you entered is incorrect.");
+      await _showDialog(Get.context!, title: "verification_failed".tr, message: "verification_failed_msg".tr);
       return;
     }
 
     if (newPass != confirmPass) {
-      await _showDialog(Get.context!, title: "Mismatch", message: "New password and confirmation do not match.");
+      await _showDialog(Get.context!, title: "mismatch".tr, message: "password_confirm_mismatch".tr);
       return;
     }
 
@@ -128,9 +128,9 @@ class LockController extends GetxController {
           where: 'id = 1');
 
       Get.back();
-      _showSuccess("Password updated successfully.");
+      _showSuccess("password_updated".tr);
     } catch (e) {
-      _showError("Update failed. Please try again.");
+      _showError("update_failed".tr);
     }
   }
 
@@ -138,8 +138,8 @@ class LockController extends GetxController {
     if (userAnswer.trim().isEmpty) {
       await _showDialog(
         Get.context!,
-        title: "Field Required",
-        message: "Please enter your security answer.",
+        title: "field_required".tr,
+        message: "answer_required_msg".tr,
       );
       return;
     }
@@ -152,25 +152,25 @@ class LockController extends GetxController {
       if (storedAnswer.isEmpty) {
         await _showDialog(
           Get.context!,
-          title: "Setup Required",
-          message: "Security recovery has not been configured for this account.",
+          title: "setup_required".tr,
+          message: "setup_required_msg".tr,
         );
         return;
       }
 
       if (userAnswer.trim().toLowerCase() == storedAnswer) {
-        _showSuccess("Identity verified successfully!");
+        _showSuccess("verified_success".tr);
 
         Get.off(() => const CreatePasswordScreen());
       } else {
         await _showDialog(
           Get.context!,
-          title: "Verification Failed",
-          message: "The answer you entered is incorrect. Please try again.",
+          title: "verification_failed".tr,
+          message: "verification_failed_answer_msg".tr,
         );
       }
     } catch (e) {
-      _showError("An error occurred while verifying. Please try again later.");
+      _showError("verify_error".tr);
     }
   }
 
@@ -184,19 +184,19 @@ class LockController extends GetxController {
     if (storedPass.isEmpty) {
       await _showDialog(
         Get.context!,
-        title: "Field Required",
-        message: "No password is currently set.",
+        title: "field_required",
+        message: "no_password_set_msg".tr,
       );
       return;
     }
 
     if (currentInput != storedPass) {
-      await _showDialog(Get.context!, title: "Verification Failed", message: "Current password is incorrect.");
+      await _showDialog(Get.context!, title: "verification_failed".tr, message: "current_password_wrong_msg".tr);
       return;
     }
 
     if (currentInput != confirmPass) {
-      await _showDialog(Get.context!, title: "Verification Failed", message: "Passwords do not match.");
+      await _showDialog(Get.context!, title: "verification_failed".tr, message: "password_mismatch_msg".tr);
       return;
     }
 
@@ -231,9 +231,9 @@ class LockController extends GetxController {
       Get.back();
       Get.offAllNamed('mainHome');
 
-      _showSuccess("Security removed and all notes unlocked.");
+      _showSuccess("security_removed_success".tr);
     } catch (e) {
-      _showError("Failed to remove security. Please try again.");
+      _showError("security_remove_failed".tr);
     }
   }
 
@@ -246,16 +246,16 @@ class LockController extends GetxController {
       context: context,
       title: title,
       subTitle: message,
-      confirmText: "OK",
+      confirmText: "ok".tr,
       onConfirm: () {},
     );
   }
 
   void _showError(String message) {
-    Get.snackbar("Error", message, backgroundColor: AppColor().red, colorText: Colors.white);
+    Get.snackbar("error".tr, message, backgroundColor: AppColor().red, colorText: Colors.white);
   }
 
   void _showSuccess(String message) {
-    Get.snackbar("Success", message, backgroundColor: AppColor().green, colorText: Colors.white);
+    Get.snackbar("success".tr, message, backgroundColor: AppColor().green, colorText: Colors.white);
   }
 }

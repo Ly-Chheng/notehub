@@ -8,7 +8,7 @@ class BottomNavigationBarController extends GetxController {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   int selectedIndex = 0;
   List listTitle = [
-    'Student Notes',
+    'Quick Notes',
     'focus_track'.tr,
     'more'.tr,
   ];

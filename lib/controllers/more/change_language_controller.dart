@@ -13,13 +13,13 @@ class ChangeLanguageController extends GetxController {
       'name': 'ភាសាខ្មែរ',
       'key': ['km', 'KM'],
       'locale': const Locale('km', 'KM'),
-      'image': 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Flag_of_Cambodia.svg/800px-Flag_of_Cambodia.svg.png',
+      'image': 'assets/images/kh_flag.jpg',
     },
     {
       'name': 'English',
       'key': ['en', 'US'],
       'locale': const Locale('en', 'US'),
-      'image': 'https://upload.wikimedia.org/wikipedia/commons/f/fc/Flag_of_Great_Britain_%28English_version%29.png',
+      'image': 'assets/images/uk_flag.png',
     }
   ];
 

@@ -43,7 +43,6 @@ class SheetHeader extends StatelessWidget {
                   "cancel".tr,
                   style: TextStyle(
                     color: AppColor().red,
-                    // fontFamily: 'EN-ENGINEER',
                     fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                     fontSize: context.isPhone ? 16 : 18,
                   ),
@@ -53,7 +52,6 @@ class SheetHeader extends StatelessWidget {
                 title,
                 style: TextStyle(
                   fontSize: context.isPhone ? 18 : 20,
-                  // fontFamily: 'EN-BOLD',
                   fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
                   color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
@@ -64,7 +62,6 @@ class SheetHeader extends StatelessWidget {
                   saveText,
                   style: TextStyle(
                     color: AppColor().primaryColor,
-                    // fontFamily: 'EN-ENGINEER',
                     fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                     fontSize: context.isPhone ? 16 : 18,
                   ),
@@ -123,6 +120,7 @@ Widget buildActionItem(
                 title,
                 style: TextStyle(
                   fontSize: AppFontSize(context).descriptionLargeSize,
+                  fontFamilyFallback: [Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR'],
                   fontFamily: rengular,
                   color: isDestructive ? AppColor().red : null,
                 ),
@@ -140,13 +138,102 @@ PopupMenuItem<String> buildPopupItem(BuildContext context, String title, IconDat
     value: title,
     child: Row(
       children: [
-        Icon(icon, size: context.isPhone ? 20 : 25),
+        Icon(
+          icon,
+          size: context.isPhone ? 20 : 25,
+          color: color ?? Theme.of(context).iconTheme.color,
+        ),
         SizedBox(width: context.isPhone ? 20 : 25),
         Text(
-          title,
-          style: text14(context),
+          title.tr,
+          style: text14(context).copyWith(
+            color: color ?? Theme.of(context).textTheme.bodyMedium?.color,
+          ),
         ),
       ],
     ),
   );
+}
+
+class AppSnackbar {
+  static void showError({
+    required String title,
+    required String message,
+  }) {
+    Get.snackbar(
+      "",
+      "",
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: AppColor().red,
+      margin: const EdgeInsets.all(12),
+      borderRadius: 8,
+      duration: const Duration(seconds: 2),
+      titleText: Text(
+        title,
+        style: TextStyle(
+          fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
+          color: AppColor().white,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      messageText: Text(
+        message,
+        style: TextStyle(
+          fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
+          color: AppColor().white,
+          fontSize: 14,
+        ),
+      ),
+    );
+  }
+
+  static void showSuccess({
+    required String title,
+    required String message,
+  }) {
+    Get.snackbar(
+      "",
+      "",
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: AppColor().green,
+      margin: const EdgeInsets.all(12),
+      borderRadius: 8,
+      duration: const Duration(seconds: 2),
+      titleText: Text(
+        title,
+        style: TextStyle(
+          fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
+          color: AppColor().white,
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      messageText: Text(
+        message,
+        style: TextStyle(
+          fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
+          color: AppColor().white,
+          fontSize: 14,
+        ),
+      ),
+    );
+  }
+
+  static void showWarning({
+    required String title,
+    required String message,
+  }) {
+    Get.snackbar(
+      title,
+      message,
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: Colors.orange,
+      colorText: Colors.white,
+      margin: const EdgeInsets.all(12),
+      borderRadius: 8,
+      icon: const Icon(Icons.warning, color: Colors.white),
+      duration: const Duration(seconds: 2),
+    );
+  }
 }

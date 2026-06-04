@@ -79,11 +79,11 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     if (isFixedDuplicate) {
       showConfirmDialog(
         context: context,
-        title: "Already Exists",
-        subTitle: "This time is already available in your presets.",
+        title: "already_exists".tr,
+        subTitle: "preset_exists_msg".tr,
         showCancel: false,
         onConfirm: () {},
-        confirmText: "OK",
+        confirmText: "ok".tr,
       );
       return false;
     }
@@ -97,16 +97,20 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     if (isUserDuplicate) {
       showConfirmDialog(
         context: context,
-        title: "Already Exists",
-        subTitle: "This time is already available in your presets.",
+        title: "already_exists".tr,
+        subTitle: "preset_exists_msg".tr,
         showCancel: false,
         onConfirm: () {},
-        confirmText: "OK",
+        confirmText: "ok".tr,
       );
       return false;
     }
 
-    String label = "${h > 0 ? '${h}h ' : ''}${m > 0 ? '${m}m ' : ''}${s > 0 ? '${s}s' : ''}".trim();
+    // String label = "${h > 0 ? '${h}h ' : ''}${m > 0 ? '${m}m ' : ''}${s > 0 ? '${s}s' : ''}".trim();
+    String label = "${h > 0 ? '$h ${"h".tr} ' : ''}"
+            "${m > 0 ? '$m ${"m".tr} ' : ''}"
+            "${s > 0 ? '$s ${"s".tr}' : ''}"
+        .trim();
     Map<String, dynamic> newPreset = {"label": label, "h": h, "m": m, "s": s};
 
     customPresets.add(newPreset);
@@ -123,7 +127,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       showConfirmDialog(
         context: context,
         title: "duration".tr,
-        subTitle: "Duration cannot be zero",
+        subTitle: "duration_zero_msg".tr,
         showCancel: false,
         onConfirm: () {},
         confirmText: "ok".tr,
@@ -137,7 +141,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       showConfirmDialog(
         context: context,
         title: "duplicate".tr,
-        subTitle: "A timer with this duration and name already exists.",
+        subTitle: "duplicate_timer_msg".tr,
         showCancel: false,
         onConfirm: () {},
         confirmText: "ok".tr,
@@ -233,9 +237,9 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(20)),
       child: Row(
         children: [
-          _buildPicker(24, "h", hourController, (v) => selectedHours = v),
-          _buildPicker(60, "m", minController, (v) => selectedMinutes = v),
-          _buildPicker(60, "s", secController, (v) => selectedSeconds = v),
+          _buildPicker(24, "h".tr, hourController, (v) => selectedHours = v),
+          _buildPicker(60, "m".tr, minController, (v) => selectedMinutes = v),
+          _buildPicker(60, "s".tr, secController, (v) => selectedSeconds = v),
         ],
       ),
     );
@@ -304,9 +308,9 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         spacing: 10,
         runSpacing: 10,
         children: [
-          _fixedPresetItem("10 m", 0, 10, 0),
-          _fixedPresetItem("30 m", 0, 30, 0),
-          _fixedPresetItem("50 m", 0, 50, 0),
+          _fixedPresetItem("10 ${'m'.tr}", 0, 10, 0),
+          _fixedPresetItem("30 ${'m'.tr}", 0, 30, 0),
+          _fixedPresetItem("50 ${'m'.tr}", 0, 50, 0),
           ...rawList.map((p) => _presetButton(
                 p['label'].toString(),
                 () => _setPreset(p['h'], p['m'], p['s']),
@@ -364,9 +368,9 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
             ),
             child: Row(
               children: [
-                _buildSheetPicker(24, "h", (v) => setSheetState(() => tempH = v), initial: tempH),
-                _buildSheetPicker(60, "m", (v) => setSheetState(() => tempM = v), initial: tempM),
-                _buildSheetPicker(60, "s", (v) => setSheetState(() => tempS = v), initial: tempS),
+                _buildSheetPicker(24, "h".tr, (v) => setSheetState(() => tempH = v), initial: tempH),
+                _buildSheetPicker(60, "m".tr, (v) => setSheetState(() => tempM = v), initial: tempM),
+                _buildSheetPicker(60, "s".tr, (v) => setSheetState(() => tempS = v), initial: tempS),
               ],
             ),
           );

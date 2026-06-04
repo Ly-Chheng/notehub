@@ -39,9 +39,9 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
         bool shouldExit = false;
         await showConfirmDialog(
           context: context,
-          title: "Exit App",
-          subTitle: "Are you sure you want to exit the app?",
-          confirmText: "Yes",
+          title: "exit_app".tr,
+          subTitle: "exit_app_confirm".tr,
+          confirmText: "yes".tr,
           onConfirm: () {
             shouldExit = true;
             SystemNavigator.pop();

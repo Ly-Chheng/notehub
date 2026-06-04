@@ -8,6 +8,7 @@ import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 import 'package:project_structure/views/focus_track/components/timer_detail_screen.dart';
+import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 
@@ -107,7 +108,18 @@ class TimerComponent extends StatelessWidget {
                 backgroundColor: AppColor().primaryColor,
               ),
               AppSlidableAction(
-                onPressed: () => controller.deleteTimer(timer.key),
+                // onPressed: () => controller.deleteTimer(timer.key),
+                onPressed: () {
+                  showConfirmDialog(
+                    context: context,
+                    title: "delete_timer".tr,
+                    subTitle: "delete_timer_confirm".tr,
+                    confirmText: "delete".tr,
+                    onConfirm: () {
+                      controller.deleteTimer(timer.key);
+                    },
+                  );
+                },
                 icon: Icons.delete,
                 label: 'delete'.tr,
                 backgroundColor: AppColor().red,
@@ -137,7 +149,7 @@ class TimerComponent extends StatelessWidget {
                               color: isFinished ? AppColor().white : Theme.of(context).colorScheme.onSurface,
                               fontFamily: 'EN-SEMIBOLD',
                             )),
-                        Text("${controller.formatToHMS(timer.totalSeconds)} total",
+                        Text("${controller.formatToHMS(timer.totalSeconds)} ${'total'.tr}",
                             style: TextStyle(
                                 color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface.withAlpha(150), fontSize: AppFontSize(context).normalTextSize, fontFamily: 'EN-REGULAR')),
                       ],

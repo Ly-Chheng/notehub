@@ -21,33 +21,45 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColor().primaryColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(10),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColor().primaryColor.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            Icons.language,
+                            color: AppColor().primaryColor,
+                            size: context.isPhone ? 20 : 24,
+                          )),
+                      SizedBox(width: 15),
+                      Text(
+                        'change_language'.tr,
+                        style: TextStyle(
+                          fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
+                          fontSize: context.isPhone ? 14 : 18,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
-                        child: Icon(
-                          Icons.language,
-                          color: AppColor().primaryColor,
-                          size: context.isPhone ? 20 : 24,
-                        )),
-                    const SizedBox(width: 15),
-                    Text(
-                      'change_language'.tr,
-                      style: TextStyle(
-                        fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
-                        fontSize: context.isPhone ? 14 : 18,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                SizedBox(width: 15),
+                // Text(
+                //   controller.langs[controller.locales.indexOf(Get.locale!)],
+                //   style: TextStyle(
+                //     fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
+                //     fontSize: context.isPhone ? 14 : 18,
+                //      color: Theme.of(context).textTheme.bodyLarge?.color,
+                //   ),
+                // ),
                 Icon(
-                  Icons.keyboard_arrow_right_rounded,
+                  Icons.arrow_forward_ios,
+                  size: context.isPhone ? 14 : 18,
                   color: Colors.grey,
-                  size: context.isPhone ? 24 : 34,
                 ),
               ],
             ),
@@ -82,19 +94,23 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
                     return CupertinoButton(
                       child: Row(
                         children: [
-                          Image.network(
-                            controller.localeList[index]['image'],
-                            width: context.isPhone ? 45 : 65,
-                            height: context.isPhone ? 30 : 40,
-                            fit: BoxFit.fill,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(4),
+                            child: Image.asset(
+                              controller.localeList[index]['image'],
+                              width: context.isPhone ? 45 : 65,
+                              height: context.isPhone ? 30 : 40,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 15),
                           Text(
                             controller.localeList[index]['name'],
                             style: TextStyle(
-                              fontFamily: controller.localeList[index]['name'] == 'English' ? 'EN-REGULAR' : 'KH-REGULAR',
-                              fontSize: context.isPhone ? 14 : 18,
-                            ),
+                                fontFamily: controller.localeList[index]['name'] == 'English' ? 'EN-REGULAR' : 'KH-REGULAR',
+                                fontSize: context.isPhone ? 14 : 18,
+                                // color: Get.locale == controller.localeList[index]['locale'] ? AppColor().primaryColor : Theme.of(context).textTheme.bodyLarge?.color,
+                                color: Theme.of(context).textTheme.bodyLarge?.color),
                           ),
                         ],
                       ),

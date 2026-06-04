@@ -364,26 +364,48 @@ class NoteController extends GetxController {
     }
   }
 
+  // String getDateHeader(String dateStr) {
+  //   try {
+  //     DateTime noteDate = DateFormat('dd/MM/yyyy').parse(dateStr);
+
+  //     DateTime now = DateTime.now();
+  //     DateTime today = DateTime(now.year, now.month, now.day);
+  //     DateTime yesterday = DateTime(now.year, now.month, now.day - 1);
+  //     DateTime noteDateMidnight = DateTime(noteDate.year, noteDate.month, noteDate.day);
+
+  //     if (noteDateMidnight.isAtSameMomentAs(today)) {
+  //       return "Today";
+  //     } else if (noteDateMidnight.isAtSameMomentAs(yesterday)) {
+  //       return "Yesterday";
+  //     } else if (noteDate.year == now.year) {
+  //       return DateFormat('MMMM d').format(noteDate);
+  //     } else {
+  //       return DateFormat('MMMM d, y').format(noteDate);
+  //     }
+  //   } catch (e) {
+  //     return "Earlier";
+  //   }
+  // }
   String getDateHeader(String dateStr) {
     try {
       DateTime noteDate = DateFormat('dd/MM/yyyy').parse(dateStr);
-
       DateTime now = DateTime.now();
       DateTime today = DateTime(now.year, now.month, now.day);
-      DateTime yesterday = DateTime(now.year, now.month, now.day - 1);
+      DateTime yesterday = today.subtract(const Duration(days: 1));
       DateTime noteDateMidnight = DateTime(noteDate.year, noteDate.month, noteDate.day);
 
       if (noteDateMidnight.isAtSameMomentAs(today)) {
-        return "Today";
+        return 'today'.tr;
       } else if (noteDateMidnight.isAtSameMomentAs(yesterday)) {
-        return "Yesterday";
+        return 'yesterday'.tr;
       } else if (noteDate.year == now.year) {
-        return DateFormat('MMMM d').format(noteDate);
+        // For "MMMM d", we use DateFormat with the current locale
+        return DateFormat('MMMM d', Get.locale.toString()).format(noteDate);
       } else {
-        return DateFormat('MMMM d, y').format(noteDate);
+        return DateFormat('MMMM d, y', Get.locale.toString()).format(noteDate);
       }
     } catch (e) {
-      return "Earlier";
+      return 'earlier'.tr;
     }
   }
 

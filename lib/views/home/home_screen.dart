@@ -13,6 +13,7 @@ import 'package:project_structure/views/home/components/create_folder_component.
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
+import 'package:project_structure/widgets/multi_style.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -168,7 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
         context: context,
         title: "unlock_folder".tr,
         // subTitle: "Enter your password to unlock ${folder.title}.",
-        subTitle: "enter_password_unlock_folder".tr.trParams({'name': folder.title}),
+        subTitle: "enter_password_unlock_folder".tr,
         confirmText: "unlock".tr,
         controller: verifyPassController,
         obscureText: true,
@@ -178,7 +179,10 @@ class _MyHomePageState extends State<MyHomePage> {
             await controller.toggleLock(folder.id!);
             Get.back();
           } else {
-            Get.snackbar("verification_failed".tr, "incorrect_password".tr, backgroundColor: AppColor().red, colorText: Colors.white,);
+            AppSnackbar.showError(
+              title: "verification_failed".tr,
+              message: "incorrect_password".tr,
+            );
           }
         },
       );
@@ -211,17 +215,18 @@ class _MyHomePageState extends State<MyHomePage> {
           Get.back();
           showFolderSheet(context, folder: folder);
         } else {
-          Get.snackbar("verification_failed".tr, "incorrect_password".tr, backgroundColor: AppColor().red, colorText: AppColor().white);
+          AppSnackbar.showError(
+            title: "verification_failed".tr,
+            message: "incorrect_password".tr,
+          );
         }
       },
     );
   }
 
   void _confirmDelete(BuildContext context, FolderModel folder) async {
-    // Check if folder itself is locked
     bool folderLocked = folder.isLocked;
 
-    // Check if there are any locked notes inside
     bool containsLockedNotes = await noteController.hasLockedNotesInFolder(folder.id!);
 
     if (folderLocked || containsLockedNotes) {
@@ -244,7 +249,10 @@ class _MyHomePageState extends State<MyHomePage> {
             Get.back();
             _proceedWithDeletion(folder);
           } else {
-            Get.snackbar("verification_failed".tr, "incorrect_password".tr, backgroundColor: AppColor().red, colorText: AppColor().white);
+            AppSnackbar.showError(
+              title: "verification_failed".tr,
+              message: "incorrect_password".tr,
+            );
           }
         },
       );
@@ -257,7 +265,7 @@ class _MyHomePageState extends State<MyHomePage> {
     showConfirmDialog(
       context: context,
       title: "delete_folder".tr,
-      subTitle: "Are you sure you want to delete ${folder.title}? All notes inside will be moved directly to Recently Deleted.",
+      subTitle: "delete_folder_confirm_subtitle".tr,
       confirmText: "delete".tr,
       onConfirm: () async {
         await noteController.bulkMoveToTrashByFolder(folder.id!, controller.defaultFolderId);
@@ -271,13 +279,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget folderTile(FolderModel folder, bool isDefault) {
     return GestureDetector(
-      // onTap: () {
-      //   Get.to(() => FolderNoteListScreen(
-      //         folderId: folder.id!,
-      //         folderName: folder.title,
-      //       ));
-      //   controller.folders.refresh();
-      // },
       onTap: () async {
         final settings = await lockController.getSecuritySettings();
         String storedPass = settings?['master_password'] ?? "";
@@ -306,12 +307,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     ));
                 controller.folders.refresh();
               } else {
-                Get.snackbar(
-                  "verification_failed".tr,
-                  "incorrect_password".tr,
-                  backgroundColor: AppColor().red,
-                  colorText: Colors.white,
-                  snackPosition: SnackPosition.TOP,
+                AppSnackbar.showError(
+                  title: "verification_failed".tr,
+                  message: "incorrect_password".tr,
                 );
               }
             },
@@ -393,5 +391,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
-  
 }

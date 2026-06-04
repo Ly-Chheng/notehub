@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:get/utils.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/multi_style.dart';
@@ -88,15 +89,15 @@ void showMediaSheet({
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SheetHeader(
-              title: "Add Media",
+            SheetHeader(
+              title: "add_media".tr,
             ),
             const SizedBox(height: 15),
             buildActionItem(
               context,
               icon: Icons.camera_alt_outlined,
               color: AppColor().primaryColor,
-              title: "Take a Photo",
+              title: "take_photo".tr,
               onTap: () => pickImage(ImageSource.camera),
             ),
             divider(context),
@@ -104,24 +105,24 @@ void showMediaSheet({
               context,
               icon: Icons.image_outlined,
               color: AppColor().primaryColor,
-              title: "Select Image from Gallery",
+              title: "gallery_image".tr,
               onTap: () => pickImage(ImageSource.gallery),
             ),
             divider(context),
             const SizedBox(height: 5),
-            buildActionItem(
-              context,
-              icon: Icons.videocam_outlined,
-              color: AppColor().primaryColor,
-              title: "Record a Video",
-              onTap: () => pickVideo(ImageSource.camera),
-            ),
+            // buildActionItem(
+            //   context,
+            //   icon: Icons.videocam_outlined,
+            //   color: AppColor().primaryColor,
+            //   title: "Record a Video",
+            //   onTap: () => pickVideo(ImageSource.camera),
+            // ),
             divider(context),
             buildActionItem(
               context,
               icon: Icons.video_library_outlined,
               color: AppColor().primaryColor,
-              title: "Select Video from Gallery",
+              title: "gallery_video".tr,
               onTap: () => pickVideo(ImageSource.gallery),
             ),
             divider(context),
@@ -129,7 +130,7 @@ void showMediaSheet({
               context,
               icon: Icons.attach_file_outlined,
               color: AppColor().primaryColor,
-              title: "Attach File",
+              title: "attach_file".tr,
               onTap: pickFile,
             ),
             const SizedBox(height: 10),
