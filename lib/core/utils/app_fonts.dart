@@ -5,7 +5,6 @@ const String rengular = 'EN-REGULAR';
 const String sumibold = 'EN-SEMIBOLD';
 const String bold = 'EN-BOLD';
 
-// Font Size Custom
 class AppFontSize {
   late double extraLargeSize;
   late double titleSize;
@@ -38,8 +37,7 @@ titleTextSyle() {
 
 TextStyle text10 = TextStyle(
   fontSize: AppFontSize(Get.context!).subNormalSize,
-  // fontFamily: rengular,
-  fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
+  fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
 );
 
 TextStyle text12 = TextStyle(
@@ -114,7 +112,6 @@ Widget customHeader(String title, BuildContext context) {
     title,
     style: TextStyle(
       fontSize: AppFontSize(context).titleSize,
-      // fontFamily: 'EN-BOLD',
       fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
       color: Theme.of(context).textTheme.bodyLarge?.color,
     ),

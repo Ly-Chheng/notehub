@@ -12,6 +12,7 @@ import 'package:project_structure/controllers/notes/folder_controller.dart' show
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/core/services/firebase_services.dart';
+import 'package:project_structure/core/services/notification_service.dart';
 import 'package:project_structure/core/services/themes_services.dart';
 import 'package:project_structure/core/utils/app_language.dart';
 import 'package:project_structure/core/functions/local_storage.dart';
@@ -64,7 +65,7 @@ Future<void> main() async {
 
   await Hive.openBox<TimerModel>('timer_box');
   await Hive.openBox('create_timer_box');
-
+  await NotificationService.init();
   runApp(const MyApp());
 }
 

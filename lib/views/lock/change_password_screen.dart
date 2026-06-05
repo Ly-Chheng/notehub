@@ -123,7 +123,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     style: TextStyle(
                       color: AppColor().gray,
                       fontSize: AppFontSize(context).normalTextSize,
-                      // fontFamily: 'EN-REGULAR',
                       fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                     ),
                   ),
@@ -157,7 +156,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           style: TextStyle(
             color: AppColor().gray,
             fontSize: AppFontSize(context).normalTextSize,
-            // fontFamily: 'EN-REGULAR',
             fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
           ),
         ),
@@ -181,7 +179,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             style: TextStyle(
               color: AppColor().gray,
               fontSize: AppFontSize(context).subTitleSize,
-              // fontFamily: 'EN-REGULAR',
               fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
             ),
           ),

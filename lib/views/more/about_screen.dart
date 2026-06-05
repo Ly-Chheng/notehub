@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
-import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
-
-  // Helper to switch fonts based on current locale
   String get _bodyFont => Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR';
   String get _boldFont => Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD';
 
@@ -66,12 +63,10 @@ class AboutScreen extends StatelessWidget {
 
             const SizedBox(height: 22),
 
-            /// ABOUT CARD
             _buildCard(context, Icons.info_outline_rounded, "about_application".tr, "about_description".tr),
 
             const SizedBox(height: 20),
 
-            /// FEATURES CARD
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),

@@ -3,6 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/controllers/focus_track/timer_controller.dart';
+import 'package:project_structure/core/services/sound_servies.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
@@ -32,7 +33,7 @@ class TimerComponent extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomNoData(
-                    message: "no_time",
+                    message: "no_data".tr,
                     imagePath: "assets/images/no_time.png",
                   ),
                 ],
@@ -58,22 +59,14 @@ class TimerComponent extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 15),
               children: [
                 if (activeTimers.isNotEmpty) ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                    child: customHeader("running".tr, context),
-                  ),
+                  _glassHeader("running".tr, AppColor().primaryColor, context),
                   ...activeTimers.map((timer) => _buildTimerTile(context, controller, timer)),
                 ],
                 SizedBox(
                   height: 10,
                 ),
                 if (recentTimers.isNotEmpty) ...[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                    ),
-                    child: customHeader("recents".tr, context),
-                  ),
+                  _glassHeader("recents".tr, AppColor().green, context),
                   ...recentTimers.map((timer) => _buildTimerTile(context, controller, timer)),
                 ],
               ],
@@ -92,7 +85,7 @@ class TimerComponent extends StatelessWidget {
       double progress = timer.totalSeconds > 0 ? currentSec / timer.totalSeconds : 0.0;
 
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
+        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
         child: Slidable(
           key: ValueKey(timer.key),
           endActionPane: ActionPane(
@@ -105,10 +98,11 @@ class TimerComponent extends StatelessWidget {
                 },
                 icon: Icons.edit,
                 label: 'edit'.tr,
-                backgroundColor: AppColor().primaryColor,
+                iconSize: 20,
+                backgroundColor: AppColor().green,
+                borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), topLeft: Radius.circular(20)),
               ),
               AppSlidableAction(
-                // onPressed: () => controller.deleteTimer(timer.key),
                 onPressed: () {
                   showConfirmDialog(
                     context: context,
@@ -123,16 +117,18 @@ class TimerComponent extends StatelessWidget {
                 icon: Icons.delete,
                 label: 'delete'.tr,
                 backgroundColor: AppColor().red,
+                borderRadius: BorderRadius.only(bottomRight: Radius.circular(20), topRight: Radius.circular(20)),
               ),
             ],
           ),
           child: GestureDetector(
             onTap: () => Get.to(() => TimerDetailScreen(timerKey: timer.key, data: timer)),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
               decoration: BoxDecoration(
-                color: isFinished ? AppColor().black : Theme.of(context).cardColor,
-              ),
+                  // color: isFinished ? AppColor().black : Theme.of(context).cardColor,
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(20)),
               child: Row(
                 children: [
                   Expanded(
@@ -142,16 +138,21 @@ class TimerComponent extends StatelessWidget {
                         Text(timer.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface, fontSize: AppFontSize(context).subTitleSize, fontFamily: 'EN-REGULAR')),
+                            style: text16(context).copyWith(
+                              // color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            )),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
-                              fontSize: context.isPhone ? 28 : 32,
-                              color: isFinished ? AppColor().white : Theme.of(context).colorScheme.onSurface,
-                              fontFamily: 'EN-SEMIBOLD',
+                              fontSize: context.isPhone ? 30 : 32,
+                              // color: isFinished ? AppColor().white : Theme.of(context).colorScheme.onSurface,
+                              color: Theme.of(context).colorScheme.onSurface,
+                              fontFamily: 'EN-BOLD',
                             )),
-                        Text("${controller.formatToHMS(timer.totalSeconds)} ${'total'.tr}",
-                            style: TextStyle(
-                                color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface.withAlpha(150), fontSize: AppFontSize(context).normalTextSize, fontFamily: 'EN-REGULAR')),
+                        Text("${'total'.tr} ${controller.formatToHMS(timer.totalSeconds)}",
+                            style: text10.copyWith(
+                              color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface.withAlpha(150),
+                            )),
                       ],
                     ),
                   ),
@@ -167,10 +168,21 @@ class TimerComponent extends StatelessWidget {
 
   Widget _buildiPhoneCircle(TimerController controller, TimerModel timer, double progress, bool isFinished, bool isRunning, BuildContext context) {
     return GestureDetector(
+      // onTap: () {
+      //   SoundService.stopSound();
+      //   if (timer.remainingSeconds <= 0 && !isRunning) {
+      //     timer.remainingSeconds = timer.totalSeconds;
+      //     timer.save();
+      //   }
+      //   controller.toggleTimer(timer.key);
+      // },
       onTap: () {
+        SoundService.stopSound();
         if (timer.remainingSeconds <= 0 && !isRunning) {
           timer.remainingSeconds = timer.totalSeconds;
           timer.save();
+          // Force the controller to recognize the reset
+          controller.runningSeconds[timer.key] = timer.totalSeconds;
         }
         controller.toggleTimer(timer.key);
       },
@@ -182,20 +194,52 @@ class TimerComponent extends StatelessWidget {
               height: context.isPhone ? 55 : 65,
               child: CircularProgressIndicator(
                   value: 1.0,
-                  strokeWidth: 4,
+                  strokeWidth: 5,
                   valueColor: AlwaysStoppedAnimation(
                     Colors.grey.withAlpha(30),
                   ))),
           SizedBox(
               width: context.isPhone ? 55 : 65,
               height: context.isPhone ? 55 : 65,
-              child: CircularProgressIndicator(value: progress, strokeWidth: 4, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
+              child: CircularProgressIndicator(value: progress, strokeWidth: 5, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
           Icon(
             isFinished ? Icons.refresh : (isRunning ? Icons.pause : Icons.play_arrow),
-            color: isFinished ? AppColor().white : AppColor().primaryColor,
+            // color: isFinished ? AppColor().white : AppColor().primaryColor,
+            color: AppColor().primaryColor,
             size: context.isPhone ? 30 : 35,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _glassHeader(String title, Color color, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          color: color.withOpacity(0.08),
+          border: Border.all(color: color.withOpacity(0.15)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: text18(context),
+            ),
+          ],
+        ),
       ),
     );
   }

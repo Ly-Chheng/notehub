@@ -25,6 +25,9 @@ class TimerModel extends HiveObject {
   @HiveField(6)
   DateTime? completedAt;
 
+  @HiveField(7)
+  String sound;
+
   TimerModel({
     required this.id,
     required this.title,
@@ -33,5 +36,6 @@ class TimerModel extends HiveObject {
     this.type = 'timer',
     this.createdAt,
     this.completedAt,
+    this.sound = 'dragon-studio-alert-444816.mp3',
   });
 }

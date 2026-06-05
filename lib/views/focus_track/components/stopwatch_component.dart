@@ -14,27 +14,19 @@ class StopwatchScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: context.isPhone ? 30 : 40,
-                ),
-                _buildTimerDisplay(context),
-                SizedBox(
-                  height: context.isPhone ? 30 : 40,
-                ),
-                _buildLapList(context),
-                const SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 50),
-                  child: _buildControls(context),
-                ),
-                const SizedBox(height: 60),
-              ],
-            ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          child: Column(
+            children: [
+              SizedBox(height: context.isPhone ? 20 : 40),
+              _buildTimerDisplay(context),
+              SizedBox(height: context.isPhone ? 30 : 40),
+              Expanded(
+                child: _buildLapList(context),
+              ),
+              SizedBox(height: 20),
+              _glowCircle(context),
+            ],
           ),
         ),
       ),
@@ -103,7 +95,7 @@ class StopwatchScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text("${'lap'.tr} ${lap.lapNumber}", style: text16(context)),
+                          Text("${lap.lapNumber}", style: text16(context)),
                           Text(lap.formattedTime, style: text16(context)),
                         ],
                       ),
@@ -116,21 +108,32 @@ class StopwatchScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildControls(BuildContext context) {
+  Widget _glowCircle(BuildContext context) {
     return Obx(() {
       bool isRunning = controller.isRunning.value;
       bool isAtZero = controller.milliseconds.value == 0;
 
       return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _roundButton(Icons.refresh, (isAtZero || isRunning) ? null : controller.resetStopwatch, context),
           GestureDetector(
             onTap: controller.startStopwatch,
-            child: Icon(
-              isRunning ? Icons.stop_circle : Icons.play_circle_filled,
-              size: context.isPhone ? 60 : 90,
-              color: AppColor().primaryColor,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              decoration: BoxDecoration(
+                color: AppColor().primaryColor,
+                shape: BoxShape.circle,
+                boxShadow: [BoxShadow(color: AppColor().primaryColor.withValues(alpha: 0.5), blurRadius: 20)],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  isRunning ? Icons.pause : Icons.play_arrow,
+                  size: context.isPhone ? 50 : 150,
+                  color: AppColor().white,
+                ),
+              ),
             ),
           ),
           _roundButton(Icons.flag_outlined, (isAtZero || !isRunning) ? null : controller.addLap, context),
@@ -143,20 +146,30 @@ class StopwatchScreen extends StatelessWidget {
     bool isDisabled = onTap == null;
     final activeIconColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
 
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: EdgeInsets.all(context.isPhone ? 8 : 10),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          shape: BoxShape.circle,
-          boxShadow: isDisabled ? [] : const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))],
-        ),
-        child: Icon(
-          icon,
-          color: isDisabled ? AppColor().gray : activeIconColor,
-          size: context.isPhone ? 24 : 30,
-        ),
+    // return GestureDetector(
+    //   onTap: onTap,
+    //   child: Container(
+    //     padding: EdgeInsets.all(context.isPhone ? 8 : 10),
+    //     decoration: BoxDecoration(
+    //       color: Theme.of(context).cardColor,
+    //       shape: BoxShape.circle,
+    //       boxShadow: isDisabled ? [] : const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))],
+    //     ),
+    //     child: Icon(
+    //       icon,
+    //       color: isDisabled ? AppColor().gray : activeIconColor,
+    //       size: context.isPhone ? 24 : 30,
+    //     ),
+    //   ),
+    // );
+    return IconButton(
+      onPressed: onTap,
+      icon: Icon(
+        icon,
+        color: isDisabled ? AppColor().gray : activeIconColor,
+      ),
+      style: IconButton.styleFrom(
+        backgroundColor: Theme.of(context).cardColor.withValues(alpha: 0.1),
       ),
     );
   }

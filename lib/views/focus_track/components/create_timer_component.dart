@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/controllers/focus_track/timer_controller.dart';
+import 'package:project_structure/core/services/sound_servies.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
@@ -28,9 +29,16 @@ class CreateTimerScreen extends StatefulWidget {
 }
 
 class _CreateTimerScreenState extends State<CreateTimerScreen> {
+  final Map<String, String> soundMap = {
+    'Default': 'dragon-studio-alert-444816.mp3',
+    'Mornnig': 'reddog0607-clock-ticking-365218.mp3',
+    'Evening': 'dragon-studio-alert-444816.mp3',
+  };
+
   late int selectedHours;
   late int selectedMinutes;
   late int selectedSeconds;
+  late String selectedSound;
   late TextEditingController _labelController;
 
   late FixedExtentScrollController hourController;
@@ -40,18 +48,23 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize values based on whether we are editing or creating
+
     if (widget.isEditing && widget.existingTimer != null) {
       final total = widget.existingTimer!.totalSeconds;
       selectedHours = total ~/ 3600;
       selectedMinutes = (total % 3600) ~/ 60;
       selectedSeconds = total % 60;
       _labelController = TextEditingController(text: widget.existingTimer!.title);
+      selectedSound = soundMap.keys.firstWhere(
+        (k) => soundMap[k] == widget.existingTimer!.sound,
+        orElse: () => 'Default',
+      );
     } else {
       selectedHours = 1;
       selectedMinutes = 20;
       selectedSeconds = 40;
       _labelController = TextEditingController(text: (widget.existingTimer?.title != null && widget.existingTimer!.title.isNotEmpty) ? widget.existingTimer!.title : "Timer");
+      selectedSound = 'Default';
     }
 
     hourController = FixedExtentScrollController(initialItem: selectedHours);
@@ -106,7 +119,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       return false;
     }
 
-    // String label = "${h > 0 ? '${h}h ' : ''}${m > 0 ? '${m}m ' : ''}${s > 0 ? '${s}s' : ''}".trim();
     String label = "${h > 0 ? '$h ${"h".tr} ' : ''}"
             "${m > 0 ? '$m ${"m".tr} ' : ''}"
             "${s > 0 ? '$s ${"s".tr}' : ''}"
@@ -119,9 +131,68 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     return true;
   }
 
+  // void _saveTimer() async {
+  //   final Box<TimerModel> box = Hive.box<TimerModel>('timer_box');
+  //   int totalSec = (selectedHours * 3600) + (selectedMinutes * 60) + selectedSeconds;
+
+  //   if (totalSec <= 0) {
+  //     showConfirmDialog(
+  //       context: context,
+  //       title: "duration".tr,
+  //       subTitle: "duration_zero_msg".tr,
+  //       showCancel: false,
+  //       onConfirm: () {},
+  //       confirmText: "ok".tr,
+  //     );
+  //     return;
+  //   }
+
+  //   bool isDuplicate = box.values.any((timer) => timer.totalSeconds == totalSec && timer.title.trim().toLowerCase() == _labelController.text.trim().toLowerCase());
+
+  //   if (isDuplicate) {
+  //     showConfirmDialog(
+  //       context: context,
+  //       title: "duplicate".tr,
+  //       subTitle: "duplicate_timer_msg".tr,
+  //       showCancel: false,
+  //       onConfirm: () {},
+  //       confirmText: "ok".tr,
+  //     );
+  //     return;
+  //   }
+
+  //   if (widget.isEditing && widget.existingTimer != null) {
+  //     final TimerController controller = Get.find<TimerController>();
+
+  //     // Reset controller state for this timer
+  //     controller.activeTimerKeys.remove(widget.timerKey);
+  //     controller.resetTimerMemory(widget.timerKey);
+
+  //     // Update the Hive object
+  //     widget.existingTimer!.title = _labelController.text;
+  //     widget.existingTimer!.totalSeconds = totalSec;
+  //     widget.existingTimer!.remainingSeconds = totalSec;
+
+  //     await widget.existingTimer!.save();
+  //   } else {
+  //     // Create and add new timer
+  //     final newTimer = TimerModel(
+  //       id: DateTime.now().millisecondsSinceEpoch.toString(),
+  //       title: _labelController.text,
+  //       totalSeconds: totalSec,
+  //       remainingSeconds: totalSec,
+  //       createdAt: DateTime.now(),
+  //     );
+  //     await box.add(newTimer);
+  //   }
+
+  //   Get.back();
+  // }
   void _saveTimer() async {
     final Box<TimerModel> box = Hive.box<TimerModel>('timer_box');
     int totalSec = (selectedHours * 3600) + (selectedMinutes * 60) + selectedSeconds;
+
+    String soundFileName = soundMap[selectedSound] ?? 'dragon-studio-alert-444816.mp3';
 
     if (totalSec <= 0) {
       showConfirmDialog(
@@ -152,23 +223,22 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     if (widget.isEditing && widget.existingTimer != null) {
       final TimerController controller = Get.find<TimerController>();
 
-      // Reset controller state for this timer
       controller.activeTimerKeys.remove(widget.timerKey);
       controller.resetTimerMemory(widget.timerKey);
 
-      // Update the Hive object
       widget.existingTimer!.title = _labelController.text;
       widget.existingTimer!.totalSeconds = totalSec;
       widget.existingTimer!.remainingSeconds = totalSec;
+      widget.existingTimer!.sound = soundFileName;
 
       await widget.existingTimer!.save();
     } else {
-      // Create and add new timer
       final newTimer = TimerModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         title: _labelController.text,
         totalSeconds: totalSec,
         remainingSeconds: totalSec,
+        sound: soundFileName,
         createdAt: DateTime.now(),
       );
       await box.add(newTimer);
@@ -253,7 +323,13 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         onSelectedItemChanged: (index) {
           setState(() => onSelect(index));
         },
-        children: List.generate(count, (i) => Center(child: Text("$i $unit", style: TextStyle(fontSize: AppFontSize(context).titleSize, fontFamily: 'EN-REGULAR')))),
+        children: List.generate(
+            count,
+            (i) => Center(
+                    child: Text(
+                  "$i $unit",
+                  style: text16(context),
+                ))),
       ),
     );
   }
@@ -261,20 +337,36 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   Widget _buildLabelRow() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-            decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-            child: Text("label".tr, style: text16(context)),
+          customTextField(
+            "timer".tr,
+            false,
+            null,
+            controller: _labelController,
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: customTextField(
-              "password".tr,
-              false,
-              null,
-              controller: _labelController,
+          SizedBox(
+            height: 10,
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+            decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: selectedSound,
+                dropdownColor: Theme.of(context).cardColor,
+                isExpanded: true,
+                items: soundMap.keys.map((String name) {
+                  return DropdownMenuItem<String>(
+                    value: name,
+                    child: Text(name, style: text14(context)),
+                  );
+                }).toList(),
+                onChanged: (String? newName) {
+                  setState(() => selectedSound = newName!);
+                  SoundService.playTimerSound(soundMap[newName]!);
+                },
+              ),
             ),
           ),
         ],
@@ -342,10 +434,10 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
           border: Border.all(color: Colors.blueGrey.withValues(alpha: 0.1)),
         ),
         child: Center(
-            child: Text(text,
-                style: const TextStyle(
-                  color: Colors.blueGrey,
-                ))),
+            child: Text(
+          text,
+          style: text14(context),
+        )),
       ),
     );
   }

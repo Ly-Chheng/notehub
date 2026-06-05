@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:project_structure/core/services/sound_servies.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
@@ -31,6 +32,7 @@ customAppBar({
             ? GestureDetector(
                 onTap: onTap ??
                     () {
+                      SoundService.stopSound();
                       Navigator.pop(context);
                     },
                 child: Icon(
