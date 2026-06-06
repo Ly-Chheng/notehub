@@ -25,6 +25,7 @@ class AppTranslations extends Translations {
           'change_language': 'Change Language',
           'share_app': 'Share App',
           'recently_deleted': 'Recently Deleted',
+          'notification': 'Notification',
 
           // Security
           'change_password': 'Change Password',
@@ -301,6 +302,7 @@ class AppTranslations extends Translations {
           'change_language': 'ផ្លាស់ប្ដូរភាសា',
           'share_app': 'ចែករំលែកកម្មវិធី',
           'recently_deleted': 'បានលុបថ្មីៗ',
+          'notification': 'ការជូនដំណឹង',
 
           // Security
           'change_password': 'ផ្លាស់ប្ដូរពាក្យសម្ងាត់',

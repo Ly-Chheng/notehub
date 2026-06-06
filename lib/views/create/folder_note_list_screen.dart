@@ -340,22 +340,16 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           onTap: () => _handleNoteTap(note),
           child: Container(
             decoration: BoxDecoration(
-                color: noteBgColor,
-                borderRadius: BorderRadius.circular(16),
-                border: isSelected
-                    ? Border.all(
-                        color: AppColor().primaryColor,
-                        width: 1.5,
-                      )
-                    : null,
-                boxShadow: [
-                  BoxShadow(
-                    color: Color.fromRGBO(0, 0, 0, 0.04),
-                    blurRadius: 5,
-                    spreadRadius: 0,
-                    offset: Offset(0, 3),
-                  )
-                ]),
+              color: noteBgColor,
+              borderRadius: BorderRadius.circular(16),
+              border: isSelected
+                  ? Border.all(
+                      color: AppColor().primaryColor,
+                      width: 1.5,
+                    )
+                  : null,
+              boxShadow: AppDecorations.subtleShadow,
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 14),
               child: Row(
@@ -405,7 +399,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                         Row(
                           children: [
                             Text(
-                              // note.date.toString(),
                               formatDateForLocale(note.date),
                               style: text14(context).copyWith(color: itemSubTextColor),
                             ),

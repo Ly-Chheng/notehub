@@ -10,6 +10,7 @@ import 'package:open_filex/open_filex.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/create/components/image_zoom_compoenent.dart';
+import 'package:project_structure/views/create/components/media_logic_component.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/multi_style.dart';
 import 'package:share_plus/share_plus.dart';
@@ -45,21 +46,18 @@ class QuillEditorComponent extends StatelessWidget {
         showCursor: true,
         expands: false,
         scrollable: false,
-
-        // Register custom builders for both content profiles
         embedBuilders: [
           CustomMediaEmbedBuilder(controller: controller, mediaType: BlockEmbed.imageType),
           CustomMediaEmbedBuilder(controller: controller, mediaType: BlockEmbed.videoType),
           CustomFileEmbedBuilder(),
           ...FlutterQuillEmbeds.editorBuilders(),
         ],
-
         customStyles: DefaultStyles(
           paragraph: DefaultTextBlockStyle(
             TextStyle(
               fontSize: context.isPhone ? 16 : 18,
               height: 1.4,
-              fontFamily: 'EN-REGULAR',
+              fontFamily: AppFonts().rengular,
               fontFamilyFallback: const ['KH-REGULAR'],
               color: effectiveColor,
             ),
@@ -72,7 +70,7 @@ class QuillEditorComponent extends StatelessWidget {
             TextStyle(
               fontSize: 16,
               height: 1.4,
-              fontFamily: 'EN-REGULAR',
+              fontFamily: AppFonts().rengular,
               fontFamilyFallback: const ['KH-REGULAR'],
               color: effectiveColor.withValues(alpha: 0.6),
             ),
@@ -84,51 +82,6 @@ class QuillEditorComponent extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-// CUSTOM MEDIA (IMAGE/VIDEO) EMBED BUILDER
-class CustomMediaEmbedBuilder implements EmbedBuilder {
-  final QuillController controller;
-  final String mediaType;
-
-  CustomMediaEmbedBuilder({required this.controller, required this.mediaType});
-
-  @override
-  String get key => mediaType;
-
-  @override
-  bool get expanded => false;
-
-  @override
-  Widget build(BuildContext context, EmbedContext embedContext) {
-    final style = embedContext.node.style.attributes['style'];
-    double savedWidth = 1.0;
-
-    if (style != null && style.value != null) {
-      final RegExp widthRegExp = RegExp(r'width:\s*(\d+)%');
-      final match = widthRegExp.firstMatch(style.value.toString());
-      if (match != null) {
-        savedWidth = int.parse(match.group(1)!) / 100.0;
-      }
-    }
-
-    return ResizableMediaWidget(
-      node: embedContext.node,
-      controller: controller,
-      initialWidthPercentage: savedWidth,
-      isVideo: mediaType == BlockEmbed.videoType,
-    );
-  }
-
-  @override
-  String toPlainText(Embed node) {
-    return node.value.data.toString();
-  }
-
-  @override
-  WidgetSpan buildWidgetSpan(Widget child) {
-    return WidgetSpan(child: child);
   }
 }
 
@@ -269,7 +222,7 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                               Text("resize".tr, style: text16(context)),
                               Text(
                                 "${(_widthPercentage * 100).round()}%",
-                                style: TextStyle(fontWeight: FontWeight.bold, color: AppColor().primaryColor, fontFamily: rengular),
+                                style: TextStyle(fontWeight: FontWeight.bold, color: AppColor().primaryColor, fontFamily: AppFonts().rengular),
                               ),
                             ],
                           ),
@@ -405,20 +358,18 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
       try {
         final result = await OpenFilex.open(filePath);
         if (result.type != ResultType.done) {
-          Get.snackbar(
-            "error_cannot_open".tr,
-            "No compatible application found on your device to open this file.",
-            snackPosition: SnackPosition.TOP,
+          AppSnackbar.showError(
+            title: "error_cannot_open".tr,
+            message: "No compatible application found on your device to open this file.",
           );
         }
       } catch (e) {
         Get.snackbar("Error", "An error occurred while trying to open the file: $e");
       }
     } else {
-      Get.snackbar(
-        "file_not_found".tr,
-        "The file no longer exists at its recorded path storage directory.",
-        snackPosition: SnackPosition.TOP,
+      AppSnackbar.showError(
+        title: "file_not_found".tr,
+        message: "The file no longer exists at its recorded path storage directory.",
       );
     }
   }
@@ -517,13 +468,7 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            boxShadow: AppDecorations.subtleShadow,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -546,8 +491,6 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
                 },
               ),
               divider(context),
-
-              // Remove Option Item
               buildActionItem(
                 context,
                 icon: Icons.delete_outline,

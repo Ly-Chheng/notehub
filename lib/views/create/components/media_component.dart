@@ -28,7 +28,6 @@ void showMediaSheet({
     }
   }
 
-  // Handles video picking (Camera or Gallery)
   Future<void> pickVideo(ImageSource source) async {
     try {
       final XFile? file = await picker.pickVideo(

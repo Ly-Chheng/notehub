@@ -168,20 +168,11 @@ class TimerComponent extends StatelessWidget {
 
   Widget _buildiPhoneCircle(TimerController controller, TimerModel timer, double progress, bool isFinished, bool isRunning, BuildContext context) {
     return GestureDetector(
-      // onTap: () {
-      //   SoundService.stopSound();
-      //   if (timer.remainingSeconds <= 0 && !isRunning) {
-      //     timer.remainingSeconds = timer.totalSeconds;
-      //     timer.save();
-      //   }
-      //   controller.toggleTimer(timer.key);
-      // },
       onTap: () {
         SoundService.stopSound();
         if (timer.remainingSeconds <= 0 && !isRunning) {
           timer.remainingSeconds = timer.totalSeconds;
           timer.save();
-          // Force the controller to recognize the reset
           controller.runningSeconds[timer.key] = timer.totalSeconds;
         }
         controller.toggleTimer(timer.key);
@@ -204,8 +195,7 @@ class TimerComponent extends StatelessWidget {
               child: CircularProgressIndicator(value: progress, strokeWidth: 5, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
           Icon(
             isFinished ? Icons.refresh : (isRunning ? Icons.pause : Icons.play_arrow),
-            // color: isFinished ? AppColor().white : AppColor().primaryColor,
-            color: AppColor().primaryColor,
+            color: isFinished ? AppColor().gray : AppColor().primaryColor,
             size: context.isPhone ? 30 : 35,
           ),
         ],

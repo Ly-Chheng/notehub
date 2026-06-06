@@ -89,7 +89,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
               }
 
               if (controller.trashNotes.isEmpty) {
-                return const CustomNoData(message: "Trash is empty");
+                return CustomNoData(message: "no_data".tr);
               }
 
               return SlidableAutoCloseBehavior(
@@ -166,13 +166,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                               color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(18),
                               border: isSelected ? Border.all(color: AppColor().primaryColor, width: 1.5) : null,
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color.fromRGBO(0, 0, 0, 0.04),
-                                  blurRadius: 5,
-                                  offset: Offset(0, 3),
-                                )
-                              ],
+                              boxShadow: AppDecorations.subtleShadow,
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),

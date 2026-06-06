@@ -30,9 +30,9 @@ class CreateTimerScreen extends StatefulWidget {
 
 class _CreateTimerScreenState extends State<CreateTimerScreen> {
   final Map<String, String> soundMap = {
-    'Default': 'dragon-studio-alert-444816.mp3',
-    'Mornnig': 'reddog0607-clock-ticking-365218.mp3',
-    'Evening': 'dragon-studio-alert-444816.mp3',
+    'default_sound'.tr: 'dragon-studio-alert-444816.mp3',
+    'morning_sound'.tr: 'reddog0607-clock-ticking-365218.mp3',
+    'evening_sound'.tr: 'dragon-studio-alert-444816.mp3',
   };
 
   late int selectedHours;
@@ -57,14 +57,14 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       _labelController = TextEditingController(text: widget.existingTimer!.title);
       selectedSound = soundMap.keys.firstWhere(
         (k) => soundMap[k] == widget.existingTimer!.sound,
-        orElse: () => 'Default',
+        orElse: () => 'default_sound'.tr,
       );
     } else {
       selectedHours = 1;
       selectedMinutes = 20;
       selectedSeconds = 40;
       _labelController = TextEditingController(text: (widget.existingTimer?.title != null && widget.existingTimer!.title.isNotEmpty) ? widget.existingTimer!.title : "Timer");
-      selectedSound = 'Default';
+      selectedSound = 'default_sound'.tr;
     }
 
     hourController = FixedExtentScrollController(initialItem: selectedHours);
@@ -131,63 +131,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     return true;
   }
 
-  // void _saveTimer() async {
-  //   final Box<TimerModel> box = Hive.box<TimerModel>('timer_box');
-  //   int totalSec = (selectedHours * 3600) + (selectedMinutes * 60) + selectedSeconds;
-
-  //   if (totalSec <= 0) {
-  //     showConfirmDialog(
-  //       context: context,
-  //       title: "duration".tr,
-  //       subTitle: "duration_zero_msg".tr,
-  //       showCancel: false,
-  //       onConfirm: () {},
-  //       confirmText: "ok".tr,
-  //     );
-  //     return;
-  //   }
-
-  //   bool isDuplicate = box.values.any((timer) => timer.totalSeconds == totalSec && timer.title.trim().toLowerCase() == _labelController.text.trim().toLowerCase());
-
-  //   if (isDuplicate) {
-  //     showConfirmDialog(
-  //       context: context,
-  //       title: "duplicate".tr,
-  //       subTitle: "duplicate_timer_msg".tr,
-  //       showCancel: false,
-  //       onConfirm: () {},
-  //       confirmText: "ok".tr,
-  //     );
-  //     return;
-  //   }
-
-  //   if (widget.isEditing && widget.existingTimer != null) {
-  //     final TimerController controller = Get.find<TimerController>();
-
-  //     // Reset controller state for this timer
-  //     controller.activeTimerKeys.remove(widget.timerKey);
-  //     controller.resetTimerMemory(widget.timerKey);
-
-  //     // Update the Hive object
-  //     widget.existingTimer!.title = _labelController.text;
-  //     widget.existingTimer!.totalSeconds = totalSec;
-  //     widget.existingTimer!.remainingSeconds = totalSec;
-
-  //     await widget.existingTimer!.save();
-  //   } else {
-  //     // Create and add new timer
-  //     final newTimer = TimerModel(
-  //       id: DateTime.now().millisecondsSinceEpoch.toString(),
-  //       title: _labelController.text,
-  //       totalSeconds: totalSec,
-  //       remainingSeconds: totalSec,
-  //       createdAt: DateTime.now(),
-  //     );
-  //     await box.add(newTimer);
-  //   }
-
-  //   Get.back();
-  // }
   void _saveTimer() async {
     final Box<TimerModel> box = Hive.box<TimerModel>('timer_box');
     int totalSec = (selectedHours * 3600) + (selectedMinutes * 60) + selectedSeconds;
@@ -268,7 +211,10 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
-              onPressed: _saveTimer,
+              onPressed: () {
+                SoundService.stopSound();
+                _saveTimer();
+              },
               child: Text(
                 "save".tr,
                 style: text18(context).copyWith(color: AppColor().primaryColor),

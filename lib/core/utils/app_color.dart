@@ -49,3 +49,13 @@ class AppColor {
         const Color(0xFF32CD32),
       ];
 }
+
+class AppDecorations {
+  static const List<BoxShadow> subtleShadow = [
+    BoxShadow(
+      color: Color.fromRGBO(0, 0, 0, 0.04),
+      blurRadius: 5,
+      offset: Offset(0, 3),
+    ),
+  ];
+}

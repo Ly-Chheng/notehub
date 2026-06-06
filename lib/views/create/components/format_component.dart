@@ -46,12 +46,6 @@ void showFormatSheet({
     0XFF000000,
     0xFFFFC107,
     0xFF9C27B0,
-    0xFFE91E63,
-    0xFF00BCD4,
-    0xFF8BC34A,
-    0xFFFF5722,
-    0xFF607D8B,
-    0xFF795548,
   ];
 
   showModalBottomSheet(
@@ -296,7 +290,7 @@ void showFormatSheet({
                               color: isSelected ? AppColor().primaryColor : Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: isSelected ? AppColor().primaryColor : Colors.grey.withValues(alpha: 0.3),
+                                color: isSelected ? Colors.grey.withValues(alpha: 0.3) : Colors.grey.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(

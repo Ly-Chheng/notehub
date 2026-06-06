@@ -47,7 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           Expanded(
             child: Obx(() {
-              // Read from the filtered list in your controller instead of raw folders
               final displayedFolders = controller.filteredFolders;
 
               if (displayedFolders.isEmpty) {
@@ -168,7 +167,6 @@ class _MyHomePageState extends State<MyHomePage> {
       showConfirmDialog(
         context: context,
         title: "unlock_folder".tr,
-        // subTitle: "Enter your password to unlock ${folder.title}.",
         subTitle: "enter_password_unlock_folder".tr,
         confirmText: "unlock".tr,
         controller: verifyPassController,
@@ -372,7 +370,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Icon(
             Icons.lock,
             size: 16,
-            color: Colors.white,
+            color: AppColor().white,
           ),
       ],
     );

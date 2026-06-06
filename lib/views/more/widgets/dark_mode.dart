@@ -57,6 +57,7 @@ class DarkModeView extends GetView<DarkModeController> {
                         ThemeService().changeTheme();
                       },
                       value: controller.darkStatus,
+                      activeColor: AppColor().primaryColor,
                     );
                   },
                 ),

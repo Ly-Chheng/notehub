@@ -71,9 +71,10 @@ class AboutScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4))]),
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: AppDecorations.subtleShadow,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -99,9 +100,10 @@ class AboutScreen extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(24),
-                  boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4))]),
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: AppDecorations.subtleShadow,
+              ),
               child: Column(
                 children: [
                   _buildContactTile(Icons.email_outlined, "contact_email".tr, "support@studentnoteapp.com"),

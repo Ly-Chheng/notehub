@@ -97,7 +97,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
       final path = '${directory.path}/draw_${DateTime.now().millisecondsSinceEpoch}.png';
       await File(path).writeAsBytes(pngBytes);
 
-      // Convert Controllers to Hive-compatible Maps
       List<SignatureController> allControllers = [..._layers, _activeController];
       List<Map<String, dynamic>> exportData = allControllers
           .where((c) => c.isNotEmpty)

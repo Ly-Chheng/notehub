@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:project_structure/core/services/notification_service.dart';
+import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/core/services/sound_servies.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 
@@ -18,51 +18,17 @@ class TimerController extends GetxController {
     _startGlobalTimer();
   }
 
-  // void _startGlobalTimer() {
-  //   _globalTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-  //     for (var key in activeTimerKeys.toList()) {
-  //       if ((runningSeconds[key] ?? 0) > 0) {
-  //         runningSeconds[key] = runningSeconds[key]! - 1;
-
-  //         if (runningSeconds[key]! % 10 == 0) {
-  //           _updateHiveSeconds(key, runningSeconds[key]!);
-  //         }
-  //       } else {
-  //         activeTimerKeys.remove(key);
-  //         _updateHiveSeconds(key, 0);
-  //       }
-  //     }
-  //   });
-  // }
   void _startGlobalTimer() {
     _globalTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       for (var key in activeTimerKeys.toList()) {
         if ((runningSeconds[key] ?? 0) > 0) {
           runningSeconds[key] = runningSeconds[key]! - 1;
-
-          // // Trigger sound exactly when it hits 0
-          // if (runningSeconds[key] == 0) {
-          //   final timerData = timerBox.get(key);
-          //   if (timerData != null) {
-          //     // Play the assigned sound
-          //     SoundService.playTimerSound(timerData.sound ?? 'dragon-studio-alert-444816.mp3');
-          //   }
-
-          //   activeTimerKeys.remove(key); // Stop the timer
-          //   _updateHiveSeconds(key, 0); // Final sync to Hive
-          // } else if (runningSeconds[key]! % 10 == 0) {
-          //   // Periodic save for performance
-          //   _updateHiveSeconds(key, runningSeconds[key]!);
-          // }
-          // Check if finished
           if (runningSeconds[key] == 0) {
             final timerData = timerBox.get(key);
             if (timerData != null) {
-              // 1. Play Sound
               SoundService.playTimerSound(timerData.sound);
 
-              // 2. Show Notification
-              NotificationService.showTimerFinishedNotification(
+              FirebaseServices.showTimerFinishedNotification(
                 title: "timer_finished".tr,
                 body: "${timerData.title} ${'has_completed'.tr}",
               );
@@ -72,16 +38,12 @@ class TimerController extends GetxController {
               // );
             }
 
-            // 3. IMPORTANT: Stop the timer and update state
             activeTimerKeys.remove(key);
             _updateHiveSeconds(key, 0);
-          }
-          // Periodic save every 10 seconds
-          else if (runningSeconds[key]! % 10 == 0) {
+          } else if (runningSeconds[key]! % 10 == 0) {
             _updateHiveSeconds(key, runningSeconds[key]!);
           }
         } else {
-          // Safety catch: remove if it somehow stayed active at 0
           activeTimerKeys.remove(key);
         }
       }

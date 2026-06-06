@@ -54,8 +54,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   Timer? _autoSaveTimer;
   bool isAutoSaveEnabled = true;
   bool isSessionUnlocked = false;
-
-  // Note State
   Color? noteBgColor;
   bool isLocked = false;
   bool isPinned = false;
@@ -76,7 +74,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     currentNoteId = widget.existingNote?.id;
 
-    // Initialize data for editing or new note
     if (widget.isEditing && widget.existingNote != null) {
       final note = widget.existingNote!;
 
@@ -99,7 +96,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         selectedImages = note.imagePaths.map((path) => File(path)).toList();
       }
 
-      // Quill Editor Content
       try {
         final contentJson = note.content;
         final decoded = jsonDecode(contentJson);
@@ -129,7 +125,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     });
   }
 
-  // Helper method to look deeply for all content embeddings inside Quill document
   Map<String, List<String>> _extractEmbeddedMedia() {
     final List<String> images = [];
     final List<String> videos = [];
@@ -575,14 +570,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               vertical: 10,
             ),
             padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 15 : 40, vertical: context.isPhone ? 3 : 10),
-            decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(40), boxShadow: [
-              BoxShadow(
-                color: Color.fromRGBO(0, 0, 0, 0.04),
-                blurRadius: 5,
-                spreadRadius: 0,
-                offset: Offset(0, 3),
-              )
-            ]),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(40),
+              boxShadow: AppDecorations.subtleShadow,
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [

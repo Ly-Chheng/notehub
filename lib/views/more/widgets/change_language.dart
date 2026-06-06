@@ -48,14 +48,6 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
                   ),
                 ),
                 SizedBox(width: 15),
-                // Text(
-                //   controller.langs[controller.locales.indexOf(Get.locale!)],
-                //   style: TextStyle(
-                //     fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
-                //     fontSize: context.isPhone ? 14 : 18,
-                //      color: Theme.of(context).textTheme.bodyLarge?.color,
-                //   ),
-                // ),
                 Icon(
                   Icons.arrow_forward_ios,
                   size: context.isPhone ? 14 : 18,
@@ -109,7 +101,6 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
                             style: TextStyle(
                                 fontFamily: controller.localeList[index]['name'] == 'English' ? 'EN-REGULAR' : 'KH-REGULAR',
                                 fontSize: context.isPhone ? 14 : 18,
-                                // color: Get.locale == controller.localeList[index]['locale'] ? AppColor().primaryColor : Theme.of(context).textTheme.bodyLarge?.color,
                                 color: Theme.of(context).textTheme.bodyLarge?.color),
                           ),
                         ],

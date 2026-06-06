@@ -3,13 +3,16 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:project_structure/main.dart';
 import 'package:project_structure/views/home/home_screen.dart';
 
 class FirebaseServices {
   final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   static const String notificationChannelId = 'com.example.project_structure';
-  final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
+  // final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
+  static final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   Future<void> getInstance() async {
     await initNotification();
@@ -67,11 +70,17 @@ class FirebaseServices {
         debugPrint("-----Active Click-----");
         if (notificationResponse.payload != null) {
           try {
-            navigatorKey.currentState?.push(
-              MaterialPageRoute(
-                builder: (context) => const MyHomePage(),
-              ),
-            );
+            // navigatorKey.currentState?.push(
+            //   MaterialPageRoute(
+            //     builder: (context) => const MyHomePage(),
+            //   ),
+            // );
+            FirebaseMessaging.onMessageOpenedApp.listen((message) {
+              Get.offAllNamed('/mainHome', arguments: {
+                'tab': 1,
+                'focusTab': 1,
+              });
+            });
           } catch (error) {
             debugPrint('-----Notification payload error: $error');
           }
@@ -130,5 +139,29 @@ class FirebaseServices {
         );
       }
     }
+  }
+
+  static Future<void> showTimerFinishedNotification({required String title, required String body}) async {
+    final box = GetStorage();
+    bool isEnabled = box.read('notifications_enabled') ?? true;
+
+    if (!isEnabled) {
+      return;
+    }
+
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'timer_channel_id',
+      'Timer Notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: false,
+    );
+
+    await _notificationsPlugin.show(
+      0,
+      title,
+      body,
+      const NotificationDetails(android: androidDetails),
+    );
   }
 }

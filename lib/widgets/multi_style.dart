@@ -121,7 +121,7 @@ Widget buildActionItem(
                 style: TextStyle(
                   fontSize: AppFontSize(context).descriptionLargeSize,
                   fontFamilyFallback: [Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR'],
-                  fontFamily: rengular,
+                  fontFamily: AppFonts().fontRegular,
                   color: isDestructive ? AppColor().red : null,
                 ),
               ),

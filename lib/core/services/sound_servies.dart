@@ -10,8 +10,5 @@ class SoundService {
 
   static Future<void> stopSound() async {
     await _player.stop();
-    // If you need to reset the player to the beginning for next time:
-    // await _player.seek(Duration.zero);
   }
-  
 }

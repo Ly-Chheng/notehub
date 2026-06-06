@@ -17,7 +17,6 @@ class LockController extends GetxController {
     "What is the name of your childhood best friend?"
   ];
 
-  // Fetch current security settings
   Future<Map<String, dynamic>?> getSecuritySettings() async {
     final db = await DatabaseService.db;
     final List<Map<String, dynamic>> maps = await db.query('security', where: 'id = 1');
@@ -80,7 +79,6 @@ class LockController extends GetxController {
     String? question, // Optional
     String? answer, // Optional
   }) async {
-    // Fetch current settings from DB
     final settings = await getSecuritySettings();
     String storedPass = settings?['master_password'] ?? "";
 
@@ -111,12 +109,10 @@ class LockController extends GetxController {
     try {
       final db = await DatabaseService.db;
 
-      // If user input is empty, use the data already in the database
       String finalQuestion = (question != null && question.isNotEmpty) ? question : (settings?['security_question'] ?? "");
 
       String finalAnswer = (answer != null && answer.isNotEmpty) ? answer.trim().toLowerCase() : (settings?['security_answer'] ?? "");
 
-      // Update with "merged" data
       await db.update(
           'security',
           {
@@ -148,7 +144,6 @@ class LockController extends GetxController {
       final settings = await getSecuritySettings();
       String storedAnswer = (settings?['security_answer'] ?? "").toString().trim().toLowerCase();
 
-      // Handle "Not Set Up" case
       if (storedAnswer.isEmpty) {
         await _showDialog(
           Get.context!,
@@ -203,13 +198,10 @@ class LockController extends GetxController {
     try {
       final db = await DatabaseService.db;
 
-      // Bulk Unlock all notes in SQLite
       await db.update('notes', {'is_locked': 0});
 
-      // Bulk Unlock all folders in SQLite
       await db.update('folders', {'isLocked': 0});
 
-      // Clear security table
       await db.update(
           'security',
           {
@@ -220,11 +212,9 @@ class LockController extends GetxController {
           },
           where: 'id = 1');
 
-      // Refresh UI
       final NoteController noteController = Get.find<NoteController>();
       final FolderController folderController = Get.find<FolderController>();
 
-      // Fetch updated data after unlocking
       await noteController.fetchAllNotes();
       await folderController.loadFolders();
 

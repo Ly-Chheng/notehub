@@ -5,6 +5,7 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/more/widgets/change_language.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
+import 'package:project_structure/views/more/widgets/notification.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({
@@ -28,20 +29,21 @@ class _MoreScreenState extends State<MoreScreen> {
           child: Column(
             children: [
               _buildSectionContainer([
-                _buildMenuTile(Icons.info_outline, "about".tr, onTap: () {
+                buildMenuTile(Icons.info_outline, "about".tr, onTap: () {
                   Get.toNamed('/about');
                 }),
                 DarkModeView(),
-                _buildMenuTile(Icons.help_outline, "how_to_use".tr, onTap: () {
+                NotificationView(),
+                buildMenuTile(Icons.help_outline, "how_to_use".tr, onTap: () {
                   Get.toNamed('/howToUse');
                 }),
                 ChangeLanguageView(),
-                _buildMenuTile(
+                buildMenuTile(
                   Icons.share_outlined,
                   "share_app".tr,
                   onTap: () {},
                 ),
-                _buildMenuTile(
+                buildMenuTile(
                   Icons.delete_outline,
                   "recently_deleted".tr,
                   onTap: () {
@@ -53,13 +55,13 @@ class _MoreScreenState extends State<MoreScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 20, bottom: 60),
                 child: _buildSectionContainer([
-                  _buildMenuTile(Icons.lock_outline, "change_password".tr, onTap: () {
+                  buildMenuTile(Icons.lock_outline, "change_password".tr, onTap: () {
                     Get.toNamed('/changePassword');
                   }),
-                  _buildMenuTile(Icons.sync_lock_outlined, "reset_password".tr, onTap: () {
+                  buildMenuTile(Icons.sync_lock_outlined, "reset_password".tr, onTap: () {
                     Get.toNamed('/resetPassword');
                   }),
-                  _buildMenuTile(Icons.lock_reset, "forget_password".tr, onTap: () {
+                  buildMenuTile(Icons.lock_reset, "forget_password".tr, onTap: () {
                     Get.toNamed('/fogetPassword');
                   }, isLast: true),
                 ]),
@@ -86,19 +88,13 @@ class _MoreScreenState extends State<MoreScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 12,
-            offset: const Offset(0, 6),
-          )
-        ],
+        boxShadow: AppDecorations.subtleShadow,
       ),
       child: Column(children: children),
     );
   }
 
-  Widget _buildMenuTile(IconData icon, String title, {required VoidCallback onTap, bool isLast = false}) {
+  Widget buildMenuTile(IconData icon, String title, {required VoidCallback onTap, bool isLast = false}) {
     return Column(
       children: [
         InkWell(

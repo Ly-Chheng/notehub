@@ -1,9 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-const String rengular = 'EN-REGULAR';
-const String sumibold = 'EN-SEMIBOLD';
-const String bold = 'EN-BOLD';
+class AppFonts {
+  // English Fonts "Nunito"
+  String rengular = 'EN-REGULAR';
+  String sumibold = 'EN-SEMIBOLD';
+  String bold = 'EN-BOLD';
+  String fontExBold = 'EN-BOLD';
+
+  // Khmer Fonts "Battambang"
+  String fontKhRegular = 'KH-REGULAR';
+  String fontKhMedium = 'KH-SEMIBOLD';
+  String fontKhBold = 'KH-BOLD';
+  String fontkhExBold = 'KH-BOLD';
+
+  String fontRegular = 'Regular-Font';
+  String fontMedium = 'Medium-Font';
+  String fontBold = 'Bold-Font';
+  String fontEBold = 'Nunito-Extrabold';
+}
 
 class AppFontSize {
   late double extraLargeSize;
@@ -30,7 +45,7 @@ class AppFontSize {
 
 titleTextSyle() {
   return TextStyle(
-    fontFamily: rengular,
+    fontFamily: AppFonts().rengular,
     fontSize: AppFontSize(Get.context!).subTitleSize,
   );
 }
@@ -42,13 +57,13 @@ TextStyle text10 = TextStyle(
 
 TextStyle text12 = TextStyle(
   fontSize: AppFontSize(Get.context!).normalTextSize,
-  fontFamily: rengular,
+  fontFamily: AppFonts().rengular,
 );
 
 TextStyle text14(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(Get.context!).descriptionLargeSize,
-    fontFamily: rengular,
+    fontFamily: AppFonts().rengular,
     fontFamilyFallback: const ['KH-REGULAR'],
   );
 }
@@ -56,7 +71,7 @@ TextStyle text14(BuildContext context) {
 TextStyle text16(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(Get.context!).subTitleSize,
-    fontFamily: rengular,
+    fontFamily: AppFonts().rengular,
     fontFamilyFallback: const ['KH-REGULAR'],
     color: Theme.of(context).textTheme.bodyLarge?.color,
   );
@@ -65,7 +80,7 @@ TextStyle text16(BuildContext context) {
 TextStyle text18(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(context).mediumLargeSize,
-    fontFamily: bold,
+    fontFamily: AppFonts().bold,
     fontFamilyFallback: const ['KH-BOLD'],
     color: Theme.of(context).textTheme.bodyLarge?.color,
   );
@@ -74,7 +89,7 @@ TextStyle text18(BuildContext context) {
 TextStyle text20(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(Get.context!).titleSize,
-    fontFamily: bold,
+    fontFamily: AppFonts().rengular,
     fontFamilyFallback: const ['KH-BOLD'],
     color: Theme.of(context).textTheme.bodyLarge?.color,
   );
@@ -83,27 +98,8 @@ TextStyle text20(BuildContext context) {
 TextStyle text22(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(context).extraLargeSize,
-    fontFamily: bold,
+    fontFamily: AppFonts().rengular,
     color: Theme.of(context).textTheme.bodyLarge?.color,
-  );
-}
-
-TextStyle custom({
-  required BuildContext context,
-  required double phone,
-  required double tablet,
-  String fontFamily = rengular,
-  FontWeight? weight,
-  Color? color,
-}) {
-  final isPhone = Get.context!.isPhone;
-  final size = isPhone ? phone : tablet;
-
-  return TextStyle(
-    fontSize: size,
-    fontFamily: fontFamily,
-    fontWeight: weight,
-    color: color ?? Theme.of(context).textTheme.bodyLarge?.color,
   );
 }
 
