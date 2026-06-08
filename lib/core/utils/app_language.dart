@@ -49,6 +49,7 @@ class AppTranslations extends Translations {
           'add_column': 'Add Column',
           'delete_table': 'Delete Table',
           'delete_table_confirm': 'Are you sure you want to delete this table?',
+          'choose_template': 'Choose Template',
 
           // Color Picker
           'pick_a_color': 'Pick a color',
@@ -326,6 +327,7 @@ class AppTranslations extends Translations {
           'add_column': 'បន្ថែមជួរឈរ',
           'delete_table': 'លុបតារាង',
           'delete_table_confirm': 'តើអ្នកពិតជាចង់លុបតារាងនេះមែនទេ?',
+          'choose_template': 'ជ្រើសរើស​គំរូ',
 
           // Color Picker
           'pick_a_color': 'ជ្រើសរើសពណ៌',

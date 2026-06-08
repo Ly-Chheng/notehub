@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/views/create/components/notebook_painter.dart';
 import 'package:signature/signature.dart';
 
 class HandwritingCanvas extends StatefulWidget {
@@ -33,6 +34,9 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
   double currentWidth = 2.0;
   bool isEraser = false;
   bool showColorPalette = false;
+  bool showLines = false;
+  // 0: None, 1: Lines, 2: Grid
+  int canvasMode = 0;
 
   late final isDarkMode = Theme.of(context).brightness == Brightness.dark;
   late final canvasBgColor = isDarkMode ? const Color(0xFFF9F9F9) : const Color(0xFFF9F9F9);
@@ -193,10 +197,36 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                 child: Container(
                   margin: const EdgeInsets.only(top: 5, bottom: 5),
                   decoration: BoxDecoration(color: canvasBgColor),
+                  // child: Stack(
+                  //   children: [
+                  //     ..._layers.map((l) => Signature(controller: l, backgroundColor: Colors.transparent)),
+                  //     Signature(controller: _activeController, backgroundColor: Colors.transparent),
+                  //   ],
+                  // ),
+                  // child: Stack(
+                  //   children: [
+                  //     ..._layers.map((l) => Signature(controller: l, backgroundColor: Colors.transparent)),
+                  //     Signature(controller: _activeController, backgroundColor: Colors.transparent),
+                  //     if (showLines)
+                  //       IgnorePointer(
+                  //         child: CustomPaint(
+                  //           size: Size.infinite,
+                  //           painter: NotebookPainter(),
+                  //         ),
+                  //       ),
+                  //   ],
+                  // ),
                   child: Stack(
                     children: [
                       ..._layers.map((l) => Signature(controller: l, backgroundColor: Colors.transparent)),
                       Signature(controller: _activeController, backgroundColor: Colors.transparent),
+                      if (canvasMode > 0)
+                        IgnorePointer(
+                          child: CustomPaint(
+                            size: Size.infinite,
+                            painter: NotebookPainter(mode: canvasMode),
+                          ),
+                        ),
                     ],
                   ),
                 ),
@@ -342,9 +372,34 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                     child: Icon(
                       Icons.color_lens,
                       size: showColorPalette ? 35 : 35,
-                      color: Colors.green,
+                      color: AppColor().green,
                     ),
                   ),
+                ),
+                // IconButton(
+                //   icon: Icon(
+                //     showLines ? Icons.grid_off : Icons.grid_on,
+                //     size: 35,
+                //     color: showLines ? Colors.blue : Colors.blue,
+                //   ),
+                //   onPressed: () {
+                //     setState(() {
+                //       showLines = !showLines;
+                //     });
+                //   },
+                // ),
+                IconButton(
+                  icon: Icon(
+                    canvasMode == 0 ? Icons.grid_off : (canvasMode == 1 ? Icons.view_headline : Icons.grid_on),
+                    size: 35,
+                    color: canvasMode == 0 ? Colors.grey : Colors.blue,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      // Cycles: 0 -> 1 -> 2 -> 0
+                      canvasMode = (canvasMode + 1) % 3;
+                    });
+                  },
                 ),
                 IconButton(
                     icon: Icon(

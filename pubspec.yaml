@@ -74,6 +74,7 @@ flutter:
     - assets/images/
     - assets/sounds/
     - assets/.env
+    - lib/json/templates.json
 
   fonts:
     - family: KH-LIGHT

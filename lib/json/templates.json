@@ -1,0 +1,117 @@
+
+[
+  {
+    "templates": {
+       "Notebook": [
+        { "insert": "📘 Subject: \n", "attributes": { "bold": true } },
+        { "insert": "📅 Date: \n\n" },
+
+        { "insert": "🧠 Topic Overview\n", "attributes": { "bold": true } },
+        { "insert": "Write a short summary of the topic here...\n\n" },
+
+        { "insert": "📌 Key Points\n", "attributes": { "bold": true } },
+        { "insert": "- Point 1\n- Point 2\n- Point 3\n\n" },
+
+        { "insert": "📖 Detailed Notes\n", "attributes": { "bold": true } },
+        { "insert": "Write detailed explanation here...\n\n" },
+
+        { "insert": "❓ Questions / Doubts\n", "attributes": { "bold": true } },
+        { "insert": "- \n- \n\n" },
+
+        { "insert": "📝 Summary\n", "attributes": { "bold": true } },
+        { "insert": "Final short summary...\n" }
+      ],
+      "Exam Paper": [
+        { "insert": "📄 Exam Practice Paper\n", "attributes": { "bold": true } },
+
+        { "insert": "📘 Subject: \n" },
+        { "insert": "⏱ Time: \n" },
+        { "insert": "📅 Date: \n\n" },
+
+        { "insert": "Part A: Multiple Choice Questions\n", "attributes": { "bold": true } },
+        { "insert": "1. \nA) \nB) \nC) \nD) \n\n" },
+
+        { "insert": "Part B: Short Answers\n", "attributes": { "bold": true } },
+        { "insert": "1. \n2. \n3. \n\n" },
+
+        { "insert": "Part C: Long Questions\n", "attributes": { "bold": true } },
+        { "insert": "1. \n2. \n\n" },
+
+        { "insert": "📌 Instructions\n", "attributes": { "bold": true } },
+        { "insert": "- Answer all questions\n- Show your work clearly\n- Manage your time wisely\n" }
+      ],
+    
+      "Cornell Notes": [
+        { "insert": "📒 Cornell Notes\n", "attributes": { "bold": true } },
+
+        { "insert": "👤 Name: " },
+        { "insert": "\n📘 Subject: " },
+        { "insert": "\n📅 Date: \n\n" },
+
+        { "insert": "❓ Essential Question\n", "attributes": { "bold": true } },
+        { "insert": "\n\n" },
+
+        { "insert": "🧠 Key Ideas\n", "attributes": { "bold": true } },
+        { "insert": "- \n- \n- \n\n" },
+
+        { "insert": "📝 Notes\n", "attributes": { "bold": true } },
+        { "insert": "Write your detailed notes here...\n\n" },
+
+        { "insert": "📌 Summary\n", "attributes": { "bold": true } },
+        { "insert": "Final summary...\n" }
+      ],
+
+      "To-Do List": [
+        { "insert": "✅ Today’s Tasks\n", "attributes": { "bold": true } },
+
+        { "insert": "📅 Date: \n\n" },
+
+        { "insert": "🔥 Priority Tasks\n", "attributes": { "bold": true } },
+        { "insert": "- [ ] \n- [ ] \n- [ ] \n\n" },
+
+        { "insert": "📌 Other Tasks\n", "attributes": { "bold": true } },
+        { "insert": "- [ ] \n- [ ] \n\n" },
+
+        { "insert": "📊 Progress Notes\n", "attributes": { "bold": true } },
+        { "insert": "Write updates here...\n" }
+      ],
+
+      "Journal": [
+        { "insert": "📔 Daily Journal\n", "attributes": { "bold": true } },
+
+        { "insert": "📅 Date: {DATE_PLACEHOLDER}\n\n" },
+
+        { "insert": "💭 Mood Today\n", "attributes": { "bold": true } },
+        { "insert": "🙂 / 😐 / 😢 / 😄\n\n" },
+
+        { "insert": "🌟 Highlights\n", "attributes": { "bold": true } },
+        { "insert": "- \n- \n\n" },
+
+        { "insert": "📝 Reflection\n", "attributes": { "bold": true } },
+        { "insert": "Write your thoughts here...\n\n" },
+
+        { "insert": "🎯 Tomorrow Goals\n", "attributes": { "bold": true } },
+        { "insert": "- \n- \n" }
+      ],
+      "Work": [
+        { "insert": "💼 Project / Task Title: \n", "attributes": { "bold": true } },
+        { "insert": "📅 Date: \n\n" },
+
+        { "insert": "🎯 Objective\n", "attributes": { "bold": true } },
+        { "insert": "Describe the goal of this work...\n\n" },
+
+        { "insert": "📌 Tasks\n", "attributes": { "bold": true } },
+        { "insert": "- Task 1\n- Task 2\n- Task 3\n\n" },
+
+        { "insert": "⚙️ Progress / Notes\n", "attributes": { "bold": true } },
+        { "insert": "Write progress updates here...\n\n" },
+
+        { "insert": "🚧 Issues / Blockers\n", "attributes": { "bold": true } },
+        { "insert": "- \n- \n\n" },
+
+        { "insert": "✅ Result / Outcome\n", "attributes": { "bold": true } },
+        { "insert": "Final output or summary...\n" }
+      ]
+    }
+  }
+]

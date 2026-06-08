@@ -130,7 +130,7 @@ class StopwatchScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Icon(
                   isRunning ? Icons.pause : Icons.play_arrow,
-                  size: context.isPhone ? 50 : 150,
+                  size: context.isPhone ? 50 : 60,
                   color: AppColor().white,
                 ),
               ),
@@ -169,6 +169,7 @@ class StopwatchScreen extends StatelessWidget {
         color: isDisabled ? AppColor().gray : activeIconColor,
       ),
       style: IconButton.styleFrom(
+        iconSize: context.isPhone ? 24 : 30,
         backgroundColor: Theme.of(context).cardColor.withValues(alpha: 0.1),
       ),
     );

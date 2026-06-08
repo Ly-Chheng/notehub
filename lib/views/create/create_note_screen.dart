@@ -19,6 +19,7 @@ import 'package:project_structure/views/create/components/media_component.dart';
 import 'package:project_structure/views/create/components/quill_editor_component.dart';
 import 'package:project_structure/views/create/components/table_component.dart';
 import 'package:project_structure/views/create/components/handwriting_component.dart';
+import 'package:project_structure/views/create/components/template_library_sheet.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
@@ -205,6 +206,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     if (!isAuto) {
       Get.back(result: true);
     }
+  }
+
+  void _applyTemplate(List<dynamic> deltaJson) {
+    _quillController.document = Document.fromJson(deltaJson);
+    _triggerAutoSave();
   }
 
   Future<void> _handleLockToggle() async {
@@ -596,6 +602,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 _bottomIcon(Icons.mode_outlined, () {
                   _openDrawing();
                   _triggerAutoSave();
+                }),
+                _bottomIcon(Icons.widgets_outlined, () {
+                  TemplateLibrarySheet.show(context, (templateData) {
+                    _applyTemplate(templateData);
+                  });
                 }),
               ],
             ),

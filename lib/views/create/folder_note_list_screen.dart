@@ -617,8 +617,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               child: Obx(() {
                 final otherFolders = folderController.folders.where((f) => f.id != widget.folderId).toList();
                 if (otherFolders.isEmpty) {
-                  return const CustomNoData(
-                    message: "no_data",
+                  return CustomNoData(
+                    message: "no_data".tr,
                   );
                 }
                 return ListView.builder(
