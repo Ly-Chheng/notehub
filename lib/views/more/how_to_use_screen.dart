@@ -7,7 +7,6 @@ import 'package:project_structure/widgets/custom_appbar.dart';
 class HowToUseScreen extends StatelessWidget {
   const HowToUseScreen({super.key});
 
-  // Helper to get correct font family based on locale
   String get _bodyFont => Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR';
   String get _boldFont => Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD';
 

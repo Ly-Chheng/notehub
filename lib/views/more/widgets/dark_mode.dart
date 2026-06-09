@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/core/services/themes_services.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 class DarkModeView extends GetView<DarkModeController> {
   @override
@@ -41,11 +42,7 @@ class DarkModeView extends GetView<DarkModeController> {
                     const SizedBox(width: 15),
                     Text(
                       'dark_mode'.tr,
-                      style: TextStyle(
-                        fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
-                        fontSize: context.isPhone ? 15 : 17,
-                        color: Theme.of(context).textTheme.bodyLarge?.color,
-                      ),
+                      style: text16(context),
                     ),
                   ],
                 ),
@@ -57,7 +54,7 @@ class DarkModeView extends GetView<DarkModeController> {
                         ThemeService().changeTheme();
                       },
                       value: controller.darkStatus,
-                      activeColor: AppColor().primaryColor,
+                      activeTrackColor: AppColor().primaryColor,
                     );
                   },
                 ),

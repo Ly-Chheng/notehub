@@ -6,6 +6,7 @@ import 'package:project_structure/controllers/focus_track/timer_controller.dart'
 import 'package:project_structure/core/services/sound_servies.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
 import 'package:project_structure/views/focus_track/components/timer_detail_screen.dart';
@@ -39,7 +40,6 @@ class TimerComponent extends StatelessWidget {
                 ],
               );
             }
-
             // FILTERING LOGIC
             final activeTimers = allTimers.where((t) {
               bool isCurrentlyRunning = controller.activeTimerKeys.contains(t.key);
@@ -85,7 +85,7 @@ class TimerComponent extends StatelessWidget {
       double progress = timer.totalSeconds > 0 ? currentSec / timer.totalSeconds : 0.0;
 
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+        padding: Layout.padding(),
         child: Slidable(
           key: ValueKey(timer.key),
           endActionPane: ActionPane(
@@ -125,10 +125,7 @@ class TimerComponent extends StatelessWidget {
             onTap: () => Get.to(() => TimerDetailScreen(timerKey: timer.key, data: timer)),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              decoration: BoxDecoration(
-                  // color: isFinished ? AppColor().black : Theme.of(context).cardColor,
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(20)),
+              decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(20)),
               child: Row(
                 children: [
                   Expanded(
@@ -139,13 +136,11 @@ class TimerComponent extends StatelessWidget {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: text16(context).copyWith(
-                              // color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface,
                               color: Theme.of(context).colorScheme.onSurface,
                             )),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
                               fontSize: context.isPhone ? 30 : 32,
-                              // color: isFinished ? AppColor().white : Theme.of(context).colorScheme.onSurface,
                               color: Theme.of(context).colorScheme.onSurface,
                               fontFamily: 'EN-BOLD',
                             )),
@@ -205,7 +200,7 @@ class TimerComponent extends StatelessWidget {
 
   Widget _glassHeader(String title, Color color, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      padding: Layout.padding(),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(

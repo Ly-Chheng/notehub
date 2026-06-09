@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
@@ -7,11 +6,13 @@ import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/functions/fomat_date.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
+import 'package:project_structure/widgets/rounded_file_image.dart';
 
 class RecentlyDeletedScreen extends StatefulWidget {
   const RecentlyDeletedScreen({super.key});
@@ -104,7 +105,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                     bool isSelected = selectedNoteIds.contains(note.id);
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                      padding: Layout.padding(),
                       child: Slidable(
                         key: ValueKey(note.id),
                         enabled: !isSelectionMode,
@@ -190,27 +191,10 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         subtitle: Text(
-                                          // "Deleted on: ${note.date}",
                                           '${'deleted_on'.tr} ${formatDateForLocale(note.date)}',
                                           style: text14(context).copyWith(color: AppColor().gray),
                                         ),
-                                        trailing: note.imagePaths.isNotEmpty
-                                            ? ClipRRect(
-                                                borderRadius: BorderRadius.circular(8),
-                                                child: Image.file(
-                                                  File(note.imagePaths[0]),
-                                                  width: context.isPhone ? 60 : 80,
-                                                  height: context.isPhone ? 60 : 80,
-                                                  fit: BoxFit.cover,
-                                                  errorBuilder: (_, __, ___) => Container(
-                                                    width: context.isPhone ? 60 : 80,
-                                                    height: context.isPhone ? 60 : 80,
-                                                    color: Colors.grey[200],
-                                                    child: Icon(Icons.broken_image, size: context.isPhone ? 20 : 26, color: Colors.grey),
-                                                  ),
-                                                ),
-                                              )
-                                            : null),
+                                        trailing: note.imagePaths.isNotEmpty ? RoundedFileImage(path: note.imagePaths[0]) : null),
                                   ),
                                 ],
                               ),
@@ -258,10 +242,9 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
     ConfirmBottomSheet.show(
       context: context,
       title: "delete_permanently".tr,
-      // subtitle: "Are you sure you want to delete ${selectedNoteIds.length} selected items forever? This cannot be undone.",
       subtitle: 'delete_bulk_confirm_subtitle'.tr,
       confirmText: "delete".tr,
-      confirmColor: Colors.red,
+      confirmColor: AppColor().red,
       itemCount: selectedNoteIds.length,
       onConfirm: () async {
         for (var id in selectedNoteIds) {

@@ -9,12 +9,11 @@ import 'package:project_structure/widgets/custom_dialog.dart';
 
 class LockController extends GetxController {
   final List<String> questions = [
-    "What was the name of your first school?",
-    "What is your mother's maiden name?",
-    "In which city were you born?",
-    "What was your dream job as a child?",
-    "What is your favorite teacher's name?",
-    "What is the name of your childhood best friend?"
+    "first_school_question".tr,
+    "mother_maiden_name_question".tr,
+    "birth_city_question".tr,
+    "dream_job_child_question".tr,
+    "favorite_teacher_question".tr,
   ];
 
   Future<Map<String, dynamic>?> getSecuritySettings() async {

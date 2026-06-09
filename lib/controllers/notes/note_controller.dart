@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -65,7 +64,6 @@ class NoteController extends GetxController {
     try {
       final db = await DatabaseService.db;
 
-      // Update notes: change ownership to default folder AND mark as deleted
       await db.update(
         'notes',
         {

@@ -32,10 +32,6 @@ class TimerController extends GetxController {
                 title: "timer_finished".tr,
                 body: "${timerData.title} ${'has_completed'.tr}",
               );
-              // NotificationService.showTimerFinishedNotification(
-              //   title: "Timer Finished",
-              //   body: "${timerData.title} has completed!",
-              // );
             }
 
             activeTimerKeys.remove(key);
@@ -106,9 +102,6 @@ class TimerController extends GetxController {
     int m = (totalSeconds % 3600) ~/ 60;
     int s = totalSeconds % 60;
     List<String> parts = [];
-    // if (h > 0) parts.add("${h}h");
-    // if (m > 0) parts.add("${m}m");
-    // if (s > 0 || parts.isEmpty) parts.add("${s}s");
     if (h > 0) parts.add("$h ${'h'.tr}");
     if (m > 0) parts.add("$m ${'m'.tr}");
     if (s > 0 || parts.isEmpty) parts.add("$s ${'s'.tr}");

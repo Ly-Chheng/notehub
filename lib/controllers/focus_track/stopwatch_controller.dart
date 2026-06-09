@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:project_structure/models/focus_track/lap_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StopwatchController extends GetxController {
   Timer? _timer;
@@ -8,10 +10,45 @@ class StopwatchController extends GetxController {
   var isRunning = false.obs;
   var laps = <LapModel>[].obs;
 
-  void startStopwatch() {
+  final String _prefKeyStartTime = "start_time";
+  final String _prefKeyElapsed = "elapsed_ms";
+  final String _keyLaps = "saved_laps";
+
+  @override
+  void onInit() {
+    super.onInit();
+    _loadStoredState();
+    _loadLaps();
+  }
+
+  Future<void> _loadStoredState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final startTimeString = prefs.getString(_prefKeyStartTime);
+    final savedElapsed = prefs.getInt(_prefKeyElapsed) ?? 0;
+
+    if (startTimeString != null) {
+      final startTime = DateTime.parse(startTimeString);
+      final now = DateTime.now();
+      final diff = now.difference(startTime).inMilliseconds;
+      milliseconds.value = savedElapsed + diff;
+      startStopwatch();
+    } else {
+      milliseconds.value = savedElapsed;
+    }
+  }
+
+  void startStopwatch() async {
+    final prefs = await SharedPreferences.getInstance();
+
     if (isRunning.value) {
       _timer?.cancel();
+
+      await prefs.setInt(_prefKeyElapsed, milliseconds.value);
+      await prefs.remove(_prefKeyStartTime);
     } else {
+      final now = DateTime.now();
+      await prefs.setString(_prefKeyStartTime, now.toIso8601String());
+
       _timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
         milliseconds.value += 10;
       });
@@ -26,7 +63,7 @@ class StopwatchController extends GetxController {
     laps.clear();
   }
 
-  void addLap() {
+  void addLap() async {
     final newLap = LapModel(
       lapNumber: laps.length + 1,
       totalTimeMs: milliseconds.value,
@@ -34,6 +71,19 @@ class StopwatchController extends GetxController {
     );
 
     laps.insert(0, newLap);
+
+    final prefs = await SharedPreferences.getInstance();
+    List<String> jsonList = laps.map((lap) => jsonEncode(lap.toJson())).toList();
+    await prefs.setStringList(_keyLaps, jsonList);
+  }
+
+  Future<void> _loadLaps() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String>? savedLaps = prefs.getStringList(_keyLaps);
+
+    if (savedLaps != null) {
+      laps.value = savedLaps.map((item) => LapModel.fromJson(jsonDecode(item))).toList();
+    }
   }
 
   String formatTime(int ms) {

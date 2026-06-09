@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/change_language_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 
 class ChangeLanguageView extends GetView<ChangeLanguageController> {
   const ChangeLanguageView({super.key});
@@ -38,11 +39,7 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
                       SizedBox(width: 15),
                       Text(
                         'change_language'.tr,
-                        style: TextStyle(
-                          fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
-                          fontSize: context.isPhone ? 14 : 18,
-                          color: Theme.of(context).textTheme.bodyLarge?.color,
-                        ),
+                        style: text16(context),
                       ),
                     ],
                   ),

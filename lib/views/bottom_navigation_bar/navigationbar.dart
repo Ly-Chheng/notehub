@@ -55,7 +55,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
         key: controller.scaffoldKey,
         appBar: customAppBar(
           isLeading: false,
-          // title: controller.listTitle[controller.selectedIndex],
           title: controller.currentTitle,
           context: context,
           actions: [

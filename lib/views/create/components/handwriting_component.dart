@@ -9,6 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/create/components/notebook_painter.dart';
+import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/custom_template.dart';
 import 'package:signature/signature.dart';
 
 class HandwritingCanvas extends StatefulWidget {
@@ -35,7 +37,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
   bool isEraser = false;
   bool showColorPalette = false;
   bool showLines = false;
-  // 0: None, 1: Lines, 2: Grid
   int canvasMode = 0;
 
   late final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -146,7 +147,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                   onTap: () => Navigator.pop(context),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: Text('cancel'.tr, style: text18(context).copyWith(color: Colors.red)),
+                    child: Text('cancel'.tr, style: text16(context).copyWith(color: Colors.red)),
                   ),
                 ),
                 Row(
@@ -185,7 +186,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                         onPressed: _saveAndExit,
                         child: Text(
                           "save".tr,
-                          style: text18(context).copyWith(color: AppColor().primaryColor),
+                          style: text16(context).copyWith(color: AppColor().primaryColor),
                         ))
                   ],
                 ),
@@ -201,19 +202,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                   //   children: [
                   //     ..._layers.map((l) => Signature(controller: l, backgroundColor: Colors.transparent)),
                   //     Signature(controller: _activeController, backgroundColor: Colors.transparent),
-                  //   ],
-                  // ),
-                  // child: Stack(
-                  //   children: [
-                  //     ..._layers.map((l) => Signature(controller: l, backgroundColor: Colors.transparent)),
-                  //     Signature(controller: _activeController, backgroundColor: Colors.transparent),
-                  //     if (showLines)
-                  //       IgnorePointer(
-                  //         child: CustomPaint(
-                  //           size: Size.infinite,
-                  //           painter: NotebookPainter(),
-                  //         ),
-                  //       ),
                   //   ],
                   // ),
                   child: Stack(
@@ -376,29 +364,49 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                     ),
                   ),
                 ),
-                // IconButton(
-                //   icon: Icon(
-                //     showLines ? Icons.grid_off : Icons.grid_on,
-                //     size: 35,
-                //     color: showLines ? Colors.blue : Colors.blue,
-                //   ),
-                //   onPressed: () {
-                //     setState(() {
-                //       showLines = !showLines;
-                //     });
-                //   },
-                // ),
                 IconButton(
                   icon: Icon(
                     canvasMode == 0 ? Icons.grid_off : (canvasMode == 1 ? Icons.view_headline : Icons.grid_on),
-                    size: 35,
-                    color: canvasMode == 0 ? Colors.grey : Colors.blue,
+                    size: 30,
+                    color: canvasMode == 0 ? Colors.grey : AppColor().primaryColor,
                   ),
                   onPressed: () {
-                    setState(() {
-                      // Cycles: 0 -> 1 -> 2 -> 0
-                      canvasMode = (canvasMode + 1) % 3;
-                    });
+                    ConfirmBottomSheet.show(
+                      context: context,
+                      title: "choose_template".tr,
+                      content: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ModeOptionCard(
+                            label: "none".tr,
+                            icon: Icons.close,
+                            isSelected: canvasMode == 0,
+                            onTap: () {
+                              setState(() => canvasMode = 0);
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ModeOptionCard(
+                            label: "lines".tr,
+                            icon: Icons.view_headline,
+                            isSelected: canvasMode == 1,
+                            onTap: () {
+                              setState(() => canvasMode = 1);
+                              Navigator.pop(context);
+                            },
+                          ),
+                          ModeOptionCard(
+                            label: "grid".tr,
+                            icon: Icons.grid_on,
+                            isSelected: canvasMode == 2,
+                            onTap: () {
+                              setState(() => canvasMode = 2);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ],
+                      ),
+                    );
                   },
                 ),
                 IconButton(

@@ -8,8 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:project_structure/controllers/notes/folder_controller.dart' show FolderController;
-import 'package:project_structure/controllers/notes/note_controller.dart';
+import 'package:project_structure/core/utils/app_bindings.dart';
 import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/core/services/themes_services.dart';
@@ -83,10 +82,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeService().getThemeMode(),
       initialRoute: '/',
       getPages: appRoute,
-      initialBinding: BindingsBuilder(() {
-        Get.put(NoteController());
-        Get.put(FolderController());
-      }),
+      initialBinding: InitialBinding(),
       translations: AppTranslations(),
       fallbackLocale: AppTranslations().fallbackLocale,
       locale: storage.read('langCode') != null ? Locale(storage.read('langCode'), storage.read('countryCode')) : const Locale('km', 'KM'),

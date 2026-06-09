@@ -13,8 +13,7 @@ class FolderController extends GetxController {
     super.onInit();
     loadFolders();
   }
-
-  // Inside FolderController class
+  
   int get defaultFolderId {
     return folders
         .firstWhere(
@@ -191,17 +190,14 @@ class FolderController extends GetxController {
   }
 
   // Inside FolderController class
-
   Future<void> clearAllFolderLocks() async {
     final db = await DatabaseService.db;
 
-    // Update the database: Set isLocked to 0 for all folders
     await db.update(
       'folders',
       {'isLocked': 0},
     );
 
-    // 2. Update the local GetX state
     for (var folder in folders) {
       folder.isLocked = false;
     }
@@ -211,10 +207,9 @@ class FolderController extends GetxController {
 
   Future<void> forceUnlockAll() async {
     final db = await DatabaseService.db;
-    // Update all folders to be unlocked in DB
+
     await db.update('folders', {'isLocked': 0});
 
-    // Update local state
     for (var f in folders) {
       f.isLocked = false;
     }
@@ -225,7 +220,6 @@ class FolderController extends GetxController {
     searchQuery.value = query;
   }
 
-// A computed list that automatically updates when folders or searchQuery changes
   List<FolderModel> get filteredFolders {
     if (searchQuery.isEmpty) {
       return folders;

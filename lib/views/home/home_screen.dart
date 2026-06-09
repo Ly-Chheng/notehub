@@ -6,13 +6,16 @@ import 'package:project_structure/controllers/notes/folder_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/note/folder_model.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/views/create/folder_note_list_screen.dart';
 import 'package:project_structure/views/home/components/create_folder_component.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/custom_fab.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
+import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/multi_style.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -42,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           _buildFolderSearchBar(),
           Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            padding: Layout.padding(),
             child: customHeader("folders".tr, context),
           ),
           Expanded(
@@ -50,16 +53,7 @@ class _MyHomePageState extends State<MyHomePage> {
               final displayedFolders = controller.filteredFolders;
 
               if (displayedFolders.isEmpty) {
-                return Center(
-                  child: Text(
-                    controller.searchQuery.isEmpty ? "no_folders_yet".tr : "no_matching_folders".tr,
-                    style: TextStyle(
-                      fontSize: AppFontSize(context).normalTextSize,
-                      fontFamily: Get.locale?.languageCode == 'km' ? 'KH-REGULAR' : 'EN-REGULAR',
-                      color: AppColor().gray,
-                    ),
-                  ),
-                );
+                return _buildEmptyState();
               }
               return SlidableAutoCloseBehavior(
                 child: ListView.builder(
@@ -70,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     final isDefault = controller.isDefaultFolder(folder);
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                      padding: Layout.padding(),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: Slidable(
@@ -128,8 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppColor().primaryColor,
+      floatingActionButton: CustomFab(
         onPressed: () {
           final int targetFolderId = controller.defaultFolderId;
 
@@ -138,10 +131,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 folderId: targetFolderId,
               ));
         },
-        child: Icon(
-          Icons.add,
-          color: AppColor().white,
-        ),
       ),
     );
   }
@@ -357,6 +346,15 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Widget _buildEmptyState() {
+    return Center(
+      child: CustomNoData(
+        message: controller.searchQuery.isEmpty ? "no_folders_yet".tr : "no_data".tr,
+        imagePath: "assets/images/no_data.png",
+      ),
+    );
+  }
+
   Widget buildFolderIcon(FolderModel folder, bool isDefault) {
     return Stack(
       alignment: Alignment.center,
@@ -378,7 +376,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildFolderSearchBar() {
     return Padding(
-      padding: const EdgeInsets.only(left: 15, right: 15, top: 5, bottom: 12),
+      padding: Layout.padding(),
       child: customTextField(
         "search".tr,
         false,

@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
@@ -7,15 +6,18 @@ import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/controllers/notes/folder_controller.dart';
 import 'package:project_structure/core/functions/fomat_date.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/note/note_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/custom_fab.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/multi_style.dart';
+import 'package:project_structure/widgets/rounded_file_image.dart';
 
 class FolderNoteListScreen extends StatefulWidget {
   final int folderId;
@@ -250,13 +252,11 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       ),
       floatingActionButton: isSelectionMode
           ? null
-          : FloatingActionButton(
-              backgroundColor: AppColor().primaryColor,
+          : CustomFab(
               onPressed: () async {
                 final result = await Get.to(() => CreateNoteScreen(folderId: widget.folderId));
                 if (result == true) controller.fetchNotesByFolder(widget.folderId);
               },
-              child: const Icon(Icons.add, color: Colors.white),
             ),
       bottomNavigationBar: isSelectionMode ? _buildSelectionBottomBar() : null,
     );
@@ -294,7 +294,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     final String subtitleText = note.title.trim().isNotEmpty ? plainContent : "";
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+      padding: Layout.padding(),
       child: Slidable(
         key: ValueKey(note.id),
         enabled: !isSelectionMode,
@@ -419,22 +419,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                       ],
                     ),
                   ),
-                  if (imagePaths.isNotEmpty)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(
-                        File(imagePaths[0]),
-                        width: context.isPhone ? 60 : 80,
-                        height: context.isPhone ? 60 : 80,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          width: context.isPhone ? 60 : 80,
-                          height: context.isPhone ? 60 : 80,
-                          color: Colors.grey[200],
-                          child: Icon(Icons.broken_image, size: context.isPhone ? 24 : 30),
-                        ),
-                      ),
-                    ),
+                  if (imagePaths.isNotEmpty) RoundedFileImage(path: imagePaths[0]),
                   if (imagePaths.isNotEmpty) SizedBox(width: 10),
                 ],
               ),
@@ -582,7 +567,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
 
     showConfirmDialog(
       context: context,
-      title: "locked_note",
+      title: "locked_note".tr,
       subTitle: "enter_password_move_note".tr,
       confirmText: "unlock".tr,
       controller: verifyPassController,
@@ -656,7 +641,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     showConfirmDialog(
       context: context,
       title: "delete_note".tr,
-      // subTitle: "Are you sure you want to delete ${selectedNoteIds.length} selected ${selectedNoteIds.length > 1 ? 'notes' : 'note'}?",
       subTitle: selectedNoteIds.length > 1 ? 'delete_notes_bulk_confirm'.tr : 'delete_note_confirm'.tr,
       confirmText: "delete".tr,
       onConfirm: () async {

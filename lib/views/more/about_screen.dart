@@ -24,7 +24,6 @@ class AboutScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            /// HERO CARD
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(28),

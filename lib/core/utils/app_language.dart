@@ -49,7 +49,20 @@ class AppTranslations extends Translations {
           'add_column': 'Add Column',
           'delete_table': 'Delete Table',
           'delete_table_confirm': 'Are you sure you want to delete this table?',
+
+          //template
           'choose_template': 'Choose Template',
+          'none': 'None',
+          'lines': 'Lines',
+          'grid': 'Grid',
+          'exam_paper': 'Exam Paper',
+          'notebook': 'Notebook',
+          'to_do_list': 'To-Do List',
+          'journal': 'Journal',
+          'work': 'Work',
+          "exam_preparation": "Exam Preparation",
+          "homework": "Homework",
+          "daily_note": "Daily Note",
 
           // Color Picker
           'pick_a_color': 'Pick a color',
@@ -115,6 +128,7 @@ class AppTranslations extends Translations {
           'no_security_question': 'No security question set up.',
           'loading': 'Loading...',
           'selected': 'Selected',
+
           //create password
           'field_required': 'Field Required',
           'field_required_msg': 'Please fill in the password, security question, and answer.',
@@ -141,6 +155,13 @@ class AppTranslations extends Translations {
           'verified_success': 'Identity verified successfully!',
           'verification_failed_answer_msg': 'The answer you entered is incorrect. Please try again.',
           'verify_error': 'An error occurred while verifying. Please try again later.',
+
+          // qustion
+          "first_school_question": "What was the name of your first school?",
+          "mother_maiden_name_question": "What is your mother's maiden name?",
+          "birth_city_question": "In which city were you born?",
+          "dream_job_child_question": "What was your dream job as a child?",
+          "favorite_teacher_question": "What is your favorite teacher's name?",
 
           // remove
           'no_password_set_msg': 'No password is currently set.',
@@ -327,7 +348,20 @@ class AppTranslations extends Translations {
           'add_column': 'បន្ថែមជួរឈរ',
           'delete_table': 'លុបតារាង',
           'delete_table_confirm': 'តើអ្នកពិតជាចង់លុបតារាងនេះមែនទេ?',
+
+          //template
           'choose_template': 'ជ្រើសរើស​គំរូ',
+          'none': 'គ្មាន',
+          'lines': 'បន្ទាត់',
+          'grid': 'ក្រឡាចត្រង្គ',
+          'exam_paper': 'ក្រដាសប្រឡង',
+          'notebook': 'សៀវភៅកំណត់ត្រា',
+          'to_do_list': 'បញ្ជីការងារ',
+          'journal': 'កំណត់ហេតុ',
+          'work': 'ការងារ',
+          "exam_preparation": "ការត្រៀមប្រឡង",
+          "homework": "កិច្ចការផ្ទះ",
+          "daily_note": "កំណត់ត្រាប្រចាំថ្ងៃ",
 
           // Color Picker
           'pick_a_color': 'ជ្រើសរើសពណ៌',
@@ -421,6 +455,14 @@ class AppTranslations extends Translations {
           'verification_failed_title': 'បរាជ័យការផ្ទៀងផ្ទាត់',
           'verification_failed_answer_msg': 'ចម្លើយដែលអ្នកបញ្ចូលមិនត្រឹមត្រូវ។ សូមព្យាយាមម្តងទៀត។',
           'verify_error': 'មានបញ្ហាក្នុងការផ្ទៀងផ្ទាត់។ សូមព្យាយាមម្តងទៀតក្រោយ។',
+
+          //Qustion
+          // Khmer
+          "first_school_question": "តើសាលាដំបូងរបស់អ្នកមានឈ្មោះអ្វី?",
+          "mother_maiden_name_question": "តើនាមត្រកូលពីកំណើតរបស់ម្តាយអ្នកជាអ្វី?",
+          "birth_city_question": "តើអ្នកកើតនៅទីក្រុងណា?",
+          "dream_job_child_question": "តើការងារក្នុងក្តីស្រមៃរបស់អ្នកនៅពេលកុមារគឺអ្វី?",
+          "favorite_teacher_question": "តើគ្រូដែលអ្នកចូលចិត្តបំផុតមានឈ្មោះអ្វី?",
 
           // remove
           'no_password_set_msg': 'មិនមានពាក្យសម្ងាត់នៅឡើយទេ។',

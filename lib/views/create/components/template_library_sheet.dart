@@ -28,16 +28,18 @@ class TemplateLibrarySheet {
           childAspectRatio: 1.2,
         ),
         itemBuilder: (context, index) {
-          final key = templates.keys.elementAt(index);
-          final icon = _getTemplateIcon(key);
+          final templateName = templates.keys.elementAt(index);
+          final icon = _getTemplateIcon(templateName);
 
           return InkWell(
             onTap: () {
               Navigator.pop(context);
 
-              List<dynamic> selectedTemplate = List<dynamic>.from(templates[key]);
-              if (key == 'Journal') {
+              List<dynamic> selectedTemplate = List<dynamic>.from(templates[templateName]);
+
+              if (templateName == 'Journal') {
                 String today = DateTime.now().toString().split(' ')[0];
+
                 selectedTemplate[0]['insert'] = selectedTemplate[0]['insert'].replaceAll('{DATE_PLACEHOLDER}', today);
               }
 
@@ -55,7 +57,8 @@ class TemplateLibrarySheet {
                   Icon(icon, size: 32, color: AppColor().primaryColor),
                   const SizedBox(height: 10),
                   Text(
-                    key,
+                    // key,
+                    _getTranslationKey(templateName).tr,
                     style: text16(context),
                     textAlign: TextAlign.center,
                   ),
@@ -68,22 +71,51 @@ class TemplateLibrarySheet {
     );
   }
 
+  static String _getTranslationKey(String title) {
+    switch (title) {
+      case 'Exam Paper':
+        return 'exam_paper';
+
+      case 'Daily Note':
+        return 'daily_note';
+
+      case 'Exam Preparation':
+        return 'exam_preparation';
+      case 'Homework':
+        return 'homework';
+
+      case 'Notebook':
+        return 'notebook';
+
+      case 'To-Do List':
+        return 'to_do_list';
+
+      case 'Work':
+        return 'work';
+
+      default:
+        return title;
+    }
+  }
+
   static IconData _getTemplateIcon(String title) {
     switch (title) {
       case 'Exam Paper':
         return Icons.school;
 
+      case 'Daily Note':
+        return Icons.sticky_note_2;
+
+      case 'Exam Preparation':
+        return Icons.menu_book;
+      case 'Homework':
+        return Icons.edit_note;
+
       case 'Notebook':
         return Icons.assignment;
 
-      case 'Cornell Notes':
-        return Icons.view_quilt_outlined;
-
       case 'To-Do List':
         return Icons.check_circle;
-
-      case 'Journal':
-        return Icons.book;
 
       case 'Work':
         return Icons.work;
