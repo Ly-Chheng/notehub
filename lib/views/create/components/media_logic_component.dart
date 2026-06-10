@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_quill/flutter_quill.dart';
-import 'package:project_structure/views/create/components/quill_editor_component.dart';
+import 'package:project_structure/views/create/components/quill_media_components.dart';
 
 class CustomMediaEmbedBuilder implements EmbedBuilder {
   final QuillController controller;

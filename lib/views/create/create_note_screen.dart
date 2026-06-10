@@ -497,16 +497,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 Wrap(
                   children: [
                     if (hasText)
-                      ListTile(
-                        leading: Icon(
-                          Icons.text_snippet,
-                          color: AppColor().primaryColor,
-                          size: context.isPhone ? 20 : 25,
-                        ),
-                        title: Text(
-                          "text".tr,
-                          style: text16(context),
-                        ),
+                      FolderItemTile(
+                        title: "text".tr,
+                        icon: Icons.image,
+                        iconColor: AppColor().primaryColor,
                         onTap: () {
                           Get.back();
                           noteController.shareNote(
@@ -518,16 +512,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                         },
                       ),
                     if (hasImages)
-                      ListTile(
-                        leading: Icon(
-                          Icons.image,
-                          color: AppColor().green,
-                          size: context.isPhone ? 20 : 25,
-                        ),
-                        title: Text(
-                          "photos".tr,
-                          style: text16(context),
-                        ),
+                      FolderItemTile(
+                        title: "photos".tr,
+                        icon: Icons.image,
+                        iconColor: AppColor().green,
                         onTap: () {
                           Get.back();
                           noteController.shareNote(
@@ -539,13 +527,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                         },
                       ),
                     if (hasText)
-                      ListTile(
-                        leading: Icon(
-                          Icons.insert_drive_file,
-                          color: AppColor().orange,
-                          size: context.isPhone ? 20 : 25,
-                        ),
-                        title: Text("file_txt".tr, style: text16(context)),
+                      FolderItemTile(
+                        title: "file_txt".tr,
+                        icon: Icons.insert_drive_file,
+                        iconColor: AppColor().orange,
                         onTap: () {
                           Get.back();
                           noteController.shareNote(
@@ -592,6 +577,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   _openPalette();
                   _triggerAutoSave();
                 }),
+                // _bottomIcon(Icons.grid_3x3_outlined, () {
+                //   insertTable(_quillController);
+                // }),
                 _bottomIcon(
                   showTable ? Icons.table_chart_outlined : Icons.table_chart_outlined,
                   () {
@@ -659,7 +647,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           if (isLocked) Icon(Icons.lock_outline, color: AppColor().primaryColor, size: 20),
           AnimatedBuilder(
             animation: _quillController,
-            builder: (context, _) => _actionButton(
+            builder: (context, _) => actionButton(
               asset: 'assets/images/undo.png',
               isEnabled: _quillController.hasUndo,
               onTap: () {
@@ -670,7 +658,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           ),
           AnimatedBuilder(
             animation: _quillController,
-            builder: (context, _) => _actionButton(
+            builder: (context, _) => actionButton(
               asset: 'assets/images/redo.png',
               isEnabled: _quillController.hasRedo,
               onTap: () {
@@ -789,21 +777,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  Widget _actionButton({required String asset, required bool isEnabled, required VoidCallback onTap}) {
-    return InkWell(
-      onTap: isEnabled ? onTap : null,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Image.asset(
-          asset,
-          width: 22,
-          height: 22,
-          color: isEnabled ? AppColor().primaryColor : AppColor().gray,
-        ),
-      ),
-    );
-  }
-
   void _showDeleteDialog() {
     showConfirmDialog(
       context: context,
@@ -842,12 +815,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             itemBuilder: (context, index) {
               final folder = folders[index];
 
-              return ListTile(
-                leading: Icon(
-                  Icons.folder,
-                  color: AppColor().primaryColor,
-                ),
-                title: Text(folder.title),
+              return FolderItemTile(
+                title: folder.title,
                 onTap: () async {
                   await noteController.moveNote(
                     currentNoteId!,

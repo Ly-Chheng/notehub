@@ -301,12 +301,12 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                         color: AppColor().gray,
                       ),
                       child: CircleAvatar(
-                        radius: context.isPhone ? 14 : 16,
+                        radius: context.isPhone ? 12 : 14,
                         backgroundColor: AppColor().white,
                         child: Icon(
                           Icons.add,
-                          color: Colors.black,
-                          size: context.isPhone ? 20 : 25,
+                          color: AppColor().black,
+                          size: context.isPhone ? 18 : 23,
                         ),
                       ),
                     ),
@@ -359,7 +359,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Icon(
                       Icons.color_lens,
-                      size: showColorPalette ? 35 : 35,
+                      size: showColorPalette ? 30 : 30,
                       color: AppColor().green,
                     ),
                   ),
@@ -367,7 +367,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                 IconButton(
                   icon: Icon(
                     canvasMode == 0 ? Icons.grid_off : (canvasMode == 1 ? Icons.view_headline : Icons.grid_on),
-                    size: 30,
+                    size: 25,
                     color: canvasMode == 0 ? Colors.grey : AppColor().primaryColor,
                   ),
                   onPressed: () {
@@ -413,7 +413,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                     icon: Icon(
                       Icons.delete,
                       color: AppColor().red,
-                      size: 35,
+                      size: 30,
                     ),
                     onPressed: () => setState(() {
                           _layers.clear();
@@ -437,7 +437,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
         ),
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: isSelected ? AppColor().primaryColor : Colors.transparent, width: 1)),
-        child: CircleAvatar(radius: context.isPhone ? 14 : 16, backgroundColor: color),
+        child: CircleAvatar(radius: context.isPhone ? 12 : 14, backgroundColor: color),
       ),
     );
   }
@@ -452,8 +452,8 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
           if (imagePath != null)
             Image.asset(
               imagePath,
-              width: sel ? 70 : 50,
-              height: sel ? 70 : 50,
+              width: sel ? 60 : 40,
+              height: sel ? 60 : 40,
               colorBlendMode: BlendMode.srcIn,
             )
           else if (icon != null)

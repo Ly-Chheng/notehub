@@ -70,7 +70,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   void _showUnlockDialog(NoteModel note) async {
     final TextEditingController verifyPassController = TextEditingController();
 
-    // Fetch settings from SQLite via LockController
     final settings = await lockController.getSecuritySettings();
     String storedPass = settings?['master_password'] ?? "";
 

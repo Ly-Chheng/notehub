@@ -58,6 +58,7 @@ TextStyle text10 = TextStyle(
 TextStyle text12 = TextStyle(
   fontSize: AppFontSize(Get.context!).normalTextSize,
   fontFamily: AppFonts().rengular,
+  fontFamilyFallback: const ['KH-REGULAR'],
 );
 
 TextStyle text14(BuildContext context) {

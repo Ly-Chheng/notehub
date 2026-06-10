@@ -176,10 +176,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           dropdownColor: Theme.of(context).cardColor,
           hint: Text(
             "select_question".tr,
-            style: TextStyle(
+            style: text16(context).copyWith(
               color: AppColor().gray,
-              fontSize: AppFontSize(context).subTitleSize,
-              fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
             ),
           ),
           isExpanded: true,
@@ -187,13 +185,10 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           items: _lockController.questions.map((String q) {
             return DropdownMenuItem(
               value: q,
-              child: Text(
-                q,
-                style: TextStyle(
-                  fontSize: AppFontSize(context).descriptionLargeSize,
-                  fontFamily: 'EN-REGULAR',
-                ),
-              ),
+              child: Text(q,
+                  style: text12.copyWith(
+                    color: AppColor().gray,
+                  )),
             );
           }).toList(),
           onChanged: (val) => setState(() => _selectedQuestion = val),

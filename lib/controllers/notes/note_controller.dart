@@ -505,4 +505,5 @@ class NoteController extends GetxController {
       return false;
     }
   }
+  
 }

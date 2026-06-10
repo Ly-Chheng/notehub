@@ -116,7 +116,7 @@ void showMediaSheet({
             //   title: "Record a Video",
             //   onTap: () => pickVideo(ImageSource.camera),
             // ),
-            divider(context),
+            // divider(context),
             buildActionItem(
               context,
               icon: Icons.video_library_outlined,

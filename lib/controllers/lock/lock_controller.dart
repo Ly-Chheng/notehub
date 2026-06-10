@@ -8,14 +8,13 @@ import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 
 class LockController extends GetxController {
-  final List<String> questions = [
-    "first_school_question".tr,
-    "mother_maiden_name_question".tr,
-    "birth_city_question".tr,
-    "dream_job_child_question".tr,
-    "favorite_teacher_question".tr,
-  ];
-
+  List<String> get questions => [
+        "first_school_question".tr,
+        "mother_maiden_name_question".tr,
+        "birth_city_question".tr,
+        "dream_job_child_question".tr,
+        "favorite_teacher_question".tr,
+      ];
   Future<Map<String, dynamic>?> getSecuritySettings() async {
     final db = await DatabaseService.db;
     final List<Map<String, dynamic>> maps = await db.query('security', where: 'id = 1');
