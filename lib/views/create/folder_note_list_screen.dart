@@ -11,6 +11,7 @@ import 'package:project_structure/models/note/note_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create/create_note_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_fab.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
@@ -203,7 +204,7 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               }
 
               if (controller.notes.isEmpty) {
-                return const CustomNoData(message: "No data");
+                return CustomNoData(message: "no_data".tr);
               }
 
               final sortedNotes = [...controller.notes]..sort((a, b) => b.date.compareTo(a.date));
@@ -586,52 +587,47 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
   }
 
   void _showMoveSheet(List<int> noteIds) {
-    showModalBottomSheet(
+    ConfirmBottomSheet.show(
       context: context,
-      constraints: const BoxConstraints(maxWidth: double.infinity),
-      backgroundColor: Theme.of(context).cardColor,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SheetHeader(title: "move_to_folder".tr),
-            Flexible(
-              child: Obx(() {
-                final otherFolders = folderController.folders.where((f) => f.id != widget.folderId).toList();
-                if (otherFolders.isEmpty) {
-                  return CustomNoData(
-                    message: "no_data".tr,
-                  );
-                }
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: otherFolders.length,
-                  itemBuilder: (context, index) {
-                    final folder = otherFolders[index];
-                    return ListTile(
-                      leading: Icon(Icons.folder, color: AppColor().primaryColor),
-                      title: Text(
-                        folder.title,
-                        style: text16(context),
-                      ),
-                      onTap: () async {
-                        await controller.bulkMoveNotes(noteIds, folder.id!);
-                        if (!mounted) return;
-                        Get.back();
-                        setState(() {
-                          isSelectionMode = false;
-                          selectedNoteIds.clear();
-                        });
-                      },
-                    );
-                  },
+      title: "move_to_folder".tr,
+      showTopCancel: true,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Obx(() {
+              final otherFolders = folderController.folders.where((f) => f.id != widget.folderId).toList();
+              if (otherFolders.isEmpty) {
+                return CustomNoData(
+                  message: "no_data".tr,
                 );
-              }),
-            ),
-          ],
-        ),
+              }
+              return ListView.builder(
+                shrinkWrap: true,
+                itemCount: otherFolders.length,
+                itemBuilder: (context, index) {
+                  final folder = otherFolders[index];
+                  return ListTile(
+                    leading: Icon(Icons.folder, color: AppColor().primaryColor),
+                    title: Text(
+                      folder.title,
+                      style: text16(context),
+                    ),
+                    onTap: () async {
+                      await controller.bulkMoveNotes(noteIds, folder.id!);
+                      if (!mounted) return;
+                      Get.back();
+                      setState(() {
+                        isSelectionMode = false;
+                        selectedNoteIds.clear();
+                      });
+                    },
+                  );
+                },
+              );
+            }),
+          ),
+        ],
       ),
     );
   }

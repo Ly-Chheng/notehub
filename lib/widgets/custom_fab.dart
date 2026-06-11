@@ -13,8 +13,11 @@ class CustomFab extends StatelessWidget {
   Widget build(BuildContext context) {
     return FloatingActionButton(
       backgroundColor: AppColor().primaryColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       onPressed: onPressed,
-      child: Icon(Icons.add, color: AppColor().white),
+      child: Icon(Icons.add, size: 30, color: AppColor().white),
     );
   }
 }

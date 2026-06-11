@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -18,7 +19,6 @@ class AboutScreen extends StatelessWidget {
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,
-        actions: [],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -49,23 +49,19 @@ class AboutScreen extends StatelessWidget {
                   const SizedBox(height: 18),
                   Text("about_app_name".tr, style: TextStyle(fontSize: 28, color: AppColor().white, fontFamily: _boldFont)),
                   const SizedBox(height: 8),
-                  Text("about_slogan".tr, style: TextStyle(color: AppColor().white.withValues(alpha: 0.9), fontSize: 15, fontFamily: _boldFont)),
+                  Text("about_slogan".tr, style: text14(context).copyWith(color: AppColor().white.withValues(alpha: 0.9))),
                   const SizedBox(height: 22),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: AppColor().white.withValues(alpha: 0.16)),
-                    child: Text("about_version".tr, style: TextStyle(color: AppColor().white, fontWeight: FontWeight.w600, fontFamily: _boldFont)),
+                    child: Text("about_version".tr, style: text14(context).copyWith(color: AppColor().white)),
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 22),
-
             _buildCard(context, Icons.info_outline_rounded, "about_application".tr, "about_description".tr),
-
             const SizedBox(height: 20),
-
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -81,7 +77,7 @@ class AboutScreen extends StatelessWidget {
                     children: [
                       Icon(Icons.star_outline_rounded, color: AppColor().primaryColor),
                       const SizedBox(width: 10),
-                      Text("about_features".tr, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, fontFamily: _boldFont)),
+                      Text("about_features".tr, style: text18(context)),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -91,10 +87,7 @@ class AboutScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
-            /// CONTACT CARD
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -111,9 +104,8 @@ class AboutScreen extends StatelessWidget {
                 ],
               ),
             ),
-
             const SizedBox(height: 30),
-            Text("copyright_footer".tr, style: TextStyle(color: Colors.grey.shade500, fontSize: 13, fontFamily: _bodyFont)),
+            Text("copyright_footer".tr, style: text12.copyWith(color: AppColor().gray)),
           ],
         ),
       ),
@@ -125,13 +117,15 @@ class AboutScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-          color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4))]),
+          color: Theme.of(context).cardColor,
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [BoxShadow(color: AppColor().black.withValues(alpha: 0.05), blurRadius: 12, offset: const Offset(0, 4))]),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [Icon(icon, color: AppColor().primaryColor), const SizedBox(width: 10), Text(title, style: TextStyle(fontSize: 18, fontFamily: _boldFont))]),
+          Row(children: [Icon(icon, color: AppColor().primaryColor), const SizedBox(width: 10), Text(title, style: text18(context))]),
           const SizedBox(height: 16),
-          Text(desc, style: TextStyle(fontSize: 15, height: 1.7, fontFamily: _bodyFont, color: Colors.grey.shade600)),
+          Text(desc, style: text14(context).copyWith(height: 1.7)),
         ],
       ),
     );

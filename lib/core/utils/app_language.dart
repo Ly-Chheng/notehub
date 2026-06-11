@@ -177,6 +177,13 @@ class AppTranslations extends Translations {
           'duplicate_name': 'Duplicate Name',
           'folder_exists': 'A folder with this name already exists.',
           'ok': 'OK',
+          'previous': 'Previous',
+          'close': 'Close',
+          'skip': 'Skip',
+          'next': 'Next',
+          'tap_to_search': 'Tap to search',
+          'tap_to_create_note': 'Tap here to create a new note',
+          'tap_to_my_folder': 'Tap folders to view notes',
 
           // Multi-Selection / Bulk actions inside specific folders
           'deleted_on': 'Deleted on:',
@@ -478,6 +485,13 @@ class AppTranslations extends Translations {
           'duplicate_name': 'ឈ្មោះស្ទួន',
           'folder_exists': 'មានថតឯកសារដែលមានឈ្មោះនេះរួចហើយ។',
           'ok': 'យល់ព្រម',
+          'previous': 'ត្រឡប់ក្រោយ',
+          'close': 'បិទ',
+          'skip': 'រំលង',
+          'next': 'បន្ទាប់',
+          'tap_to_search': 'ចុចដើម្បីស្វែងរក',
+          'tap_to_create_note': 'ចុចទីនេះដើម្បីបង្កើតកំណត់ត្រាថ្មី',
+          'tap_to_my_folder': 'ចុចថតឯកសារដើម្បីមើលកំណត់ចំណាំ',
 
           // Multi-Selection / Bulk actions inside specific folders
           'deleted_on': 'បានលុបនៅថ្ងៃទី៖',

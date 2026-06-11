@@ -18,27 +18,6 @@ class NoteController extends GetxController {
   var trashNotes = <NoteModel>[].obs;
   var isLoading = false.obs;
 
-  // //   FETCH NOTES
-  // Future<void> fetchNotesByFolder(int folderId) async {
-  //   isLoading.value = true;
-  //   try {
-  //     final db = await DatabaseService.db;
-  //     final maps = await db.query(
-  //       'notes',
-  //       where: 'folder_id = ?',
-  //       whereArgs: [folderId],
-  //       orderBy: 'is_pinned DESC, id DESC',
-  //     );
-
-  //     notes.assignAll(maps.map((e) => NoteModel.fromMap(e)).toList());
-  //     debugPrint(" Fetched ${notes.length} note(s) from folder ID: $folderId");
-  //   } catch (e) {
-  //     debugPrint(" Error fetching notes: $e");
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
-
   // FETCH NOTES (Only active, non-deleted records)
   Future<void> fetchNotesByFolder(int folderId) async {
     isLoading.value = true;

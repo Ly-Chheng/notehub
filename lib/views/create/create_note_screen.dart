@@ -474,81 +474,66 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     final hasImages = selectedImages.isNotEmpty;
     final bool hasText = titleController.text.trim().isNotEmpty || rawText.trim().isNotEmpty;
 
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      constraints: BoxConstraints(maxWidth: double.infinity),
-      backgroundColor: Theme.of(context).cardColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SheetHeader(title: ""),
-                Wrap(
-                  children: [
-                    if (hasText)
-                      FolderItemTile(
-                        title: "text".tr,
-                        icon: Icons.image,
-                        iconColor: AppColor().primaryColor,
-                        onTap: () {
-                          Get.back();
-                          noteController.shareNote(
-                            title: titleController.text,
-                            content: rawText,
-                            selectedImages: selectedImages,
-                            mode: ShareMode.text,
-                          );
-                        },
-                      ),
-                    if (hasImages)
-                      FolderItemTile(
-                        title: "photos".tr,
-                        icon: Icons.image,
-                        iconColor: AppColor().green,
-                        onTap: () {
-                          Get.back();
-                          noteController.shareNote(
-                            title: titleController.text,
-                            content: rawText,
-                            selectedImages: selectedImages,
-                            mode: ShareMode.photo,
-                          );
-                        },
-                      ),
-                    if (hasText)
-                      FolderItemTile(
-                        title: "file_txt".tr,
-                        icon: Icons.insert_drive_file,
-                        iconColor: AppColor().orange,
-                        onTap: () {
-                          Get.back();
-                          noteController.shareNote(
-                            title: titleController.text,
-                            content: rawText,
-                            selectedImages: selectedImages,
-                            mode: ShareMode.file,
-                          );
-                        },
-                      ),
-                  ],
-                ),
-              ],
-            ),
+    ConfirmBottomSheet.show(
+        context: context,
+        title: "".tr,
+        showTopCancel: true,
+        content: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Wrap(
+                children: [
+                  if (hasText)
+                    FolderItemTile(
+                      title: "text".tr,
+                      icon: Icons.image,
+                      iconColor: AppColor().primaryColor,
+                      onTap: () {
+                        Get.back();
+                        noteController.shareNote(
+                          title: titleController.text,
+                          content: rawText,
+                          selectedImages: selectedImages,
+                          mode: ShareMode.text,
+                        );
+                      },
+                    ),
+                  if (hasImages)
+                    FolderItemTile(
+                      title: "photos".tr,
+                      icon: Icons.image,
+                      iconColor: AppColor().green,
+                      onTap: () {
+                        Get.back();
+                        noteController.shareNote(
+                          title: titleController.text,
+                          content: rawText,
+                          selectedImages: selectedImages,
+                          mode: ShareMode.photo,
+                        );
+                      },
+                    ),
+                  if (hasText)
+                    FolderItemTile(
+                      title: "file_txt".tr,
+                      icon: Icons.insert_drive_file,
+                      iconColor: AppColor().orange,
+                      onTap: () {
+                        Get.back();
+                        noteController.shareNote(
+                          title: titleController.text,
+                          content: rawText,
+                          selectedImages: selectedImages,
+                          mode: ShareMode.file,
+                        );
+                      },
+                    ),
+                ],
+              ),
+            ],
           ),
-        );
-      },
-    );
+        ));
   }
 
   Widget _buildBottomToolbar(Color iconColor) {
@@ -804,8 +789,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           final folders = folderController.folders.where((f) => f.id != widget.folderId).toList();
 
           if (folders.isEmpty) {
-            return const CustomNoData(
-              message: "No data",
+            return CustomNoData(
+              message: "no_data".tr,
             );
           }
 

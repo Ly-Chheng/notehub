@@ -26,8 +26,6 @@ class HowToUseScreen extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         children: [
           const SizedBox(height: 10),
-
-          /// HEADER
           Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -39,11 +37,11 @@ class HowToUseScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.menu_book_rounded, color: Colors.white, size: 45),
+                Icon(Icons.menu_book_rounded, color: AppColor().white, size: 45),
                 const SizedBox(height: 14),
                 Text(
                   "how_to_use_title".tr,
-                  style: TextStyle(color: Colors.white, fontSize: 26, fontFamily: _boldFont),
+                  style: TextStyle(color: AppColor().white, fontSize: 26, fontFamily: _boldFont),
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -53,14 +51,11 @@ class HowToUseScreen extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 30),
-
           _buildTimelineCard(context, "01", "step_01_title".tr, "step_01_desc".tr, Icons.edit_note_rounded, AppColor().primaryColor),
           _buildTimelineCard(context, "02", "step_02_title".tr, "step_02_desc".tr, Icons.folder_copy_rounded, AppColor().orange),
           _buildTimelineCard(context, "03", "step_03_title".tr, "step_03_desc".tr, Icons.lock_rounded, AppColor().red),
           _buildTimelineCard(context, "04", "step_04_title".tr, "step_04_desc".tr, Icons.timer_rounded, AppColor().green),
-
           const SizedBox(height: 30),
         ],
       ),
@@ -104,11 +99,11 @@ class HowToUseScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Text(title, style: TextStyle(fontSize: 20, fontFamily: _boldFont, color: Theme.of(context).colorScheme.onSurface)),
+                  Text(title, style: text20(context)),
                   const SizedBox(height: 10),
                   Text(
                     description,
-                    style: TextStyle(fontSize: 14, height: 1.6, color: Colors.grey.shade700, fontFamily: _bodyFont),
+                    style: text14(context).copyWith(color: Colors.grey.shade700),
                   ),
                 ],
               ),

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/widgets/custom_appbar.dart';
 
 class ImageZoomPage extends StatelessWidget {
   final String imagePath;
@@ -9,8 +10,11 @@ class ImageZoomPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(backgroundColor: AppColor().white),
+      appBar: customAppBar(
+        title: "",
+        context: context,
+        leadingColor: AppColor().primaryColor,
+      ),
       body: Center(
         child: InteractiveViewer(
           panEnabled: true,

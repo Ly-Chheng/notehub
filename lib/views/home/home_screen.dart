@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
@@ -17,6 +20,8 @@ import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/multi_style.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:showcaseview/showcaseview.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -31,9 +36,168 @@ class _MyHomePageState extends State<MyHomePage> {
   final LockController lockController = Get.put(LockController());
   final TextEditingController folderSearchController = TextEditingController();
 
+  final GlobalKey _firstShowcaseWidget = GlobalKey();
+  final GlobalKey _lastShowcaseWidget = GlobalKey();
+  final GlobalKey _two = GlobalKey();
+  final GlobalKey _three = GlobalKey();
+  final GlobalKey _four = GlobalKey();
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Register the showcase view
+  //   // This is alternative of ShowCaseWidget register all the configuration here which are in ShowCaseWidget.
+  //   // if we don't register the ShowcaseView then showcase functionality will not work.
+  //   ShowcaseView.register(
+  //     hideFloatingActionWidgetForShowcase: [_lastShowcaseWidget],
+  //     globalFloatingActionWidget: (showcaseContext) => FloatingActionWidget(
+  //       left: 16,
+  //       bottom: 16,
+  //       child: Padding(
+  //         padding: const EdgeInsets.all(16.0),
+  //         child: ElevatedButton(
+  //           onPressed: () => ShowcaseView.get().dismiss(),
+  //           style: ElevatedButton.styleFrom(
+  //             backgroundColor: const Color(0xffEE5366),
+  //           ),
+  //           child: Text(
+  //             'skip'.tr,
+  //             style: text14(context).copyWith(color: AppColor().white),
+  //           ),
+  //         ),
+  //       ),
+  //     ),
+  //     onStart: (index, key) {
+  //       log('onStart: $index, $key');
+  //     },
+  //     onComplete: (index, key) {
+  //       log('onComplete: $index, $key');
+  //       if (index == 4) {
+  //         SystemChrome.setSystemUIOverlayStyle(
+  //           SystemUiOverlayStyle.light.copyWith(
+  //             statusBarIconBrightness: Brightness.dark,
+  //             statusBarColor: Colors.white,
+  //           ),
+  //         );
+  //       }
+  //     },
+  //     blurValue: 1,
+  //     autoPlayDelay: const Duration(seconds: 3),
+  //     globalTooltipActionConfig: const TooltipActionConfig(
+  //       position: TooltipActionPosition.inside,
+  //       alignment: MainAxisAlignment.spaceBetween,
+  //       actionGap: 20,
+  //     ),
+  //     globalTooltipActions: [
+  //       // Here we don't need previous action for the first showcase widget
+  //       // so we hide this action for the first showcase widget
+  //       TooltipActionButton(
+  //         type: TooltipDefaultActionType.previous,
+  //         textStyle: text12.copyWith(color: AppColor().white),
+  //         hideActionWidgetForShowcase: [_firstShowcaseWidget],
+  //       ),
+  //       // Here we don't need next action for the last showcase widget so we
+  //       // hide this action for the last showcase widget
+  //       TooltipActionButton(
+  //         type: TooltipDefaultActionType.next,
+  //         textStyle: text12.copyWith(color: AppColor().white),
+  //         hideActionWidgetForShowcase: [_lastShowcaseWidget],
+  //       ),
+  //     ],
+  //     onDismiss: (key) {
+  //       debugPrint('Dismissed at $key');
+  //     },
+  //   );
+  //   //Start showcase view after current widget frames are drawn.
+  //   WidgetsBinding.instance.addPostFrameCallback(
+  //     (_) => ShowcaseView.get().startShowCase(
+  //       [_firstShowcaseWidget, _two, _three, _four, _lastShowcaseWidget],
+  //     ),
+  //   );
+  // }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // 1. Register the showcase view configuration
+    _registerShowcaseConfiguration();
+
+    // 2. Check for first-time launch and start the showcase
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkAndStartShowcase());
+  }
+
+  Future<void> _checkAndStartShowcase() async {
+    final prefs = await SharedPreferences.getInstance();
+    bool hasShownShowcase = prefs.getBool('has_shown_showcase') ?? false;
+
+    if (!hasShownShowcase) {
+      if (mounted) {
+        ShowcaseView.get().startShowCase(
+          [_firstShowcaseWidget, _two, _three, _four, _lastShowcaseWidget],
+        );
+        // Mark as shown so it doesn't trigger on subsequent opens
+        await prefs.setBool('has_shown_showcase', true);
+      }
+    }
+  }
+
+  void _registerShowcaseConfiguration() {
+    ShowcaseView.register(
+      hideFloatingActionWidgetForShowcase: [_lastShowcaseWidget],
+      globalFloatingActionWidget: (showcaseContext) => FloatingActionWidget(
+        left: 16,
+        bottom: 16,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ElevatedButton(
+            onPressed: () => ShowcaseView.get().dismiss(),
+            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xffEE5366)),
+            child: Text('skip'.tr, style: text12.copyWith(color: AppColor().white)),
+          ),
+        ),
+      ),
+      onStart: (index, key) => log('onStart: $index, $key'),
+      onComplete: (index, key) {
+        log('onComplete: $index, $key');
+        if (index == 4) {
+          SystemChrome.setSystemUIOverlayStyle(
+            SystemUiOverlayStyle.light.copyWith(
+              statusBarIconBrightness: Brightness.dark,
+              statusBarColor: AppColor().white,
+            ),
+          );
+        }
+      },
+      blurValue: 1,
+      autoPlayDelay: const Duration(seconds: 3),
+      globalTooltipActionConfig: const TooltipActionConfig(
+        position: TooltipActionPosition.inside,
+        alignment: MainAxisAlignment.spaceBetween,
+        actionGap: 20,
+      ),
+      globalTooltipActions: [
+        TooltipActionButton(
+          type: TooltipDefaultActionType.previous,
+          name: 'previous'.tr,
+          textStyle: text12.copyWith(color: AppColor().white),
+          hideActionWidgetForShowcase: [_firstShowcaseWidget],
+        ),
+        TooltipActionButton(
+          type: TooltipDefaultActionType.next,
+          name: 'next'.tr,
+          textStyle: text12.copyWith(color: AppColor().white),
+          hideActionWidgetForShowcase: [_lastShowcaseWidget],
+        ),
+      ],
+      onDismiss: (key) => debugPrint('Dismissed at $key'),
+    );
+  }
+
   @override
   void dispose() {
     folderSearchController.dispose();
+    ShowcaseView.get().unregister();
     super.dispose();
   }
 
@@ -44,10 +208,6 @@ class _MyHomePageState extends State<MyHomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildFolderSearchBar(),
-          Padding(
-            padding: Layout.padding(),
-            child: customHeader("folders".tr, context),
-          ),
           Expanded(
             child: Obx(() {
               final displayedFolders = controller.filteredFolders;
@@ -65,53 +225,75 @@ class _MyHomePageState extends State<MyHomePage> {
 
                     return Padding(
                       padding: Layout.padding(),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: Slidable(
-                          enabled: !isDefault,
-                          key: ValueKey(folder.id),
-                          startActionPane: ActionPane(
-                            motion: const BehindMotion(),
-                            children: [
-                              AppSlidableAction(
-                                onPressed: () => _togglePin(folder),
-                                icon: folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-                                label: folder.isPinned ? 'unpin'.tr : 'pin'.tr,
-                                iconSize: 20,
-                                backgroundColor: AppColor().orange,
-                              ),
-                              AppSlidableAction(
-                                onPressed: () => _toggleLock(folder),
-                                icon: folder.isLocked ? Icons.lock_open : Icons.lock,
-                                label: folder.isLocked ? 'unlock'.tr : 'lock'.tr,
-                                iconSize: 20,
-                                backgroundColor: AppColor().green,
-                              ),
-                            ],
-                          ),
-                          endActionPane: ActionPane(
-                            motion: const DrawerMotion(),
-                            children: [
-                              AppSlidableAction(
-                                onPressed: () => _handleEditFolder(context, folder),
-                                icon: Icons.edit,
-                                label: 'edit'.tr,
-                                iconSize: 20,
-                                backgroundColor: AppColor().primaryColor,
-                              ),
-                              AppSlidableAction(
-                                onPressed: () => _confirmDelete(context, folder),
-                                icon: Icons.delete,
-                                label: 'delete'.tr,
-                                iconSize: 20,
-                                backgroundColor: AppColor().red,
-                                borderRadius: const BorderRadius.horizontal(
-                                  right: Radius.circular(16),
+                      child: Showcase(
+                        key: _two,
+                        description: 'tap_to_my_folder'.tr,
+                        descTextStyle: text14(context).copyWith(color: AppColor().black),
+                        onBarrierClick: () {
+                          debugPrint('Barrier clicked');
+                          debugPrint(
+                            'Floating Action widget for first showcase is now hidden',
+                          );
+                          ShowcaseView.get().hideFloatingActionWidgetForKeys([
+                            _firstShowcaseWidget,
+                            _lastShowcaseWidget,
+                          ]);
+                        },
+                        targetBorderRadius: BorderRadius.circular(12),
+                        tooltipBorderRadius: BorderRadius.circular(12),
+                        tooltipActionConfig: const TooltipActionConfig(
+                          alignment: MainAxisAlignment.end,
+                          position: TooltipActionPosition.outside,
+                          gapBetweenContentAndAction: 10,
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Slidable(
+                            enabled: !isDefault,
+                            key: ValueKey(folder.id),
+                            startActionPane: ActionPane(
+                              motion: const BehindMotion(),
+                              children: [
+                                AppSlidableAction(
+                                  onPressed: () => _togglePin(folder),
+                                  icon: folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
+                                  label: folder.isPinned ? 'unpin'.tr : 'pin'.tr,
+                                  iconSize: 20,
+                                  backgroundColor: AppColor().orange,
                                 ),
-                              ),
-                            ],
+                                AppSlidableAction(
+                                  onPressed: () => _toggleLock(folder),
+                                  icon: folder.isLocked ? Icons.lock_open : Icons.lock,
+                                  label: folder.isLocked ? 'unlock'.tr : 'lock'.tr,
+                                  iconSize: 20,
+                                  backgroundColor: AppColor().green,
+                                ),
+                              ],
+                            ),
+                            endActionPane: ActionPane(
+                              motion: const DrawerMotion(),
+                              children: [
+                                AppSlidableAction(
+                                  onPressed: () => _handleEditFolder(context, folder),
+                                  icon: Icons.edit,
+                                  label: 'edit'.tr,
+                                  iconSize: 20,
+                                  backgroundColor: AppColor().primaryColor,
+                                ),
+                                AppSlidableAction(
+                                  onPressed: () => _confirmDelete(context, folder),
+                                  icon: Icons.delete,
+                                  label: 'delete'.tr,
+                                  iconSize: 20,
+                                  backgroundColor: AppColor().red,
+                                  borderRadius: const BorderRadius.horizontal(
+                                    right: Radius.circular(16),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            child: folderTile(folder, isDefault),
                           ),
-                          child: folderTile(folder, isDefault),
                         ),
                       ),
                     );
@@ -122,15 +304,38 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      floatingActionButton: CustomFab(
-        onPressed: () {
-          final int targetFolderId = controller.defaultFolderId;
+      floatingActionButton: Showcase(
+        key: _three,
+        description: 'tap_to_create_note'.tr,
+        descTextStyle: text14(context).copyWith(color: AppColor().black),
+        targetBorderRadius: BorderRadius.circular(12),
+        tooltipBorderRadius: BorderRadius.circular(12),
+        tooltipActionConfig: const TooltipActionConfig(
+          alignment: MainAxisAlignment.end,
+          position: TooltipActionPosition.outside,
+          gapBetweenContentAndAction: 10,
+        ),
+        tooltipActions: [
+          TooltipActionButton(
+              type: TooltipDefaultActionType.previous,
+              name: 'previous'.tr,
+              onTap: () {
+                ShowcaseView.get().previous();
+              },
+              backgroundColor: AppColor().primaryColor,
+              textStyle: text14(context).copyWith(color: AppColor().white)),
+          TooltipActionButton(type: TooltipDefaultActionType.skip, name: 'next'.tr, textStyle: text14(context).copyWith(color: AppColor().white)),
+        ],
+        child: CustomFab(
+          onPressed: () {
+            final int targetFolderId = controller.defaultFolderId;
 
-          Get.to(() => CreateNoteScreen(
-                isEditing: false,
-                folderId: targetFolderId,
-              ));
-        },
+            Get.to(() => CreateNoteScreen(
+                  isEditing: false,
+                  folderId: targetFolderId,
+                ));
+          },
+        ),
       ),
     );
   }
@@ -377,13 +582,35 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildFolderSearchBar() {
     return Padding(
       padding: Layout.padding(),
-      child: customTextField(
-        "search".tr,
-        false,
-        null,
-        controller: folderSearchController,
-        onChanged: (v) => controller.searchFolders(v),
-        prefixIcon: const Icon(Icons.search),
+      child: Showcase(
+        key: _firstShowcaseWidget,
+        description: 'tap_to_search'.tr,
+        descTextStyle: text14(context).copyWith(color: AppColor().black),
+        onBarrierClick: () {
+          debugPrint('Barrier clicked');
+          debugPrint(
+            'Floating Action widget for first showcase is now hidden',
+          );
+          ShowcaseView.get().hideFloatingActionWidgetForKeys([
+            _firstShowcaseWidget,
+            _lastShowcaseWidget,
+          ]);
+        },
+        targetBorderRadius: BorderRadius.circular(12),
+        tooltipBorderRadius: BorderRadius.circular(12),
+        tooltipActionConfig: const TooltipActionConfig(
+          alignment: MainAxisAlignment.end,
+          position: TooltipActionPosition.outside,
+          gapBetweenContentAndAction: 10,
+        ),
+        child: customTextField(
+          "search".tr,
+          false,
+          null,
+          controller: folderSearchController,
+          onChanged: (v) => controller.searchFolders(v),
+          prefixIcon: const Icon(Icons.search),
+        ),
       ),
     );
   }
