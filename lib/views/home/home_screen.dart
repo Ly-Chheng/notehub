@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -45,11 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-
-    // 1. Register the showcase view configuration
     _registerShowcaseConfiguration();
-
-    // 2. Check for first-time launch and start the showcase
     WidgetsBinding.instance.addPostFrameCallback((_) => _checkAndStartShowcase());
   }
 
@@ -62,7 +57,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ShowcaseView.get().startShowCase(
           [_firstShowcaseWidget, _two, _three, _four, _lastShowcaseWidget],
         );
-        // Mark as shown so it doesn't trigger on subsequent opens
         await prefs.setBool('has_shown_showcase', true);
       }
     }

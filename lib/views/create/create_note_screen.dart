@@ -554,50 +554,34 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _bottomIcon(Icons.image_outlined, () {
+                bottomIcon(Icons.image_outlined, () {
                   _handleImageSelection();
-                }),
-                _bottomIcon(Icons.text_fields, _openFormatting),
-                _bottomIcon(Icons.palette_outlined, () {
+                }, context),
+                bottomIcon(Icons.text_fields, _openFormatting, context),
+                bottomIcon(Icons.palette_outlined, () {
                   _openPalette();
                   _triggerAutoSave();
-                }),
+                }, context),
                 // _bottomIcon(Icons.grid_3x3_outlined, () {
                 //   insertTable(_quillController);
                 // }),
-                _bottomIcon(
-                  showTable ? Icons.table_chart_outlined : Icons.table_chart_outlined,
-                  () {
-                    setState(() => showTable = !showTable);
-                    _triggerAutoSave();
-                  },
-                ),
-                _bottomIcon(Icons.mode_outlined, () {
+                bottomIcon(showTable ? Icons.table_chart_outlined : Icons.table_chart_outlined, () {
+                  setState(() => showTable = !showTable);
+                  _triggerAutoSave();
+                }, context),
+                bottomIcon(Icons.mode_outlined, () {
                   _openDrawing();
                   _triggerAutoSave();
-                }),
-                _bottomIcon(Icons.widgets_outlined, () {
+                }, context),
+                bottomIcon(Icons.widgets_outlined, () {
                   TemplateLibrarySheet.show(context, (templateData) {
                     _applyTemplate(templateData);
                   });
-                }),
+                }, context),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _bottomIcon(IconData icon, VoidCallback onPressed) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 5 : 20),
-      child: IconButton(
-        icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 25 : 35),
-        onPressed: () {
-          onPressed();
-          FocusScope.of(context).unfocus();
-        },
       ),
     );
   }

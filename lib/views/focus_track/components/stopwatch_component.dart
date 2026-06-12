@@ -11,6 +11,7 @@ class StopwatchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = context.isPhone ? 20.0 : 40.0;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -18,9 +19,9 @@ class StopwatchScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           child: Column(
             children: [
-              SizedBox(height: context.isPhone ? 20 : 40),
+              SizedBox(height: size),
               _buildTimerDisplay(context),
-              SizedBox(height: context.isPhone ? 30 : 40),
+              SizedBox(height: size),
               Expanded(
                 child: _buildLapList(context),
               ),
@@ -34,12 +35,13 @@ class StopwatchScreen extends StatelessWidget {
   }
 
   Widget _buildTimerDisplay(BuildContext context) {
+    final size = context.isPhone ? 250.0 : 300.0;
     return Obx(() => Stack(
           alignment: Alignment.center,
           children: [
             Container(
-              width: context.isPhone ? 250 : 300,
-              height: context.isPhone ? 250 : 300,
+              width: size,
+              height: size,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.transparent,
@@ -146,31 +148,20 @@ class StopwatchScreen extends StatelessWidget {
     bool isDisabled = onTap == null;
     final activeIconColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
 
-    // return GestureDetector(
-    //   onTap: onTap,
-    //   child: Container(
-    //     padding: EdgeInsets.all(context.isPhone ? 8 : 10),
-    //     decoration: BoxDecoration(
-    //       color: Theme.of(context).cardColor,
-    //       shape: BoxShape.circle,
-    //       boxShadow: isDisabled ? [] : const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))],
-    //     ),
-    //     child: Icon(
-    //       icon,
-    //       color: isDisabled ? AppColor().gray : activeIconColor,
-    //       size: context.isPhone ? 24 : 30,
-    //     ),
-    //   ),
-    // );
-    return IconButton(
-      onPressed: onTap,
-      icon: Icon(
-        icon,
-        color: isDisabled ? AppColor().gray : activeIconColor,
-      ),
-      style: IconButton.styleFrom(
-        iconSize: context.isPhone ? 24 : 30,
-        backgroundColor: Theme.of(context).cardColor.withValues(alpha: 0.1),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: EdgeInsets.all(context.isPhone ? 5 : 10),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          shape: BoxShape.circle,
+          boxShadow: isDisabled ? [] : const [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 5))],
+        ),
+        child: Icon(
+          icon,
+          color: isDisabled ? AppColor().gray : activeIconColor,
+          size: context.isPhone ? 24 : 30,
+        ),
       ),
     );
   }

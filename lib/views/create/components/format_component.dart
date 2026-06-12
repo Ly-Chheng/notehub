@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/widgets/custom_format_toggle.dart';
 import 'package:project_structure/widgets/multi_style.dart';
 
 void showFormatSheet({
@@ -56,7 +57,7 @@ void showFormatSheet({
     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
     builder: (context) => StatefulBuilder(builder: (context, setSheetState) {
       Widget buildModernColorPicker(Color activeColor, Function(Color) onPicked) {
-        return _buildContainer(
+        return buildContainer(
           context,
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
@@ -113,26 +114,26 @@ void showFormatSheet({
                   mainAxisAlignment: MainAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _buildContainer(
+                    buildContainer(
                       context,
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            _formatToggle(Icons.format_align_left, isLeftAligned, () {
+                            formatToggle(Icons.format_align_left, isLeftAligned, () {
                               onLeftAlignPressed();
                               Navigator.pop(context);
                             }, context),
-                            _formatToggle(Icons.format_align_center, isCenterAligned, () {
+                            formatToggle(Icons.format_align_center, isCenterAligned, () {
                               onCenterAlignPressed();
                               Navigator.pop(context);
                             }, context),
-                            _formatToggle(Icons.format_align_right, isRightAligned, () {
+                            formatToggle(Icons.format_align_right, isRightAligned, () {
                               onRightAlignPressed();
                               Navigator.pop(context);
                             }, context),
-                            _formatToggle(Icons.format_align_justify, isJustifyAligned, () {
+                            formatToggle(Icons.format_align_justify, isJustifyAligned, () {
                               onJustifyAlignPressed();
                               Navigator.pop(context);
                             }, context),
@@ -141,22 +142,22 @@ void showFormatSheet({
                       ),
                     ),
                     const SizedBox(width: 15),
-                    _buildContainer(
+                    buildContainer(
                       context,
                       SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
-                            _formatToggle(Icons.format_list_bulleted, false, () {
+                            formatToggle(Icons.format_list_bulleted, false, () {
                               onBulletPressed();
                               Navigator.pop(context);
                             }, context),
-                            _formatToggle(Icons.format_line_spacing_rounded, false, () {
+                            formatToggle(Icons.format_line_spacing_rounded, false, () {
                               onHyphenPressed();
                               Navigator.pop(context);
                             }, context),
-                            _formatToggle(Icons.format_list_numbered, false, () {
+                            formatToggle(Icons.format_list_numbered, false, () {
                               onNumberedPressed();
                               Navigator.pop(context);
                             }, context),
@@ -177,31 +178,31 @@ void showFormatSheet({
               ),
               Row(
                 children: [
-                  _buildContainer(
+                  buildContainer(
                     context,
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _formatToggle(Icons.format_bold, isBold, () {
+                          formatToggle(Icons.format_bold, isBold, () {
                             isBold = !isBold;
                             onBoldChanged(isBold);
                             setSheetState(() {});
                             Navigator.pop(context);
                           }, context),
-                          _formatToggle(Icons.format_italic, isItalic, () {
+                          formatToggle(Icons.format_italic, isItalic, () {
                             isItalic = !isItalic;
                             onItalicChanged(isItalic);
                             setSheetState(() {});
                             Navigator.pop(context);
                           }, context),
-                          _formatToggle(Icons.format_underlined, isUnderlined, () {
+                          formatToggle(Icons.format_underlined, isUnderlined, () {
                             isUnderlined = !isUnderlined;
                             onUnderlineChanged(isUnderlined);
                             setSheetState(() {});
                             Navigator.pop(context);
                           }, context),
-                          _formatToggle(Icons.format_strikethrough, isStrikethrough, () {
+                          formatToggle(Icons.format_strikethrough, isStrikethrough, () {
                             isStrikethrough = !isStrikethrough;
                             onStrikethroughChanged(isStrikethrough);
                             setSheetState(() {});
@@ -212,19 +213,19 @@ void showFormatSheet({
                     ),
                   ),
                   const SizedBox(width: 15),
-                  _buildContainer(
+                  buildContainer(
                     context,
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _formatToggle(Icons.format_color_text, isColorPickerOpen, () {
+                          formatToggle(Icons.format_color_text, isColorPickerOpen, () {
                             setSheetState(() {
                               isColorPickerOpen = !isColorPickerOpen;
                               isHighlightPickerOpen = false;
                             });
                           }, context),
-                          _formatToggle(Icons.border_color, isHighlightPickerOpen, () {
+                          formatToggle(Icons.border_color, isHighlightPickerOpen, () {
                             setSheetState(() {
                               isHighlightPickerOpen = !isHighlightPickerOpen;
                               isColorPickerOpen = false;
@@ -264,7 +265,7 @@ void showFormatSheet({
                   style: text14(context).copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
-              _buildContainer(
+              buildContainer(
                 context,
                 SizedBox(
                   height: context.isPhone ? 40 : 50,
@@ -314,7 +315,7 @@ void showFormatSheet({
   );
 }
 
-Widget _buildContainer(BuildContext context, Widget child) {
+Widget buildContainer(BuildContext context, Widget child) {
   return Container(
     padding: EdgeInsets.all(context.isPhone ? 6 : 11),
     decoration: BoxDecoration(
@@ -322,27 +323,5 @@ Widget _buildContainer(BuildContext context, Widget child) {
       borderRadius: BorderRadius.circular(8),
     ),
     child: child,
-  );
-}
-
-Widget _formatToggle(IconData icon, bool isActive, VoidCallback onTap, BuildContext context) {
-  return InkWell(
-    onTap: onTap,
-    child: Padding(
-      padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 5 : 10),
-      child: Container(
-        padding: EdgeInsets.all(context.isPhone ? 5 : 10),
-        decoration: BoxDecoration(
-          color: isActive ? AppColor().primaryColor.withValues(alpha: 0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: isActive ? AppColor().primaryColor : Colors.grey.shade300),
-        ),
-        child: Icon(
-          icon,
-          color: isActive ? AppColor().primaryColor : AppColor().gray,
-          size: context.isPhone ? 25 : 35,
-        ),
-      ),
-    ),
   );
 }

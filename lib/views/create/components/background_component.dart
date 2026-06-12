@@ -8,6 +8,8 @@ void showPaletteSheet({
   required Color selectedColor,
   required Function(Color) onColorSelected,
 }) {
+  final size = context.isPhone ? 6.0 : 8.0;
+
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -25,8 +27,8 @@ void showPaletteSheet({
             ),
             const SizedBox(height: 10),
             Wrap(
-              spacing: context.isPhone ? 6 : 8,
-              runSpacing: context.isPhone ? 6 : 8,
+              spacing: size,
+              runSpacing: size,
               children: AppColor().backgroundColors(context).map((color) {
                 bool isActive = selectedColor == color;
                 return GestureDetector(

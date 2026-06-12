@@ -58,4 +58,13 @@ class AppDecorations {
       offset: Offset(0, 3),
     ),
   ];
+
+  static const List<BoxShadow> softShadow = [
+    BoxShadow(
+      color: Color.fromRGBO(0, 0, 0, 0.05),
+      // color: Colors.black.withValues(alpha: 0.05),
+      blurRadius: 20,
+      offset: Offset(0, 8),
+    ),
+  ];
 }

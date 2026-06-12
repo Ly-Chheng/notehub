@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/create/components/notebook_painter.dart';
+import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_template.dart';
 import 'package:signature/signature.dart';
@@ -409,12 +410,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                     );
                   },
                 ),
-                IconButton(
-                    icon: Icon(
-                      Icons.delete,
-                      color: AppColor().red,
-                      size: 30,
-                    ),
+                GrobleButton(
                     onPressed: () => setState(() {
                           _layers.clear();
                           _activeController.clear();

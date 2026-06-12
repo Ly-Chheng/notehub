@@ -17,6 +17,7 @@ import 'package:project_structure/widgets/custom_fab.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
+import 'package:project_structure/widgets/costom_folder_list.dart';
 import 'package:project_structure/widgets/multi_style.dart';
 import 'package:project_structure/widgets/rounded_file_image.dart';
 
@@ -49,7 +50,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     controller.fetchNotesByFolder(widget.folderId);
   }
 
-  // NAVIGATION LOGIC WITH LOCK
   void _handleNoteTap(NoteModel note) async {
     if (isSelectionMode) {
       setState(() {
@@ -451,11 +451,11 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildBottomAction(Icons.folder, AppColor().primaryColor, () {
+          buildBottomAction(Icons.folder, AppColor().primaryColor, () {
             if (selectedNoteIds.isNotEmpty) {
               _handleMoveWithLock();
             }
-          }),
+          }, context),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -465,9 +465,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
               ),
             ],
           ),
-          _buildBottomAction(Icons.delete, AppColor().red, () {
+          buildBottomAction(Icons.delete, AppColor().red, () {
             if (selectedNoteIds.isNotEmpty) _handleBulkDeleteProtection();
-          }),
+          }, context),
         ],
       ),
     );
@@ -542,22 +542,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     }
   }
 
-  Widget _buildBottomAction(IconData icon, Color color, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: color,
-            size: context.isPhone ? 25 : 30,
-          ),
-        ],
-      ),
-    );
-  }
-
   void _verifyAndMove(List<int> noteIds) async {
     final TextEditingController verifyPassController = TextEditingController();
     final settings = await lockController.getSecuritySettings();
@@ -607,12 +591,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                 itemCount: otherFolders.length,
                 itemBuilder: (context, index) {
                   final folder = otherFolders[index];
-                  return ListTile(
-                    leading: Icon(Icons.folder, color: AppColor().primaryColor),
-                    title: Text(
-                      folder.title,
-                      style: text16(context),
-                    ),
+                  return FolderListTile(
+                    title: folder.title,
                     onTap: () async {
                       await controller.bulkMoveNotes(noteIds, folder.id!);
                       if (!mounted) return;

@@ -71,7 +71,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 Center(child: customHeader("create_new_password".tr, context)),
                 const SizedBox(height: 8),
                 Text(
-                  "Create a secure password to protect your personal notes.",
+                  "create_password_desc".tr,
                   textAlign: TextAlign.center,
                   style: text16(context).copyWith(
                     color: AppColor().gray,
@@ -102,7 +102,6 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                     style: TextStyle(
                       color: AppColor().gray,
                       fontSize: AppFontSize(context).normalTextSize,
-                      // fontFamily: 'EN-REGULAR',
                       fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                     ),
                   ),
@@ -145,7 +144,6 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
                 style: TextStyle(
                   color: AppColor().gray,
                   fontSize: AppFontSize(context).subTitleSize,
-                  // fontFamily: 'EN-REGULAR',
                   fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
                 ),
               ),

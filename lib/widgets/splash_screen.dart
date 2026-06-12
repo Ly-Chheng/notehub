@@ -8,6 +8,8 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final size = context.isPhone ? 100.0 : 130.0;
+
     Get.put(SplashController());
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -24,8 +26,8 @@ class SplashScreen extends StatelessWidget {
             Image.asset(
               'assets/icons/note_book.png',
               fit: BoxFit.cover,
-              height: context.isPhone ? 100 : 130,
-              width: context.isPhone ? 100 : 130,
+              height: size,
+              width: size,
             ),
           ],
         ),

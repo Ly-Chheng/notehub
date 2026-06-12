@@ -288,3 +288,32 @@ Widget actionButton({required String asset, required bool isEnabled, required Vo
     ),
   );
 }
+
+Widget bottomIcon(IconData icon, VoidCallback onPressed, BuildContext context) {
+  return Padding(
+    padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 5 : 20),
+    child: IconButton(
+      icon: Icon(icon, color: Theme.of(context).iconTheme.color, size: context.isPhone ? 25 : 35),
+      onPressed: () {
+        onPressed();
+        FocusScope.of(context).unfocus();
+      },
+    ),
+  );
+}
+
+Widget buildBottomAction(IconData icon, Color color, VoidCallback onTap, BuildContext context) {
+  return InkWell(
+    onTap: onTap,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: color,
+          size: context.isPhone ? 25 : 30,
+        ),
+      ],
+    ),
+  );
+}

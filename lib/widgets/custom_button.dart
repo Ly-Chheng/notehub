@@ -92,3 +92,30 @@ class CustomButton extends StatelessWidget {
     );
   }
 }
+
+class GrobleButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final double size;
+  final IconData icon;
+  final Color? color;
+
+  const GrobleButton({
+    super.key,
+    required this.onPressed,
+    this.size = 30.0,
+    this.icon = Icons.delete,
+    this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      icon: Icon(
+        icon,
+        color: color ?? AppColor().red,
+        size: size,
+      ),
+      onPressed: onPressed,
+    );
+  }
+}

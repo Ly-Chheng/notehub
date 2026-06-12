@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:open_filex/open_filex.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/views/create/components/image_zoom_compoenent.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/multi_style.dart';
@@ -128,17 +129,7 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
             StatefulBuilder(
               builder: (context, setModalState) {
                 return Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.05),
-                        blurRadius: 20,
-                        offset: const Offset(0, 8),
-                      ),
-                    ],
-                  ),
+                  decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(10), boxShadow: AppDecorations.softShadow),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Column(
@@ -181,17 +172,7 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
           ],
           const SizedBox(height: 20),
           Container(
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(10),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
+            decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(10), boxShadow: AppDecorations.softShadow),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -331,14 +312,7 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
             behavior: HitTestBehavior.opaque,
             child: Container(
               padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Theme.of(context).dividerColor.withValues(alpha: 0.1),
-                  width: 1,
-                ),
-              ),
+              decoration: Layout.cardDecoration(),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -396,11 +370,7 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
       content: Padding(
         padding: const EdgeInsets.only(top: 10),
         child: Container(
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: AppDecorations.subtleShadow,
-          ),
+          decoration: Layout.cardDecoration(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,

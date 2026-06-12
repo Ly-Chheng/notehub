@@ -12,6 +12,7 @@ import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
+import 'package:project_structure/widgets/costom_folder_list.dart';
 import 'package:project_structure/widgets/rounded_file_image.dart';
 
 class RecentlyDeletedScreen extends StatefulWidget {
@@ -305,19 +306,17 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
       content: Flexible(
         child: Obx(() {
           if (folderController.folders.isEmpty) {
-            return const CustomNoData(message: "No folders available");
+            return CustomNoData(message: "no_data".tr);
           }
           return ListView.builder(
             shrinkWrap: true,
             itemCount: folderController.folders.length,
             itemBuilder: (context, index) {
               final folder = folderController.folders[index];
-              return ListTile(
-                leading: Icon(Icons.folder, color: AppColor().primaryColor),
-                title: Text(folder.title, style: text16(context)),
+              return FolderListTile(
+                title: folder.title,
                 onTap: () async {
                   final List<int> idsToMove = selectedNoteIds.toList();
-
                   await controller.bulkMoveNotes(idsToMove, folder.id!);
 
                   for (var id in idsToMove) {
@@ -330,8 +329,6 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                     isSelectionMode = false;
                     selectedNoteIds.clear();
                   });
-
-                  Get.snackbar("Success", "${idsToMove.length} notes restored to ${folder.title}");
                 },
               );
             },

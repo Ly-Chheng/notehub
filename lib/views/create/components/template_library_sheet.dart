@@ -57,7 +57,6 @@ class TemplateLibrarySheet {
                   Icon(icon, size: 32, color: AppColor().primaryColor),
                   const SizedBox(height: 10),
                   Text(
-                    // key,
                     _getTranslationKey(templateName).tr,
                     style: text16(context),
                     textAlign: TextAlign.center,

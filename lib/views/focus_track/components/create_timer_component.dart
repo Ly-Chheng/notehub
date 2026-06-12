@@ -5,8 +5,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/controllers/focus_track/timer_controller.dart';
 import 'package:project_structure/core/services/sound_servies.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/widgets/custom_label_dropdown.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
@@ -224,17 +226,28 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  child: customHeader("duration".tr, context),
-                ),
+                customHeader("duration".tr, context),
+                const SizedBox(height: 10),
                 _buildPickerSection(),
                 const SizedBox(height: 25),
-                _buildLabelRow(),
+                customTextField(
+                  "timer".tr,
+                  false,
+                  null,
+                  controller: _labelController,
+                ),
+                LabelSettingsWidget(
+                  selectedValue: selectedSound,
+                  itemsMap: soundMap,
+                  onChanged: (newValue) {
+                    setState(() => selectedSound = newValue);
+                    SoundService.playTimerSound(soundMap[newValue]!);
+                  },
+                ),
                 const SizedBox(height: 20),
                 _buildPresetHeader(),
                 _buildAllPresets(),
@@ -249,8 +262,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
   Widget _buildPickerSection() {
     return Container(
       height: context.isPhone ? 200 : 300,
-      margin: const EdgeInsets.symmetric(horizontal: 20),
-      decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.05), borderRadius: BorderRadius.circular(20)),
+      decoration: Layout.subtleDecoration(),
       child: Row(
         children: [
           _buildPicker(24, "h".tr, hourController, (v) => selectedHours = v),
@@ -280,59 +292,16 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     );
   }
 
-  Widget _buildLabelRow() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          customTextField(
-            "timer".tr,
-            false,
-            null,
-            controller: _labelController,
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-            decoration: BoxDecoration(color: Colors.grey.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(10)),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: selectedSound,
-                dropdownColor: Theme.of(context).cardColor,
-                isExpanded: true,
-                items: soundMap.keys.map((String name) {
-                  return DropdownMenuItem<String>(
-                    value: name,
-                    child: Text(name, style: text14(context)),
-                  );
-                }).toList(),
-                onChanged: (String? newName) {
-                  setState(() => selectedSound = newName!);
-                  SoundService.playTimerSound(soundMap[newName]!);
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildPresetHeader() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 24, right: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          customHeader("quick_presets".tr, context),
-          IconButton(
-            onPressed: () => showAddPresetSheet(),
-            icon: Icon(Icons.add_circle_outline, color: AppColor().primaryColor, size: context.isPhone ? 28 : 32),
-          ),
-        ],
-      ),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        customHeader("quick_presets".tr, context),
+        IconButton(
+          onPressed: () => showAddPresetSheet(),
+          icon: Icon(Icons.add_circle_outline, color: AppColor().primaryColor, size: context.isPhone ? 28 : 32),
+        ),
+      ],
     );
   }
 
@@ -340,27 +309,24 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     final settingsBox = Hive.box('create_timer_box');
     final List rawList = settingsBox.get('user_presets', defaultValue: []);
 
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Wrap(
-        spacing: 10,
-        runSpacing: 10,
-        children: [
-          _fixedPresetItem("10 ${'m'.tr}", 0, 10, 0),
-          _fixedPresetItem("30 ${'m'.tr}", 0, 30, 0),
-          _fixedPresetItem("50 ${'m'.tr}", 0, 50, 0),
-          ...rawList.map((p) => _presetButton(
-                p['label'].toString(),
-                () => _setPreset(p['h'], p['m'], p['s']),
-                onLongPress: () {
-                  List updated = List.from(rawList);
-                  updated.remove(p);
-                  settingsBox.put('user_presets', updated);
-                  setState(() {});
-                },
-              )),
-        ],
-      ),
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: [
+        _fixedPresetItem("10 ${'m'.tr}", 0, 10, 0),
+        _fixedPresetItem("30 ${'m'.tr}", 0, 30, 0),
+        _fixedPresetItem("50 ${'m'.tr}", 0, 50, 0),
+        ...rawList.map((p) => _presetButton(
+              p['label'].toString(),
+              () => _setPreset(p['h'], p['m'], p['s']),
+              onLongPress: () {
+                List updated = List.from(rawList);
+                updated.remove(p);
+                settingsBox.put('user_presets', updated);
+                setState(() {});
+              },
+            )),
+      ],
     );
   }
 
@@ -400,10 +366,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         builder: (context, setSheetState) {
           return Container(
             height: context.isPhone ? 200 : 300,
-            decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.01),
-              borderRadius: BorderRadius.circular(20),
-            ),
+            decoration: Layout.subtleDecoration(),
             child: Row(
               children: [
                 _buildSheetPicker(24, "h".tr, (v) => setSheetState(() => tempH = v), initial: tempH),

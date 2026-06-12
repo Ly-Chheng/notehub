@@ -14,13 +14,15 @@ Widget customNavigationBar({
 }) {
   final double iconSize = context.isPhone ? 25 : 32;
   final double timerIconSize = context.isPhone ? 32 : 34;
+  final padding = context.isPhone ? 50.0 : 90.0;
+  final sizeImg = context.isPhone ? 26.0 : 32.0;
   final Color activeColor = selectedItemColor ?? AppColor().primaryColor;
   final Color inactiveColor = unselectedItemColor ?? AppColor().gray;
 
   return Padding(
     padding: EdgeInsets.only(
-      left: context.isPhone ? 50 : 90,
-      right: context.isPhone ? 50 : 90,
+      left: padding,
+      right: padding,
       bottom: context.isPhone ? 10 : 20,
     ),
     child: Container(
@@ -80,8 +82,8 @@ Widget customNavigationBar({
                   ),
                   child: Image.asset(
                     currentIndex == 2 ? 'assets/images/more_active.png' : 'assets/images/more.png',
-                    width: context.isPhone ? 26 : 32,
-                    height: context.isPhone ? 26 : 32,
+                    width: sizeImg,
+                    height: sizeImg,
                     color: currentIndex == 2 ? activeColor : inactiveColor,
                   ),
                 ),

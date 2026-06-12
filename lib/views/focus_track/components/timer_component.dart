@@ -125,7 +125,7 @@ class TimerComponent extends StatelessWidget {
             onTap: () => Get.to(() => TimerDetailScreen(timerKey: timer.key, data: timer)),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              decoration: BoxDecoration(color: Theme.of(context).cardColor, borderRadius: BorderRadius.circular(20)),
+              decoration: Layout.cardDecoration(radius: 20.0),
               child: Row(
                 children: [
                   Expanded(
@@ -162,6 +162,7 @@ class TimerComponent extends StatelessWidget {
   }
 
   Widget _buildiPhoneCircle(TimerController controller, TimerModel timer, double progress, bool isFinished, bool isRunning, BuildContext context) {
+    final size = context.isPhone ? 55.0 : 65.0;
     return GestureDetector(
       onTap: () {
         SoundService.stopSound();
@@ -176,8 +177,8 @@ class TimerComponent extends StatelessWidget {
         alignment: Alignment.center,
         children: [
           SizedBox(
-              width: context.isPhone ? 55 : 65,
-              height: context.isPhone ? 55 : 65,
+              width: size,
+              height: size,
               child: CircularProgressIndicator(
                   value: 1.0,
                   strokeWidth: 5,
@@ -185,8 +186,8 @@ class TimerComponent extends StatelessWidget {
                     Colors.grey.withAlpha(30),
                   ))),
           SizedBox(
-              width: context.isPhone ? 55 : 65,
-              height: context.isPhone ? 55 : 65,
+              width: size,
+              height: size,
               child: CircularProgressIndicator(value: progress, strokeWidth: 5, valueColor: AlwaysStoppedAnimation(isFinished ? Colors.transparent : AppColor().primaryColor))),
           Icon(
             isFinished ? Icons.refresh : (isRunning ? Icons.pause : Icons.play_arrow),

@@ -136,14 +136,6 @@ class _MoreScreenState extends State<MoreScreen> {
             ),
           ),
         ),
-        // if (!isLast)
-        //   Padding(
-        //     padding: const EdgeInsets.only(left: 60),
-        //     child: Divider(
-        //       height: 1,
-        //       color: AppColor().gray.withValues(alpha: 0.1),
-        //     ),
-        //   ),
       ],
     );
   }
