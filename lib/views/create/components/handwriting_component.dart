@@ -11,6 +11,7 @@ import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/create/components/notebook_painter.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/custom_icon_buttom.dart';
 import 'package:project_structure/widgets/custom_template.dart';
 import 'package:signature/signature.dart';
 
@@ -325,25 +326,25 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _toolBtn(
+                toolBtn(
                   "Pen",
                   !isEraser && currentWidth == 2.0,
                   () => _updateBrush(width: 2.0),
                   imagePath: 'assets/images/pen.png',
                 ),
-                _toolBtn(
+                toolBtn(
                   "Thin",
                   !isEraser && currentWidth == 1.0,
                   () => _updateBrush(width: 1.0),
                   imagePath: 'assets/images/pencle.png',
                 ),
-                _toolBtn(
+                toolBtn(
                   "Highlighter",
                   !isEraser && currentWidth == 20.0,
                   () => _updateBrush(width: 20.0),
                   imagePath: 'assets/images/highlighter.png',
                 ),
-                _toolBtn(
+                toolBtn(
                   "Eraser",
                   isEraser,
                   () => _updateBrush(eraser: true),
@@ -434,30 +435,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: isSelected ? AppColor().primaryColor : Colors.transparent, width: 1)),
         child: CircleAvatar(radius: context.isPhone ? 12 : 14, backgroundColor: color),
-      ),
-    );
-  }
-
-  Widget _toolBtn(String label, bool sel, VoidCallback tap, {String? imagePath, IconData? icon}) {
-    return InkWell(
-      onTap: tap,
-      borderRadius: BorderRadius.circular(8),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (imagePath != null)
-            Image.asset(
-              imagePath,
-              width: sel ? 60 : 40,
-              height: sel ? 60 : 40,
-              colorBlendMode: BlendMode.srcIn,
-            )
-          else if (icon != null)
-            Icon(
-              icon,
-              size: context.isPhone ? 24 : 30,
-            ),
-        ],
       ),
     );
   }

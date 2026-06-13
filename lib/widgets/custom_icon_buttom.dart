@@ -23,3 +23,27 @@ Widget formatToggle(IconData icon, bool isActive, VoidCallback onTap, BuildConte
     ),
   );
 }
+
+Widget toolBtn(String label, bool sel, VoidCallback tap, {String? imagePath, IconData? icon, BuildContext? context}) {
+  return InkWell(
+    onTap: tap,
+    borderRadius: BorderRadius.circular(8),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (imagePath != null)
+          Image.asset(
+            imagePath,
+            width: sel ? 60 : 40,
+            height: sel ? 60 : 40,
+            colorBlendMode: BlendMode.srcIn,
+          )
+        else if (icon != null)
+          Icon(
+            icon,
+            size: context!.isPhone ? 24 : 30,
+          ),
+      ],
+    ),
+  );
+}

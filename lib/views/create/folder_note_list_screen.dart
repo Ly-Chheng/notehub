@@ -3,7 +3,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
-import 'package:project_structure/controllers/notes/folder_controller.dart';
+import 'package:project_structure/controllers/home/folder_controller.dart';
 import 'package:project_structure/core/functions/fomat_date.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';

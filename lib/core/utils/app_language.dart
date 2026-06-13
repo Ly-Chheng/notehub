@@ -123,6 +123,7 @@ class AppTranslations extends Translations {
           'select_question': 'Select Question',
           'enter_your_answer': 'Enter your answer',
           'remove_lock_desc': 'Please enter your current password to remove all protection.',
+          'select_option': 'Select option',
 
           'submit': 'Submit',
           'forget_password_desc': 'Verify your identity using your security question to reset your password.',
@@ -317,7 +318,7 @@ class AppTranslations extends Translations {
         'km_KM': {
           // General
           'more': 'បន្ថែម',
-          'focus_track': 'កម្មវិធីផ្ដោតអារម្មណ៍',
+          'focus_track': 'ការផ្ដោតអារម្មណ៍',
           'locale': 'km',
           'home': 'ទំព័រដើម',
           'search': 'ស្វែងរក',
@@ -431,6 +432,7 @@ class AppTranslations extends Translations {
           'enter_your_answer': 'បញ្ចូលចម្លើយរបស់អ្នក',
           'remove_lock_desc': 'សូមបញ្ចូលពាក្យសម្ងាត់បច្ចុប្បន្នរបស់អ្នក ដើម្បីដកការការពារទាំងអស់។',
           'submit': 'បញ្ជូន',
+          'select_option': 'ជ្រើសរើសជម្រើស',
 
           //create password
           'forget_password_desc': 'ផ្ទៀងផ្ទាត់អត្តសញ្ញាណរបស់អ្នកដោយប្រើសំណួរសុវត្ថិភាព ដើម្បីកំណត់ពាក្យសម្ងាត់ឡើងវិញ។',
@@ -562,7 +564,7 @@ class AppTranslations extends Translations {
 
           // Timer
           'stopwatch': 'នាឡិកា​កំណត់​ពេល',
-          'timer': 'កំណត់ម៉ោង',
+          'timer': 'ម៉ោង',
           'duration': 'រយៈពេល',
           'quick_presets': 'ការកំណត់ទុកជាមុន',
           'add_quick_preset': 'បន្ថែមការកំណត់រហ័ស',

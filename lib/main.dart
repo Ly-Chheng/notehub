@@ -23,7 +23,6 @@ import 'package:flutter_quill/flutter_quill.dart';
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  // debugPrint("-------------Handling a background message: ${message.data}");
 }
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -57,10 +56,8 @@ Future<void> main() async {
 
   /// HIVE INIT (SETTINGS + TRASH + TIMER)
   Hive.registerAdapter(TimerModelAdapter());
-
   await Hive.deleteFromDisk();
   // await GetStorage().erase();
-
   await Hive.openBox<TimerModel>('timer_box');
   await Hive.openBox('create_timer_box');
 

@@ -65,7 +65,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       selectedHours = 1;
       selectedMinutes = 20;
       selectedSeconds = 40;
-      _labelController = TextEditingController(text: (widget.existingTimer?.title != null && widget.existingTimer!.title.isNotEmpty) ? widget.existingTimer!.title : "Timer");
+      _labelController = TextEditingController(text: (widget.existingTimer?.title != null && widget.existingTimer!.title.isNotEmpty) ? widget.existingTimer!.title : "timer".tr);
       selectedSound = 'default_sound'.tr;
     }
 
@@ -226,7 +226,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: Layout.padding(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

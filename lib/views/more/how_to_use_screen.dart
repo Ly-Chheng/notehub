@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
 class HowToUseScreen extends StatelessWidget {
@@ -17,13 +18,11 @@ class HowToUseScreen extends StatelessWidget {
       appBar: customAppBar(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         title: "how_to_use".tr,
-        titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
         actions: [],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(20),
+        padding: Layout.padding(),
         children: [
           const SizedBox(height: 10),
           Container(

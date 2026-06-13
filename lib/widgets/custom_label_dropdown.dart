@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
-class LabelSettingsWidget extends StatefulWidget {
-  final String selectedValue;
+class LabelSettingsWidget extends StatelessWidget {
+  final String? selectedValue;
   final Map<String, String> itemsMap;
   final Function(String) onChanged;
+  final String hint;
 
   const LabelSettingsWidget({
     super.key,
     required this.selectedValue,
     required this.itemsMap,
     required this.onChanged,
+    this.hint = "Select option",
   });
 
-  @override
-  State<LabelSettingsWidget> createState() => _LabelSettingsWidgetState();
-}
-
-class _LabelSettingsWidgetState extends State<LabelSettingsWidget> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -31,18 +29,19 @@ class _LabelSettingsWidgetState extends State<LabelSettingsWidget> {
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
-              value: widget.selectedValue,
+              value: selectedValue,
+              hint: Text(hint, style: text16(context).copyWith(color: AppColor().gray)),
               dropdownColor: Theme.of(context).cardColor,
               isExpanded: true,
-              items: widget.itemsMap.keys.map((String name) {
+              items: itemsMap.keys.map((String name) {
                 return DropdownMenuItem<String>(
                   value: name,
-                  child: Text(name, style: text14(context)),
+                  child: Text(name, style: text16(context)),
                 );
               }).toList(),
               onChanged: (String? newValue) {
                 if (newValue != null) {
-                  widget.onChanged(newValue);
+                  onChanged(newValue);
                 }
               },
             ),

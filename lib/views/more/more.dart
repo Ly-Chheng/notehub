@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/views/more/widgets/change_language.dart';
 import 'package:project_structure/views/more/widgets/dark_mode.dart';
 import 'package:project_structure/views/more/widgets/notification.dart';
@@ -23,7 +24,7 @@ class _MoreScreenState extends State<MoreScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(left: 20, right: 20, bottom: 10, top: 10),
+        padding: Layout.padding(),
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
           child: Column(
@@ -32,8 +33,6 @@ class _MoreScreenState extends State<MoreScreen> {
                 buildMenuTile(Icons.info_outline, "about".tr, onTap: () {
                   Get.toNamed('/about');
                 }),
-                DarkModeView(),
-                NotificationView(),
                 buildMenuTile(Icons.help_outline, "how_to_use".tr, onTap: () {
                   Get.toNamed('/howToUse');
                 }),
@@ -53,18 +52,25 @@ class _MoreScreenState extends State<MoreScreen> {
                 ),
               ]),
               Padding(
-                padding: const EdgeInsets.only(top: 20, bottom: 60),
+                padding: const EdgeInsets.symmetric(vertical: 15),
                 child: _buildSectionContainer([
-                  buildMenuTile(Icons.lock_outline, "change_password".tr, onTap: () {
-                    Get.toNamed('/changePassword');
-                  }),
-                  buildMenuTile(Icons.sync_lock_outlined, "reset_password".tr, onTap: () {
-                    Get.toNamed('/resetPassword');
-                  }),
-                  buildMenuTile(Icons.lock_reset, "forget_password".tr, onTap: () {
-                    Get.toNamed('/fogetPassword');
-                  }, isLast: true),
+                  DarkModeView(),
+                  NotificationView(),
                 ]),
+              ),
+              _buildSectionContainer([
+                buildMenuTile(Icons.lock_outline, "change_password".tr, onTap: () {
+                  Get.toNamed('/changePassword');
+                }),
+                buildMenuTile(Icons.sync_lock_outlined, "reset_password".tr, onTap: () {
+                  Get.toNamed('/resetPassword');
+                }),
+                buildMenuTile(Icons.lock_reset, "forget_password".tr, onTap: () {
+                  Get.toNamed('/fogetPassword');
+                }, isLast: true),
+              ]),
+              SizedBox(
+                height: 15,
               ),
               Text(
                 "copyright".tr,

@@ -4,7 +4,7 @@ import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/create/components/media_logic_component.dart';
-import 'package:project_structure/views/create/components/quill_media_components.dart';
+import 'package:project_structure/views/create/components/quill_file_component.dart';
 
 class QuillEditorComponent extends StatelessWidget {
   final QuillController controller;

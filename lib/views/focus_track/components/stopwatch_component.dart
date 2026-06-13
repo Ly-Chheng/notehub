@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/focus_track/stopwatch_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 
 class StopwatchScreen extends StatelessWidget {
   StopwatchScreen({super.key});
@@ -16,7 +17,7 @@ class StopwatchScreen extends StatelessWidget {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          padding: Layout.padding(),
           child: Column(
             children: [
               SizedBox(height: size),

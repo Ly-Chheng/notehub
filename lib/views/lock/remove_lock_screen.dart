@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
@@ -34,9 +35,7 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         title: "",
-        titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
             onPressed: () {
@@ -55,7 +54,8 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          // padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          padding: Layout.padding(),
           child: Column(
             children: [
               Center(child: customHeader("reset_password".tr, context)),

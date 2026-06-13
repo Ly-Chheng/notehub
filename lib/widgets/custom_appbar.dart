@@ -47,7 +47,7 @@ customAppBar({
                     },
                 child: Icon(
                   Icons.arrow_back_ios,
-                  color: leadingColor ?? AppColor().white,
+                  color: leadingColor ?? AppColor().primaryColor,
                 ),
               )
         : leading,

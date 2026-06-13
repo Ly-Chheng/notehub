@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
@@ -49,9 +50,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         title: "",
-        titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
             onPressed: () {
@@ -71,7 +70,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                padding: Layout.padding(),
                 child: Column(
                   children: [
                     Center(child: customHeader("forget_password".tr, context)),

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/controllers/notes/folder_controller.dart';
+import 'package:project_structure/controllers/home/folder_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/functions/fomat_date.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
-import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/selection_mode_toggle.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
@@ -41,42 +42,19 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         title: "recently_deleted".tr,
-        titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
         actions: [
           Obx(() {
             final bool hasNoData = controller.trashNotes.isEmpty;
-
-            return InkWell(
-              onTap: hasNoData
-                  ? null
-                  : () {
-                      setState(() {
-                        isSelectionMode = !isSelectionMode;
-                        selectedNoteIds.clear();
-                      });
-                    },
-              borderRadius: BorderRadius.circular(5),
-              child: Container(
-                height: 24,
-                width: 24,
-                padding: const EdgeInsets.all(2),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: hasNoData ? AppColor().gray : AppColor().primaryColor,
-                    width: 1,
-                  ),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Center(
-                  child: Icon(
-                    isSelectionMode ? Icons.close : Icons.more_vert_outlined,
-                    size: 18,
-                    color: hasNoData ? AppColor().gray : AppColor().primaryColor,
-                  ),
-                ),
-              ),
+            return SelectionModeToggle(
+              hasNoData: hasNoData,
+              isSelectionMode: isSelectionMode,
+              onToggle: () {
+                setState(() {
+                  isSelectionMode = !isSelectionMode;
+                  selectedNoteIds.clear();
+                });
+              },
             );
           }),
           const SizedBox(width: 10),
@@ -217,7 +195,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
 
   Widget _buildSelectionBottomBar() {
     return BottomAppBar(
-      height: 55,
+      height: 60,
       color: Theme.of(context).cardColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

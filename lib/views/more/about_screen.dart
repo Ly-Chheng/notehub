@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
 class AboutScreen extends StatelessWidget {
@@ -21,7 +22,7 @@ class AboutScreen extends StatelessWidget {
         leadingColor: AppColor().primaryColor,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: Layout.padding(),
         child: Column(
           children: [
             Container(

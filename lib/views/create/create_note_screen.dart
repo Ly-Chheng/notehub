@@ -7,12 +7,14 @@ import 'package:get/get.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
-import 'package:project_structure/controllers/notes/folder_controller.dart';
+import 'package:project_structure/controllers/home/folder_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/functions/format_file_size.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/note/note_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/views/create/components/popup_menu_component.dart';
 import 'package:project_structure/views/create/components/background_component.dart';
 import 'package:project_structure/views/create/components/format_component.dart';
 import 'package:project_structure/views/create/components/media_component.dart';
@@ -546,11 +548,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               vertical: 10,
             ),
             padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 15 : 40, vertical: context.isPhone ? 3 : 10),
-            decoration: BoxDecoration(
-              color: Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(40),
-              boxShadow: AppDecorations.subtleShadow,
-            ),
+            decoration: Layout.cardDecoration(radius: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -609,9 +607,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       backgroundColor: effectiveBg,
       appBar: customAppBar(
         title: widget.isEditing ? "edit_note".tr : "create_note".tr,
-        titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
         actions: [
           if (isLocked) Icon(Icons.lock_outline, color: AppColor().primaryColor, size: 20),
           AnimatedBuilder(
@@ -636,33 +632,45 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               },
             ),
           ),
+          // AnimatedBuilder(
+          //   animation: Listenable.merge([titleController, _quillController]),
+          //   builder: (context, _) {
+          //     final bool isEmpty = _isNoteEmpty;
+
+          //     return PopupMenuButton<String>(
+          //       color: Theme.of(context).cardColor,
+          //       enabled: !isEmpty,
+          //       onOpened: _forceUnfocus,
+          //       icon: Container(
+          //         padding: const EdgeInsets.all(2),
+          //         decoration: BoxDecoration(
+          //           border: Border.all(color: isEmpty ? AppColor().gray : AppColor().primaryColor, width: 1),
+          //           borderRadius: BorderRadius.circular(5),
+          //         ),
+          //         child: Icon(Icons.more_vert_outlined, color: isEmpty ? AppColor().gray : AppColor().primaryColor, size: 18),
+          //       ),
+          //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          //       offset: const Offset(0, 50),
+          //       onSelected: (v) => _handleMenuSelection(v),
+          //       itemBuilder: (context) => [
+          //         buildPopupItem(context, isPinned ? 'unpin' : 'pin', isPinned ? Icons.push_pin_outlined : Icons.push_pin_outlined),
+          //         buildPopupItem(context, 'share', Icons.share_outlined),
+          //         buildPopupItem(context, 'move_note', Icons.folder_outlined),
+          //         buildPopupItem(context, isLocked ? 'unlock_note' : 'lock_note', isLocked ? Icons.lock_open : Icons.lock_outline),
+          //         buildPopupItem(context, 'delete', Icons.delete_outline, color: AppColor().red),
+          //       ],
+          //     );
+          //   },
+          // ),
           AnimatedBuilder(
             animation: Listenable.merge([titleController, _quillController]),
             builder: (context, _) {
-              final bool isEmpty = _isNoteEmpty;
-
-              return PopupMenuButton<String>(
-                color: Theme.of(context).cardColor,
-                enabled: !isEmpty,
+              return NotePopupMenu(
+                isEmpty: _isNoteEmpty,
+                isPinned: isPinned,
+                isLocked: isLocked,
                 onOpened: _forceUnfocus,
-                icon: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: isEmpty ? AppColor().gray : AppColor().primaryColor, width: 1),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Icon(Icons.more_vert_outlined, color: isEmpty ? AppColor().gray : AppColor().primaryColor, size: 18),
-                ),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                offset: const Offset(0, 50),
                 onSelected: (v) => _handleMenuSelection(v),
-                itemBuilder: (context) => [
-                  buildPopupItem(context, isPinned ? 'unpin' : 'pin', isPinned ? Icons.push_pin_outlined : Icons.push_pin_outlined),
-                  buildPopupItem(context, 'share', Icons.share_outlined),
-                  buildPopupItem(context, 'move_note', Icons.folder_outlined),
-                  buildPopupItem(context, isLocked ? 'unlock_note' : 'lock_note', isLocked ? Icons.lock_open : Icons.lock_outline),
-                  buildPopupItem(context, 'delete', Icons.delete_outline, color: AppColor().red),
-                ],
               );
             },
           ),

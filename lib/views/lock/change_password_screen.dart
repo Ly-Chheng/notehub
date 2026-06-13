@@ -3,7 +3,9 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_label_dropdown.dart';
 
 import 'package:project_structure/widgets/custom_text_field.dart';
 
@@ -62,9 +64,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
         title: "",
-        titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
             onPressed: () {
@@ -88,7 +88,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10),
+            padding: Layout.padding(),
             child: Column(
               children: [
                 Center(child: customHeader("change_password".tr, context)),
@@ -118,14 +118,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                   false,
                   null,
                   controller: _hintController,
-                  trailing: Text(
-                    "optional".tr,
-                    style: TextStyle(
-                      color: AppColor().gray,
-                      fontSize: AppFontSize(context).normalTextSize,
-                      fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
-                    ),
-                  ),
+                  trailing: Text("optional".tr, style: text12.copyWith(color: AppColor().gray)),
                 ),
                 const SizedBox(height: 30),
                 _buildSecurityHeader(),
@@ -164,36 +157,11 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   }
 
   Widget _buildDropdown() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.grey.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _selectedQuestion,
-          dropdownColor: Theme.of(context).cardColor,
-          hint: Text(
-            "select_question".tr,
-            style: text16(context).copyWith(
-              color: AppColor().gray,
-            ),
-          ),
-          isExpanded: true,
-          icon: Icon(Icons.keyboard_arrow_down, color: AppColor().gray),
-          items: _lockController.questions.map((String q) {
-            return DropdownMenuItem(
-              value: q,
-              child: Text(q,
-                  style: text12.copyWith(
-                    color: AppColor().gray,
-                  )),
-            );
-          }).toList(),
-          onChanged: (val) => setState(() => _selectedQuestion = val),
-        ),
-      ),
+    return LabelSettingsWidget(
+      selectedValue: _selectedQuestion,
+      hint: "select_question".tr,
+      itemsMap: {for (var q in _lockController.questions) q: q},
+      onChanged: (val) => setState(() => _selectedQuestion = val),
     );
   }
 }

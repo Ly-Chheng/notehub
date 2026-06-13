@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/controllers/notes/folder_controller.dart';
-import 'package:project_structure/models/note/folder_model.dart';
+import 'package:project_structure/controllers/home/folder_controller.dart';
+import 'package:project_structure/models/home/folder_model.dart';
 import 'package:project_structure/widgets/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/multi_style.dart';

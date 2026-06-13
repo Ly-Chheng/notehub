@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/controllers/notes/folder_controller.dart';
+import 'package:project_structure/controllers/home/folder_controller.dart';
 import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';

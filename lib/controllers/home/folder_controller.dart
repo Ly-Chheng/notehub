@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:project_structure/core/database/database_service.dart';
-import 'package:project_structure/models/note/folder_model.dart';
+import 'package:project_structure/models/home/folder_model.dart';
 
 class FolderController extends GetxController {
   var folders = <FolderModel>[].obs;
