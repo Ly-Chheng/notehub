@@ -6,7 +6,7 @@ import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/views/more/components/change_language.dart';
 import 'package:project_structure/views/more/components/dark_mode.dart';
 import 'package:project_structure/views/more/components/notification.dart';
-import 'package:project_structure/widgets/custom_card_setting.dart';
+import 'package:project_structure/widgets/card_and_button/custom_card_setting.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({

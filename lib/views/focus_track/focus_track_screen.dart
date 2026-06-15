@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
-import 'package:project_structure/views/focus_track/components/timer_component.dart';
-import 'package:project_structure/views/focus_track/components/stopwatch_component.dart';
+import 'package:project_structure/views/focus_track/components/timer_list.dart';
+import 'package:project_structure/views/focus_track/components/stopwatch.dart';
 
 class FocusTrackScreen extends StatefulWidget {
   final ValueChanged<int>? onToggleChanged;
@@ -18,7 +18,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
 
   final List<Widget> screens = [
     StopwatchScreen(),
-    TimerComponent(),
+    TimerList(),
   ];
 
   void _handleToggle(int index) {

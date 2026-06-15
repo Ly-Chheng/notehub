@@ -14,7 +14,7 @@ import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
-import 'package:project_structure/widgets/costom_folder_list.dart';
+import 'package:project_structure/widgets/custom_folder_list.dart';
 import 'package:project_structure/widgets/rounded_file_image.dart';
 
 class RecentlyDeletedScreen extends StatefulWidget {

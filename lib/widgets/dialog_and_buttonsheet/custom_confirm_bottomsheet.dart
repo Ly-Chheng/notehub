@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
-import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_button.dart';
+import 'package:project_structure/widgets/card_and_button/custom_button.dart';
 
 class ConfirmBottomSheet {
   static void show({

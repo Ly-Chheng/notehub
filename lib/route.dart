@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:project_structure/views/bottom_navigation/navigationbar.dart';
-import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
+import 'package:project_structure/views/focus_track/components/create_timer.dart';
 import 'package:project_structure/views/focus_track/focus_track_screen.dart';
 import 'package:project_structure/views/more/recently_deleted_screen.dart';
 import 'package:project_structure/views/home/home_screen.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/change_language_controller.dart';
-import 'package:project_structure/widgets/custom_card_setting.dart';
+import 'package:project_structure/widgets/card_and_button/custom_card_setting.dart';
 
 class ChangeLanguageView extends GetView<ChangeLanguageController> {
   const ChangeLanguageView({super.key});

@@ -8,14 +8,14 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
-import 'package:project_structure/views/focus_track/components/create_timer_component.dart';
-import 'package:project_structure/views/focus_track/components/timer_detail_screen.dart';
+import 'package:project_structure/views/focus_track/components/create_timer.dart';
+import 'package:project_structure/views/focus_track/components/timer_detail.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 
-class TimerComponent extends StatelessWidget {
-  const TimerComponent({super.key});
+class TimerList extends StatelessWidget {
+  const TimerList({super.key});
 
   @override
   Widget build(BuildContext context) {
