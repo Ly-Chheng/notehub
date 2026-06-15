@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -14,10 +13,9 @@ import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/core/services/themes_services.dart';
 import 'package:project_structure/core/utils/app_language.dart';
 import 'package:project_structure/core/functions/local_storage.dart';
-import 'package:project_structure/firebase_options.dart';
+import 'package:project_structure/widgets/firebase_options.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/route.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 
@@ -29,9 +27,6 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  var databasesPath = await getDatabasesPath();
-  log("--- DATABASE LOCATION --->$databasesPath");
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -57,7 +52,6 @@ Future<void> main() async {
   /// HIVE INIT (SETTINGS + TRASH + TIMER)
   Hive.registerAdapter(TimerModelAdapter());
   await Hive.deleteFromDisk();
-  // await GetStorage().erase();
   await Hive.openBox<TimerModel>('timer_box');
   await Hive.openBox('create_timer_box');
 

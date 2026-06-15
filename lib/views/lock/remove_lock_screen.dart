@@ -54,7 +54,6 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SingleChildScrollView(
-          // padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
           padding: Layout.padding(),
           child: Column(
             children: [

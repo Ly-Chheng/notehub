@@ -5,7 +5,7 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
-import 'package:project_structure/widgets/custom_label_dropdown.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dropdown.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 
 class CreatePasswordScreen extends StatefulWidget {
@@ -122,7 +122,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
       children: [
         Text("security_question_verification".tr, style: text16(context)),
         const SizedBox(height: 10),
-        LabelSettingsWidget(
+        CustomDropdown(
           hint: "select_security_question".tr,
           selectedValue: _selectedQuestion,
           itemsMap: {for (var q in _controller.questions) q: q},

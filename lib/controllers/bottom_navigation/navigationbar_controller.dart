@@ -23,7 +23,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/views/focus_track/focus_track_screen.dart';
 import 'package:project_structure/views/home/home_screen.dart';
-import 'package:project_structure/views/more/more.dart';
+import 'package:project_structure/views/more/more_screen.dart';
 
 class BottomNavigationBarController extends GetxController {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();

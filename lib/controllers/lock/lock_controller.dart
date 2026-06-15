@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/home/folder_controller.dart';
 import 'package:project_structure/core/database/database_service.dart';
-import 'package:project_structure/controllers/notes/note_controller.dart';
+import 'package:project_structure/controllers/note/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
-import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
 class LockController extends GetxController {
   List<String> get questions => [

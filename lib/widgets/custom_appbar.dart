@@ -37,7 +37,7 @@ customAppBar({
                     },
                 child: Icon(
                   Icons.arrow_back,
-                  color: leadingColor ?? AppColor().white,
+                  color: leadingColor ?? AppColor().primaryColor,
                 ),
               )
             : GestureDetector(

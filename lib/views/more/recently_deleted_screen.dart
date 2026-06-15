@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/home/folder_controller.dart';
-import 'package:project_structure/controllers/notes/note_controller.dart';
+import 'package:project_structure/controllers/note/note_controller.dart';
 import 'package:project_structure/core/functions/fomat_date.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/selection_bottom_bar.dart';
 import 'package:project_structure/widgets/selection_mode_toggle.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
-import 'package:project_structure/widgets/custom_confirm_bottomsheet.dart';
-import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/costom_folder_list.dart';
@@ -189,31 +190,13 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: isSelectionMode ? _buildSelectionBottomBar() : null,
-    );
-  }
-
-  Widget _buildSelectionBottomBar() {
-    return BottomAppBar(
-      height: 60,
-      color: Theme.of(context).cardColor,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-            icon: Icon(Icons.folder, color: AppColor().primaryColor, size: context.isPhone ? 25 : 30),
-            onPressed: selectedNoteIds.isEmpty ? null : _handleBulkMoveRestore,
-          ),
-          Text(
-            '${selectedNoteIds.length} ${'selected'.tr} ',
-            style: text10,
-          ),
-          IconButton(
-            icon: Icon(Icons.delete, color: AppColor().red, size: context.isPhone ? 25 : 30),
-            onPressed: selectedNoteIds.isEmpty ? null : _handleBulkPermanentDelete,
-          ),
-        ],
-      ),
+      bottomNavigationBar: isSelectionMode
+          ? SelectionBottomBar(
+              selectedCount: selectedNoteIds.length,
+              onMove: _handleBulkMoveRestore,
+              onDelete: _handleBulkPermanentDelete,
+            )
+          : null,
     );
   }
 

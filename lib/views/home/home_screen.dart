@@ -5,18 +5,18 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/home/folder_controller.dart';
-import 'package:project_structure/controllers/notes/note_controller.dart';
+import 'package:project_structure/controllers/note/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/home/folder_model.dart';
-import 'package:project_structure/views/create/create_note_screen.dart';
-import 'package:project_structure/views/create/folder_note_list_screen.dart';
-import 'package:project_structure/views/home/components/create_folder_component.dart';
-import 'package:project_structure/widgets/custom_dialog.dart';
+import 'package:project_structure/views/create_note/create_note_screen.dart';
+import 'package:project_structure/views/folder_note_list/folder_note_list_screen.dart';
+import 'package:project_structure/views/home/components/create_folder.dart';
+import 'package:project_structure/views/home/components/folder_search.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_fab.dart';
 import 'package:project_structure/widgets/custom_slidableasction.dart';
-import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/multi_style.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -127,7 +127,11 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildFolderSearchBar(),
+          FolderSearch(
+            controller: folderSearchController,
+            folderController: controller,
+            showcaseKey: _firstShowcaseWidget,
+          ),
           Expanded(
             child: Obx(() {
               final displayedFolders = controller.filteredFolders;
@@ -305,7 +309,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _handleEditFolder(BuildContext context, FolderModel folder) async {
     if (!folder.isLocked) {
-      showFolderSheet(context, folder: folder);
+      createFolder(context, folder: folder);
       return;
     }
     final settings = await lockController.getSecuritySettings();
@@ -325,7 +329,7 @@ class _MyHomePageState extends State<MyHomePage> {
       onConfirm: () {
         if (verifyPassController.text == storedPass) {
           Get.back();
-          showFolderSheet(context, folder: folder);
+          createFolder(context, folder: folder);
         } else {
           AppSnackbar.showError(
             title: "verification_failed".tr,
@@ -496,42 +500,6 @@ class _MyHomePageState extends State<MyHomePage> {
             color: AppColor().white,
           ),
       ],
-    );
-  }
-
-  Widget _buildFolderSearchBar() {
-    return Padding(
-      padding: Layout.padding(),
-      child: Showcase(
-        key: _firstShowcaseWidget,
-        description: 'tap_to_search'.tr,
-        descTextStyle: text14(context).copyWith(color: AppColor().black),
-        onBarrierClick: () {
-          debugPrint('Barrier clicked');
-          debugPrint(
-            'Floating Action widget for first showcase is now hidden',
-          );
-          ShowcaseView.get().hideFloatingActionWidgetForKeys([
-            _firstShowcaseWidget,
-            _lastShowcaseWidget,
-          ]);
-        },
-        targetBorderRadius: BorderRadius.circular(12),
-        tooltipBorderRadius: BorderRadius.circular(12),
-        tooltipActionConfig: const TooltipActionConfig(
-          alignment: MainAxisAlignment.end,
-          position: TooltipActionPosition.outside,
-          gapBetweenContentAndAction: 10,
-        ),
-        child: customTextField(
-          "search".tr,
-          false,
-          null,
-          controller: folderSearchController,
-          onChanged: (v) => controller.searchFolders(v),
-          prefixIcon: const Icon(Icons.search),
-        ),
-      ),
     );
   }
 }
