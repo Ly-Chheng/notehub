@@ -52,7 +52,6 @@ class NoteModel {
   factory NoteModel.fromMap(Map<String, dynamic> map) {
     return NoteModel(
       id: map['id'],
-      // folderId: map['folder_id'],
       folderId: map['folder_id'] ?? 0,
       title: map['title'] ?? "",
       content: map['content'] ?? "",

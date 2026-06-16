@@ -10,6 +10,7 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create_note/create_note_screen.dart';
 import 'package:project_structure/views/folder_note_list/components/note_card.dart';
 import 'package:project_structure/views/folder_note_list/components/note_search.dart';
+import 'package:project_structure/widgets/custom_snack_bar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/selection_bottom_bar.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';

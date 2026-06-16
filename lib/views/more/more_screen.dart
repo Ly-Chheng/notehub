@@ -4,7 +4,7 @@ import 'package:project_structure/controllers/more/theme_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
-import 'package:project_structure/views/more/components/font_size_view.dart';
+import 'package:project_structure/views/more/components/font_size.dart';
 import 'package:project_structure/views/more/components/change_language.dart';
 import 'package:project_structure/views/more/components/dark_mode.dart';
 import 'package:project_structure/views/more/components/notification.dart';

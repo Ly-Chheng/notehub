@@ -45,9 +45,7 @@ Future<void> main() async {
 
   /// SQLITE INIT (NOTES + FOLDERS)
   await DatabaseService.initDB();
-
   WidgetsFlutterBinding.ensureInitialized();
-
   await Hive.initFlutter();
 
   /// HIVE INIT (SETTINGS + TRASH + TIMER)

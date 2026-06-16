@@ -144,7 +144,7 @@ class TimerList extends StatelessWidget {
                               color: Theme.of(context).colorScheme.onSurface,
                             )),
                         Text("${'total'.tr} ${controller.formatToHMS(timer.totalSeconds)}",
-                            style: text10.copyWith(
+                            style: text12.copyWith(
                               color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface.withAlpha(150),
                             )),
                       ],
@@ -161,7 +161,7 @@ class TimerList extends StatelessWidget {
   }
 
   Widget _buildiPhoneCircle(TimerController controller, TimerModel timer, double progress, bool isFinished, bool isRunning, BuildContext context) {
-    final size = context.isPhone ? 55.0 : 65.0;
+    final size = context.isPhone ? 60.0 : 65.0;
     return GestureDetector(
       onTap: () {
         SoundService.stopSound();
@@ -205,8 +205,8 @@ class TimerList extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
-          color: color.withOpacity(0.08),
-          border: Border.all(color: color.withOpacity(0.15)),
+          color: color.withValues(alpha: 0.08),
+          border: Border.all(color: color.withValues(alpha: 0.15),),
         ),
         child: Row(
           children: [

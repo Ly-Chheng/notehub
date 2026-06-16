@@ -7,8 +7,6 @@ import 'package:project_structure/widgets/custom_appbar.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
-  String get _bodyFont => Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR';
-  String get _boldFont => Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD';
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +46,11 @@ class AboutScreen extends StatelessWidget {
                     child: Icon(Icons.auto_stories_rounded, size: 50, color: AppColor().white),
                   ),
                   const SizedBox(height: 18),
-                  Text("about_app_name".tr, style: TextStyle(fontSize: 28, color: AppColor().white, fontFamily: _boldFont)),
+                  Text("about_app_name".tr,
+                      style: text18(context).copyWith(
+                        fontSize: 28,
+                        color: AppColor().white,
+                      )),
                   const SizedBox(height: 8),
                   Text("about_slogan".tr, style: text14(context).copyWith(color: AppColor().white.withValues(alpha: 0.9))),
                   const SizedBox(height: 22),
@@ -88,25 +90,6 @@ class AboutScreen extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(24),
-                boxShadow: AppDecorations.subtleShadow,
-              ),
-              child: Column(
-                children: [
-                  _buildContactTile(Icons.email_outlined, "contact_email".tr, "support@studentnoteapp.com"),
-                  Divider(color: Colors.grey.withValues(alpha: 0.2)),
-                  _buildContactTile(Icons.language_rounded, "contact_website".tr, "www.studentnoteapp.com"),
-                ],
-              ),
-            ),
-            const SizedBox(height: 30),
-            Text("copyright_footer".tr, style: text12.copyWith(color: AppColor().gray)),
           ],
         ),
       ),
@@ -146,22 +129,13 @@ class AboutScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, fontFamily: _boldFont)),
-                Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 14, fontFamily: _bodyFont)),
+                Text(title, style: TextStyle(fontSize: 16, fontFamily: 'EN-BOLD')),
+                Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 16, fontFamily: 'EN-BOLD')),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildContactTile(IconData icon, String title, String subtitle) {
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(backgroundColor: AppColor().primaryColor.withValues(alpha: 0.1), child: Icon(icon, color: AppColor().primaryColor)),
-      title: Text(title, style: TextStyle(fontFamily: _bodyFont)),
-      subtitle: Text(subtitle, style: TextStyle(fontFamily: _bodyFont)),
     );
   }
 }
