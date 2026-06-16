@@ -51,7 +51,7 @@ class NotificationView extends StatelessWidget {
                 Obx(() => Switch.adaptive(
                       value: controller.isNotificationEnabled.value,
                       onChanged: (value) => controller.toggleNotifications(value),
-                      activeTrackColor: AppColor().primaryColor,
+                      // activeTrackColor: AppColor().primaryColor,
                     )),
               ],
             ),

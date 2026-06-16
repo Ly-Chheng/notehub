@@ -166,7 +166,8 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                         contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                         title: Text(
                                           displayTitle,
-                                          style: text18(context),
+                                          // style: text18(context),
+                                          style: font18(context).copyWith(),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),

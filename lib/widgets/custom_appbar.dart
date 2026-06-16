@@ -25,6 +25,8 @@ customAppBar({
         overflow: TextOverflow.ellipsis,
         style: text20(context).copyWith(
           color: Theme.of(context).textTheme.bodyLarge?.color,
+          fontFamily: 'EN-BOLD',
+          fontFamilyFallback: const ['KH-BOLD'],
         )),
     automaticallyImplyLeading: false,
     leading: isLeading

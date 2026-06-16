@@ -140,7 +140,7 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                               Text("resize".tr, style: text16(context)),
                               Text(
                                 "${(_widthPercentage * 100).round()}%",
-                                style: TextStyle(fontWeight: FontWeight.bold, color: AppColor().primaryColor, fontFamily: AppFonts().rengular),
+                                style: TextStyle(fontWeight: FontWeight.bold, color: AppColor().primaryColor, fontFamily: AppFonts().fontEngRegular),
                               ),
                             ],
                           ),

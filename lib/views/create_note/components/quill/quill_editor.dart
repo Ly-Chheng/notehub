@@ -47,7 +47,7 @@ class QuillEditorComponent extends StatelessWidget {
             TextStyle(
               fontSize: context.isPhone ? 16 : 18,
               height: 1.4,
-              fontFamily: AppFonts().rengular,
+              fontFamily: AppFonts().fontEngRegular,
               fontFamilyFallback: const ['KH-REGULAR'],
               color: effectiveColor,
             ),
@@ -60,7 +60,7 @@ class QuillEditorComponent extends StatelessWidget {
             TextStyle(
               fontSize: 16,
               height: 1.4,
-              fontFamily: AppFonts().rengular,
+              fontFamily: AppFonts().fontEngRegular,
               fontFamilyFallback: const ['KH-REGULAR'],
               color: effectiveColor.withValues(alpha: 0.6),
             ),

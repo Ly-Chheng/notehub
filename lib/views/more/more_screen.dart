@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/theme_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
+import 'package:project_structure/views/more/components/font_size_view.dart';
 import 'package:project_structure/views/more/components/change_language.dart';
 import 'package:project_structure/views/more/components/dark_mode.dart';
 import 'package:project_structure/views/more/components/notification.dart';
@@ -46,6 +48,13 @@ class _MoreScreenState extends State<MoreScreen> {
                 ),
                 ChangeLanguageView(),
                 CustomCardSetting(
+                  icon: Icons.text_fields,
+                  title: "font_size".tr,
+                  onTap: () {
+                    Get.bottomSheet(const FontSizeBottomSheet());
+                  },
+                ),
+                CustomCardSetting(
                   icon: Icons.share_outlined,
                   title: "share_app".tr,
                   onTap: () {},
@@ -84,23 +93,18 @@ class _MoreScreenState extends State<MoreScreen> {
                   icon: Icons.lock_reset,
                   title: "forget_password".tr,
                   onTap: () {
-                    Get.toNamed('/forgetPassword');
+                    Get.toNamed('/fogetPassword');
                   },
                 ),
               ]),
               SizedBox(
                 height: 15,
               ),
-              Text(
-                "copyright".tr,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: AppColor().gray,
-                  fontSize: context.isPhone ? 12 : 14,
-                  height: 1.5,
-                  fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
-                ),
-              ),
+              Text("copyright".tr,
+                  textAlign: TextAlign.center,
+                  style: text12.copyWith(
+                    height: 1.5,
+                  )),
             ],
           ),
         ),

@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 
 class AppFonts {
   // English Fonts "Nunito"
-  String rengular = 'EN-REGULAR';
-  String sumibold = 'EN-SEMIBOLD';
-  String bold = 'EN-BOLD';
+  String fontEngRegular = 'EN-REGULAR';
+  String fontEngMedium = 'EN-SEMIBOLD';
+  String fontEngBold = 'EN-BOLD';
   String fontExBold = 'EN-BOLD';
 
   // Khmer Fonts "Battambang"
@@ -20,6 +20,19 @@ class AppFonts {
   String fontEBold = 'Nunito-Extrabold';
 }
 
+// Font Family and font weight Custom
+class AppFontStyle {
+  String regularFont = AppFonts().fontRegular;
+  String mediumFont = AppFonts().fontMedium;
+  String boldFont = AppFonts().fontBold;
+  String fontebold = AppFonts().fontEBold;
+
+  String fontRegular = Get.locale == const Locale('km', 'KM') ? AppFonts().fontKhRegular : AppFonts().fontEngRegular;
+  String fontMedium = Get.locale == const Locale('km', 'KM') ? AppFonts().fontKhMedium : AppFonts().fontEngMedium;
+  String fontBold = Get.locale == const Locale('km', 'KM') ? AppFonts().fontKhBold : AppFonts().fontEngBold;
+}
+
+// Font Size Custom
 class AppFontSize {
   late double extraLargeSize;
   late double titleSize;
@@ -43,37 +56,36 @@ class AppFontSize {
   }
 }
 
+
+//Custom font 
 titleTextSyle() {
   return TextStyle(
-    fontFamily: AppFonts().rengular,
+    fontFamily: AppFonts().fontEngRegular,
     fontSize: AppFontSize(Get.context!).subTitleSize,
   );
 }
 
 TextStyle text10 = TextStyle(
   fontSize: AppFontSize(Get.context!).subNormalSize,
-  fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-REGULAR' : 'EN-REGULAR',
+  fontFamily: AppFontStyle().fontRegular,
 );
 
 TextStyle text12 = TextStyle(
   fontSize: AppFontSize(Get.context!).normalTextSize,
-  fontFamily: AppFonts().rengular,
-  fontFamilyFallback: const ['KH-REGULAR'],
+  fontFamily: AppFontStyle().fontRegular,
 );
 
 TextStyle text14(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(Get.context!).descriptionLargeSize,
-    fontFamily: AppFonts().rengular,
-    fontFamilyFallback: const ['KH-REGULAR'],
+    fontFamily: AppFontStyle().fontRegular,
   );
 }
 
 TextStyle text16(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(Get.context!).subTitleSize,
-    fontFamily: AppFonts().rengular,
-    fontFamilyFallback: const ['KH-REGULAR'],
+    fontFamily: AppFontStyle().fontRegular,
     color: Theme.of(context).textTheme.bodyLarge?.color,
   );
 }
@@ -81,8 +93,7 @@ TextStyle text16(BuildContext context) {
 TextStyle text18(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(context).mediumLargeSize,
-    fontFamily: AppFonts().bold,
-    fontFamilyFallback: const ['KH-BOLD'],
+    fontFamily: AppFontStyle().fontBold,
     color: Theme.of(context).textTheme.bodyLarge?.color,
   );
 }
@@ -90,8 +101,7 @@ TextStyle text18(BuildContext context) {
 TextStyle text20(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(Get.context!).titleSize,
-    fontFamily: AppFonts().rengular,
-    fontFamilyFallback: const ['KH-BOLD'],
+    fontFamily: AppFontStyle().fontBold,
     color: Theme.of(context).textTheme.bodyLarge?.color,
   );
 }
@@ -99,7 +109,7 @@ TextStyle text20(BuildContext context) {
 TextStyle text22(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(context).extraLargeSize,
-    fontFamily: AppFonts().rengular,
+    fontFamily: AppFontStyle().fontBold,
     color: Theme.of(context).textTheme.bodyLarge?.color,
   );
 }
@@ -109,8 +119,26 @@ Widget customHeader(String title, BuildContext context) {
     title,
     style: TextStyle(
       fontSize: AppFontSize(context).titleSize,
-      fontFamily: Get.locale == const Locale('km', 'KM') ? 'KH-BOLD' : 'EN-BOLD',
+      fontFamily: AppFontStyle().fontBold,
       color: Theme.of(context).textTheme.bodyLarge?.color,
     ),
+  );
+}
+
+TextStyle font16(BuildContext context) {
+  return TextStyle(
+    fontSize: AppFontSize(Get.context!).subTitleSize,
+    fontFamily: AppFonts().fontEngBold,
+    fontFamilyFallback: const ['KH-BOLD'],
+    color: Theme.of(context).textTheme.bodyLarge?.color,
+  );
+}
+
+TextStyle font18(BuildContext context) {
+  return TextStyle(
+    fontSize: AppFontSize(Get.context!).mediumLargeSize,
+    fontFamily: AppFonts().fontEngBold,
+    fontFamilyFallback: const ['KH-BOLD'],
+    color: Theme.of(context).textTheme.bodyLarge?.color,
   );
 }

@@ -448,7 +448,12 @@ class _MyHomePageState extends State<MyHomePage> {
             buildFolderIcon(folder, isDefault),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(folder.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: text16(context).copyWith(fontWeight: FontWeight.w600)),
+              child: Text(folder.title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: font16(context).copyWith(
+                    fontFamily: 'EN-BOLD',
+                  )),
             ),
             const SizedBox(width: 10),
             if (folder.isPinned)

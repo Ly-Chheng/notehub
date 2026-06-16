@@ -135,14 +135,13 @@ class TimerList extends StatelessWidget {
                         Text(timer.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: text16(context).copyWith(
+                            style: font16(context).copyWith(
                               color: Theme.of(context).colorScheme.onSurface,
                             )),
                         Text(controller.formatTime(currentSec),
                             style: TextStyle(
                               fontSize: context.isPhone ? 30 : 32,
                               color: Theme.of(context).colorScheme.onSurface,
-                              fontFamily: 'EN-BOLD',
                             )),
                         Text("${'total'.tr} ${controller.formatToHMS(timer.totalSeconds)}",
                             style: text10.copyWith(

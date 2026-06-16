@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/more/change_language_controller.dart';
+import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/card_and_button/custom_card_setting.dart';
 
 class ChangeLanguageView extends GetView<ChangeLanguageController> {
@@ -45,6 +46,7 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
                 child: ListView.builder(
                   shrinkWrap: true,
                   itemBuilder: (context, index) {
+                    final isSelected = Get.locale?.languageCode == controller.localeList[index]['locale'].languageCode;
                     return CupertinoButton(
                       child: Row(
                         children: [
@@ -58,13 +60,21 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
                             ),
                           ),
                           const SizedBox(width: 15),
-                          Text(
-                            controller.localeList[index]['name'],
-                            style: TextStyle(
-                                fontFamily: controller.localeList[index]['name'] == 'English' ? 'EN-REGULAR' : 'KH-REGULAR',
-                                fontSize: context.isPhone ? 14 : 18,
-                                color: Theme.of(context).textTheme.bodyLarge?.color),
+                          Expanded(
+                            child: Text(
+                              controller.localeList[index]['name'],
+                              style: TextStyle(
+                                  fontFamily: controller.localeList[index]['name'] == 'English' ? 'EN-REGULAR' : 'KH-REGULAR',
+                                  fontSize: context.isPhone ? 14 : 18,
+                                  color: Theme.of(context).textTheme.bodyLarge?.color),
+                            ),
                           ),
+                          if (isSelected)
+                            Icon(
+                              Icons.check,
+                              color: AppColor().primaryColor,
+                              size: 24,
+                            ),
                         ],
                       ),
                       onPressed: () {

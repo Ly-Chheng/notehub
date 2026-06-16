@@ -47,6 +47,7 @@ class AppTranslations extends Translations {
           'huge': 'Huge',
           'table_options': 'Table Options',
           'add_row': 'Add Row',
+          'a': 'A',
           'add_column': 'Add Column',
           'delete_table': 'Delete Table',
           'delete_table_confirm': 'Are you sure you want to delete this table?',
@@ -358,6 +359,7 @@ class AppTranslations extends Translations {
           'add_column': 'បន្ថែមជួរឈរ',
           'delete_table': 'លុបតារាង',
           'delete_table_confirm': 'តើអ្នកពិតជាចង់លុបតារាងនេះមែនទេ?',
+          'a': 'ក',
 
           //template
           'choose_template': 'ជ្រើសរើស​គំរូ',

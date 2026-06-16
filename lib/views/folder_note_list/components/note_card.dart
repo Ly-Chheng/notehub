@@ -140,14 +140,15 @@ class NoteCard extends StatelessWidget {
                               width: note.isLocked ? 6 : 0,
                             ),
                             Flexible(
-                              child: Text(
-                                titleText.isNotEmpty ? titleText : "untitled".tr,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: text18(context).copyWith(
-                                  color: itemTextColor,
-                                ),
-                              ),
+                              child: Text(titleText.isNotEmpty ? titleText : "untitled".tr,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  // style: text18(context).copyWith(
+                                  //   color: itemTextColor,
+                                  // ),
+                                  style: font18(context).copyWith(
+                                    color: itemTextColor,
+                                  )),
                             ),
                           ],
                         ),
@@ -158,7 +159,7 @@ class NoteCard extends StatelessWidget {
                               formatDateForLocale(
                                 note.date,
                               ),
-                              style: text14(context).copyWith(
+                              style: text16(context).copyWith(
                                 color: itemSubTextColor,
                               ),
                             ),
