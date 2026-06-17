@@ -7,13 +7,14 @@ class FolderController extends GetxController {
   var searchQuery = ''.obs;
 
   final String defaultFolderName = "My Note";
+  String get displayDefaultFolderName => 'default_folder_name'.tr;
 
   @override
   void onInit() {
     super.onInit();
     loadFolders();
   }
-  
+
   int get defaultFolderId {
     return folders
         .firstWhere(
@@ -21,6 +22,10 @@ class FolderController extends GetxController {
           orElse: () => folders.first,
         )
         .id!;
+  }
+
+  bool isDefaultName(String name) {
+    return name == defaultFolderName;
   }
 
   Future<void> loadFolders() async {

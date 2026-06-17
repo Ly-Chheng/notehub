@@ -12,7 +12,7 @@ class AppTranslations extends Translations {
           'locale': 'en',
           'home': 'HomeScreen',
           'search': 'Search',
-          'my_note': 'My Notes',
+          'default_folder_name': 'My Note',
           'folders': 'Folders',
           'more': 'More',
           'focus_track': 'Focus Track',
@@ -325,7 +325,7 @@ class AppTranslations extends Translations {
           'locale': 'km',
           'home': 'ទំព័រដើម',
           'search': 'ស្វែងរក',
-          'my_note': 'កំណត់ត្រារបស់ខ្ញុំ',
+          'default_folder_name': 'កំណត់ត្រារបស់ខ្ញុំ',
           'folders': 'ថតឯកសារ',
           'khmer': 'ភាសាខ្មែរ',
 

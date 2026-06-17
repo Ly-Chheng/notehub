@@ -5,6 +5,7 @@ import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/note/note_controller.dart';
 import 'package:project_structure/controllers/home/folder_controller.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/models/home/folder_model.dart';
 import 'package:project_structure/models/note/note_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create_note/create_note_screen.dart';
@@ -148,7 +149,8 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: widget.folderName,
+        // title: widget.folderName,
+        title: folderController.isDefaultName(widget.folderName) ? folderController.displayDefaultFolderName : widget.folderName,
         titleColor: AppColor().primaryColor,
         context: context,
         leadingColor: AppColor().primaryColor,

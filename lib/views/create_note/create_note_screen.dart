@@ -455,6 +455,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       content: _quillController.document.toPlainText(),
       selectedImages: selectedImages,
       noteController: noteController,
+      quillController: _quillController,
     );
   }
 

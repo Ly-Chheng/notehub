@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/note/note_controller.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
@@ -13,9 +14,21 @@ class ShareNote {
     required String content,
     required List<File> selectedImages,
     required NoteController noteController,
+    required QuillController quillController,
   }) {
+    // final bool hasImages = selectedImages.isNotEmpty;
+    // final bool hasText = title.trim().isNotEmpty || content.trim().isNotEmpty;
+    bool hasActualText() {
+      for (final operation in quillController.document.toDelta().toJson()) {
+        if (operation.containsKey('insert') && operation['insert'] is String) {
+          if (operation['insert'].toString().trim().isNotEmpty) return true;
+        }
+      }
+      return false;
+    }
+
     final bool hasImages = selectedImages.isNotEmpty;
-    final bool hasText = title.trim().isNotEmpty || content.trim().isNotEmpty;
+    final bool hasText = title.trim().isNotEmpty || hasActualText();
 
     ConfirmBottomSheet.show(
       context: context,
