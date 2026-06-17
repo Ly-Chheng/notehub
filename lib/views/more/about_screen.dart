@@ -84,9 +84,9 @@ class AboutScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  _buildFeatureItem(Icons.note_alt_outlined, "about_create_notes".tr, "about_create_notes_sub".tr),
-                  _buildFeatureItem(Icons.edit_note_rounded, "about_edit_anytime".tr, "about_edit_anytime_sub".tr),
-                  _buildFeatureItem(Icons.school_outlined, "about_study_smarter".tr, "about_study_smarter_sub".tr),
+                  _buildFeatureItem(Icons.note_alt_outlined, "about_create_notes".tr, "about_create_notes_sub".tr, context),
+                  _buildFeatureItem(Icons.edit_note_rounded, "about_edit_anytime".tr, "about_edit_anytime_sub".tr, context),
+                  _buildFeatureItem(Icons.school_outlined, "about_study_smarter".tr, "about_study_smarter_sub".tr, context),
                 ],
               ),
             ),
@@ -115,7 +115,7 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureItem(IconData icon, String title, String subtitle) {
+  Widget _buildFeatureItem(IconData icon, String title, String subtitle, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
@@ -129,8 +129,8 @@ class AboutScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(fontSize: 16, fontFamily: 'EN-BOLD')),
-                Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 16, fontFamily: 'EN-BOLD')),
+                Text(title, style: text16(context).copyWith(fontWeight: FontWeight.bold)),
+                Text(subtitle, style: text16(context).copyWith(color: AppColor().gray)),
               ],
             ),
           ),

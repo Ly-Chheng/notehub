@@ -378,8 +378,24 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           insertionIndex += 1;
         }
 
+        _quillController.document.insert(insertionIndex + 1, '\n'); // 3. Add a newline and update cursor
         _quillController.updateSelection(
           TextSelection.collapsed(offset: insertionIndex),
+          ChangeSource.local,
+        );
+
+        _triggerAutoSave();
+      },
+      onTextScanned: (String scannedText) {
+        if (scannedText.isEmpty) return;
+
+        // 1. Insert text at cursor position
+        final int index = _quillController.selection.baseOffset;
+        _quillController.document.insert(index, scannedText);
+
+        // 2. Move cursor to end of inserted text
+        _quillController.updateSelection(
+          TextSelection.collapsed(offset: index + scannedText.length),
           ChangeSource.local,
         );
 

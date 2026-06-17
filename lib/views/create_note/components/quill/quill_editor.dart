@@ -3,7 +3,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
-import 'package:project_structure/views/create_note/components/media_component.dart';
+import 'package:project_structure/views/create_note/components/quill/quill_madia.dart';
 import 'package:project_structure/views/create_note/components/quill/quill_file.dart';
 
 class QuillEditorComponent extends StatelessWidget {

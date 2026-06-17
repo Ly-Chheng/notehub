@@ -79,9 +79,11 @@ class AppTranslations extends Translations {
           'attach_file': 'Attach File',
           'video_options': 'Video Options',
           'image_options': 'Image Options',
+          'scan_text': 'Scan Text',
           'resize': 'Resize',
           'zoom': 'Zoom',
           'remove': 'Remove',
+          'no_text_detected_in_the_image': 'No text detected in the image.',
 
           // File Handling Actions
           'file_options': 'File Options',
@@ -388,9 +390,11 @@ class AppTranslations extends Translations {
           'attach_file': 'ភ្ជាប់ឯកសារ',
           'video_options': 'ជម្រើសវីដេអូ',
           'image_options': 'ជម្រើសរូបភាព',
+          'scan_text': 'អត្ថបទស្កេន',
           'resize': 'កែទំហំ',
           'zoom': 'ពង្រីក',
           'remove': 'លុបចេញ',
+          'no_text_detected_in_the_image': 'រកមិនឃើញអក្សរនៅក្នុងរូបភាពទេ។',
 
           // File Handling Actions
           'file_options': 'ជម្រើសឯកសារ',

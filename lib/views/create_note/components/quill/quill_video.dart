@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/views/create_note/components/quill/quill_media.dart';
+import 'package:project_structure/views/create_note/components/resizable_media.dart';
 import 'package:video_player/video_player.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 
