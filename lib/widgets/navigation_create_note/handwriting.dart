@@ -30,7 +30,8 @@ class HandwritingCanvas extends StatefulWidget {
 
 class _HandwritingCanvasState extends State<HandwritingCanvas> {
   final GlobalKey _repaintKey = GlobalKey();
-  List<SignatureController> _layers = [];
+  // List<SignatureController> _layers = [];
+  final List<SignatureController> _layers = [];
   late SignatureController _activeController;
 
   Color currentPenColor = Colors.black;
@@ -424,7 +425,8 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
   }
 
   Widget _colorCircle(Color color) {
-    bool isSelected = !isEraser && currentPenColor.value == color.value;
+    // bool isSelected = !isEraser && currentPenColor.value == color.value;
+    bool isSelected = !isEraser && currentPenColor == color;
     return GestureDetector(
       onTap: () => _updateBrush(color: color),
       child: Container(

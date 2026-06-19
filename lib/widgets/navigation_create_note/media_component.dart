@@ -1,9 +1,9 @@
 import 'dart:io';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:project_structure/controllers/note/media_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_snack_bar.dart';
 import 'package:project_structure/widgets/multi_style.dart';
@@ -14,34 +14,93 @@ void showMediaSheet({
   Function(String text)? onTextScanned,
 }) {
   final ImagePicker picker = ImagePicker();
+  final MediaController controller = Get.put(MediaController());
+
+  // Future<void> scanText() async {
+  //   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
+
+  //   // Pick the image first
+  //   final XFile? file = await picker.pickImage(source: ImageSource.camera);
+  //   Get.back();
+  //   if (file == null) return;
+
+  //   Get.dialog(
+  //     Center(
+  //         child: CircularProgressIndicator(
+  //       color: AppColor().primaryColor,
+  //     )),
+  //     barrierDismissible: false,
+  //   );
+
+  //   try {
+  //     final inputImage = InputImage.fromFilePath(file.path);
+  //     final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+
+  //     if (Get.isDialogOpen ?? false) Get.back();
+
+  //     if (recognizedText.text.isNotEmpty && context.mounted) {
+  //       // ONLY call the text scanner, skip onMediaSelected to avoid adding the image
+  //       onTextScanned?.call(recognizedText.text);
+
+  //       // Navigator.pop(context);
+  //     } else {
+  //       AppSnackbar.showError(
+  //         title: "error".tr,
+  //         message: "no_text_detected_in_the_image".tr,
+  //       );
+  //     }
+  //   } catch (e) {
+  //     if (Get.isDialogOpen ?? false) Get.back();
+  //     debugPrint("Error scanning text: $e");
+  //   } finally {
+  //     textRecognizer.close();
+  //   }
+  // }
 
   Future<void> scanText() async {
-    final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-
-    // Pick the image first
     final XFile? file = await picker.pickImage(source: ImageSource.camera);
     Get.back();
     if (file == null) return;
 
     Get.dialog(
-      Center(
-          child: CircularProgressIndicator(
-        color: AppColor().primaryColor,
-      )),
+      Center(child: CircularProgressIndicator(color: AppColor().primaryColor)),
       barrierDismissible: false,
     );
 
     try {
       final inputImage = InputImage.fromFilePath(file.path);
-      final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
+
+      // Multiple recognizers
+      final recognizers = [
+        TextRecognizer(script: TextRecognitionScript.korean),
+        TextRecognizer(script: TextRecognitionScript.chinese),
+        TextRecognizer(script: TextRecognitionScript.japanese),
+        TextRecognizer(script: TextRecognitionScript.latin),
+      ];
+
+      String bestText = "";
+
+      for (final recognizer in recognizers) {
+        final result = await recognizer.processImage(inputImage);
+
+        debugPrint(
+          "Detected (${recognizer.script.name}): ${result.text}",
+        );
+
+        // choose the longest/most meaningful result
+        if (result.text.length > bestText.length) {
+          bestText = result.text;
+        }
+
+        await recognizer.close();
+      }
 
       if (Get.isDialogOpen ?? false) Get.back();
 
-      if (recognizedText.text.isNotEmpty && context.mounted) {
-        // ONLY call the text scanner, skip onMediaSelected to avoid adding the image
-        onTextScanned?.call(recognizedText.text);
+      debugPrint("Final OCR Result: $bestText");
 
-        // Navigator.pop(context);
+      if (bestText.trim().isNotEmpty && context.mounted) {
+        onTextScanned?.call(bestText);
       } else {
         AppSnackbar.showError(
           title: "error".tr,
@@ -50,71 +109,7 @@ void showMediaSheet({
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
-      debugPrint("Error scanning text: $e");
-    } finally {
-      textRecognizer.close();
-    }
-  }
-
-  Future<void> pickImage(ImageSource source) async {
-    try {
-      final XFile? file = await picker.pickImage(
-        source: source,
-        imageQuality: 70,
-      );
-
-      if (file != null && context.mounted) {
-        onMediaSelected(File(file.path), 'image');
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      debugPrint("Error picking image: $e");
-    }
-  }
-
-  Future<void> pickVideo(ImageSource source) async {
-    try {
-      final XFile? file = await picker.pickVideo(
-        source: source,
-        maxDuration: const Duration(minutes: 5),
-      );
-
-      if (file != null && context.mounted) {
-        onMediaSelected(File(file.path), 'video');
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      debugPrint("Error picking video: $e");
-    }
-  }
-
-  Future<void> pickFile() async {
-    try {
-      FilePickerResult? result = await FilePicker.pickFiles(
-        type: FileType.custom,
-        allowMultiple: false,
-        allowedExtensions: [
-          'pdf',
-          'doc',
-          'docx',
-          'xls',
-          'xlsx',
-          'ppt',
-          'pptx',
-          'txt',
-          'zip',
-          'rar',
-        ],
-      );
-
-      if (result != null && result.files.single.path != null && context.mounted) {
-        final file = File(result.files.single.path!);
-
-        onMediaSelected(file, 'file');
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      debugPrint("Error picking file: $e");
+      debugPrint("OCR Error: $e");
     }
   }
 
@@ -141,7 +136,7 @@ void showMediaSheet({
               icon: Icons.camera_alt_outlined,
               color: AppColor().primaryColor,
               title: "take_photo".tr,
-              onTap: () => pickImage(ImageSource.camera),
+              onTap: () => controller.pickImage(source: ImageSource.camera, onResult: onMediaSelected),
             ),
             divider(context),
             buildActionItem(
@@ -149,24 +144,16 @@ void showMediaSheet({
               icon: Icons.image_outlined,
               color: AppColor().primaryColor,
               title: "gallery_image".tr,
-              onTap: () => pickImage(ImageSource.gallery),
+              onTap: () => controller.pickImage(source: ImageSource.gallery, onResult: onMediaSelected),
             ),
             divider(context),
             const SizedBox(height: 5),
-            // buildActionItem(
-            //   context,
-            //   icon: Icons.videocam_outlined,
-            //   color: AppColor().primaryColor,
-            //   title: "Record a Video",
-            //   onTap: () => pickVideo(ImageSource.camera),
-            // ),
-            // divider(context),
             buildActionItem(
               context,
               icon: Icons.video_library_outlined,
               color: AppColor().primaryColor,
               title: "gallery_video".tr,
-              onTap: () => pickVideo(ImageSource.gallery),
+              onTap: () => controller.pickVideo(source: ImageSource.gallery, onResult: onMediaSelected),
             ),
             divider(context),
             buildActionItem(
@@ -174,7 +161,7 @@ void showMediaSheet({
               icon: Icons.note_outlined,
               color: AppColor().primaryColor,
               title: "attach_file".tr,
-              onTap: pickFile,
+              onTap: () => controller.pickFile(onResult: onMediaSelected),
             ),
             divider(context),
             buildActionItem(

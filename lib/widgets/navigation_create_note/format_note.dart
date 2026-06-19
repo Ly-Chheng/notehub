@@ -64,7 +64,8 @@ void showFormatSheet({
             child: Row(
               children: colorValues.map((val) {
                 Color color = Color(val);
-                bool isSelected = activeColor.value == color.value;
+                // bool isSelected = activeColor.value == color.value;
+                bool isSelected = activeColor == color;
                 return GestureDetector(
                   onTap: () {
                     onPicked(color);

@@ -84,7 +84,7 @@ class FontSizeBottomSheet extends StatelessWidget {
                       child: SliderTheme(
                         data: SliderTheme.of(context).copyWith(
                           activeTrackColor: Get.theme.primaryColor,
-                          inactiveTrackColor: Get.theme.primaryColor.withOpacity(0.2),
+                          inactiveTrackColor: Get.theme.primaryColor.withValues(alpha: 0.2),
                           thumbColor: Get.theme.primaryColor,
                           trackHeight: 8.0,
                           thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10.0),

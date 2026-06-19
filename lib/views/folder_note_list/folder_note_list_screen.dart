@@ -5,7 +5,6 @@ import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/note/note_controller.dart';
 import 'package:project_structure/controllers/home/folder_controller.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
-import 'package:project_structure/models/home/folder_model.dart';
 import 'package:project_structure/models/note/note_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/create_note/create_note_screen.dart';
@@ -19,7 +18,6 @@ import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.d
 import 'package:project_structure/widgets/custom_fab.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/custom_folder_list.dart';
-import 'package:project_structure/widgets/multi_style.dart';
 import 'package:project_structure/widgets/selection_mode_toggle.dart';
 
 class FolderNoteListScreen extends StatefulWidget {
