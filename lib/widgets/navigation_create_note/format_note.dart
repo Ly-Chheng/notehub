@@ -64,7 +64,6 @@ void showFormatSheet({
             child: Row(
               children: colorValues.map((val) {
                 Color color = Color(val);
-                // bool isSelected = activeColor.value == color.value;
                 bool isSelected = activeColor == color;
                 return GestureDetector(
                   onTap: () {
@@ -79,7 +78,7 @@ void showFormatSheet({
                       child: CircleAvatar(
                         backgroundColor: color,
                         radius: context.isPhone ? 16 : 20,
-                        //child: isSelected ? Icon(Icons.check, color: Colors.white, size: context.isPhone ? 18 : 24) : null,
+                        child: isSelected ? Icon(Icons.check, color: Colors.white, size: context.isPhone ? 18 : 24) : null,
                       ),
                     ),
                   ),

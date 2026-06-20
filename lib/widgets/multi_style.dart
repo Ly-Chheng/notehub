@@ -133,28 +133,6 @@ Widget buildActionItem(
   );
 }
 
-PopupMenuItem<String> buildPopupItem(BuildContext context, String title, IconData icon, {Color? color}) {
-  return PopupMenuItem<String>(
-    value: title,
-    child: Row(
-      children: [
-        Icon(
-          icon,
-          size: context.isPhone ? 20 : 25,
-          color: color ?? Theme.of(context).iconTheme.color,
-        ),
-        SizedBox(width: context.isPhone ? 20 : 25),
-        Text(
-          title.tr,
-          style: text14(context).copyWith(
-            color: color ?? Theme.of(context).textTheme.bodyMedium?.color,
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
 class FolderItemTile extends StatelessWidget {
   final String title;
   final VoidCallback onTap;

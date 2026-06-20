@@ -167,7 +167,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                         title: Text(
                                           displayTitle,
                                           // style: text18(context),
-                                          style: font18(context).copyWith(),
+                                          style: fix18(context).copyWith(),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
                                         ),

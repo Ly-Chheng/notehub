@@ -135,7 +135,7 @@ class TimerList extends StatelessWidget {
                         Text(timer.title,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
-                            style: font16(context).copyWith(
+                            style: fix16(context).copyWith(
                               color: Theme.of(context).colorScheme.onSurface,
                             )),
                         Text(controller.formatTime(currentSec),
@@ -206,7 +206,9 @@ class TimerList extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           color: color.withValues(alpha: 0.08),
-          border: Border.all(color: color.withValues(alpha: 0.15),),
+          border: Border.all(
+            color: color.withValues(alpha: 0.15),
+          ),
         ),
         child: Row(
           children: [

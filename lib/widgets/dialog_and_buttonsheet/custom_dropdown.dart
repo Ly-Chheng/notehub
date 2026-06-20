@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
@@ -50,4 +51,26 @@ class CustomDropdown extends StatelessWidget {
       ],
     );
   }
+}
+
+PopupMenuItem<String> buildPopupItem(BuildContext context, String title, IconData icon, {Color? color}) {
+  return PopupMenuItem<String>(
+    value: title,
+    child: Row(
+      children: [
+        Icon(
+          icon,
+          size: context.isPhone ? 20 : 25,
+          color: color ?? Theme.of(context).iconTheme.color,
+        ),
+        SizedBox(width: context.isPhone ? 20 : 25),
+        Text(
+          title.tr,
+          style: text14(context).copyWith(
+            color: color ?? Theme.of(context).textTheme.bodyMedium?.color,
+          ),
+        ),
+      ],
+    ),
+  );
 }

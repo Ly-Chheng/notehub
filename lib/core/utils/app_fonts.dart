@@ -125,7 +125,7 @@ Widget customHeader(String title, BuildContext context) {
   );
 }
 
-TextStyle font16(BuildContext context) {
+TextStyle fix16(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(Get.context!).subTitleSize,
     fontFamily: AppFonts().fontEngBold,
@@ -134,7 +134,7 @@ TextStyle font16(BuildContext context) {
   );
 }
 
-TextStyle font18(BuildContext context) {
+TextStyle fix18(BuildContext context) {
   return TextStyle(
     fontSize: AppFontSize(Get.context!).mediumLargeSize,
     fontFamily: AppFonts().fontEngBold,

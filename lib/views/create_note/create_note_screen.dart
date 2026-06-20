@@ -378,7 +378,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           insertionIndex += 1;
         }
 
-        _quillController.document.insert(insertionIndex + 1, '\n'); // 3. Add a newline and update cursor
+        _quillController.document.insert(insertionIndex + 1, '\n'); // Add a newline and update cursor
         _quillController.updateSelection(
           TextSelection.collapsed(offset: insertionIndex),
           ChangeSource.local,
@@ -389,11 +389,11 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       onTextScanned: (String scannedText) {
         if (scannedText.isEmpty) return;
 
-        // 1. Insert text at cursor position
+        // Insert text at cursor position
         final int index = _quillController.selection.baseOffset;
         _quillController.document.insert(index, scannedText);
 
-        // 2. Move cursor to end of inserted text
+        // Move cursor to end of inserted text
         _quillController.updateSelection(
           TextSelection.collapsed(offset: index + scannedText.length),
           ChangeSource.local,
@@ -427,6 +427,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       builder: (BuildContext context) {
         return HandwritingCanvas(
           initialLayers: drawingLayers,
+          noteId: currentNoteId?.toString() ?? 'new_note',
           onSave: (path, layers) {
             setState(() {
               drawingLayers = layers;
@@ -476,7 +477,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   @override
   Widget build(BuildContext context) {
     final Color effectiveBg = noteBgColor ?? Theme.of(context).scaffoldBackgroundColor;
-    final Color textColor = (effectiveBg.computeLuminance() > 0.5) ? Colors.black : Colors.white;
+    final Color textColor = (effectiveBg.computeLuminance() > 0.5) ? AppColor().black : AppColor().white;
 
     return Scaffold(
       backgroundColor: effectiveBg,

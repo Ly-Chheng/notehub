@@ -10,7 +10,6 @@ class BottomToolbarComponent extends StatelessWidget {
   final VoidCallback onTablePressed;
   final VoidCallback onDrawingPressed;
   final VoidCallback onTemplatePressed;
-  // final VoidCallback onScanTextPressed;
 
   const BottomToolbarComponent({
     super.key,
@@ -21,13 +20,13 @@ class BottomToolbarComponent extends StatelessWidget {
     required this.onTablePressed,
     required this.onDrawingPressed,
     required this.onTemplatePressed,
-    // required this.onScanTextPressed,
   });
 
   Widget _buildIcon(IconData icon, VoidCallback onTap, BuildContext context) {
     return IconButton(
       icon: Icon(icon),
       onPressed: onTap,
+      iconSize: context.isPhone ? 24 : 30,
     );
   }
 
@@ -39,13 +38,12 @@ class BottomToolbarComponent extends StatelessWidget {
         child: UnconstrainedBox(
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 10),
-            padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 15 : 40, vertical: context.isPhone ? 3 : 10),
+            padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 10 : 40, vertical: context.isPhone ? 4 : 10),
             decoration: Layout.cardDecoration(radius: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _buildIcon(Icons.attach_file_outlined, onImagePressed, context),
-                // _buildIcon(Icons.document_scanner, onScanTextPressed, context),
                 _buildIcon(Icons.text_fields, onFormatPressed, context),
                 _buildIcon(Icons.palette_outlined, onPalettePressed, context),
                 _buildIcon(showTable ? Icons.table_chart_outlined : Icons.table_chart_outlined, onTablePressed, context),

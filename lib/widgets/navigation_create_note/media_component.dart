@@ -5,8 +5,10 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 import 'package:image_picker/image_picker.dart';
 import 'package:project_structure/controllers/note/media_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_snack_bar.dart';
 import 'package:project_structure/widgets/multi_style.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 void showMediaSheet({
   required BuildContext context,
@@ -15,47 +17,6 @@ void showMediaSheet({
 }) {
   final ImagePicker picker = ImagePicker();
   final MediaController controller = Get.put(MediaController());
-
-  // Future<void> scanText() async {
-  //   final textRecognizer = TextRecognizer(script: TextRecognitionScript.latin);
-
-  //   // Pick the image first
-  //   final XFile? file = await picker.pickImage(source: ImageSource.camera);
-  //   Get.back();
-  //   if (file == null) return;
-
-  //   Get.dialog(
-  //     Center(
-  //         child: CircularProgressIndicator(
-  //       color: AppColor().primaryColor,
-  //     )),
-  //     barrierDismissible: false,
-  //   );
-
-  //   try {
-  //     final inputImage = InputImage.fromFilePath(file.path);
-  //     final RecognizedText recognizedText = await textRecognizer.processImage(inputImage);
-
-  //     if (Get.isDialogOpen ?? false) Get.back();
-
-  //     if (recognizedText.text.isNotEmpty && context.mounted) {
-  //       // ONLY call the text scanner, skip onMediaSelected to avoid adding the image
-  //       onTextScanned?.call(recognizedText.text);
-
-  //       // Navigator.pop(context);
-  //     } else {
-  //       AppSnackbar.showError(
-  //         title: "error".tr,
-  //         message: "no_text_detected_in_the_image".tr,
-  //       );
-  //     }
-  //   } catch (e) {
-  //     if (Get.isDialogOpen ?? false) Get.back();
-  //     debugPrint("Error scanning text: $e");
-  //   } finally {
-  //     textRecognizer.close();
-  //   }
-  // }
 
   Future<void> scanText() async {
     final XFile? file = await picker.pickImage(source: ImageSource.camera);
@@ -110,6 +71,107 @@ void showMediaSheet({
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
       debugPrint("OCR Error: $e");
+    }
+  }
+
+  Future<void> scanVoice(Function(String) onResult) async {
+    final SpeechToText speech = SpeechToText();
+
+    // Initialize
+    bool available = await speech.initialize(
+      onStatus: (status) => debugPrint('Speech status: $status'),
+      onError: (error) => debugPrint('Speech error: $error'),
+    );
+    Get.back();
+    if (available) {
+      // Start Listening
+      speech.listen(
+        onResult: (result) {
+          if (result.finalResult) {
+            onResult(result.recognizedWords);
+            Get.back();
+          }
+        },
+      );
+
+      // Get.dialog(
+      //   Dialog(
+      //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      //     backgroundColor: Theme.of(context).cardColor,
+      //     child: Padding(
+      //       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+      //       child: Column(
+      //         mainAxisSize: MainAxisSize.min,
+      //         children: [
+      //           // A pulsating or simple animated icon
+      //           Container(
+      //               padding: EdgeInsets.all(10),
+      //               decoration: BoxDecoration(
+      //                 shape: BoxShape.circle,
+      //                 color: Colors.black.withOpacity(0.02),
+      //               ),
+      //               child: const Icon(Icons.mic_rounded, size: 64, color: Colors.redAccent)),
+      //           const SizedBox(height: 20),
+      //           Text("listening".tr, style: text18(context)),
+      //           const SizedBox(height: 10),
+      //           Text(
+      //             "speak_now".tr,
+      //             style: text12,
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      //   barrierDismissible: true,
+      // ).then((_) => speech.stop());
+
+      Get.dialog(
+        Dialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          backgroundColor: Theme.of(context).cardColor,
+          child: StatefulBuilder(
+            // Use StatefulBuilder to manage animation
+            builder: (context, setDialogState) {
+              final controller = AnimationController(
+                vsync: Navigator.of(context),
+                duration: const Duration(milliseconds: 1000),
+              )..repeat(reverse: true);
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Pulsating Animation
+                    ScaleTransition(
+                      scale: Tween(begin: 0.9, end: 1.1).animate(
+                        CurvedAnimation(parent: controller, curve: Curves.easeInOut),
+                      ),
+                      child: Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColor().red.withValues(alpha: 0.1),
+                        ),
+                        child: Icon(Icons.mic_rounded, size: 64, color: AppColor().red),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Text("listening".tr, style: text18(context)),
+                    const SizedBox(height: 10),
+                    Text("speak_now".tr, style: text12),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+        barrierDismissible: true,
+      ).then((_) {
+        speech.stop();
+      });
+    } else {
+      AppSnackbar.showError(title: "error".tr, message: "speech_not_available".tr);
     }
   }
 
@@ -170,6 +232,18 @@ void showMediaSheet({
               color: AppColor().primaryColor,
               title: "scan_text".tr,
               onTap: scanText,
+            ),
+            divider(context),
+            buildActionItem(
+              context,
+              icon: Icons.mic_none,
+              color: AppColor().primaryColor,
+              title: "voice_note".tr,
+              onTap: () => scanVoice((text) {
+                if (onTextScanned != null) {
+                  onTextScanned(text);
+                }
+              }),
             ),
             const SizedBox(height: 10),
           ],

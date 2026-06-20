@@ -83,6 +83,10 @@ class AppTranslations extends Translations {
           'resize': 'Resize',
           'zoom': 'Zoom',
           'remove': 'Remove',
+          'voice_note': 'Voice Note',
+          'listening': 'Listening',
+          'speak_now': 'Speak now...',
+           'speech_not_available': 'Speech not available',
           'no_text_detected_in_the_image': 'No text detected in the image.',
 
           // File Handling Actions
@@ -289,7 +293,7 @@ class AppTranslations extends Translations {
           'morning_sound': 'Morning',
           'evening_sound': 'Evening',
 
-          // --- How to Use ---
+          // How to Use
           'how_to_use_title': 'How To Use Quick Note',
           'how_to_use_desc': 'Master your notes with simple steps.',
           'step_01_title': 'Create Your First Note',
@@ -301,7 +305,7 @@ class AppTranslations extends Translations {
           'step_04_title': 'Study with Stopwatch',
           'step_04_desc': 'Track your study time and improve focus.',
 
-          // --- About Screen ---
+          // About
           'about_app_name': 'Quick Note App',
           'about_slogan': 'Study smarter, stay organized',
           'about_version': 'Version 1.0.0',
@@ -394,6 +398,10 @@ class AppTranslations extends Translations {
           'resize': 'កែទំហំ',
           'zoom': 'ពង្រីក',
           'remove': 'លុបចេញ',
+          'voice_note': 'កំណត់ចំណាំជាសំឡេង',
+          'listening': 'ការស្តាប់',
+          'speak_now': 'និយាយឥឡូវនេះ...',
+          'speech_not_available': 'មិនអាចនិយាយបាន',
           'no_text_detected_in_the_image': 'រកមិនឃើញអក្សរនៅក្នុងរូបភាពទេ។',
 
           // File Handling Actions
@@ -601,7 +609,7 @@ class AppTranslations extends Translations {
           'morning_sound': 'ពេលព្រឹក',
           'evening_sound': 'ពេលល្ងាច',
 
-          // --- How to Use ---
+          // How to Use
           'step': 'ជំហានទី',
           'how_to_use_title': 'របៀបប្រើប្រាស់កម្មវិធី',
           'how_to_use_desc': 'គ្រប់គ្រងកំណត់ត្រារបស់អ្នកដោយជំហានងាយៗ។',
@@ -614,7 +622,7 @@ class AppTranslations extends Translations {
           'step_04_title': 'សិក្សាដោយប្រើនាឡិកាកំណត់ពេល',
           'step_04_desc': 'តាមដានពេលវេលាសិក្សារបស់អ្នក និងបង្កើនការផ្ដោតអារម្មណ៍។',
 
-          // --- About Screen ---
+          // About
           'about_app_name': 'កម្មវិធី Quick Note',
           'about_slogan': 'សិក្សាកាន់តែឆ្លាតវៃ រៀបចំបានល្អប្រសើរ',
           'about_version': 'កំណែ ១.០.០',

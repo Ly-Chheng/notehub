@@ -132,6 +132,13 @@ class _MyHomePageState extends State<MyHomePage> {
             folderController: controller,
             showcaseKey: _firstShowcaseWidget,
           ),
+          Padding(
+            padding: Layout.padding(),
+            child: Text(
+              "folder".tr,
+              style: text20(context),
+            ),
+          ),
           Expanded(
             child: Obx(() {
               final displayedFolders = controller.filteredFolders;
@@ -452,7 +459,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   // folder.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: font16(context)),
+                  style: fix16(context)),
             ),
             const SizedBox(width: 10),
             if (folder.isPinned)

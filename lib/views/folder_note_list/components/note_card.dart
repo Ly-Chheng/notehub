@@ -146,7 +146,7 @@ class NoteCard extends StatelessWidget {
                                   // style: text18(context).copyWith(
                                   //   color: itemTextColor,
                                   // ),
-                                  style: font18(context).copyWith(
+                                  style: fix18(context).copyWith(
                                     color: itemTextColor,
                                   )),
                             ),

@@ -26,12 +26,22 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to the camera to take photos for your notes.</string>
+
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app needs access to the microphone if you record videos.</string>
+
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to the photo library to select images for your notes.</string>
+	
+	<key>NSMicrophoneUsageDescription</key>
+    <string>This app needs access to the microphone to record audio for notes and speech-to-text.</string>
+    
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>This app requires speech recognition access to convert your voice into text notes.</string>
+
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -12,16 +12,19 @@ import 'package:project_structure/widgets/navigation_create_note/notebook_painte
 import 'package:project_structure/widgets/card_and_button/custom_button.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_template.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:signature/signature.dart';
 
 class HandwritingCanvas extends StatefulWidget {
   final List<Map<String, dynamic>> initialLayers;
   final Function(String? filePath, List<Map<String, dynamic>> layers) onSave;
+  final String noteId;
 
   const HandwritingCanvas({
     super.key,
     required this.onSave,
     this.initialLayers = const [],
+    required this.noteId,
   });
 
   @override
@@ -30,7 +33,6 @@ class HandwritingCanvas extends StatefulWidget {
 
 class _HandwritingCanvasState extends State<HandwritingCanvas> {
   final GlobalKey _repaintKey = GlobalKey();
-  // List<SignatureController> _layers = [];
   final List<SignatureController> _layers = [];
   late SignatureController _activeController;
 
@@ -49,6 +51,8 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
     super.initState();
     _loadInitialLayers();
     _activeController = _createController();
+
+    _loadCanvasMode();
   }
 
   void _loadInitialLayers() {
@@ -271,6 +275,30 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
     );
   }
 
+  Future<void> _loadCanvasMode() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      canvasMode = prefs.getInt(
+            'canvas_mode_${widget.noteId}',
+          ) ??
+          0;
+    });
+  }
+
+  Future<void> _saveCanvasMode(int mode) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.setInt(
+      'canvas_mode_${widget.noteId}',
+      mode,
+    );
+
+    setState(() {
+      canvasMode = mode;
+    });
+  }
+
   Widget _buildBottomActions() {
     final List<Color> colors = [
       Colors.black,
@@ -383,27 +411,27 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                             label: "none".tr,
                             icon: Icons.close,
                             isSelected: canvasMode == 0,
-                            onTap: () {
-                              setState(() => canvasMode = 0);
-                              Navigator.pop(context);
+                            onTap: () async {
+                              await _saveCanvasMode(0);
+                              Get.back();
                             },
                           ),
                           ModeOptionCard(
                             label: "lines".tr,
                             icon: Icons.view_headline,
                             isSelected: canvasMode == 1,
-                            onTap: () {
-                              setState(() => canvasMode = 1);
-                              Navigator.pop(context);
+                            onTap: () async {
+                              await _saveCanvasMode(1);
+                              Get.back();
                             },
                           ),
                           ModeOptionCard(
                             label: "grid".tr,
                             icon: Icons.grid_on,
                             isSelected: canvasMode == 2,
-                            onTap: () {
-                              setState(() => canvasMode = 2);
-                              Navigator.pop(context);
+                            onTap: () async {
+                              await _saveCanvasMode(2);
+                              Get.back();
                             },
                           ),
                         ],
@@ -425,7 +453,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
   }
 
   Widget _colorCircle(Color color) {
-    // bool isSelected = !isEraser && currentPenColor.value == color.value;
     bool isSelected = !isEraser && currentPenColor == color;
     return GestureDetector(
       onTap: () => _updateBrush(color: color),

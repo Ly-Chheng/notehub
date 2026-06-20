@@ -23,35 +23,28 @@ class ModeOptionCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-        // decoration: BoxDecoration(
-        //   color: isSelected ? AppColor().primaryColor.withOpacity(0.1) : Colors.white,
-        //   borderRadius: BorderRadius.circular(18),
-        //   boxShadow: AppDecorations.subtleShadow,
-        //   border: Border.all(
-        //     color: isSelected
-        //         ? AppColor().primaryColor
-        //         : AppColor().gray.withOpacity(0.1),
-        //     width: 1,
-        //   ),
-        // ),
         decoration: BoxDecoration(
-          color: AppColor().primaryColor.withValues(alpha: 0.05),
+          color: isSelected ? AppColor().primaryColor.withValues(alpha: 0.05) : Colors.white,
           borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: AppColor().primaryColor.withValues(alpha: 0.2)),
+          border: Border.all(
+            color: isSelected ? AppColor().primaryColor : AppColor().gray.withValues(alpha: 0.2),
+            width: 1,
+          ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
-              size: 32,
-              // color: isSelected ? AppColor().primaryColor : AppColor().gray,
-              color: AppColor().primaryColor,
+              size: 30,
+              color: isSelected ? AppColor().primaryColor : AppColor().gray,
             ),
             const SizedBox(height: 8),
             Text(
               label,
-              style: text16(context),
+              style: text16(context).copyWith(
+                color: isSelected ? AppColor().primaryColor : AppColor().gray,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
