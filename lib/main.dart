@@ -7,7 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:project_structure/controllers/more/font_size_controller.dart';
+import 'package:project_structure/controllers/mores/font_size_controller.dart';
 import 'package:project_structure/core/utils/app_bindings.dart';
 import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/core/services/firebase_services.dart';

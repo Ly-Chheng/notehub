@@ -6,9 +6,11 @@ class NoteFormatComponents {
   static void openFormattingSheet(BuildContext context, QuillController controller) {
     final selectionStyle = controller.getSelectionStyle();
     final attributes = selectionStyle.attributes;
+    final currentSize = attributes[Attribute.size.key]?.value ?? 'normal';
 
     showFormatSheet(
       context: context,
+      initialFontSize: currentSize,
       isLeftAligned: selectionStyle.attributes[Attribute.align.key]?.value == 'left' || selectionStyle.attributes[Attribute.align.key] == null,
       isCenterAligned: selectionStyle.attributes[Attribute.align.key]?.value == 'center',
       isRightAligned: selectionStyle.attributes[Attribute.align.key]?.value == 'right',
@@ -28,7 +30,6 @@ class NoteFormatComponents {
       onRightAlignPressed: () => controller.formatSelection(Attribute.rightAlignment),
       onJustifyAlignPressed: () => controller.formatSelection(Attribute.justifyAlignment),
       onHighlightColorChanged: (color) {
-        // final hex = '#${color.value.toRadixString(16).substring(2)}';
         final hex = '#${color.toARGB32().toRadixString(16).padLeft(8, '0').substring(2)}';
         controller.formatSelection(BackgroundAttribute(hex));
       },
@@ -40,7 +41,8 @@ class NoteFormatComponents {
         }
       },
       onColorChanged: (color) {
-        final hex = '#${color.value.toRadixString(16).substring(2)}';
+        // final hex = '#${color.value.toRadixString(16).substring(2)}';
+        final hex = '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
         controller.formatSelection(ColorAttribute(hex));
       },
       onBulletPressed: () => controller.formatSelection(Attribute.ul),

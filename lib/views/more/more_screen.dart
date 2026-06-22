@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/controllers/more/theme_controller.dart';
+import 'package:project_structure/controllers/mores/notification_controller.dart';
+import 'package:project_structure/controllers/mores/theme_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/views/more/components/font_size.dart';
 import 'package:project_structure/views/more/components/change_language.dart';
 import 'package:project_structure/views/more/components/dark_mode.dart';
-import 'package:project_structure/views/more/components/notification.dart';
 import 'package:project_structure/widgets/card_and_button/custom_card_setting.dart';
 
 class MoreScreen extends StatefulWidget {
@@ -21,6 +21,8 @@ class MoreScreen extends StatefulWidget {
 
 class _MoreScreenState extends State<MoreScreen> {
   final controller = Get.put(DarkModeController());
+  final RxBool notificationEnabled = true.obs;
+  final NotificationController notificontroller = Get.put(NotificationController());
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +73,15 @@ class _MoreScreenState extends State<MoreScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 15),
                 child: _buildSectionContainer([
                   DarkModeView(),
-                  NotificationView(),
+                  CustomCardSetting(
+                    icon: Icons.notifications_outlined,
+                    title: "notification".tr,
+                    onTap: () {},
+                    trailing: Obx(() => Switch.adaptive(
+                          value: notificontroller.isNotificationEnabled.value,
+                          onChanged: (value) => notificontroller.toggleNotifications(value),
+                        )),
+                  ),
                 ]),
               ),
               _buildSectionContainer([

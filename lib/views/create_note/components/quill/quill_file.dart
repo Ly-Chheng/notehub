@@ -147,8 +147,13 @@ class CustomFileEmbedBuilder implements EmbedBuilder {
                 onTap: () async {
                   Get.back();
                   if (filePath.isNotEmpty && await File(filePath).exists()) {
-                    await Share.shareXFiles(
-                      [XFile(filePath)],
+                    // await Share.shareXFiles(
+                    //   [XFile(filePath)],
+                    // );
+                    await SharePlus.instance.share(
+                      ShareParams(
+                        files: [XFile(filePath)],
+                      ),
                     );
                   } else {
                     Get.snackbar("eror".tr, "File path doesn't exist anymore.");

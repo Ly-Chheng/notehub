@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/controllers/note/note_controller.dart';
+import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/multi_style.dart';
 import 'package:project_structure/core/utils/app_color.dart';
@@ -16,8 +16,6 @@ class ShareNote {
     required NoteController noteController,
     required QuillController quillController,
   }) {
-    // final bool hasImages = selectedImages.isNotEmpty;
-    // final bool hasText = title.trim().isNotEmpty || content.trim().isNotEmpty;
     bool hasActualText() {
       for (final operation in quillController.document.toDelta().toJson()) {
         if (operation.containsKey('insert') && operation['insert'] is String) {

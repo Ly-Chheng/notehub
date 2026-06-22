@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 
 class SelectionModeToggle extends StatelessWidget {
@@ -23,8 +24,8 @@ class SelectionModeToggle extends StatelessWidget {
       onTap: hasNoData ? null : onToggle,
       borderRadius: BorderRadius.circular(5),
       child: Container(
-        height: 24,
-        width: 24,
+        height: context.isPhone ? 24 : 30,
+        width: context.isPhone ? 24 : 30,
         padding: const EdgeInsets.all(2),
         decoration: BoxDecoration(
           border: Border.all(color: currentColor, width: 1),

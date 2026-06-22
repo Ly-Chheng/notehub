@@ -52,9 +52,9 @@ class CustomCardSetting extends StatelessWidget {
               ),
             ),
             trailing ??
-                const Icon(
+                Icon(
                   Icons.arrow_forward_ios,
-                  size: 16,
+                  size: context.isPhone ? 16 : 20,
                   color: Colors.grey,
                 ),
           ],

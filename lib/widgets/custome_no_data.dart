@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
 class CustomNoData extends StatelessWidget {
@@ -19,7 +20,7 @@ class CustomNoData extends StatelessWidget {
         children: [
           Image.asset(
             imagePath,
-            height: 100,
+            height: context.isPhone ? 100 : 130,
           ),
           SizedBox(
             height: 10,

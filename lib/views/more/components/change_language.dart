@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/controllers/more/change_language_controller.dart';
+import 'package:project_structure/controllers/mores/change_language_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/card_and_button/custom_card_setting.dart';
 
@@ -17,10 +17,10 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
           icon: Icons.language,
           title: "change_language".tr,
           onTap: () => buildLanguageDialog(context),
-          trailing: const Icon(
+          trailing: Icon(
             Icons.arrow_forward_ios,
-            size: 16,
-            color: Colors.grey,
+            size: context.isPhone ? 16 : 20,
+            color: AppColor().gray,
           ),
         );
       },
@@ -73,7 +73,7 @@ class ChangeLanguageView extends GetView<ChangeLanguageController> {
                             Icon(
                               Icons.check,
                               color: AppColor().primaryColor,
-                              size: 24,
+                              size: context.isPhone ? 24 : 30,
                             ),
                         ],
                       ),

@@ -19,7 +19,7 @@ class MediaController extends GetxController {
       );
       if (file != null) {
         onResult(File(file.path), 'image');
-        Get.back(); // Closes the bottom sheet
+        Get.back();
       }
     } catch (e) {
       debugPrint("Error picking image: $e");
@@ -62,11 +62,4 @@ class MediaController extends GetxController {
       debugPrint("Error picking file: $e");
     }
   }
-
-  /// Helper to close the bottom sheet
-  // void _closeSheet() {
-  //   if (Get.isBottomSheetOpen == true) {
-  //     Get.back();
-  //   }
-  // }
 }

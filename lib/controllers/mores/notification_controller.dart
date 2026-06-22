@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
-class SettingsController extends GetxController {
+class NotificationController extends GetxController {
   final _storage = GetStorage();
   final RxBool isNotificationEnabled = true.obs;
 

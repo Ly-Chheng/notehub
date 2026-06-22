@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/home/folder_controller.dart';
-import 'package:project_structure/controllers/note/note_controller.dart';
+import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/functions/fomat_date.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
@@ -166,7 +166,6 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                         contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                                         title: Text(
                                           displayTitle,
-                                          // style: text18(context),
                                           style: fix18(context).copyWith(),
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,

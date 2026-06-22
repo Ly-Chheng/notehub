@@ -20,7 +20,7 @@ class SelectionBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      height: 50,
+      height: context.isPhone ? 50 : 60,
       color: Theme.of(context).cardColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,

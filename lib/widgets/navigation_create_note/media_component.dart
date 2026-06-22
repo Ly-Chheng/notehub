@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:project_structure/controllers/note/media_controller.dart';
+import 'package:project_structure/controllers/notes/media_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_snack_bar.dart';
@@ -17,6 +17,8 @@ void showMediaSheet({
 }) {
   final ImagePicker picker = ImagePicker();
   final MediaController controller = Get.put(MediaController());
+
+  final themeColor = Theme.of(context).cardColor;
 
   Future<void> scanText() async {
     final XFile? file = await picker.pickImage(source: ImageSource.camera);
@@ -44,9 +46,9 @@ void showMediaSheet({
       for (final recognizer in recognizers) {
         final result = await recognizer.processImage(inputImage);
 
-        debugPrint(
-          "Detected (${recognizer.script.name}): ${result.text}",
-        );
+        // debugPrint(
+        //   "Detected (${recognizer.script.name}): ${result.text}",
+        // );
 
         // choose the longest/most meaningful result
         if (result.text.length > bestText.length) {
@@ -82,53 +84,25 @@ void showMediaSheet({
       onStatus: (status) => debugPrint('Speech status: $status'),
       onError: (error) => debugPrint('Speech error: $error'),
     );
-    Get.back();
     if (available) {
+      Get.back();
       // Start Listening
       speech.listen(
         onResult: (result) {
           if (result.finalResult) {
+            if (Get.isDialogOpen == true) {
+              Get.back(); // Closes the dialog
+            }
             onResult(result.recognizedWords);
-            Get.back();
+            // Get.back();
           }
         },
       );
 
-      // Get.dialog(
-      //   Dialog(
-      //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      //     backgroundColor: Theme.of(context).cardColor,
-      //     child: Padding(
-      //       padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-      //       child: Column(
-      //         mainAxisSize: MainAxisSize.min,
-      //         children: [
-      //           // A pulsating or simple animated icon
-      //           Container(
-      //               padding: EdgeInsets.all(10),
-      //               decoration: BoxDecoration(
-      //                 shape: BoxShape.circle,
-      //                 color: Colors.black.withOpacity(0.02),
-      //               ),
-      //               child: const Icon(Icons.mic_rounded, size: 64, color: Colors.redAccent)),
-      //           const SizedBox(height: 20),
-      //           Text("listening".tr, style: text18(context)),
-      //           const SizedBox(height: 10),
-      //           Text(
-      //             "speak_now".tr,
-      //             style: text12,
-      //           ),
-      //         ],
-      //       ),
-      //     ),
-      //   ),
-      //   barrierDismissible: true,
-      // ).then((_) => speech.stop());
-
       Get.dialog(
         Dialog(
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          backgroundColor: Theme.of(context).cardColor,
+          backgroundColor: themeColor,
           child: StatefulBuilder(
             // Use StatefulBuilder to manage animation
             builder: (context, setDialogState) {
@@ -159,7 +133,7 @@ void showMediaSheet({
                     const SizedBox(height: 20),
                     Text("listening".tr, style: text18(context)),
                     const SizedBox(height: 10),
-                    Text("speak_now".tr, style: text12),
+                    Text("speak_now".tr, style: text14(context)),
                   ],
                 ),
               );

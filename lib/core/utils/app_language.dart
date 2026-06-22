@@ -72,7 +72,7 @@ class AppTranslations extends Translations {
 
           // Media/File Block
           'add_media': 'Add Media',
-          'take_photo': 'Take a Photo',
+          'take_photo': 'Take Photo',
           'gallery_image': 'Select Image from Gallery',
           'record_video': 'Record a Video',
           'gallery_video': 'Select Video from Gallery',

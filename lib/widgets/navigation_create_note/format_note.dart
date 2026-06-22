@@ -30,10 +30,12 @@ void showFormatSheet({
   required VoidCallback onJustifyAlignPressed,
   required Color selectedHighlightColor,
   required Function(Color) onHighlightColorChanged,
+  required String initialFontSize,
 }) {
   bool isColorPickerOpen = false;
   bool isHighlightPickerOpen = false;
-  String activeSize = 'Normal';
+  // String activeSize = 'Normal';
+  String activeSize = initialFontSize;
 
   final List<int> colorValues = [
     0XFF9500FF,
@@ -78,7 +80,7 @@ void showFormatSheet({
                       child: CircleAvatar(
                         backgroundColor: color,
                         radius: context.isPhone ? 16 : 20,
-                        child: isSelected ? Icon(Icons.check, color: Colors.white, size: context.isPhone ? 18 : 24) : null,
+                        child: isSelected ? Icon(Icons.check, color: AppColor().white, size: context.isPhone ? 18 : 24) : null,
                       ),
                     ),
                   ),
@@ -140,7 +142,7 @@ void showFormatSheet({
                         ),
                       ),
                     ),
-                    const SizedBox(width: 15),
+                    SizedBox(width: context.isPhone ? 15 : 25),
                     buildContainer(
                       context,
                       SingleChildScrollView(
@@ -167,7 +169,7 @@ void showFormatSheet({
                   ],
                 ),
               ),
-              const SizedBox(height: 15),
+              SizedBox(width: context.isPhone ? 15 : 25),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: context.isPhone ? 10 : 20),
                 child: Text(
@@ -211,7 +213,7 @@ void showFormatSheet({
                       ),
                     ),
                   ),
-                  const SizedBox(width: 15),
+                  SizedBox(width: context.isPhone ? 15 : 25),
                   buildContainer(
                     context,
                     SingleChildScrollView(
@@ -256,7 +258,7 @@ void showFormatSheet({
                           : const SizedBox.shrink(key: ValueKey('none')),
                 ),
               ),
-              const SizedBox(height: 15),
+              SizedBox(width: context.isPhone ? 15 : 25),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: context.isPhone ? 10 : 20),
                 child: Text(
@@ -272,25 +274,27 @@ void showFormatSheet({
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
                     children: ['Small', 'Normal', 'Large', 'Huge'].map((size) {
-                      bool isSelected = activeSize == size;
+                      // activeSize now tracks the local state
+                      bool isSelected = activeSize.toLowerCase() == size.toLowerCase();
+
                       return Padding(
                         padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 5 : 10),
                         child: GestureDetector(
                           onTap: () {
-                            setSheetState(() => activeSize = size);
-                            onFontSizeChanged(size.toLowerCase());
+                            setSheetState(() => activeSize = size); // Updates UI
+                            onFontSizeChanged(size.toLowerCase()); // Updates Controller
                             Navigator.pop(context);
                           },
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            height: double.infinity,
                             alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 16 : 20, vertical: context.isPhone ? 4 : 8),
+                            padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 16 : 20),
                             decoration: BoxDecoration(
+                              // Visual state based on isSelected
                               color: isSelected ? AppColor().primaryColor : Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: isSelected ? Colors.grey.withValues(alpha: 0.3) : Colors.grey.withValues(alpha: 0.3),
+                                color: isSelected ? AppColor().primaryColor : Colors.grey.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(

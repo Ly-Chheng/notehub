@@ -58,8 +58,8 @@ class CustomButton extends StatelessWidget {
       ),
       child: isLoading
           ? SizedBox(
-              height: 25,
-              width: 25,
+              height: context.isPhone ? 25 : 30,
+              width: context.isPhone ? 25 : 30,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
                 color: AppColor().white,
@@ -119,4 +119,3 @@ class GrobleButton extends StatelessWidget {
     );
   }
 }
-

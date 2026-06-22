@@ -5,7 +5,7 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/home/folder_controller.dart';
-import 'package:project_structure/controllers/note/note_controller.dart';
+import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';

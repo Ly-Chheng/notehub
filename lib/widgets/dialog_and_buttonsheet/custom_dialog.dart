@@ -64,7 +64,7 @@ Future<void> showConfirmDialog({
                       if (icon != null)
                         Icon(
                           icon,
-                          size: 50,
+                          size: context.isPhone ? 50 : 60,
                           color: confirmColor,
                         ),
                       if (icon != null && title.isNotEmpty) const SizedBox(height: 8),

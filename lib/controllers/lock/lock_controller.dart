@@ -2,25 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/home/folder_controller.dart';
 import 'package:project_structure/core/database/database_service.dart';
-import 'package:project_structure/controllers/note/note_controller.dart';
+import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
 class LockController extends GetxController {
   List<String> get questions => [
-        // "first_school_question".tr,
         "mother_maiden_name_question".tr,
         "birth_city_question".tr,
         "dream_job_child_question".tr,
         "favorite_teacher_question".tr,
       ];
+
   Future<Map<String, dynamic>?> getSecuritySettings() async {
     final db = await DatabaseService.db;
     final List<Map<String, dynamic>> maps = await db.query('security', where: 'id = 1');
     return maps.isNotEmpty ? maps.first : null;
   }
 
+  //Function CreatePassword
   Future<void> handleCreatePassword({
     required String password,
     required String confirmPassword,
@@ -69,6 +70,7 @@ class LockController extends GetxController {
     }
   }
 
+  //Function ChangePassword
   Future<void> handleChangePassword({
     required String currentInput,
     required String newPass,
@@ -128,6 +130,7 @@ class LockController extends GetxController {
     }
   }
 
+  //Function Forget
   Future<void> handleForgetPasswordVerify({required String userAnswer}) async {
     if (userAnswer.trim().isEmpty) {
       await _showDialog(
@@ -167,6 +170,7 @@ class LockController extends GetxController {
     }
   }
 
+  //Function Remove
   Future<void> handleRemoveAllLock({
     required String currentInput,
     required String confirmPass,
@@ -240,10 +244,10 @@ class LockController extends GetxController {
   }
 
   void _showError(String message) {
-    Get.snackbar("error".tr, message, backgroundColor: AppColor().red, colorText: Colors.white);
+    Get.snackbar("error".tr, message, backgroundColor: AppColor().red, colorText: AppColor().white);
   }
 
   void _showSuccess(String message) {
-    Get.snackbar("success".tr, message, backgroundColor: AppColor().green, colorText: Colors.white);
+    Get.snackbar("success".tr, message, backgroundColor: AppColor().green, colorText: AppColor().white);
   }
 }

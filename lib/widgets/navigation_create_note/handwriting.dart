@@ -112,7 +112,8 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
       List<Map<String, dynamic>> exportData = allControllers
           .where((c) => c.isNotEmpty)
           .map((c) => {
-                'color': c.penColor.value,
+                // 'color': c.penColor.value,
+                'color': c.penColor.toARGB32(),
                 'width': c.penStrokeWidth,
                 'points': c.points.map((p) => {'x': p.offset.dx, 'y': p.offset.dy, 't': p.type.index}).toList(),
               })
@@ -341,7 +342,8 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                       ),
                     ),
                   ),
-                  ...colors.map((c) => _colorCircle(c)).toList(),
+                  // ...colors.map((c) => _colorCircle(c)).toList(),
+                  ...colors.map((c) => _colorCircle(c)),
                   if (!colors.contains(currentPenColor) && !isEraser) _colorCircle(currentPenColor),
                 ],
               ),

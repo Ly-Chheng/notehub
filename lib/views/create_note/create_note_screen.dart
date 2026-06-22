@@ -8,7 +8,7 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/controllers/lock/lock_controller.dart';
 import 'package:project_structure/controllers/home/folder_controller.dart';
-import 'package:project_structure/controllers/note/note_controller.dart';
+import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/functions/format_file_size.dart';
 import 'package:project_structure/models/note/note_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
@@ -194,7 +194,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       contentJson: contentJson,
       isLocked: isLocked,
       isPinned: isPinned,
-      bgColor: noteBgColor?.value ?? 0,
+      // bgColor: noteBgColor?.value ?? 0,
+      bgColor: noteBgColor?.toARGB32() ?? 0,
       imagePaths: activeImagePaths,
       showTable: showTable,
       tableData: tableData,
@@ -423,7 +424,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       isScrollControlled: true,
       constraints: BoxConstraints(maxWidth: double.infinity),
       backgroundColor: Theme.of(context).cardColor,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(0))),
       builder: (BuildContext context) {
         return HandwritingCanvas(
           initialLayers: drawingLayers,
@@ -485,7 +486,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         title: widget.isEditing ? "edit_note".tr : "create_note".tr,
         context: context,
         actions: [
-          if (isLocked) Icon(Icons.lock_outline, color: AppColor().primaryColor, size: 20),
+          if (isLocked) Icon(Icons.lock_outline, color: AppColor().primaryColor, size: context.isPhone ? 20 : 25),
           AnimatedBuilder(
             animation: _quillController,
             builder: (context, _) => actionButton(
@@ -538,9 +539,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   focusedBorder: InputBorder.none,
                   errorBorder: InputBorder.none,
                   border: InputBorder.none,
-                  hintStyle: TextStyle(fontSize: AppFontSize(context).titleSize, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
+                  hintStyle: fix18(context).copyWith(color: textColor),
                 ),
-                style: TextStyle(fontSize: AppFontSize(context).titleSize, fontFamily: 'EN-BOLD', fontFamilyFallback: const ['KH-BOLD'], color: textColor),
+                style: fix18(context).copyWith(color: textColor),
               ),
               QuillEditorComponent(
                 controller: _quillController,
@@ -563,7 +564,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   },
                   onAddColumn: () {
                     setState(() {
-                      for (var row in tableData) row.add("");
+                      for (var row in tableData) {
+                        row.add("");
+                      }
                     });
                     _triggerAutoSave();
                   },
@@ -576,7 +579,9 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   onRemoveColumn: (index) {
                     setState(() {
                       if (tableData[0].length > 1) {
-                        for (var row in tableData) row.removeAt(index);
+                        for (var row in tableData) {
+                          row.removeAt(index);
+                        }
                       }
                     });
                     _triggerAutoSave();

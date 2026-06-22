@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/controllers/more/font_size_controller.dart';
+import 'package:project_structure/controllers/mores/font_size_controller.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
 class FontSizeBottomSheet extends StatelessWidget {
@@ -18,21 +18,6 @@ class FontSizeBottomSheet extends StatelessWidget {
     if (value <= 1.15) return "normal".tr;
     return "large".tr;
   }
-  // double _snapValue(double value) {
-  //   if (value < 0.9) return 0.8;
-  //   if (value < 1.1) return 1.0;
-  //   if (value < 1.3) return 1.2;
-
-  //   return 1.4;
-  // }
-
-  // String _getScaleLabel(double value) {
-  //   if (value < 0.9) return "small".tr;
-  //   if (value < 1.1) return "normal".tr;
-  //   if (value < 1.3) return "medium".tr;
-
-  //   return "large".tr;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -94,8 +79,6 @@ class FontSizeBottomSheet extends StatelessWidget {
                           min: 0.8,
                           max: 1.2,
                           divisions: 2,
-                          // max: 1.4,
-                          // divisions: 3,
                           onChanged: (value) {
                             double snapped = _snapValue(value);
                             if (controller.fontScale.value != snapped) {

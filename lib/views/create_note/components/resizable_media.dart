@@ -210,9 +210,20 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                       final file = File('${tempDir.path}/shared_media.$ext');
 
                       await file.writeAsBytes(response.bodyBytes);
-                      await Share.shareXFiles([XFile(file.path)]);
+                      // await Share.shareXFiles([XFile(file.path)]);
+                      await SharePlus.instance.share(
+                        ShareParams(
+                          files: [XFile(file.path)],
+                          // text: 'Check out this file',
+                        ),
+                      );
                     } else {
-                      await Share.shareXFiles([XFile(mediaPath)]);
+                      // await Share.shareXFiles([XFile(mediaPath)]);
+                      await SharePlus.instance.share(
+                        ShareParams(
+                          files: [XFile(mediaPath)],
+                        ),
+                      );
                     }
                   },
                 ),
