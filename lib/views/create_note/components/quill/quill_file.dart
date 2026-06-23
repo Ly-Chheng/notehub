@@ -1,7 +1,6 @@
 // CUSTOM FILE EMBED BUILDER WITH VIEW ACTION
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';

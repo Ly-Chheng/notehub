@@ -86,7 +86,7 @@ class AppTranslations extends Translations {
           'voice_note': 'Voice Note',
           'listening': 'Listening',
           'speak_now': 'Speak now...',
-           'speech_not_available': 'Speech not available',
+          'speech_not_available': 'Speech not available',
           'no_text_detected_in_the_image': 'No text detected in the image.',
 
           // File Handling Actions
@@ -321,6 +321,26 @@ class AppTranslations extends Translations {
           'contact_email': 'Email',
           'contact_website': 'Website',
           'copyright_footer': '© 2026 Quick Note App',
+
+          // Exams / Tabs
+          'exams': 'Exams',
+          'upcoming': 'Upcoming',
+          'completed': 'Completed',
+          'add_exam': 'Add Exam',
+          'exam_title': 'Exam Title',
+          'location': 'Location',
+          'please_provide_exam_title': 'Please provide an Exam Title',
+          'no_checklist_items': 'No checklist items added.',
+          'no_tracking_modules': 'No tracking modules added yet.',
+          'revision_checklist': 'Revision Checklist',
+          'add_revision_topic': 'Add Revision Topic',
+          'topic_name': 'Topic Name',
+          'add_topic': 'Add Topic',
+          'exam_details': 'Exam Details',
+          'view_revision_checklist': 'View Revision Checklist',
+          'date': 'Date',
+          'time': 'Time',
+          'reminder': 'Reminder',
         },
         'km_KM': {
           // General
@@ -398,7 +418,7 @@ class AppTranslations extends Translations {
           'resize': 'កែទំហំ',
           'zoom': 'ពង្រីក',
           'remove': 'លុបចេញ',
-          'voice_note': 'កំណត់ចំណាំជាសំឡេង',
+          'voice_note': 'កំណត់ត្រាជាសំឡេង',
           'listening': 'ការស្តាប់',
           'speak_now': 'និយាយឥឡូវនេះ...',
           'speech_not_available': 'មិនអាចនិយាយបាន',
@@ -482,7 +502,6 @@ class AppTranslations extends Translations {
           'verify_error': 'មានបញ្ហាក្នុងការផ្ទៀងផ្ទាត់។ សូមព្យាយាមម្តងទៀតក្រោយ។',
 
           //Qustion
-          // Khmer
           "first_school_question": "តើសាលាដំបូងរបស់អ្នកមានឈ្មោះអ្វី?",
           "mother_maiden_name_question": "តើនាមត្រកូលពីកំណើតរបស់ម្តាយអ្នកជាអ្វី?",
           "birth_city_question": "តើអ្នកកើតនៅទីក្រុងណា?",
@@ -638,6 +657,26 @@ class AppTranslations extends Translations {
           'contact_email': 'អ៊ីមែល',
           'contact_website': 'គេហទំព័រ',
           'copyright_footer': '© ២០២៦ កម្មវិធី Quick Note',
+
+          // Exams / Tabs
+          'exams': 'ការប្រឡង',
+          'upcoming': 'ជិតមកដល់',
+          'completed': 'បានបញ្ចប់',
+          'add_exam': 'បន្ថែមការប្រឡង',
+          'exam_title': 'ចំណងជើងការប្រឡង',
+          'location': 'ទីតាំង',
+          'please_provide_exam_title': 'សូមបញ្ចូលចំណងជើងការប្រឡង',
+          'no_checklist_items': 'មិនទាន់មានបញ្ជីផ្ទៀងផ្ទាត់ត្រូវបានបន្ថែមទេ។',
+          'no_tracking_modules': 'មិនទាន់មានម៉ូឌុលតាមដានត្រូវបានបន្ថែមទេ។',
+          'revision_checklist': 'បញ្ជីផ្ទៀងផ្ទាត់ការរំលឹកមេរៀន',
+          'add_revision_topic': 'បន្ថែមប្រធានបទរំលឹកមេរៀន',
+          'topic_name': 'ឈ្មោះប្រធានបទ',
+          'add_topic': 'បន្ថែមប្រធានបទ',
+          'exam_details': 'ព័ត៌មានលម្អិតការប្រឡង',
+          'view_revision_checklist': 'មើលបញ្ជីផ្ទៀងផ្ទាត់ការរំលឹកមេរៀន',
+          'date': 'កាលបរិច្ឆេទ',
+          'time': 'ម៉ោង',
+          'reminder': 'ការរំលឹក',
         },
       };
 }
