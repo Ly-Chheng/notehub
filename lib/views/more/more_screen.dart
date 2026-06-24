@@ -68,13 +68,13 @@ class _MoreScreenState extends State<MoreScreen> {
                     Get.toNamed('/recentyDelete');
                   },
                 ),
-                CustomCardSetting(
-                  icon: Icons.school_outlined,
-                  title: "exams".tr,
-                  onTap: () {
-                    Get.toNamed('/examList');
-                  },
-                ),
+                // CustomCardSetting(
+                //   icon: Icons.school_outlined,
+                //   title: "exams".tr,
+                //   onTap: () {
+                //     Get.toNamed('/examList');
+                //   },
+                // ),
               ]),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15),

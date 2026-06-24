@@ -13,10 +13,10 @@ import 'package:project_structure/widgets/custom_text_field.dart';
 class AddTopicScreen extends StatefulWidget {
   final int examId;
 
-  const AddTopicScreen({Key? key, required this.examId}) : super(key: key);
+  const AddTopicScreen({super.key, required this.examId});
 
   @override
-  _AddTopicScreenState createState() => _AddTopicScreenState();
+  State<AddTopicScreen> createState() => _AddTopicScreenState();
 }
 
 class _AddTopicScreenState extends State<AddTopicScreen> {

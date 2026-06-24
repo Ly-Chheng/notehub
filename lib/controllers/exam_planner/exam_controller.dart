@@ -99,4 +99,54 @@ class ExamPlannerController {
       'percent': percent,
     };
   }
+
+  /// Deletes an exam and its associated cascading data
+  Future<int> deleteExam(int examId) async {
+    final dbClient = await DatabaseService.db;
+
+    // Using a transaction ensures both topics and the exam itself are cleaned up reliably
+    return await dbClient.transaction((txn) async {
+      // 1. Delete associated subtopics via topics mapping if CASCADE isn't configured in SQL
+      await txn.rawDelete('''
+        DELETE FROM revision_subtopics 
+        WHERE topic_id IN (SELECT id FROM revision_topics WHERE exam_id = ?)
+      ''', [examId]);
+
+      // 2. Delete main topic modules
+      await txn.delete(
+        'revision_topics',
+        where: 'exam_id = ?',
+        whereArgs: [examId],
+      );
+
+      // 3. Finally, delete the root exam record
+      return await txn.delete(
+        'exams',
+        where: 'id = ?',
+        whereArgs: [examId],
+      );
+    });
+  }
+
+  /// Updates an existing exam entry in the database
+  Future<int> updateExam(Exam exam) async {
+    final dbClient = await DatabaseService.db;
+    return await dbClient.update(
+      'exams',
+      exam.toMap(),
+      where: 'id = ?',
+      whereArgs: [exam.id],
+    );
+  }
+
+  /// Updates the completion status of an exam
+  Future<void> updateExamCompletionStatus(int examId, bool isCompleted) async {
+    final dbClient = await DatabaseService.db;
+    await dbClient.update(
+      'exams',
+      {'is_completed': isCompleted ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [examId],
+    );
+  }
 }

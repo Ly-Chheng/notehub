@@ -96,7 +96,8 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
   }
 
   Color _getContrastColor(Color? bgColor) {
-    if (bgColor == null || bgColor.value == 0) {
+    // if (bgColor == null || bgColor.value == 0) {
+    if (bgColor == null || bgColor.toARGB32() == 0) {
       return Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
     }
     return ThemeData.estimateBrightnessForColor(bgColor) == Brightness.dark ? Colors.white : Colors.black;

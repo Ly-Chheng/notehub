@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
-
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/core/functions/fomat_date.dart';
 import 'package:project_structure/core/utils/app_color.dart';
@@ -37,19 +36,13 @@ class NoteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imagePaths = note.imagePaths;
-
     final Color noteBgColor = note.bgColor == 0 ? Theme.of(context).cardColor : Color(note.bgColor);
-
     final Color itemTextColor = note.bgColor == 0
         ? (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black)
         : (ThemeData.estimateBrightnessForColor(noteBgColor) == Brightness.dark ? AppColor().white : AppColor().black);
-
     final Color itemSubTextColor = itemTextColor.withValues(alpha: 0.7);
-
     final String titleText = note.title.trim().isNotEmpty ? note.title : controller.getPlainTextFromNote(note.content).trim();
-
     final String plainContent = controller.getPlainTextFromNote(note.content).trim();
-
     final String subtitleText = note.title.trim().isNotEmpty ? plainContent : "";
 
     return Padding(
@@ -143,9 +136,6 @@ class NoteCard extends StatelessWidget {
                               child: Text(titleText.isNotEmpty ? titleText : "untitled".tr,
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
-                                  // style: text18(context).copyWith(
-                                  //   color: itemTextColor,
-                                  // ),
                                   style: fix18(context).copyWith(
                                     color: itemTextColor,
                                   )),

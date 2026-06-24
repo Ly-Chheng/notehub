@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/exam_planner/exam_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/exam_planner/exam_model.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
@@ -9,14 +10,13 @@ class RevisionProgressScreen extends StatelessWidget {
   final Exam exam;
   final ExamPlannerController _controller = ExamPlannerController();
 
-  RevisionProgressScreen({Key? key, required this.exam}) : super(key: key);
-
+  RevisionProgressScreen({super.key, required this.exam});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "Revision Progress".tr,
+        title: "revision_progress".tr,
         context: context,
       ),
       body: FutureBuilder<Map<String, int>>(
@@ -61,11 +61,11 @@ class RevisionProgressScreen extends StatelessWidget {
                           children: [
                             Text(
                               "${metrics['percent']}%",
-                              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                              style: fix18(context).copyWith(fontSize: 28, fontWeight: FontWeight.bold),
                             ),
                             Text(
-                              "Completed",
-                              style: TextStyle(color: AppColor().gray, fontSize: 12),
+                              "completed".tr,
+                              style: text12.copyWith(color: AppColor().gray),
                             ),
                           ],
                         )
@@ -78,16 +78,16 @@ class RevisionProgressScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      _metricStat("Total Topics", metrics['total'] ?? 0),
-                      _metricStat("Completed", metrics['completed'] ?? 0),
-                      _metricStat("Pending", metrics['pending'] ?? 0),
+                      _metricStat("total_topics".tr, metrics['total'] ?? 0, context),
+                      _metricStat("completed".tr, metrics['completed'] ?? 0, context),
+                      _metricStat("pending".tr, metrics['pending'] ?? 0, context),
                     ],
                   ),
                   const SizedBox(height: 40),
 
-                  const Text(
-                    "Keep going! You're doing great!",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black87),
+                  Text(
+                    "keep_going".tr,
+                    style: text16(context),
                   ),
                 ],
               ),
@@ -98,14 +98,14 @@ class RevisionProgressScreen extends StatelessWidget {
     );
   }
 
-  Widget _metricStat(String label, int val) {
+  Widget _metricStat(String label, int val, BuildContext context) {
     return Column(
       children: [
         Text(label, style: const TextStyle(color: Colors.grey, fontSize: 12)),
         const SizedBox(height: 4),
         Text(
           "$val",
-          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87),
+          style: text22(context).copyWith(fontWeight: FontWeight.bold),
         ),
       ],
     );

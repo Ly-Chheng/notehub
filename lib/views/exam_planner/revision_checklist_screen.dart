@@ -12,10 +12,10 @@ import 'revision_progress_screen.dart';
 class RevisionChecklistScreen extends StatefulWidget {
   final Exam exam;
 
-  const RevisionChecklistScreen({Key? key, required this.exam}) : super(key: key);
+  const RevisionChecklistScreen({super.key, required this.exam});
 
   @override
-  _RevisionChecklistScreenState createState() => _RevisionChecklistScreenState();
+  State<RevisionChecklistScreen> createState() => _RevisionChecklistScreenState();
 }
 
 class _RevisionChecklistScreenState extends State<RevisionChecklistScreen> {
@@ -69,7 +69,7 @@ class _RevisionChecklistScreenState extends State<RevisionChecklistScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text("Overall Progress", style: text16(context).copyWith(fontWeight: FontWeight.bold)),
+                    Text("overall_progress".tr, style: text16(context).copyWith(fontWeight: FontWeight.bold)),
                     Text("$progressPercent%", style: text16(context).copyWith(fontWeight: FontWeight.bold, color: AppColor().primaryColor)),
                   ],
                 ),
@@ -116,8 +116,7 @@ class _RevisionChecklistScreenState extends State<RevisionChecklistScreen> {
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: CustomButton(
-              text: "Add Topic",
-              // onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AddTopicScreen(examId: widget.exam.id!))).then((_) => _refreshData()),
+              text: "add_topic".tr,
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -166,7 +165,7 @@ class _RevisionChecklistScreenState extends State<RevisionChecklistScreen> {
                     child: Text("no_checklist_items".tr, style: text14(context).copyWith(color: AppColor().gray)),
                   ),
                 ...subtopics.map((subtopic) => CheckboxListTile(
-                      title: Text(subtopic.name, style: TextStyle(decoration: subtopic.isCompleted ? TextDecoration.lineThrough : null, color: subtopic.isCompleted ? Colors.grey : Colors.black87)),
+                      title: Text(subtopic.name, style: TextStyle(decoration: subtopic.isCompleted ? TextDecoration.lineThrough : null, color: subtopic.isCompleted ? AppColor().gray : Colors.black)),
                       value: subtopic.isCompleted,
                       contentPadding: EdgeInsets.zero,
                       controlAffinity: ListTileControlAffinity.leading,
