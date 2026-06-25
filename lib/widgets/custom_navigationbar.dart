@@ -72,19 +72,19 @@ Widget customNavigationBar({
             ),
           ),
           // Exam
+          // GestureDetector(
+          //   onTap: () => onTap?.call(2),
+          //   child: Container(
+          //     padding: EdgeInsets.all(context.isPhone ? 6 : 10),
+          //     child: Icon(
+          //       currentIndex == 2 ? Icons.school: Icons.school_outlined,
+          //       size: timerIconSize,
+          //       color: currentIndex == 2 ? activeColor : inactiveColor,
+          //     ),
+          //   ),
+          // ),
           GestureDetector(
             onTap: () => onTap?.call(2),
-            child: Container(
-              padding: EdgeInsets.all(context.isPhone ? 6 : 10),
-              child: Icon(
-                currentIndex == 2 ? Icons.school: Icons.school_outlined,
-                size: timerIconSize,
-                color: currentIndex == 2 ? activeColor : inactiveColor,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () => onTap?.call(3),
             child: Stack(
               clipBehavior: Clip.none,
               children: [
@@ -93,10 +93,10 @@ Widget customNavigationBar({
                     context.isPhone ? 6 : 10,
                   ),
                   child: Image.asset(
-                    currentIndex == 3 ? 'assets/images/more_active.png' : 'assets/images/more.png',
+                    currentIndex == 2 ? 'assets/images/more_active.png' : 'assets/images/more.png',
                     width: sizeImg,
                     height: sizeImg,
-                    color: currentIndex == 3 ? activeColor : inactiveColor,
+                    color: currentIndex == 2 ? activeColor : inactiveColor,
                   ),
                 ),
                 if (chatBadgeCount > 0)
