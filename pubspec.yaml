@@ -66,6 +66,7 @@ dependencies:
    #Scan text
   google_mlkit_text_recognition: ^0.15.1
   speech_to_text: ^7.4.0
+  curved_labeled_navigation_bar: ^2.0.6
 
 dev_dependencies:
   flutter_test:

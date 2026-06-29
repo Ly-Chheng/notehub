@@ -210,7 +210,6 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
         title: widget.isEditing ? "edit_timer".tr : "new_timer".tr,
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
         actions: [
           TextButton(
               onPressed: () {
@@ -219,7 +218,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
               },
               child: Text(
                 "save".tr,
-                style: text18(context).copyWith(color: AppColor().primaryColor),
+                style: text18(context).copyWith(color: AppColor().white),
               )),
         ],
       ),

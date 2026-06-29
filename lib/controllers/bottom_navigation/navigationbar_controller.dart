@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:project_structure/views/event_planner/event_list_screen.dart';
 import 'package:project_structure/views/focus_track/focus_track_screen.dart';
 import 'package:project_structure/views/home/home_screen.dart';
 import 'package:project_structure/views/more/more_screen.dart';
@@ -16,6 +17,8 @@ class BottomNavigationBarController extends GetxController {
       case 1:
         return 'focus_track'.tr;
       case 2:
+        return 'exam'.tr;
+      case 3:
         return 'more'.tr;
       default:
         return '';
@@ -25,7 +28,7 @@ class BottomNavigationBarController extends GetxController {
   final List<Widget> screenWidget = const [
     MyHomePage(),
     FocusTrackScreen(),
-    // ExamListScreen(),
+    EventListScreen(),
     MoreScreen(),
   ];
 

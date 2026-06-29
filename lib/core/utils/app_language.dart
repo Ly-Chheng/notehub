@@ -324,12 +324,12 @@ class AppTranslations extends Translations {
           'copyright_footer': '© 2026 Quick Note App',
 
           // Exams / Tabs
-          'exams': 'Exams',
+          'event': 'Event',
           'upcoming': 'Upcoming',
           'completed': 'Completed',
-          'add_exam': 'Add Exam',
-          'exam_title': 'Exam Title',
-          'edit_exam': 'Edit Exam',
+          'add_event': 'Add Event',
+          'event_title': 'Event Title',
+          'edit_event': 'Edit Event',
           'location': 'Location',
           'please_provide_exam_title': 'Please provide an Exam Title',
           'no_checklist_items': 'No checklist items added.',
@@ -338,7 +338,7 @@ class AppTranslations extends Translations {
           'add_revision_topic': 'Add Revision Topic',
           'topic_name': 'Topic Name',
           'add_topic': 'Add Topic',
-          'exam_details': 'Exam Details',
+          'event_details': 'Exam Details',
           'view_revision_checklist': 'View Revision Checklist',
           'date': 'Date',
           'time': 'Time',
@@ -353,6 +353,10 @@ class AppTranslations extends Translations {
           'revision_progress': 'Revision Progress',
           'overall_progress': 'Overall Progress',
           'days_left': 'Days Left',
+          'short_description': 'Short Description',
+          'icon': 'Icon',
+          'event_date_time': 'Event Date & Time',
+          'color_tag': 'Color Tag',
         },
         'km_KM': {
           // General
@@ -672,12 +676,12 @@ class AppTranslations extends Translations {
           'copyright_footer': '© ២០២៦ កម្មវិធី Quick Note',
 
           // Exams / Tabs
-          'exams': 'ការប្រឡង',
+          'event': 'ព្រឹត្តិការណ៍',
           'upcoming': 'ជិតមកដល់',
           'completed': 'បានបញ្ចប់',
-          'add_exam': 'បន្ថែមការប្រឡង',
-          'edit_exam': 'កែប្រែការប្រឡង',
-          'exam_title': 'ចំណងជើងការប្រឡង',
+          'add_event': 'ព្រឹត្តិការណ៍បន្ថែម',
+          'edit_event': 'ព្រឹត្តិការណ៍​កែសម្រួល',
+          'event_title': 'ចំណងជើងព្រឹត្តិការណ៍',
 
           'location': 'ទីតាំង',
           'please_provide_exam_title': 'សូមបញ្ចូលចំណងជើងការប្រឡង',
@@ -687,7 +691,7 @@ class AppTranslations extends Translations {
           'add_revision_topic': 'បន្ថែមប្រធានបទរំលឹកមេរៀន',
           'topic_name': 'ឈ្មោះប្រធានបទ',
           'add_topic': 'បន្ថែមប្រធានបទ',
-          'exam_details': 'ព័ត៌មានលម្អិតការប្រឡង',
+          'event_details': 'ព័ត៌មានលម្អិតនៃព្រឹត្តិការណ៍',
           'view_revision_checklist': 'មើលបញ្ជីផ្ទៀងផ្ទាត់ការរំលឹកមេរៀន',
           'date': 'កាលបរិច្ឆេទ',
           'time': 'ម៉ោង',
@@ -702,6 +706,10 @@ class AppTranslations extends Translations {
           'revision_progress': 'វឌ្ឍនភាពការរំលឹកមេរៀន',
           'overall_progress': 'វឌ្ឍនភាពសរុប',
           'days_left': 'ថ្ងៃនៅសល់',
+          'short_description': 'ការពិពណ៌នាខ្លី',
+          'icon': 'រូបតំណាង',
+          'event_date_time': 'កាលបរិច្ឆេទ និងពេលវេលានៃព្រឹត្តិការណ៍',
+          'color_tag': 'ស្លាកពណ៌',
         },
       };
 }

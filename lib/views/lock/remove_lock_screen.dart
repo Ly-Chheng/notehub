@@ -34,7 +34,7 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "",
+        title: "reset_password".tr,
         context: context,
         actions: [
           TextButton(
@@ -46,7 +46,7 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
             },
             child: Text(
               "save".tr,
-              style: text18(context).copyWith(color: AppColor().primaryColor),
+              style: text18(context).copyWith(color: AppColor().white),
             ),
           ),
         ],
@@ -57,7 +57,7 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
           padding: Layout.padding(),
           child: Column(
             children: [
-              Center(child: customHeader("reset_password".tr, context)),
+              // Center(child: customHeader("reset_password".tr, context)),
               const SizedBox(height: 8),
               Text(
                 "remove_lock_desc".tr,

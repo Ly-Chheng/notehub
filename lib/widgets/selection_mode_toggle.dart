@@ -16,7 +16,7 @@ class SelectionModeToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color activeColor = AppColor().primaryColor;
+    final Color activeColor = AppColor().white;
     final Color disabledColor = AppColor().gray;
     final Color currentColor = hasNoData ? disabledColor : activeColor;
 

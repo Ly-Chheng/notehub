@@ -62,7 +62,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "",
+        title: "change_password".tr,
         context: context,
         actions: [
           TextButton(
@@ -78,7 +78,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             },
             child: Text(
               "save".tr,
-              style: text18(context).copyWith(color: AppColor().primaryColor),
+              style: text18(context).copyWith(color: AppColor().white),
             ),
           ),
         ],
@@ -90,7 +90,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             padding: Layout.padding(),
             child: Column(
               children: [
-                Center(child: customHeader("change_password".tr, context)),
+                // Center(child: customHeader("change_password".tr, context)),
                 const SizedBox(height: 8),
                 Text(
                   "change_password_desc".tr,

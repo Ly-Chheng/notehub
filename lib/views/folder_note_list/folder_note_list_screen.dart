@@ -147,11 +147,9 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        // title: widget.folderName,
         title: folderController.isDefaultName(widget.folderName) ? folderController.displayDefaultFolderName : widget.folderName,
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
         actions: [
           Obx(() {
             final bool hasNoData = controller.notes.isEmpty;

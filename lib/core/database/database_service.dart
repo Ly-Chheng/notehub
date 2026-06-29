@@ -15,7 +15,7 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 6,
+      version: 7,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -64,16 +64,19 @@ class DatabaseService {
 
         await db.insert('security', {'id': 1, 'master_password': ''});
 
-        // 1. Main Exams Table
         await db.execute('''
           CREATE TABLE exams (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
-            date TEXT NOT NULL,          -- Format: YYYY-MM-DD
-            time TEXT,                    -- Format: HH:MM
+            date TEXT NOT NULL,            -- Format: YYYY-MM-DD
+            time TEXT,                      -- Format: HH:MM
             location TEXT,
-            reminder_time TEXT,          -- Stores setup like '1 day before at 9:00 AM'
-            is_completed INTEGER DEFAULT 0 -- 0 = Upcoming, 1 = Completed
+            reminder_time TEXT,            -- Fallback/String description
+            is_completed INTEGER DEFAULT 0, -- 0 = Upcoming, 1 = Completed
+            icon TEXT,                      -- Stores icon identifier string/code point
+            color INTEGER,                  -- Stores hex color integer value
+            reminder_date TEXT,            -- Format: YYYY-MM-DD
+            reminder_timer TEXT            -- Format: HH:MM
           )
         ''');
 
@@ -100,7 +103,6 @@ class DatabaseService {
             FOREIGN KEY (topic_id) REFERENCES revision_topics (id) ON DELETE CASCADE
           )
         ''');
-
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
@@ -147,6 +149,12 @@ class DatabaseService {
             )
           ''');
 
+          // Check and add new schema fields to existing deployments safely
+          await _addColumnIfNotExists(db, 'exams', 'icon', "TEXT");
+          await _addColumnIfNotExists(db, 'exams', 'color', "INTEGER");
+          await _addColumnIfNotExists(db, 'exams', 'reminder_date', "TEXT");
+          await _addColumnIfNotExists(db, 'exams', 'reminder_timer', "TEXT");
+
           await db.execute('''
             CREATE TABLE IF NOT EXISTS revision_topics (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -169,7 +177,6 @@ class DatabaseService {
             )
           ''');
         }
-    
       },
     );
   }

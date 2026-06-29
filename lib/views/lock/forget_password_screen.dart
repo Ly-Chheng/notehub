@@ -49,7 +49,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "",
+        title: "forget_password".tr,
         context: context,
         actions: [
           TextButton(
@@ -60,7 +60,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
             },
             child: Text(
               "submit".tr,
-              style: text18(context).copyWith(color: AppColor().primaryColor),
+              style: text18(context).copyWith(color: AppColor().white),
             ),
           ),
         ],
@@ -73,7 +73,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                 padding: Layout.padding(),
                 child: Column(
                   children: [
-                    Center(child: customHeader("forget_password".tr, context)),
+                    // Center(child: customHeader("forget_password".tr, context)),
                     const SizedBox(height: 8),
                     Text(
                       "forget_password_desc".tr,

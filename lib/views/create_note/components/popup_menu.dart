@@ -20,7 +20,7 @@ class NotePopupMenu extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color iconColor = isEmpty ? AppColor().gray : AppColor().primaryColor;
+    final Color iconColor = isEmpty ? AppColor().gray : AppColor().white;
 
     return PopupMenuButton<String>(
       color: Theme.of(context).cardColor,

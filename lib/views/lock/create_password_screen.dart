@@ -41,7 +41,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: customAppBar(
-        title: "",
+        title: "create_new_password".tr,
         context: context,
         actions: [
           TextButton(
@@ -56,7 +56,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             },
             child: Text(
               "create".tr,
-              style: text18(context).copyWith(color: AppColor().primaryColor),
+              style: text18(context).copyWith(color: AppColor().white),
             ),
           )
         ],
@@ -68,7 +68,7 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             padding: Layout.padding(),
             child: Column(
               children: [
-                Center(child: customHeader("create_new_password".tr, context)),
+                // Center(child: customHeader("create_new_password".tr, context)),
                 const SizedBox(height: 8),
                 Text(
                   "create_password_desc".tr,

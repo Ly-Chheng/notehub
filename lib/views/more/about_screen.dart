@@ -17,7 +17,6 @@ class AboutScreen extends StatelessWidget {
         title: "about".tr,
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
       ),
       body: SingleChildScrollView(
         padding: Layout.padding(),

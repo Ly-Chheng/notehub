@@ -20,11 +20,11 @@ customAppBar({
     centerTitle: false,
     titleSpacing: 15,
     scrolledUnderElevation: 0,
-    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+    backgroundColor: AppColor().primaryColor,
     title: Text(title,
         overflow: TextOverflow.ellipsis,
         style: text20(context).copyWith(
-          color: Theme.of(context).textTheme.bodyLarge?.color,
+          color: AppColor().white,
           fontFamily: 'EN-BOLD',
           fontFamilyFallback: const ['KH-BOLD'],
         )),
@@ -39,7 +39,7 @@ customAppBar({
                     },
                 child: Icon(
                   Icons.arrow_back,
-                  color: leadingColor ?? AppColor().primaryColor,
+                  color: leadingColor ?? AppColor().white,
                 ),
               )
             : GestureDetector(
@@ -49,7 +49,7 @@ customAppBar({
                     },
                 child: Icon(
                   Icons.arrow_back_ios,
-                  color: leadingColor ?? AppColor().primaryColor,
+                  color: leadingColor ?? AppColor().white,
                 ),
               )
         : leading,

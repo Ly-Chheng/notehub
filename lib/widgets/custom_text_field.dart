@@ -18,18 +18,19 @@ Widget customTextField(
   double? fontSize,
   Widget? trailing,
   TextInputType? type,
+  int? maxLength,
+  int? maxLines = 1,
 }) {
   return Container(
-    decoration: BoxDecoration(
-      color: fillColor ?? Colors.grey.withValues(alpha: 0.1),
-      borderRadius: BorderRadius.circular(12),
-    ),
+    decoration: BoxDecoration(color: fillColor ?? Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Color(0xffE8E8EE), width: 1)),
     child: TextFormField(
       controller: controller,
       obscureText: obscure,
       validator: validator,
       onChanged: onChanged,
       keyboardType: type,
+      maxLength: maxLength,
+      maxLines: maxLines,
       cursorColor: AppColor().primaryColor,
       style: TextStyle(
         color: Theme.of(Get.context!).textTheme.bodyLarge?.color,

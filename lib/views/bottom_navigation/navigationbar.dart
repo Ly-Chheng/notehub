@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/bottom_navigation/navigationbar_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
+import 'package:project_structure/views/event_planner/add_event_screen.dart';
 import 'package:project_structure/views/focus_track/focus_track_screen.dart';
 import 'package:project_structure/views/home/components/create_folder.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
@@ -65,12 +66,14 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    color: AppColor().primaryColor,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(width: 1, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
+                    // border: Border.all(width: 1, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
+                    border: Border.all(width: 1, color: AppColor().white),
                   ),
                   child: Icon(
                     Icons.add,
+                    color: AppColor().white,
                     size: context.isPhone ? 24 : 25,
                   ),
                 ),
@@ -81,31 +84,32 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                 onTap: () => Get.toNamed('/createTimer'),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    color: AppColor().primaryColor,
                     borderRadius: BorderRadius.circular(6),
-                    border: Border.all(width: 1, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
+                    border: Border.all(width: 1, color: AppColor().white),
                   ),
-                  child: Icon(Icons.add, size: context.isPhone ? 24 : 25),
+                  child: Icon(Icons.add, color: AppColor().white, size: context.isPhone ? 24 : 25),
                 ),
               ),
-            // if (controller.selectedIndex == 2) ...[
-            //   GestureDetector(
-            //     onTap: () async {
-            //       final result = await Get.to(() => const AddExamScreen());
-            //       if (result == true) {
-            //         setState(() {});
-            //       }
-            //     },
-            //     child: Container(
-            //       decoration: BoxDecoration(
-            //         color: Theme.of(context).cardColor,
-            //         borderRadius: BorderRadius.circular(6),
-            //         border: Border.all(width: 1, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
-            //       ),
-            //       child: Icon(Icons.add, size: context.isPhone ? 24 : 25),
-            //     ),
-            //   ),
-            // ],
+            if (controller.selectedIndex == 2) ...[
+              GestureDetector(
+                onTap: () async {
+                  final result = await Get.to(() => const AddEventScreen());
+
+                  if (result == true) {
+                    setState(() {});
+                  }
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppColor().primaryColor,
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(width: 1, color: AppColor().white),
+                  ),
+                  child: Icon(Icons.add, color: AppColor().white, size: context.isPhone ? 24 : 25),
+                ),
+              ),
+            ],
             SizedBox(width: 15),
           ],
         ),

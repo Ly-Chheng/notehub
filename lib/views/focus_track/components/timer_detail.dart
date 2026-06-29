@@ -21,7 +21,6 @@ class TimerDetailScreen extends StatelessWidget {
         title: data.title,
         titleColor: AppColor().primaryColor,
         context: context,
-        leadingColor: AppColor().primaryColor,
       ),
       body: Obx(() {
         int currentSec = controller.runningSeconds[timerKey] ?? data.remainingSeconds;
