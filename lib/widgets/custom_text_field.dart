@@ -22,7 +22,7 @@ Widget customTextField(
   int? maxLines = 1,
 }) {
   return Container(
-    decoration: BoxDecoration(color: fillColor ?? Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Color(0xffE8E8EE), width: 1)),
+    decoration: BoxDecoration(color: fillColor ?? Theme.of(Get.context!).cardColor, borderRadius: BorderRadius.circular(12), border: Border.all(color: Color(0xffE8E8EE), width: 1)),
     child: TextFormField(
       controller: controller,
       obscureText: obscure,

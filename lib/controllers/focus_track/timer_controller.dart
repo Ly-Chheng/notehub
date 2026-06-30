@@ -12,10 +12,23 @@ class TimerController extends GetxController {
   var activeTimerKeys = <dynamic>{}.obs;
   Timer? _globalTimer;
 
+  final Map<String, String> soundMap = {
+    'default_sound'.tr: 'dragon-studio-alert-444816.mp3',
+    'morning_sound'.tr: 'reddog0607-clock-ticking-365218.mp3',
+    'evening_sound'.tr: 'dragon-studio-alert-444816.mp3',
+  };
+
   @override
   void onInit() {
     super.onInit();
     _startGlobalTimer();
+  }
+
+  String getSoundKeyFromFileName(String fileName) {
+    return soundMap.keys.firstWhere(
+      (key) => soundMap[key] == fileName,
+      orElse: () => 'default_sound'.tr,
+    );
   }
 
   void _startGlobalTimer() {

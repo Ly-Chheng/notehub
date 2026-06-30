@@ -1,128 +1,77 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar.dart';
+import 'package:curved_labeled_navigation_bar/curved_navigation_bar_item.dart';
 import 'package:project_structure/core/utils/app_color.dart';
-import 'package:project_structure/core/utils/app_fonts.dart';
 
 Widget customNavigationBar({
   required BuildContext context,
-  final List<BottomNavigationBarItem>? items,
-  required final int currentIndex,
-  final Color? selectedItemColor,
-  final Color? unselectedItemColor,
-  final void Function(int)? onTap,
-  final int chatBadgeCount = 0,
+  required int currentIndex,
+  required Function(int) onTap,
+  int chatBadgeCount = 0,
 }) {
-  final double iconSize = context.isPhone ? 25 : 32;
-  final double timerIconSize = context.isPhone ? 32 : 34;
-  final sizeImg = context.isPhone ? 26.0 : 32.0;
-  final Color activeColor = selectedItemColor ?? AppColor().primaryColor;
-  final Color inactiveColor = unselectedItemColor ?? AppColor().gray;
-
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Container(
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        boxShadow: AppDecorations.subtleShadow,
-        borderRadius: BorderRadius.circular(30)
+  return CurvedNavigationBar(
+    index: currentIndex,
+    height: 70,
+    backgroundColor: Colors.transparent,
+    color: Theme.of(context).cardColor,
+    buttonBackgroundColor: AppColor().primaryColor,
+    animationDuration: const Duration(milliseconds: 300),
+    animationCurve: Curves.easeInOut,
+    onTap: onTap,
+    items: [
+      CurvedNavigationBarItem(
+        child: Icon(
+          currentIndex == 0 ? Icons.home : Icons.home_outlined,
+          size: 25,
+          color: currentIndex == 0 ? AppColor().white : AppColor().gray,
+        ),
       ),
-      padding: EdgeInsets.symmetric(
-        vertical: context.isPhone ? 6 : 10,
-        horizontal: 20
+      CurvedNavigationBarItem(
+        child: Icon(
+          currentIndex == 1 ? Icons.timer : Icons.timer_outlined,
+          size: 25,
+          color: currentIndex == 1 ? AppColor().white : AppColor().gray,
+        ),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          GestureDetector(
-            onTap: () => onTap?.call(0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(
-                    context.isPhone ? 6 : 10,
-                  ),
-                  child: Image.asset(
-                    currentIndex == 0 ? 'assets/images/home_active.png' : 'assets/images/home.png',
-                    width: iconSize,
-                    height: iconSize,
-                    color: currentIndex == 0 ? activeColor : inactiveColor,
-                  ),
-                ),
-              ],
+      CurvedNavigationBarItem(
+        child: Icon(
+          currentIndex == 2 ? Icons.date_range : Icons.date_range_sharp,
+          size: 25,
+          color: currentIndex == 2 ? AppColor().white : AppColor().gray,
+        ),
+      ),
+      CurvedNavigationBarItem(
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Image.asset(
+              currentIndex == 3 ? 'assets/images/more_active.png' : 'assets/images/more.png',
+              width: 25,
+              height: 25,
+              color: currentIndex == 3 ? AppColor().white : AppColor().gray,
             ),
-          ),
-          GestureDetector(
-            onTap: () => onTap?.call(1),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(
-                    context.isPhone ? 6 : 10,
+            if (chatBadgeCount > 0)
+              Positioned(
+                right: -8,
+                top: -8,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: AppColor().red,
+                    shape: BoxShape.circle,
                   ),
-                  child: Image.asset(
-                    currentIndex == 1 ? 'assets/images/timer_active.png' : 'assets/images/timer.png',
-                    width: timerIconSize,
-                    height: timerIconSize,
-                    color: currentIndex == 1 ? activeColor : inactiveColor,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // Exam
-          GestureDetector(
-            onTap: () => onTap?.call(2),
-            child: Container(
-              padding: EdgeInsets.all(context.isPhone ? 6 : 10),
-              child: Icon(
-                currentIndex == 2 ? Icons.date_range_outlined : Icons.date_range,
-                size: timerIconSize,
-                color: currentIndex == 2 ? activeColor : inactiveColor,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () => onTap?.call(3),
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  padding: EdgeInsets.all(
-                    context.isPhone ? 6 : 10,
-                  ),
-                  child: Image.asset(
-                    currentIndex == 3 ? 'assets/images/more_active.png' : 'assets/images/more.png',
-                    width: sizeImg,
-                    height: sizeImg,
-                    color: currentIndex == 3 ? activeColor : inactiveColor,
-                  ),
-                ),
-                if (chatBadgeCount > 0)
-                  Positioned(
-                    right: -2,
-                    top: -2,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: BoxDecoration(
-                        color: AppColor().red,
-                        shape: BoxShape.circle,
-                      ),
-                      constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                      child: Center(
-                        child: Text(
-                          '$chatBadgeCount',
-                          style: TextStyle(color: AppColor().white, fontSize: AppFontSize(context).subNormalSize, fontFamily: 'EN-REGULAR'),
-                        ),
-                      ),
+                  child: Text(
+                    '$chatBadgeCount',
+                    style: TextStyle(
+                      color: AppColor().white,
+                      fontSize: 10,
                     ),
                   ),
-              ],
-            ),
-          ),
-        ],
+                ),
+              ),
+          ],
+        ),
       ),
-    ),
+    ],
   );
 }

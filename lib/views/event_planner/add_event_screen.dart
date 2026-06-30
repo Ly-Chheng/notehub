@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
-import 'package:project_structure/controllers/event_planner/exam_controller.dart';
+import 'package:project_structure/controllers/event_planner/event_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
-
 import 'package:project_structure/widgets/card_and_button/custom_button.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
+import 'package:project_structure/widgets/custom_date_picker.dart';
 import 'package:project_structure/widgets/custom_snack_bar.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
@@ -21,21 +21,19 @@ class AddEventScreen extends StatefulWidget {
 }
 
 class _AddEventScreenState extends State<AddEventScreen> {
-  // Use GetX dependency injection instead of creating a loose instance
-  final ExamPlannerController _controller = Get.put(ExamPlannerController());
+  final EventPlannerController _controller = Get.put(EventPlannerController());
 
   final _titleController = TextEditingController();
   final _locationController = TextEditingController();
-  final _iconController = TextEditingController(); // Added controller for icon representation if needed
+  final _iconController = TextEditingController();
 
   // Event Date & Time States
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
 
-  // Distinct Reminder Date & Time States (Fixed duplicate overwrite issue)
+  // Distinct Reminder Date & Time States
   DateTime _reminderDate = DateTime.now();
   TimeOfDay _reminderTime = TimeOfDay.now();
-  String _reminderStr = '1 day before at 9:00 AM';
 
   int selectedColorIndex = 0;
   bool get _isEditing => widget.exam != null;
@@ -47,7 +45,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
     const Color(0xFF06B6D4),
     const Color(0xFFF97316),
     const Color(0xFFEF4444),
-    const Color(0xFF374151),
   ];
 
   @override
@@ -61,36 +58,43 @@ class _AddEventScreenState extends State<AddEventScreen> {
       final exam = widget.exam!;
       _titleController.text = exam.title;
       _locationController.text = exam.location == "Not Specified".tr ? "" : exam.location;
-      _reminderStr = exam.reminderTime ?? '1 day before at 9:00 AM';
 
-      // Match color from historical integer if exists
       if (exam.color != null) {
         final index = eventColors.indexWhere((c) => c.value == exam.color);
         if (index != -1) selectedColorIndex = index;
       }
 
+      final now = DateTime.now();
+      final todayStart = DateTime(now.year, now.month, now.day);
+
       // Safe date parsing for event
       try {
-        _selectedDate = DateTime.parse(exam.date);
+        final parsedDate = DateTime.parse(exam.date);
+        _selectedDate = parsedDate.isBefore(todayStart) ? todayStart : parsedDate;
       } catch (e) {
-        _selectedDate = DateTime.now();
+        _selectedDate = todayStart;
       }
 
-      // Safe time parsing for event
       try {
         _selectedTime = _parseTimeOfDay(exam.time);
       } catch (e) {
         _selectedTime = TimeOfDay.now();
       }
 
-      // Safe date parsing for reminder
+      // Safe date parsing for reminder (Clamped between today and event date)
       try {
-        _reminderDate = exam.reminderDate != null ? DateTime.parse(exam.reminderDate!) : DateTime.now();
+        final parsedReminder = exam.reminderDate != null ? DateTime.parse(exam.reminderDate!) : todayStart;
+        if (parsedReminder.isBefore(todayStart)) {
+          _reminderDate = todayStart;
+        } else if (parsedReminder.isAfter(_selectedDate)) {
+          _reminderDate = _selectedDate;
+        } else {
+          _reminderDate = parsedReminder;
+        }
       } catch (e) {
-        _reminderDate = DateTime.now();
+        _reminderDate = todayStart;
       }
 
-      // Safe time parsing for reminder
       try {
         _reminderTime = exam.reminderTimer != null ? _parseTimeOfDay(exam.reminderTimer!) : TimeOfDay.now();
       } catch (e) {
@@ -100,17 +104,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
   }
 
   void _pickCustomColor() {
-    // Use the currently selected event color as the starting point inside the picker
     Color tempColor = eventColors[selectedColorIndex];
 
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(
-            'pick_a_color'.tr,
-            style: text18(context),
-          ),
+          title: Text('pick_a_color'.tr, style: text18(context)),
           content: SingleChildScrollView(
             child: ColorPicker(
               pickerColor: tempColor,
@@ -124,22 +124,16 @@ class _AddEventScreenState extends State<AddEventScreen> {
               children: [
                 TextButton(
                   child: Text('cancel'.tr, style: text16(context)),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
+                  onPressed: () => Navigator.of(context).pop(),
                 ),
                 TextButton(
                   child: Text('apply'.tr, style: text16(context)),
                   onPressed: () {
                     setState(() {
-                      // Check if the picked color already exists in your current options list
                       int existingIndex = eventColors.indexWhere((c) => c.value == tempColor.value);
-
                       if (existingIndex != -1) {
-                        // If it matches an existing color dot, simply switch selection focus to it
                         selectedColorIndex = existingIndex;
                       } else {
-                        // Otherwise, append the brand new color onto the palette selection row
                         eventColors.add(tempColor);
                         selectedColorIndex = eventColors.length - 1;
                       }
@@ -209,7 +203,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isSelected ? eventColors[selectedColorIndex].withOpacity(0.2) : AppColor().white,
+                    color: isSelected ? eventColors[selectedColorIndex].withValues(alpha: 0.2) : AppColor().white,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isSelected ? eventColors[selectedColorIndex] : const Color(0xffE8E8EE),
@@ -256,12 +250,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            customTextField(
-              "event_title".tr,
-              false,
-              null,
-              controller: _titleController,
-            ),
+            customTextField("event_title".tr, false, null, controller: _titleController),
             const SizedBox(height: 16),
             customTextField(
               "short_description".tr,
@@ -282,14 +271,23 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
-                      final DateTime? picked = await showDatePicker(
+                      final now = DateTime.now();
+                      final todayMidnight = DateTime(now.year, now.month, now.day);
+
+                      final DateTime? picked = await showCustomDatePicker(
                         context: context,
                         initialDate: _selectedDate,
-                        firstDate: DateTime.now().subtract(const Duration(days: 365)),
+                        firstDate: todayMidnight,
                         lastDate: DateTime(2035),
                       );
+
                       if (picked != null) {
-                        setState(() => _selectedDate = picked);
+                        setState(() {
+                          _selectedDate = picked;
+                          if (_reminderDate.isAfter(_selectedDate)) {
+                            _reminderDate = _selectedDate;
+                          }
+                        });
                       }
                     },
                     borderRadius: BorderRadius.circular(8.0),
@@ -297,7 +295,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: AppColor().white,
+                        color: Theme.of(Get.context!).cardColor,
                         border: Border.all(color: const Color(0xffE8E8EE), width: 1),
                       ),
                       child: Row(
@@ -327,7 +325,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: AppColor().white,
+                        color: Theme.of(Get.context!).cardColor,
                         border: Border.all(color: const Color(0xffE8E8EE), width: 1),
                       ),
                       child: Row(
@@ -368,7 +366,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(Get.context!).cardColor,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(color: const Color(0xffE8E8EE)),
                   ),
@@ -376,7 +374,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     scrollDirection: Axis.horizontal,
                     child: Row(
                       children: [
-                        // Generated default dots
                         ...List.generate(
                           eventColors.length,
                           (index) {
@@ -395,15 +392,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     color: selected ? AppColor().gray : Colors.transparent,
                                     width: 2,
                                   ),
-                                  boxShadow: selected ? [BoxShadow(color: eventColors[index].withOpacity(0.4), blurRadius: 8)] : [],
+                                  boxShadow: selected ? [BoxShadow(color: eventColors[index].withValues(alpha: 0.4), blurRadius: 8)] : [],
                                 ),
                                 child: selected ? const Icon(Icons.check, size: 18, color: Colors.white) : null,
                               ),
                             );
                           },
                         ),
-
-                        // Interactive Custom Picker Button Dot
                         GestureDetector(
                           onTap: _pickCustomColor,
                           child: Container(
@@ -415,11 +410,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                               shape: BoxShape.circle,
                               border: Border.all(color: const Color(0xffE8E8EE), width: 1),
                             ),
-                            child: Icon(
-                              Icons.add,
-                              size: 18,
-                              color: AppColor().gray,
-                            ),
+                            child: Icon(Icons.add, size: 18, color: AppColor().gray),
                           ),
                         ),
                       ],
@@ -439,11 +430,22 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
+                      final now = DateTime.now();
+                      final todayStart = DateTime(now.year, now.month, now.day);
+
+                      // Ensure initial target is completely within valid limits
+                      DateTime verifiedInitial = _reminderDate;
+                      if (verifiedInitial.isBefore(todayStart)) {
+                        verifiedInitial = todayStart;
+                      } else if (verifiedInitial.isAfter(_selectedDate)) {
+                        verifiedInitial = _selectedDate;
+                      }
+
                       final DateTime? picked = await showDatePicker(
                         context: context,
-                        initialDate: _reminderDate,
-                        firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                        lastDate: DateTime(2035),
+                        initialDate: verifiedInitial,
+                        firstDate: todayStart, //Cannot select before today
+                        lastDate: _selectedDate, //Cannot select after event date
                       );
                       if (picked != null) {
                         setState(() => _reminderDate = picked);
@@ -454,7 +456,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: AppColor().white,
+                        color: Theme.of(Get.context!).cardColor,
                         border: Border.all(color: const Color(0xffE8E8EE), width: 1),
                       ),
                       child: Row(
@@ -484,7 +486,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        color: AppColor().white,
+                        color: Theme.of(Get.context!).cardColor,
                         border: Border.all(color: const Color(0xffE8E8EE), width: 1),
                       ),
                       child: Row(
@@ -515,9 +517,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     date: dateString,
                     time: timeString,
                     location: _locationController.text.trim().isEmpty ? "not_specified".tr : _locationController.text.trim(),
-                    reminderTime: _reminderStr,
+                    reminderTime: "$reminderDateString $reminderTimeString", // safely constructed fallback string
                     isCompleted: widget.exam?.isCompleted ?? false,
-                    color: eventColors[selectedColorIndex].value, // Storing as int
+                    color: eventColors[selectedColorIndex].value,
                     icon: _iconController.text.trim(),
                     reminderDate: reminderDateString,
                     reminderTimer: reminderTimeString,

@@ -5,10 +5,10 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
-import 'package:project_structure/views/create_note/components/image_zoom.dart';
-import 'package:project_structure/views/create_note/components/quill/quill_video.dart';
+import 'package:project_structure/views/note/create_note/components/image_zoom.dart';
+import 'package:project_structure/views/note/create_note/components/quill/quill_video.dart';
+import 'package:project_structure/widgets/custom_menu_item.dart.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
-import 'package:project_structure/widgets/multi_style.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
@@ -285,4 +285,13 @@ class FullScreenVideoPage extends StatelessWidget {
       ),
     );
   }
+}
+Widget divider(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Divider(
+      height: 1,
+      color: Colors.grey.withValues(alpha: 0.08),
+    ),
+  );
 }

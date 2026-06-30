@@ -1,8 +1,8 @@
 import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
 
-class ExamPlannerController {
-  ExamPlannerController();
+class EventPlannerController {
+  EventPlannerController();
 
   /// Fetches either upcoming or completed exams depending on the [completed] flag
   Future<List<EventModel>> fetchExams({required bool completed}) async {

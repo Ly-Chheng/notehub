@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_quill/flutter_quill.dart';
-import 'package:project_structure/views/create_note/components/resizable_media.dart';
+import 'package:project_structure/views/note/create_note/components/resizable_media.dart';
 
 class CustomMediaEmbedBuilder implements EmbedBuilder {
   final QuillController controller;

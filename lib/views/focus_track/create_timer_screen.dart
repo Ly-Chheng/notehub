@@ -31,11 +31,7 @@ class CreateTimerScreen extends StatefulWidget {
 }
 
 class _CreateTimerScreenState extends State<CreateTimerScreen> {
-  final Map<String, String> soundMap = {
-    'default_sound'.tr: 'dragon-studio-alert-444816.mp3',
-    'morning_sound'.tr: 'reddog0607-clock-ticking-365218.mp3',
-    'evening_sound'.tr: 'dragon-studio-alert-444816.mp3',
-  };
+  final TimerController _timerController = Get.find<TimerController>();
 
   late int selectedHours;
   late int selectedMinutes;
@@ -57,16 +53,19 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       selectedMinutes = (total % 3600) ~/ 60;
       selectedSeconds = total % 60;
       _labelController = TextEditingController(text: widget.existingTimer!.title);
-      selectedSound = soundMap.keys.firstWhere(
-        (k) => soundMap[k] == widget.existingTimer!.sound,
-        orElse: () => 'default_sound'.tr,
-      );
+      // selectedSound = soundMap.keys.firstWhere(
+      //   (k) => soundMap[k] == widget.existingTimer!.sound,
+      //   orElse: () => 'default_sound'.tr,
+      // );
+      // 2. Read fallback map mapping safely from controller helper
+      selectedSound = _timerController.getSoundKeyFromFileName(widget.existingTimer!.sound);
     } else {
       selectedHours = 1;
       selectedMinutes = 20;
       selectedSeconds = 40;
       _labelController = TextEditingController(text: (widget.existingTimer?.title != null && widget.existingTimer!.title.isNotEmpty) ? widget.existingTimer!.title : "timer".tr);
-      selectedSound = 'default_sound'.tr;
+      // selectedSound = 'default_sound'.tr;
+      selectedSound = _timerController.soundMap.keys.first; // 3. Fallback to first map element
     }
 
     hourController = FixedExtentScrollController(initialItem: selectedHours);
@@ -137,7 +136,9 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
     final Box<TimerModel> box = Hive.box<TimerModel>('timer_box');
     int totalSec = (selectedHours * 3600) + (selectedMinutes * 60) + selectedSeconds;
 
-    String soundFileName = soundMap[selectedSound] ?? 'dragon-studio-alert-444816.mp3';
+    // String soundFileName = soundMap[selectedSound] ?? 'dragon-studio-alert-444816.mp3';
+    // 4. Retrieve asset identifier value cleanly out of your global controller configuration
+    String soundFileName = _timerController.soundMap[selectedSound] ?? 'dragon-studio-alert-444816.mp3';
 
     if (totalSec <= 0) {
       showConfirmDialog(
@@ -241,10 +242,15 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
                 ),
                 CustomDropdown(
                   selectedValue: selectedSound,
-                  itemsMap: soundMap,
+                  // itemsMap: soundMap,
+                  // onChanged: (newValue) {
+                  //   setState(() => selectedSound = newValue);
+                  //   SoundService.playTimerSound(soundMap[newValue]!);
+                  // },
+                  itemsMap: _timerController.soundMap, // 5. Reference items source via controller mapping
                   onChanged: (newValue) {
                     setState(() => selectedSound = newValue);
-                    SoundService.playTimerSound(soundMap[newValue]!);
+                    SoundService.playTimerSound(_timerController.soundMap[newValue]!);
                   },
                 ),
                 const SizedBox(height: 20),

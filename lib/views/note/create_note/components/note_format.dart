@@ -41,7 +41,6 @@ class NoteFormatComponents {
         }
       },
       onColorChanged: (color) {
-        // final hex = '#${color.value.toRadixString(16).substring(2)}';
         final hex = '#${(color.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0')}';
         controller.formatSelection(ColorAttribute(hex));
       },

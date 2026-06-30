@@ -68,7 +68,6 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   decoration: BoxDecoration(
                     color: AppColor().primaryColor,
                     borderRadius: BorderRadius.circular(6),
-                    // border: Border.all(width: 1, color: Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().gray),
                     border: Border.all(width: 1, color: AppColor().white),
                   ),
                   child: Icon(

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
-import 'package:project_structure/widgets/multi_style.dart';
 
 class SelectionBottomBar extends StatelessWidget {
   final int selectedCount;
@@ -45,4 +43,20 @@ class SelectionBottomBar extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget buildBottomAction(IconData icon, Color color, VoidCallback onTap, BuildContext context) {
+  return InkWell(
+    onTap: onTap,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          icon,
+          color: color,
+          size: context.isPhone ? 25 : 30,
+        ),
+      ],
+    ),
+  );
 }

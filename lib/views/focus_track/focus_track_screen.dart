@@ -54,7 +54,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
     return Container(
       height: context.isPhone ? 50 : 60,
       decoration: BoxDecoration(
-        color: AppColor().white,
+       color: Theme.of(Get.context!).cardColor,
         borderRadius: BorderRadius.circular(context.isPhone ? 25 : 45),
       ),
       child: Stack(
@@ -83,8 +83,6 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
   }
 
   Widget _toggleItem(String label, int index) {
-    // final Color activeColor = Theme.of(context).brightness == Brightness.dark ? AppColor().white : AppColor().black;
-
     return Expanded(
       child: GestureDetector(
         onTap: () => _handleToggle(index),

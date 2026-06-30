@@ -6,8 +6,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:project_structure/controllers/notes/media_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/widgets/custom_menu_item.dart.dart';
 import 'package:project_structure/widgets/custom_snack_bar.dart';
-import 'package:project_structure/widgets/multi_style.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_sheet_header.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 void showMediaSheet({
@@ -50,7 +51,6 @@ void showMediaSheet({
         //   "Detected (${recognizer.script.name}): ${result.text}",
         // );
 
-        // choose the longest/most meaningful result
         if (result.text.length > bestText.length) {
           bestText = result.text;
         }
@@ -86,15 +86,13 @@ void showMediaSheet({
     );
     if (available) {
       Get.back();
-      // Start Listening
       speech.listen(
         onResult: (result) {
           if (result.finalResult) {
             if (Get.isDialogOpen == true) {
-              Get.back(); // Closes the dialog
+              Get.back();
             }
             onResult(result.recognizedWords);
-            // Get.back();
           }
         },
       );
@@ -104,7 +102,6 @@ void showMediaSheet({
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
           backgroundColor: themeColor,
           child: StatefulBuilder(
-            // Use StatefulBuilder to manage animation
             builder: (context, setDialogState) {
               final controller = AnimationController(
                 vsync: Navigator.of(context),
@@ -116,7 +113,6 @@ void showMediaSheet({
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Pulsating Animation
                     ScaleTransition(
                       scale: Tween(begin: 0.9, end: 1.1).animate(
                         CurvedAnimation(parent: controller, curve: Curves.easeInOut),
@@ -223,6 +219,16 @@ void showMediaSheet({
           ],
         ),
       ),
+    ),
+  );
+}
+
+Widget divider(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 16),
+    child: Divider(
+      height: 1,
+      color: Colors.grey.withValues(alpha: 0.08),
     ),
   );
 }

@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 import 'package:project_structure/views/bottom_navigation/navigationbar.dart';
-import 'package:project_structure/views/focus_track/components/create_timer.dart';
+import 'package:project_structure/views/event_planner/add_event_screen.dart';
+import 'package:project_structure/views/event_planner/event_screen.dart';
+import 'package:project_structure/views/focus_track/create_timer_screen.dart';
 import 'package:project_structure/views/focus_track/focus_track_screen.dart';
 import 'package:project_structure/views/more/recently_deleted_screen.dart';
 import 'package:project_structure/views/home/home_screen.dart';
@@ -25,4 +27,6 @@ final appRoute = [
   GetPage(name: '/changePassword', page: () => const ChangePasswordScreen()),
   GetPage(name: '/resetPassword', page: () => const RemoveLockScreen()),
   GetPage(name: '/fogetPassword', page: () => const ForgetPasswordScreen()),
+  GetPage(name: '/addEvent', page: () => const AddEventScreen()),
+  GetPage(name: '/event', page: () => const EventScreen()),
 ];

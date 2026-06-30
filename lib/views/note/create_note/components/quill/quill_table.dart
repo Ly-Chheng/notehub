@@ -75,19 +75,19 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
       actions: [
         ActionSheetItem(
           label: 'add_row'.tr,
-          icon: CupertinoIcons.add_circled,
+          icon: Icons.add,
           color: AppColor().primaryColor,
           onTap: () => widget.onAddRow(),
         ),
         ActionSheetItem(
           label: 'add_column'.tr,
-          icon: CupertinoIcons.add_circled,
+          icon: Icons.add,
           color: AppColor().primaryColor,
           onTap: () => widget.onAddColumn(),
         ),
         ActionSheetItem(
           label: 'delete_table'.tr,
-          icon: CupertinoIcons.delete,
+          icon: Icons.delete,
           color: AppColor().red,
           onTap: () => widget.onDeleteTable(),
         ),
@@ -136,7 +136,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                       CupertinoButton(
                         padding: EdgeInsets.zero,
                         onPressed: () => _showAddMenu(context),
-                        child: Icon(CupertinoIcons.plus_circle_fill, color: AppColor().green, size: 22),
+                        child: Icon(Icons.add_circle_outline, color: AppColor().green, size: 22),
                       ),
                     ],
                   ),
@@ -176,7 +176,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
                           child: Container(
                             height: 45,
                             alignment: Alignment.center,
-                            child: Icon(CupertinoIcons.minus_circle, color: AppColor().gray, size: context.isPhone ? 20 : 25),
+                            child: Icon(Icons.remove_circle_outline, color: AppColor().gray, size: context.isPhone ? 20 : 25),
                           ),
                         ),
                       ],

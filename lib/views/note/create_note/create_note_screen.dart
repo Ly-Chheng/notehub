@@ -13,15 +13,15 @@ import 'package:project_structure/core/functions/format_file_size.dart';
 import 'package:project_structure/models/note/note_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
-import 'package:project_structure/views/create_note/components/bottom_toolbar.dart';
-import 'package:project_structure/views/create_note/components/move_note.dart';
-import 'package:project_structure/views/create_note/components/note_format.dart';
-import 'package:project_structure/views/create_note/components/popup_menu.dart';
-import 'package:project_structure/views/create_note/components/share_note.dart';
+import 'package:project_structure/views/note/create_note/components/bottom_toolbar.dart';
+import 'package:project_structure/views/note/create_note/components/move_note.dart';
+import 'package:project_structure/views/note/create_note/components/note_format.dart';
+import 'package:project_structure/views/note/create_note/components/popup_menu.dart';
+import 'package:project_structure/views/note/create_note/components/share_note.dart';
 import 'package:project_structure/widgets/navigation_create_note/background_note.dart';
 import 'package:project_structure/widgets/navigation_create_note/media_component.dart';
-import 'package:project_structure/views/create_note/components/quill/quill_editor.dart';
-import 'package:project_structure/views/create_note/components/quill/quill_table.dart';
+import 'package:project_structure/views/note/create_note/components/quill/quill_editor.dart';
+import 'package:project_structure/views/note/create_note/components/quill/quill_table.dart';
 import 'package:project_structure/widgets/navigation_create_note/handwriting.dart';
 import 'package:project_structure/widgets/navigation_create_note/template_library_sheet.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
@@ -379,7 +379,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           insertionIndex += 1;
         }
 
-        _quillController.document.insert(insertionIndex + 1, '\n'); // Add a newline and update cursor
+        _quillController.document.insert(insertionIndex + 1, '\n');
         _quillController.updateSelection(
           TextSelection.collapsed(offset: insertionIndex),
           ChangeSource.local,
