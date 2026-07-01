@@ -52,7 +52,7 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
   Widget _buildToggleSwitch(BuildContext context) {
     double switchWidth = MediaQuery.of(context).size.width - 40;
     return Container(
-      height: context.isPhone ? 50 : 60,
+      height: context.isPhone ? 55 : 60,
       decoration: BoxDecoration(
        color: Theme.of(Get.context!).cardColor,
         borderRadius: BorderRadius.circular(context.isPhone ? 25 : 45),

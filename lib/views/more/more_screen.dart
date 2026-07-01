@@ -8,7 +8,7 @@ import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/views/more/components/font_size.dart';
 import 'package:project_structure/views/more/components/change_language.dart';
 import 'package:project_structure/views/more/components/dark_mode.dart';
-import 'package:project_structure/widgets/card_and_button/custom_card_setting.dart';
+import 'package:project_structure/widgets/custom_card_setting.dart';
 
 class MoreScreen extends StatefulWidget {
   const MoreScreen({
@@ -68,13 +68,6 @@ class _MoreScreenState extends State<MoreScreen> {
                     Get.toNamed('/recentyDelete');
                   },
                 ),
-                // CustomCardSetting(
-                //   icon: Icons.school_outlined,
-                //   title: "exams".tr,
-                //   onTap: () {
-                //     Get.toNamed('/examList');
-                //   },
-                // ),
               ]),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 15),

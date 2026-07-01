@@ -74,7 +74,7 @@ class _CompletedEventListState extends State<CompletedEventList> {
                               subTitle: "delete_confirm".tr,
                               confirmText: "delete".tr,
                               onConfirm: () async {
-                                await _controller.deleteExam(event.id!);
+                                await _controller.deleteEvent(event.id!);
                                 _refreshList();
                               },
                             );
@@ -94,7 +94,7 @@ class _CompletedEventListState extends State<CompletedEventList> {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: AppColor().green.withValues(alpha: 0.05),
+                      color: AppColor().white,
                       borderRadius: const BorderRadius.horizontal(
                         left: Radius.circular(18),
                       ),

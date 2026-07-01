@@ -90,25 +90,25 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                   child: Icon(Icons.add, color: AppColor().white, size: context.isPhone ? 24 : 25),
                 ),
               ),
-            if (controller.selectedIndex == 2) ...[
-              GestureDetector(
-                onTap: () async {
-                  final result = await Get.to(() => const AddEventScreen());
+            // if (controller.selectedIndex == 2) ...[
+            //   GestureDetector(
+            //     onTap: () async {
+            //       final result = await Get.to(() => const AddEventScreen());
 
-                  if (result == true) {
-                    setState(() {});
-                  }
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppColor().primaryColor,
-                    borderRadius: BorderRadius.circular(6),
-                    border: Border.all(width: 1, color: AppColor().white),
-                  ),
-                  child: Icon(Icons.add, color: AppColor().white, size: context.isPhone ? 24 : 25),
-                ),
-              ),
-            ],
+            //       if (result == true) {
+            //         setState(() {});
+            //       }
+            //     },
+            //     child: Container(
+            //       decoration: BoxDecoration(
+            //         color: AppColor().primaryColor,
+            //         borderRadius: BorderRadius.circular(6),
+            //         border: Border.all(width: 1, color: AppColor().white),
+            //       ),
+            //       child: Icon(Icons.add, color: AppColor().white, size: context.isPhone ? 24 : 25),
+            //     ),
+            //   ),
+            // ],
             SizedBox(width: 15),
           ],
         ),
@@ -123,12 +123,10 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                 )
               : controller.screenWidget[controller.selectedIndex],
         ),
-        bottomNavigationBar: SafeArea(
-          child: customNavigationBar(
-            context: context,
-            currentIndex: controller.selectedIndex,
-            onTap: _onItemTapped,
-          ),
+        bottomNavigationBar: customNavigationBar(
+          context: context,
+          currentIndex: controller.selectedIndex,
+          onTap: _onItemTapped,
         ),
       ),
     );

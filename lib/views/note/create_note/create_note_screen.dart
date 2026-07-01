@@ -27,7 +27,7 @@ import 'package:project_structure/widgets/navigation_create_note/template_librar
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
-import 'package:project_structure/widgets/multi_style.dart';
+import 'package:project_structure/widgets/action_button_bar.dart';
 
 class CreateNoteScreen extends StatefulWidget {
   final bool isEditing;

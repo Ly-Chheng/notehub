@@ -5,12 +5,13 @@ import 'package:project_structure/controllers/event_planner/event_controller.dar
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
-import 'package:project_structure/widgets/card_and_button/custom_button.dart';
+import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_date_picker.dart';
-import 'package:project_structure/widgets/custom_snack_bar.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
+import 'package:project_structure/widgets/custom_time_picker.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
 class AddEventScreen extends StatefulWidget {
   final EventModel? exam;
@@ -58,6 +59,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
       final exam = widget.exam!;
       _titleController.text = exam.title;
       _locationController.text = exam.location == "Not Specified".tr ? "" : exam.location;
+
+      _iconController.text = exam.icon ?? "";
 
       if (exam.color != null) {
         final index = eventColors.indexWhere((c) => c.value == exam.color);
@@ -164,17 +167,10 @@ class _AddEventScreenState extends State<AddEventScreen> {
   }
 
   void _showIconBottomSheet(BuildContext context) {
-    final List<Map<String, dynamic>> availableIcons = [
-      {'name': 'school', 'icon': Icons.school},
-      {'name': 'book', 'icon': Icons.book},
-      {'name': 'assignment', 'icon': Icons.assignment},
-      {'name': 'category', 'icon': Icons.category},
-      {'name': 'star', 'icon': Icons.star},
-      {'name': 'alarm', 'icon': Icons.alarm},
-    ];
     ConfirmBottomSheet.show(
       context: context,
-      title: "select_icon".tr,
+      isFloating: true,
+      title: "icon".tr,
       showTopCancel: true,
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -189,9 +185,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
             ),
-            itemCount: availableIcons.length,
+            itemCount: _controller.availableIcons.length,
             itemBuilder: (context, index) {
-              final item = availableIcons[index];
+              final item = _controller.availableIcons[index];
               final isSelected = _iconController.text == item['name'];
 
               return GestureDetector(
@@ -202,18 +198,18 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   Navigator.pop(context);
                 },
                 child: Container(
+                  padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isSelected ? eventColors[selectedColorIndex].withValues(alpha: 0.2) : AppColor().white,
-                    borderRadius: BorderRadius.circular(12),
+                    color: isSelected ? eventColors[selectedColorIndex].withValues(alpha: 0.15) : AppColor().white,
+                    borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: isSelected ? eventColors[selectedColorIndex] : const Color(0xffE8E8EE),
                       width: 2,
                     ),
                   ),
-                  child: Icon(
-                    item['icon'],
-                    size: 28,
-                    color: isSelected ? eventColors[selectedColorIndex] : AppColor().gray,
+                  child: Image.asset(
+                    item['image'],
+                    fit: BoxFit.contain,
                   ),
                 ),
               );
@@ -312,7 +308,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
-                      final TimeOfDay? picked = await showTimePicker(
+                      // Calling your newly created custom themed time picker
+                      final TimeOfDay? picked = await showCustomTimePicker(
                         context: context,
                         initialTime: _selectedTime,
                       );
@@ -349,8 +346,19 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   "icon".tr,
                   false,
                   null,
-                  controller: _iconController,
-                  suffixIcon: Icon(Icons.category, color: AppColor().gray),
+                  // controller: _iconController,
+                  controller: TextEditingController(),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: _iconController.text.isNotEmpty
+                        ? Image.asset(
+                            'assets/images/${_iconController.text}.png',
+                            width: 24,
+                            height: 24,
+                            fit: BoxFit.contain,
+                          )
+                        : Icon(Icons.category, color: AppColor().gray),
+                  ),
                 ),
               ),
             ),
@@ -441,7 +449,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                         verifiedInitial = _selectedDate;
                       }
 
-                      final DateTime? picked = await showDatePicker(
+                      // Now safely utilizing your custom themed date picker
+                      final DateTime? picked = await showCustomDatePicker(
                         context: context,
                         initialDate: verifiedInitial,
                         firstDate: todayStart, //Cannot select before today
@@ -473,7 +482,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
-                      final TimeOfDay? picked = await showTimePicker(
+                      final TimeOfDay? picked = await showCustomTimePicker(
                         context: context,
                         initialTime: _reminderTime,
                       );
@@ -533,9 +542,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
                   Get.back(result: true);
                 } else {
-                  AppSnackbar.showError(
+                  showConfirmDialog(
+                    context: context,
                     title: "error".tr,
-                    message: "please_provide_exam_title".tr,
+                    subTitle: "please_provide_exam_title".tr,
+                    confirmText: "ok".tr,
+                    onConfirm: () {},
                   );
                 }
               },

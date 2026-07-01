@@ -117,12 +117,12 @@ class NoteController extends GetxController {
       if (id == null) {
         //  CREATE NEW NOTE
         resultId = await db.insert('notes', row);
-        debugPrint(' Note CREATED: ID $resultId');
+        // debugPrint(' Note CREATED: ID $resultId');
       } else {
         // UPDATE EXISTING NOTE
         int count = await db.update('notes', row, where: 'id = ?', whereArgs: [id]);
         resultId = id;
-        debugPrint(' Note UPDATED: ID $id ($count rows affected)');
+        // debugPrint(' Note UPDATED: ID $id ($count rows affected)');
       }
 
       await fetchNotesByFolder(folderId);

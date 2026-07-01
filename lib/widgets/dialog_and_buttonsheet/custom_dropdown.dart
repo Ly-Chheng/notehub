@@ -24,10 +24,17 @@ class CustomDropdown extends StatelessWidget {
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+          // decoration: BoxDecoration(
+          //   borderRadius: BorderRadius.circular(12),
+          //   color: Theme.of(Get.context!).cardColor,
+          //   border: Border.all(
+          //       // color: const Color(0xffE8E8EE),
+          //       color: Theme.of(Get.context!).brightness == Brightness.dark ? const Color(0xff3A3A3C) : const Color(0xffE8E8EE),
+          //       width: 1),
+          // ),
           decoration: BoxDecoration(
+            color: Colors.grey.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            color: Theme.of(Get.context!).cardColor,
-            border: Border.all(color: const Color(0xffE8E8EE), width: 1),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(

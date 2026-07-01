@@ -66,4 +66,5 @@ class AppDecorations {
       offset: Offset(0, 8),
     ),
   ];
+  
 }

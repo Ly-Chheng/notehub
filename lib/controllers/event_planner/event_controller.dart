@@ -3,8 +3,14 @@ import 'package:project_structure/models/event_planner/event_model.dart';
 
 class EventPlannerController {
   EventPlannerController();
+  final List<Map<String, dynamic>> availableIcons = [
+    {'name': 'study', 'image': 'assets/images/study.png'},
+    {'name': 'work', 'image': 'assets/images/work.png'},
+    {'name': 'todo', 'image': 'assets/images/todo.png'},
+    {'name': 'meeting', 'image': 'assets/images/meeting.png'},
+  ];
 
-  /// Fetches either upcoming or completed exams depending on the [completed] flag
+  /// Fetches either upcoming or completed even
   Future<List<EventModel>> fetchExams({required bool completed}) async {
     try {
       final dbClient = await DatabaseService.db;
@@ -20,7 +26,7 @@ class EventPlannerController {
     }
   }
 
-  /// Adds a new exam schedule entry to the database
+  /// Adds a new event to the database
   Future<int> createExam(EventModel exam) async {
     final dbClient = await DatabaseService.db;
     return await dbClient.insert('exams', exam.toMap());
@@ -100,8 +106,8 @@ class EventPlannerController {
     };
   }
 
-  /// Deletes an exam and its associated cascading data
-  Future<int> deleteExam(int examId) async {
+  /// Deletes an event and its associated cascading data
+  Future<int> deleteEvent(int examId) async {
     final dbClient = await DatabaseService.db;
 
     // Using a transaction ensures both topics and the exam itself are cleaned up reliably
@@ -128,7 +134,7 @@ class EventPlannerController {
     });
   }
 
-  /// Updates an existing exam entry in the database
+  /// Updates an existing event entry in the database
   Future<int> updateExam(EventModel exam) async {
     final dbClient = await DatabaseService.db;
     return await dbClient.update(

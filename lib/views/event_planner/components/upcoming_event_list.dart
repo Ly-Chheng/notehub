@@ -60,13 +60,16 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
     }
   }
 
-  IconData _getIconData(String? iconName) {
-    switch (iconName?.toLowerCase().trim()) {
-      case 'school': case 'education': return Icons.school;
-      case 'category': return Icons.category;
-      case 'assignment': return Icons.assignment;
-      case 'book': return Icons.book;
-      default: return Icons.school;
+  String _getImageAsset(String? iconName) {
+    final cleanName = iconName?.toLowerCase().trim();
+    switch (cleanName) {
+      case 'study':
+      case 'work':
+      case 'todo':
+      case 'meeting':
+        return 'assets/images/$cleanName.png';
+      default:
+        return 'assets/images/study.png';
     }
   }
 
@@ -125,7 +128,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                     subTitle: "delete_confirm".tr,
                     confirmText: "delete".tr,
                     onConfirm: () async {
-                      await _controller.deleteExam(exam.id!);
+                      await _controller.deleteEvent(exam.id!);
                       _refreshList();
                     },
                   );
@@ -173,7 +176,6 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
               decoration: BoxDecoration(
                 color: baseColor.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(18),
-                boxShadow: AppDecorations.subtleShadow,
               ),
               child: InkWell(
                 borderRadius: BorderRadius.circular(18),
@@ -194,7 +196,12 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(width: 1, color: baseColor.withValues(alpha: 0.4)),
                             ),
-                            child: Icon(_getIconData(exam.icon), size: 30, color: baseColor),
+                            child: Image.asset(
+                              _getImageAsset(exam.icon),
+                              width: 30,
+                              height: 30,
+                              fit: BoxFit.contain,
+                            ),
                           ),
                           const SizedBox(width: 16),
                           Expanded(

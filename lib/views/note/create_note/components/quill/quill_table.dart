@@ -96,7 +96,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
   }
 
   Color _getContrastColor(Color? bgColor) {
-    // if (bgColor == null || bgColor.value == 0) {
     if (bgColor == null || bgColor.toARGB32() == 0) {
       return Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
     }
@@ -197,7 +196,7 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
       child: Container(
         height: context.isPhone ? 40 : 50,
         alignment: Alignment.center,
-        child: Icon(CupertinoIcons.minus_circle, size: context.isPhone ? 20 : 25, color: AppColor().gray),
+        child: Icon(Icons.remove_circle_outline, size: context.isPhone ? 20 : 25, color: AppColor().gray),
       ),
     );
   }

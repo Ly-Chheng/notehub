@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/navigation_create_note/notebook_painter.dart';
-import 'package:project_structure/widgets/card_and_button/custom_button.dart';
+import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custom_template.dart';
 import 'package:shared_preferences/shared_preferences.dart';

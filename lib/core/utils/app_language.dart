@@ -35,7 +35,7 @@ class AppTranslations extends Translations {
           'forget_password': 'Forget Password',
 
           // Footer
-          'copyright': 'Copyright © 2026 Quick Note App.\nVersion 1.0.0 (6)',
+          'copyright': 'Copyright © 2026 Quick Note App.\nVersion 1.0.0 (7)',
 
           // Format
           'format': 'Format',
@@ -386,7 +386,7 @@ class AppTranslations extends Translations {
           'forget_password': 'ភ្លេចពាក្យសម្ងាត់',
 
           // Footer
-          'copyright': 'រក្សាសិទ្ធិ © ២០២៦ កម្មវិធី Quick Note\nកំណែ ១.០.០ (៦)',
+          'copyright': 'រក្សាសិទ្ធិ © ២០២៦ កម្មវិធី Quick Note\nកំណែ ១.០.០ (៧)',
 
           // Format
           'format': 'ទម្រង់',

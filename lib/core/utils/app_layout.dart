@@ -37,7 +37,6 @@ class Layout {
     return BoxDecoration(
       color: color.withValues(alpha: 0.05),
       borderRadius: BorderRadius.circular(radius),
-      // boxShadow: AppDecorations.subtleShadow,
     );
   }
 

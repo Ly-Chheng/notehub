@@ -21,7 +21,10 @@ class AppSnackbar {
             fontWeight: FontWeight.bold,
             color: AppColor().white,
           )),
-      messageText: Text(message, style: text14(Get.context!).copyWith()),
+      messageText: Text(message,
+          style: text14(Get.context!).copyWith(
+            color: AppColor().white,
+          )),
     );
   }
 

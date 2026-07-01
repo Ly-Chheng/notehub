@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/services/themes_services.dart';
 import 'package:project_structure/controllers/mores/theme_controller.dart';
-import 'package:project_structure/widgets/card_and_button/custom_card_setting.dart';
+import 'package:project_structure/widgets/custom_card_setting.dart';
 
 class DarkModeView extends GetView<DarkModeController> {
   @override

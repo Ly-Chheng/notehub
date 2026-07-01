@@ -28,6 +28,7 @@ class StopwatchScreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
               _glowCircle(context),
+              SizedBox(height: 25),
             ],
           ),
         ),

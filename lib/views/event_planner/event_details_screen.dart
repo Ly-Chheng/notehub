@@ -31,6 +31,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   }
 
   void _calculateTimeRemaining() {
+    // FIX: Guard clause to stop execution if the widget was unmounted mid-timer execution loop
+    if (!mounted) return;
+
     try {
       DateTime examDateTime;
       String rawTime = widget.exam.time.trim();
@@ -57,7 +60,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         _hasError = false;
       });
     } catch (e) {
-      // Graceful fallback to avoid app crashing if bad data string is found in DB
       setState(() {
         _timeRemaining = const Duration();
         _hasError = true;
@@ -86,7 +88,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         title: "event_details".tr,
         context: context,
       ),
-      body: Padding(
+      body: SingleChildScrollView(
+        // Added scroll safety for smaller devices
+        physics: const BouncingScrollPhysics(),
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
@@ -103,11 +107,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            Text(widget.exam.title, style: text22(context)),
+            Text(widget.exam.title, style: text22(context), textAlign: TextAlign.center),
             const SizedBox(height: 6),
-
-            // Completed Badge chip indicator
-            if (widget.exam.isCompleted)
+            if (widget.exam.isCompleted) ...[
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
                 decoration: BoxDecoration(
@@ -119,30 +121,23 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   style: text14(context).copyWith(color: AppColor().green, fontWeight: FontWeight.bold),
                 ),
               ),
-
-            const SizedBox(height: 24),
+              const SizedBox(height: 12),
+            ],
+            const SizedBox(height: 12),
             _hasError
                 ? const Text("Invalid countdown formatting structure.", style: TextStyle(color: Colors.red))
                 : Row(
                     children: [
-                      Expanded(
-                        child: _countdownCard(days, "Days"),
-                      ),
+                      Expanded(child: _countdownCard(days, "Days")),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: _countdownCard(hours, "Hours"),
-                      ),
+                      Expanded(child: _countdownCard(hours, "Hours")),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: _countdownCard(minutes, "Mins"),
-                      ),
+                      Expanded(child: _countdownCard(minutes, "Mins")),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: _countdownCard(seconds, "Secs"),
-                      ),
+                      Expanded(child: _countdownCard(seconds, "Secs")),
                     ],
                   ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
             Container(
               padding: const EdgeInsets.all(18),
               decoration: BoxDecoration(
@@ -172,13 +167,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                   _divider(),
                   _infoRow(
                     "location".tr,
-                    widget.exam.location,
+                    widget.exam.location.isEmpty ? "n_a".tr : widget.exam.location,
                     Icons.location_on_outlined,
                   ),
                   _divider(),
                   _infoRow(
                     "reminder".tr,
-                    widget.exam.reminderTime,
+                    widget.exam.reminderTime.isEmpty ? "none".tr : widget.exam.reminderTime,
                     Icons.notifications_outlined,
                   ),
                 ],
@@ -187,23 +182,14 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           ],
         ),
       ),
-      // bottomNavigationBar: Padding(
-      //   padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 20),
-      //   child: CustomButton(
-      //     text: "view_revision_checklist".tr,
-      //     onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => RevisionChecklistScreen(exam: widget.exam))),
-      //   ),
-      // ),
     );
   }
 
   Widget _countdownCard(String value, String label) {
     return Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: 18,
-      ),
+      padding: const EdgeInsets.symmetric(vertical: 18),
       decoration: BoxDecoration(
-        color: AppColor().primaryColor.withValues(alpha: 0.08),
+        color: widget.exam.isCompleted ? Colors.grey.withValues(alpha: 0.08) : AppColor().primaryColor.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(
@@ -213,7 +199,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppColor().primaryColor,
+              color: widget.exam.isCompleted ? Colors.grey : AppColor().primaryColor,
             ),
           ),
           const SizedBox(height: 4),
@@ -229,34 +215,30 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     );
   }
 
-  Widget _infoRow(
-    String label,
-    String val,
-    IconData icon,
-  ) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _infoRow(String label, String val, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Icon(
-                    icon,
-                    size: 20,
-                    color: AppColor().gray,
-                  ),
-                  const SizedBox(width: 14),
-                  Text(label, style: text16(context).copyWith(color: AppColor().gray)),
-                ],
-              ),
-              Text(val, style: text16(context).copyWith(fontWeight: FontWeight.bold)),
+              Icon(icon, size: 20, color: AppColor().gray),
+              const SizedBox(width: 14),
+              Text(label, style: text16(context).copyWith(color: AppColor().gray)),
             ],
           ),
-        ),
-      ],
+          Flexible(
+            // Prevents long location/info text from causing layout overflows
+            child: Text(
+              val,
+              style: text16(context).copyWith(fontWeight: FontWeight.bold),
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.end,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

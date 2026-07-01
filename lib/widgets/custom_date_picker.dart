@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
@@ -18,6 +19,7 @@ Future<DateTime?> showCustomDatePicker({
     initialDate: safeInitialDate,
     firstDate: firstDate,
     lastDate: lastDate,
+    locale: Get.locale ?? const Locale('km', 'KM'),
     builder: (BuildContext context, Widget? child) {
       return Theme(
         data: Theme.of(context).copyWith(
@@ -27,7 +29,7 @@ Future<DateTime?> showCustomDatePicker({
             surface: Theme.of(context).cardColor,
             onSurface: text16(context).color ?? Colors.black,
           ),
-          // Action button styling overrides (OK / CANCEL buttons)
+          // Action (OK / CANCEL)
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
               foregroundColor: AppColor().primaryColor,
@@ -56,60 +58,3 @@ Future<DateTime?> showCustomDatePicker({
     },
   );
 }
-
- // onTap: () async {
-                    //   final DateTime? picked = await showDatePicker(
-                    //     context: context,
-                    //     //  initialDate: _selectedDate.isBefore(DateTime.now()) ? DateTime.now() : _selectedDate,
-                    //     initialDate: _selectedDate.isBefore(DateTime.now()) ? DateTime.now() : _selectedDate,
-                    //     firstDate: DateTime.now(),
-                    //     lastDate: DateTime(2035),
-                    //     builder: (BuildContext context, Widget? child) {
-                    //       return Theme(
-                    //         data: Theme.of(context).copyWith(
-                    //           colorScheme: ColorScheme.light(
-                    //             primary: AppColor().primaryColor,
-                    //             onPrimary: AppColor().white,
-                    //             surface: AppColor().white,
-                    //             onSurface: text16(context).color ?? Colors.black,
-                    //           ),
-                    //           textButtonTheme: TextButtonThemeData(
-                    //             style: TextButton.styleFrom(
-                    //               foregroundColor: AppColor().primaryColor,
-                    //               textStyle: text16(context).copyWith(fontWeight: FontWeight.bold),
-                    //             ),
-                    //           ),
-                    //           dialogTheme: DialogThemeData(
-                    //             backgroundColor: AppColor().white,
-                    //             shape: RoundedRectangleBorder(
-                    //               borderRadius: BorderRadius.circular(20),
-                    //             ),
-                    //           ),
-                    //           datePickerTheme: DatePickerThemeData(
-                    //             headerBackgroundColor: AppColor().primaryColor,
-                    //             headerForegroundColor: AppColor().white,
-                    //             surfaceTintColor: Colors.transparent,
-                    //           ),
-                    //         ),
-                    //         child: child!,
-                    //       );
-                    //     },
-                    //   );
-
-                    //   if (picked != null) {
-                    //     setState(() {
-                    //       _selectedDate = picked;
-                    //       if (_reminderDate.isAfter(_selectedDate)) {
-                    //         _reminderDate = _selectedDate;
-                    //       }
-                    //     });
-                    //   }
-                    //   //   if (picked != null) {
-                    //   //     setState(() {
-                    //   //       _selectedDate = picked;
-                    //   //       // Automatically pull reminder date back to event date if it exceeds it
-                    //   //       if (_reminderDate.isAfter(_selectedDate)) {
-                    //   //         _reminderDate = _selectedDate;
-                    //   //       }
-                    //   //     });
-                    // },
