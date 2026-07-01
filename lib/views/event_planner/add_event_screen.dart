@@ -246,15 +246,35 @@ class _AddEventScreenState extends State<AddEventScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            customTextField("event_title".tr, false, null, controller: _titleController),
+            Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xffE8E8EE), width: 1),
+                ),
+                child: customTextField(
+                  "event_title".tr,
+                  false,
+                  null,
+                  controller: _titleController,
+                  fillColor: Colors.white,
+                )),
             const SizedBox(height: 16),
-            customTextField(
-              "short_description".tr,
-              false,
-              null,
-              maxLines: 3,
-              type: TextInputType.multiline,
-              controller: _locationController,
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: const Color(0xffE8E8EE), width: 1),
+              ),
+              child: customTextField(
+                "short_description".tr,
+                false,
+                null,
+                maxLines: 3,
+                type: TextInputType.multiline,
+                controller: _locationController,
+                fillColor: Colors.white,
+              ),
             ),
             const SizedBox(height: 16),
             Text(
@@ -341,23 +361,31 @@ class _AddEventScreenState extends State<AddEventScreen> {
             InkWell(
               onTap: () => _showIconBottomSheet(context),
               borderRadius: BorderRadius.circular(12),
-              child: IgnorePointer(
-                child: customTextField(
-                  "icon".tr,
-                  false,
-                  null,
-                  // controller: _iconController,
-                  controller: TextEditingController(),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: _iconController.text.isNotEmpty
-                        ? Image.asset(
-                            'assets/images/${_iconController.text}.png',
-                            width: 24,
-                            height: 24,
-                            fit: BoxFit.contain,
-                          )
-                        : Icon(Icons.category, color: AppColor().gray),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xffE8E8EE), width: 1),
+                ),
+                child: IgnorePointer(
+                  child: customTextField(
+                    "icon".tr,
+                    false,
+                    null,
+                    fillColor: Colors.white,
+                    // controller: _iconController,
+                    controller: TextEditingController(),
+                    suffixIcon: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: _iconController.text.isNotEmpty
+                          ? Image.asset(
+                              'assets/images/${_iconController.text}.png',
+                              width: 24,
+                              height: 24,
+                              fit: BoxFit.contain,
+                            )
+                          : Icon(Icons.category, color: AppColor().gray),
+                    ),
                   ),
                 ),
               ),

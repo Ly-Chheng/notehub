@@ -16,9 +16,9 @@ class BottomNavigationBarController extends GetxController {
         return 'Quick Notes';
       case 1:
         return 'focus_track'.tr;
-      // case 2:
-      //   return 'event'.tr;
       case 2:
+        return 'event'.tr;
+      case 3:
         return 'more'.tr;
       default:
         return '';
@@ -28,7 +28,7 @@ class BottomNavigationBarController extends GetxController {
   final List<Widget> screenWidget = const [
     MyHomePage(),
     FocusTrackScreen(),
-    // EventScreen(),
+    EventScreen(),
     MoreScreen(),
   ];
 

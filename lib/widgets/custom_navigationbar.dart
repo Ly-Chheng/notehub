@@ -33,22 +33,22 @@ Widget customNavigationBar({
           color: currentIndex == 1 ? AppColor().white : AppColor().gray,
         ),
       ),
-      // CurvedNavigationBarItem(
-      //   child: Icon(
-      //     currentIndex == 2 ? Icons.date_range : Icons.date_range_sharp,
-      //     size: 25,
-      //     color: currentIndex == 2 ? AppColor().white : AppColor().gray,
-      //   ),
-      // ),
+      CurvedNavigationBarItem(
+        child: Icon(
+          currentIndex == 2 ? Icons.date_range : Icons.date_range_sharp,
+          size: 25,
+          color: currentIndex == 2 ? AppColor().white : AppColor().gray,
+        ),
+      ),
       CurvedNavigationBarItem(
         child: Stack(
           clipBehavior: Clip.none,
           children: [
             Image.asset(
-              currentIndex == 2 ? 'assets/images/more_active.png' : 'assets/images/more.png',
+              currentIndex == 3 ? 'assets/images/more_active.png' : 'assets/images/more.png',
               width: 25,
               height: 25,
-              color: currentIndex == 2 ? AppColor().white : AppColor().gray,
+              color: currentIndex == 3 ? AppColor().white : AppColor().gray,
             ),
             if (chatBadgeCount > 0)
               Positioned(
