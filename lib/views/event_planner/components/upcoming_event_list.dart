@@ -9,7 +9,7 @@ import 'package:project_structure/models/event_planner/event_model.dart';
 import 'package:project_structure/views/event_planner/add_event_screen.dart';
 import 'package:project_structure/views/event_planner/event_details_screen.dart';
 import 'package:project_structure/widgets/custom_menu_item.dart.dart';
-import 'package:project_structure/widgets/custom_snack_bar.dart';
+import 'package:project_structure/widgets/app_snack_bar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
@@ -29,14 +29,14 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
   void initState() {
     super.initState();
     _refreshList();
-    _tickerTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    _tickerTimer = Timer.periodic(const Duration(seconds: 0), (timer) {
       if (mounted) setState(() {});
     });
   }
 
   void _refreshList() {
     setState(() {
-      _upcomingExamsFuture = _controller.fetchExams(completed: false);
+      _upcomingExamsFuture = _controller.fetchEvent(completed: false);
     });
   }
 
@@ -94,7 +94,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                     subTitle: "are_you_sure_make_completed".tr,
                     confirmText: "completed".tr,
                     onConfirm: () async {
-                      await _controller.updateExamCompletionStatus(exam.id!, true);
+                      await _controller.updateEventCompletionStatus(exam.id!, true);
                       _refreshList();
                     },
                   );
@@ -153,19 +153,19 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
         }
         if (snapshot.hasError) return Center(child: Text("Error: ${snapshot.error}"));
 
-        final exams = snapshot.data ?? [];
-        if (exams.isEmpty) {
-          return Center(child: Text("No upcoming exams scheduled.", style: const TextStyle(color: Colors.grey)));
+        final events = snapshot.data ?? [];
+        if (events.isEmpty) {
+          return Center(child: Text("No upcoming exams scheduled.", style: TextStyle(color: AppColor().gray)));
         }
 
         return ListView.builder(
           padding: const EdgeInsets.all(16),
-          itemCount: exams.length,
+          itemCount: events.length,
           itemBuilder: (context, index) {
-            final exam = exams[index];
-            final Color baseColor = exam.color != null ? Color(exam.color!) : AppColor().primaryColor;
+            final event = events[index];
+            final Color baseColor = event.color != null ? Color(event.color!) : AppColor().primaryColor;
 
-            final duration = _calculateTimeRemaining(exam);
+            final duration = _calculateTimeRemaining(event);
             final days = duration.inDays.toString().padLeft(2, '0');
             final hours = (duration.inHours % 24).toString().padLeft(2, '0');
             final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
@@ -181,7 +181,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                 borderRadius: BorderRadius.circular(18),
                 onTap: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => EventDetailsScreen(exam: exam)),
+                  MaterialPageRoute(builder: (context) => EventDetailsScreen(event: event)),
                 ).then((_) => _refreshList()),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -197,7 +197,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                               border: Border.all(width: 1, color: baseColor.withValues(alpha: 0.4)),
                             ),
                             child: Image.asset(
-                              _getImageAsset(exam.icon),
+                              _getImageAsset(event.icon),
                               width: 30,
                               height: 30,
                               fit: BoxFit.contain,
@@ -213,7 +213,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                                   children: [
                                     Expanded(
                                       child: Text(
-                                        exam.title,
+                                        event.title,
                                         style: fix18(context),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -221,11 +221,11 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                                     ),
                                     IconButton(
                                       icon: Icon(Icons.more_horiz_outlined, color: AppColor().gray),
-                                      onPressed: () => _showActionBottomSheet(context, exam),
+                                      onPressed: () => _showActionBottomSheet(context, event),
                                     ),
                                   ],
                                 ),
-                                Text("${exam.date} | ${exam.time}", style: text14(context).copyWith(color: AppColor().gray)),
+                                Text("${event.date} | ${event.time}", style: text14(context).copyWith(color: AppColor().gray)),
                                 const SizedBox(height: 10)
                               ],
                             ),

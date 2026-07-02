@@ -7,7 +7,7 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/note/note_model.dart';
-import 'package:project_structure/widgets/custom_slidableasction.dart';
+import 'package:project_structure/widgets/app_slidable_asction.dart';
 import 'package:project_structure/widgets/rounded_file_image.dart';
 
 class NoteCard extends StatelessWidget {

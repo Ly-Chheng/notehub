@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -123,11 +125,19 @@ class _BottomNavigationBarScreenState extends State<BottomNavigationBarScreen> {
                 )
               : controller.screenWidget[controller.selectedIndex],
         ),
-        bottomNavigationBar: customNavigationBar(
-          context: context,
-          currentIndex: controller.selectedIndex,
-          onTap: _onItemTapped,
-        ),
+        bottomNavigationBar: Platform.isAndroid
+            ? SafeArea(
+                child: customNavigationBar(
+                  context: context,
+                  currentIndex: controller.selectedIndex,
+                  onTap: _onItemTapped,
+                ),
+              )
+            : customNavigationBar(
+                context: context,
+                currentIndex: controller.selectedIndex,
+                onTap: _onItemTapped,
+              ),
       ),
     );
   }

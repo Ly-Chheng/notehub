@@ -10,14 +10,14 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/views/note/create_note/create_note_screen.dart';
 import 'package:project_structure/views/note/folder_note_list/components/note_card.dart';
 import 'package:project_structure/views/note/folder_note_list/components/note_search.dart';
-import 'package:project_structure/widgets/custom_snack_bar.dart';
+import 'package:project_structure/widgets/app_snack_bar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/selection_bottom_bar.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_fab.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
-import 'package:project_structure/widgets/custom_folder_list.dart';
+import 'package:project_structure/widgets/folder_list_title.dart';
 import 'package:project_structure/widgets/selection_mode_toggle.dart';
 
 class FolderNoteListScreen extends StatefulWidget {

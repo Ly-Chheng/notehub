@@ -11,7 +11,7 @@ import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/views/focus_track/create_timer_screen.dart';
 // import 'package:project_structure/views/focus_track/timer_detail_screen.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
-import 'package:project_structure/widgets/custom_slidableasction.dart';
+import 'package:project_structure/widgets/app_slidable_asction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 
 class TimerList extends StatelessWidget {

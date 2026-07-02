@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
-import 'package:project_structure/widgets/custom_folder_list.dart';
+import 'package:project_structure/widgets/folder_list_title.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
-import 'package:project_structure/widgets/action_button_bar.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 
 class ShareNote {

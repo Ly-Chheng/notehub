@@ -51,6 +51,17 @@ class Layout {
     );
   }
 
+  static BoxDecoration themedBorderDecoration(BuildContext context, {double radius = 12.0}) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return BoxDecoration(
+      color: Theme.of(context).cardColor,
+      borderRadius: BorderRadius.circular(radius),
+      border: Border.all(
+        color: isDark ? const Color(0xff3A3A3C) : const Color(0xffE8E8EE),
+      ),
+    );
+  }
+
   static BoxDecoration defaultDecoration({
     double radius = 10.0,
     bool isBorder = false,

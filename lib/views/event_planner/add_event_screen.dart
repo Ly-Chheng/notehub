@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/event_planner/event_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
@@ -247,25 +248,17 @@ class _AddEventScreenState extends State<AddEventScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xffE8E8EE), width: 1),
-                ),
+                decoration: Layout.themedBorderDecoration(context),
                 child: customTextField(
                   "event_title".tr,
                   false,
                   null,
                   controller: _titleController,
-                  fillColor: Colors.white,
+                  fillColor: Theme.of(context).cardColor,
                 )),
             const SizedBox(height: 16),
             Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xffE8E8EE), width: 1),
-              ),
+              decoration: Layout.themedBorderDecoration(context),
               child: customTextField(
                 "short_description".tr,
                 false,
@@ -273,7 +266,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 maxLines: 3,
                 type: TextInputType.multiline,
                 controller: _locationController,
-                fillColor: Colors.white,
+                fillColor: Theme.of(context).cardColor,
               ),
             ),
             const SizedBox(height: 16),
@@ -290,7 +283,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       final now = DateTime.now();
                       final todayMidnight = DateTime(now.year, now.month, now.day);
 
-                      final DateTime? picked = await showCustomDatePicker(
+                      final DateTime? picked = await customDatePicker(
                         context: context,
                         initialDate: _selectedDate,
                         firstDate: todayMidnight,
@@ -309,11 +302,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     borderRadius: BorderRadius.circular(8.0),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Theme.of(Get.context!).cardColor,
-                        border: Border.all(color: const Color(0xffE8E8EE), width: 1),
-                      ),
+                      decoration: Layout.themedBorderDecoration(context),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -328,8 +317,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
-                      // Calling your newly created custom themed time picker
-                      final TimeOfDay? picked = await showCustomTimePicker(
+                      final TimeOfDay? picked = await customTimePicker(
                         context: context,
                         initialTime: _selectedTime,
                       );
@@ -340,11 +328,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     borderRadius: BorderRadius.circular(8.0),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Theme.of(Get.context!).cardColor,
-                        border: Border.all(color: const Color(0xffE8E8EE), width: 1),
-                      ),
+                      decoration: Layout.themedBorderDecoration(context),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -363,16 +347,18 @@ class _AddEventScreenState extends State<AddEventScreen> {
               borderRadius: BorderRadius.circular(12),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: const Color(0xffE8E8EE), width: 1),
+                  border: Border.all(
+                    color: Theme.of(Get.context!).brightness == Brightness.dark ? const Color(0xff3A3A3C) : const Color(0xffE8E8EE),
+                  ),
                 ),
                 child: IgnorePointer(
                   child: customTextField(
                     "icon".tr,
                     false,
                     null,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).cardColor,
                     // controller: _iconController,
                     controller: TextEditingController(),
                     suffixIcon: Padding(
@@ -401,11 +387,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 const SizedBox(height: 10),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                  decoration: BoxDecoration(
-                    color: Theme.of(Get.context!).cardColor,
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: const Color(0xffE8E8EE)),
-                  ),
+                  decoration: Layout.themedBorderDecoration(context),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -444,7 +426,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             decoration: BoxDecoration(
                               color: Colors.grey.shade100,
                               shape: BoxShape.circle,
-                              border: Border.all(color: const Color(0xffE8E8EE), width: 1),
+                              border: Border.all(
+                                color: Theme.of(Get.context!).brightness == Brightness.dark ? const Color(0xff3A3A3C) : const Color(0xffE8E8EE),
+                              ),
                             ),
                             child: Icon(Icons.add, size: 18, color: AppColor().gray),
                           ),
@@ -478,7 +462,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       }
 
                       // Now safely utilizing your custom themed date picker
-                      final DateTime? picked = await showCustomDatePicker(
+                      final DateTime? picked = await customDatePicker(
                         context: context,
                         initialDate: verifiedInitial,
                         firstDate: todayStart, //Cannot select before today
@@ -491,11 +475,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     borderRadius: BorderRadius.circular(8.0),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Theme.of(Get.context!).cardColor,
-                        border: Border.all(color: const Color(0xffE8E8EE), width: 1),
-                      ),
+                      decoration: Layout.themedBorderDecoration(context),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -510,7 +490,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 Expanded(
                   child: InkWell(
                     onTap: () async {
-                      final TimeOfDay? picked = await showCustomTimePicker(
+                      final TimeOfDay? picked = await customTimePicker(
                         context: context,
                         initialTime: _reminderTime,
                       );
@@ -521,11 +501,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     borderRadius: BorderRadius.circular(8.0),
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Theme.of(Get.context!).cardColor,
-                        border: Border.all(color: const Color(0xffE8E8EE), width: 1),
-                      ),
+                      decoration: Layout.themedBorderDecoration(context),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -563,9 +539,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   );
 
                   if (_isEditing) {
-                    await _controller.updateExam(examData);
+                    await _controller.updateEvent(examData);
                   } else {
-                    await _controller.createExam(examData);
+                    await _controller.createEvent(examData);
                   }
 
                   Get.back(result: true);

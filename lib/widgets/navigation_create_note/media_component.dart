@@ -7,7 +7,7 @@ import 'package:project_structure/controllers/notes/media_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/custom_menu_item.dart.dart';
-import 'package:project_structure/widgets/custom_snack_bar.dart';
+import 'package:project_structure/widgets/app_snack_bar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_sheet_header.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 

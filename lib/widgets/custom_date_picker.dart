@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
-Future<DateTime?> showCustomDatePicker({
+Future<DateTime?> customDatePicker({
   required BuildContext context,
   required DateTime initialDate,
   required DateTime firstDate,
@@ -23,6 +23,13 @@ Future<DateTime?> showCustomDatePicker({
     builder: (BuildContext context, Widget? child) {
       return Theme(
         data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          dividerTheme: const DividerThemeData(
+            color: Colors.transparent,
+            thickness: 0,
+            space: 0,
+          ),
+
           colorScheme: ColorScheme.light(
             primary: AppColor().primaryColor,
             onPrimary: AppColor().white,
@@ -46,11 +53,21 @@ Future<DateTime?> showCustomDatePicker({
           ),
           // Individual text component mappings
           datePickerTheme: DatePickerThemeData(
+            dividerColor: Colors.transparent,
             headerBackgroundColor: AppColor().primaryColor,
             headerForegroundColor: AppColor().white,
             surfaceTintColor: Colors.transparent,
             dayStyle: text14(context),
             weekdayStyle: text14(context).copyWith(fontWeight: FontWeight.w600),
+
+            // headerHeadlineStyle: TextStyle(
+            //   color: AppColor().white,
+            //   decoration: TextDecoration.none,
+            // ),
+            // headerHelpStyle: TextStyle(
+            //   color: AppColor().white,
+            //   decoration: TextDecoration.none,
+            // ),
           ),
         ),
         child: child!,

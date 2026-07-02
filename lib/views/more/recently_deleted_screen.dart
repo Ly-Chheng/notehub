@@ -12,9 +12,9 @@ import 'package:project_structure/widgets/selection_mode_toggle.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
-import 'package:project_structure/widgets/custom_slidableasction.dart';
+import 'package:project_structure/widgets/app_slidable_asction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
-import 'package:project_structure/widgets/custom_folder_list.dart';
+import 'package:project_structure/widgets/folder_list_title.dart';
 import 'package:project_structure/widgets/rounded_file_image.dart';
 
 class RecentlyDeletedScreen extends StatefulWidget {

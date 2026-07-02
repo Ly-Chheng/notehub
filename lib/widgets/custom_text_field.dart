@@ -22,14 +22,6 @@ Widget customTextField(
   int? maxLines = 1,
 }) {
   return Container(
-    // decoration: BoxDecoration(
-    //   color: fillColor ?? Theme.of(Get.context!).cardColor, borderRadius: BorderRadius.circular(12),
-    //   // border: Border.all(color: Color(0xffE8E8EE), width: 1)
-    //   border: Border.all(
-    //     color: Theme.of(Get.context!).brightness == Brightness.dark ? const Color(0xff3A3A3C) : const Color(0xffE8E8EE),
-    //     width: 1,
-    //   ),
-    // ),
     decoration: BoxDecoration(
       color: fillColor ?? Colors.grey.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(12),

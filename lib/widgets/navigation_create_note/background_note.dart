@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_sheet_header.dart';
 
-void showPaletteSheet({
+void backgroundNote({
   required BuildContext context,
   required Color selectedColor,
   required Function(Color) onColorSelected,

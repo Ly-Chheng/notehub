@@ -6,8 +6,8 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
 import 'package:project_structure/views/event_planner/event_details_screen.dart';
-import 'package:project_structure/widgets/custom_slidableasction.dart';
-import 'package:project_structure/widgets/custom_snack_bar.dart';
+import 'package:project_structure/widgets/app_slidable_asction.dart';
+import 'package:project_structure/widgets/app_snack_bar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
 class CompletedEventList extends StatefulWidget {
@@ -29,7 +29,7 @@ class _CompletedEventListState extends State<CompletedEventList> {
 
   void _refreshList() {
     setState(() {
-      _completedExamsFuture = _controller.fetchExams(completed: true);
+      _completedExamsFuture = _controller.fetchEvent(completed: true);
     });
   }
 
@@ -94,7 +94,7 @@ class _CompletedEventListState extends State<CompletedEventList> {
                   child: Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: AppColor().white,
+                      color: Theme.of(context).cardColor,
                       borderRadius: const BorderRadius.horizontal(
                         left: Radius.circular(18),
                       ),
@@ -104,7 +104,7 @@ class _CompletedEventListState extends State<CompletedEventList> {
                       borderRadius: BorderRadius.circular(18),
                       onTap: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EventDetailsScreen(exam: event)),
+                        MaterialPageRoute(builder: (context) => EventDetailsScreen(event: event)),
                       ).then((_) => _refreshList()),
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

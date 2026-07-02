@@ -11,7 +11,7 @@ class EventPlannerController {
   ];
 
   /// Fetches either upcoming or completed even
-  Future<List<EventModel>> fetchExams({required bool completed}) async {
+  Future<List<EventModel>> fetchEvent({required bool completed}) async {
     try {
       final dbClient = await DatabaseService.db;
       final List<Map<String, dynamic>> maps = await dbClient.query(
@@ -27,7 +27,7 @@ class EventPlannerController {
   }
 
   /// Adds a new event to the database
-  Future<int> createExam(EventModel exam) async {
+  Future<int> createEvent(EventModel exam) async {
     final dbClient = await DatabaseService.db;
     return await dbClient.insert('exams', exam.toMap());
   }
@@ -135,7 +135,7 @@ class EventPlannerController {
   }
 
   /// Updates an existing event entry in the database
-  Future<int> updateExam(EventModel exam) async {
+  Future<int> updateEvent(EventModel exam) async {
     final dbClient = await DatabaseService.db;
     return await dbClient.update(
       'exams',
@@ -146,7 +146,7 @@ class EventPlannerController {
   }
 
   /// Updates the completion status of an exam
-  Future<void> updateExamCompletionStatus(int examId, bool isCompleted) async {
+  Future<void> updateEventCompletionStatus(int examId, bool isCompleted) async {
     final dbClient = await DatabaseService.db;
     await dbClient.update(
       'exams',

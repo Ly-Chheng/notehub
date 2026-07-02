@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
-Future<TimeOfDay?> showCustomTimePicker({
+Future<TimeOfDay?> customTimePicker({
   required BuildContext context,
   required TimeOfDay initialTime,
 }) async {
@@ -33,6 +33,7 @@ Future<TimeOfDay?> showCustomTimePicker({
               textStyle: text16(context).copyWith(fontWeight: FontWeight.bold),
             ),
           ),
+
           // Dialog border curvature matching the date picker
           dialogTheme: DialogThemeData(
             backgroundColor: cardColor,
@@ -43,9 +44,30 @@ Future<TimeOfDay?> showCustomTimePicker({
           ),
           // Individual time picker structural stylings
           timePickerTheme: TimePickerThemeData(
-            dayPeriodColor: primaryColor.withValues(alpha: 0.15),
-            dayPeriodTextColor: primaryColor,
-            dialBackgroundColor: const Color.fromARGB(179, 245, 245, 245),
+            // dayPeriodColor: primaryColor.withValues(alpha: 0.15),
+            // dayPeriodTextColor: primaryColor,
+            //   AM/PM BACKGROUND COLOR
+            dayPeriodColor: WidgetStateColor.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return primaryColor.withValues(alpha: 0.15);
+              }
+              return AppColor().gray.withValues(alpha: 0.15);
+            }),
+
+            // UPDATED AM/PM TEXT COLOR
+            dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return primaryColor;
+              }
+              return surfaceTextColor.withValues(alpha: 0.6);
+            }),
+
+            //Changes the border around the AM/PM boxes
+            dayPeriodBorderSide: BorderSide(
+              color: primaryColor.withValues(alpha: 0.5),
+              width: 1,
+            ),
+            dialBackgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color.fromARGB(179, 50, 50, 50) : const Color.fromARGB(179, 245, 245, 245),
             dialHandColor: primaryColor,
             dialTextColor: surfaceTextColor,
             entryModeIconColor: primaryColor,

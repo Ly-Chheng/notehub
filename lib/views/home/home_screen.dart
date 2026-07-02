@@ -14,10 +14,10 @@ import 'package:project_structure/views/note/create_note/create_note_screen.dart
 import 'package:project_structure/views/note/folder_note_list/folder_note_list_screen.dart';
 import 'package:project_structure/views/home/components/create_folder.dart';
 import 'package:project_structure/views/home/components/folder_search.dart';
-import 'package:project_structure/widgets/custom_snack_bar.dart';
+import 'package:project_structure/widgets/app_snack_bar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_fab.dart';
-import 'package:project_structure/widgets/custom_slidableasction.dart';
+import 'package:project_structure/widgets/app_slidable_asction.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:showcaseview/showcaseview.dart';

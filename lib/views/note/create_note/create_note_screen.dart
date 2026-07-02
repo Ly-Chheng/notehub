@@ -311,7 +311,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   void _openPalette() {
     _forceUnfocus();
-    showPaletteSheet(
+    backgroundNote(
       context: context,
       selectedColor: noteBgColor ?? Theme.of(context).scaffoldBackgroundColor,
       onColorSelected: (color) {
@@ -414,7 +414,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   void _openFormatting() {
     _forceUnfocus();
-    NoteFormatComponents.openFormattingSheet(context, _quillController);
+    NoteFormat.openFormattingSheet(context, _quillController);
   }
 
   void _openDrawing() {

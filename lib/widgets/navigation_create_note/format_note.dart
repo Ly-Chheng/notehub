@@ -4,7 +4,7 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_sheet_header.dart';
 
-void showFormatSheet({
+void formatNote({
   required BuildContext context,
   required bool isBold,
   required bool isItalic,

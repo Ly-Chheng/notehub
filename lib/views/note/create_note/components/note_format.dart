@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:project_structure/widgets/navigation_create_note/format_note.dart';
 
-class NoteFormatComponents {
+class NoteFormat {
   static void openFormattingSheet(BuildContext context, QuillController controller) {
     final selectionStyle = controller.getSelectionStyle();
     final attributes = selectionStyle.attributes;
     final currentSize = attributes[Attribute.size.key]?.value ?? 'normal';
 
-    showFormatSheet(
+    formatNote(
       context: context,
       initialFontSize: currentSize,
       isLeftAligned: selectionStyle.attributes[Attribute.align.key]?.value == 'left' || selectionStyle.attributes[Attribute.align.key] == null,

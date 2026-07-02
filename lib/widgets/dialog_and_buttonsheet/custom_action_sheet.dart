@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
-class ActionSheetItem {
+class ActionSheetSheet {
   final String label;
   final IconData? icon;
   final Color? color;
@@ -13,7 +13,7 @@ class ActionSheetItem {
   final RxBool? switchValue;
   final ValueChanged<bool>? onSwitchChanged;
 
-  ActionSheetItem({
+  ActionSheetSheet({
     required this.label,
     this.icon,
     this.color,
@@ -28,7 +28,7 @@ class ActionSheet {
   static Future<void> show(
     BuildContext context, {
     required String title,
-    required List<ActionSheetItem> actions,
+    required List<ActionSheetSheet> actions,
     VoidCallback? onCancel,
   }) {
     return showCupertinoModalPopup(
