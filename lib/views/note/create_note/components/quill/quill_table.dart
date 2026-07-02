@@ -73,19 +73,19 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
       context,
       title: 'table_options'.tr,
       actions: [
-        ActionSheetSheet(
+        CustomActionSheet(
           label: 'add_row'.tr,
           icon: Icons.add,
           color: AppColor().primaryColor,
           onTap: () => widget.onAddRow(),
         ),
-        ActionSheetSheet(
+        CustomActionSheet(
           label: 'add_column'.tr,
           icon: Icons.add,
           color: AppColor().primaryColor,
           onTap: () => widget.onAddColumn(),
         ),
-        ActionSheetSheet(
+        CustomActionSheet(
           label: 'delete_table'.tr,
           icon: Icons.delete,
           color: AppColor().red,
