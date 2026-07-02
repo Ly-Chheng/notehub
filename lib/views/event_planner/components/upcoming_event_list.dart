@@ -10,7 +10,7 @@ import 'package:project_structure/views/event_planner/add_event_screen.dart';
 import 'package:project_structure/views/event_planner/event_details_screen.dart';
 import 'package:project_structure/widgets/custom_menu_item.dart.dart';
 import 'package:project_structure/widgets/app_snack_bar.dart';
-import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
 class UpcomingEventList extends StatefulWidget {

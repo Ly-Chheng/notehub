@@ -10,7 +10,7 @@ import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dropdown.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
-import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 

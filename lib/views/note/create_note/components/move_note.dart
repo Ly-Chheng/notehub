@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/home/folder_controller.dart';
 import 'package:project_structure/controllers/notes/note_controller.dart';
 import 'package:project_structure/widgets/folder_list_title.dart';
-import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';
 
 class MoveNote{

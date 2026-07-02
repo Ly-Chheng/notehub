@@ -8,7 +8,7 @@ import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/views/note/create_note/components/image_zoom.dart';
 import 'package:project_structure/views/note/create_note/components/quill/quill_video.dart';
 import 'package:project_structure/widgets/custom_menu_item.dart.dart';
-import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/confirm_bottomsheet.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';

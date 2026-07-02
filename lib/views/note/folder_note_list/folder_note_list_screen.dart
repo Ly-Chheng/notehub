@@ -13,7 +13,7 @@ import 'package:project_structure/views/note/folder_note_list/components/note_se
 import 'package:project_structure/widgets/app_snack_bar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/selection_bottom_bar.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
-import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 import 'package:project_structure/widgets/custom_fab.dart';
 import 'package:project_structure/widgets/custome_no_data.dart';

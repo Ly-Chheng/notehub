@@ -11,7 +11,7 @@ import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_date_picker.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/custom_time_picker.dart';
-import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
 class AddEventScreen extends StatefulWidget {
