@@ -409,7 +409,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                       content: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          ModeOptionCard(
+                          CustomTemplate(
                             label: "none".tr,
                             icon: Icons.close,
                             isSelected: canvasMode == 0,
@@ -418,7 +418,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                               Get.back();
                             },
                           ),
-                          ModeOptionCard(
+                          CustomTemplate(
                             label: "lines".tr,
                             icon: Icons.view_headline,
                             isSelected: canvasMode == 1,
@@ -427,7 +427,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                               Get.back();
                             },
                           ),
-                          ModeOptionCard(
+                          CustomTemplate(
                             label: "grid".tr,
                             icon: Icons.grid_on,
                             isSelected: canvasMode == 2,

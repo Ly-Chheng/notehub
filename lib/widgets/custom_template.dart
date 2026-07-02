@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 
-class ModeOptionCard extends StatelessWidget {
+class CustomTemplate extends StatelessWidget {
   final String label;
   final IconData icon;
   final bool isSelected;
   final VoidCallback onTap;
 
-  const ModeOptionCard({
+  const CustomTemplate({
     super.key,
     required this.label,
     required this.icon,

@@ -27,7 +27,7 @@ class CustomMediaEmbedBuilder implements EmbedBuilder {
       }
     }
 
-    return ResizableMediaWidget(
+    return ResizableMedia(
       node: embedContext.node,
       controller: controller,
       initialWidthPercentage: savedWidth,

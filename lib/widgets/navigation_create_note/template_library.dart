@@ -6,7 +6,7 @@ import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_confirm_bottomsheet.dart';
 
-class TemplateLibrarySheet {
+class TemplateLibrary {
   static Future<void> show(BuildContext context, Function(List<dynamic>) onTemplateSelected) async {
     final String response = await rootBundle.loadString('lib/json/templates.json');
     final List<dynamic> decodedList = json.decode(response);

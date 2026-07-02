@@ -13,13 +13,13 @@ import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
-class ResizableMediaWidget extends StatefulWidget {
+class ResizableMedia extends StatefulWidget {
   final Embed node;
   final QuillController controller;
   final double initialWidthPercentage;
   final bool isVideo;
 
-  const ResizableMediaWidget({
+  const ResizableMedia({
     super.key,
     required this.node,
     required this.controller,
@@ -28,10 +28,10 @@ class ResizableMediaWidget extends StatefulWidget {
   });
 
   @override
-  State<ResizableMediaWidget> createState() => _ResizableMediaWidgetState();
+  State<ResizableMedia> createState() => _ResizableMediaWidgetState();
 }
 
-class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
+class _ResizableMediaWidgetState extends State<ResizableMedia> {
   late double _widthPercentage;
   VideoPlayerController? _videoPlayerController;
   bool _isPlayerInitialized = false;
@@ -186,7 +186,7 @@ class _ResizableMediaWidgetState extends State<ResizableMediaWidget> {
                       final imagePath = widget.node.value.data.toString();
 
                       Get.to(
-                        () => ImageZoomCompoenent(imagePath: imagePath),
+                        () => ImageZoom(imagePath: imagePath),
                         transition: Transition.fadeIn,
                       );
                     },

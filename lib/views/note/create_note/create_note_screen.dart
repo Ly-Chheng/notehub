@@ -23,11 +23,11 @@ import 'package:project_structure/widgets/navigation_create_note/media_component
 import 'package:project_structure/views/note/create_note/components/quill/quill_editor.dart';
 import 'package:project_structure/views/note/create_note/components/quill/quill_table.dart';
 import 'package:project_structure/widgets/navigation_create_note/handwriting.dart';
-import 'package:project_structure/widgets/navigation_create_note/template_library_sheet.dart';
+import 'package:project_structure/widgets/navigation_create_note/template_library.dart';
 import 'package:project_structure/views/lock/create_password_screen.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
-import 'package:project_structure/widgets/action_button_bar.dart';
+import 'package:project_structure/widgets/action_button.dart';
 
 class CreateNoteScreen extends StatefulWidget {
   final bool isEditing;
@@ -601,7 +601,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: BottomToolbarComponent(
+      bottomNavigationBar: BottomToolbar(
         showTable: showTable,
         onImagePressed: _handleImageSelection,
         onFormatPressed: _openFormatting,
@@ -618,7 +618,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           _triggerAutoSave();
         },
         onTemplatePressed: () {
-          TemplateLibrarySheet.show(context, (templateData) {
+          TemplateLibrary.show(context, (templateData) {
             _applyTemplate(templateData);
           });
         },

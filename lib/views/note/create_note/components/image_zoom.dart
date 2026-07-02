@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 
-class ImageZoomCompoenent extends StatelessWidget {
+class ImageZoom extends StatelessWidget {
   final String imagePath;
-  const ImageZoomCompoenent({super.key, required this.imagePath});
+  const ImageZoom({super.key, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {

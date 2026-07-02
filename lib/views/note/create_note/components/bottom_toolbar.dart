@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
 
-class BottomToolbarComponent extends StatelessWidget {
+class BottomToolbar extends StatelessWidget {
   final bool showTable;
   final VoidCallback onImagePressed;
   final VoidCallback onFormatPressed;
@@ -11,7 +11,7 @@ class BottomToolbarComponent extends StatelessWidget {
   final VoidCallback onDrawingPressed;
   final VoidCallback onTemplatePressed;
 
-  const BottomToolbarComponent({
+  const BottomToolbar({
     super.key,
     required this.showTable,
     required this.onImagePressed,
