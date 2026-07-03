@@ -15,7 +15,7 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 7,
+      version: 9,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -87,8 +87,9 @@ class DatabaseService {
             exam_id INTEGER NOT NULL,
             name TEXT NOT NULL,
             notes TEXT,
-            priority TEXT DEFAULT 'Medium', -- High, Medium, Low
+            priority TEXT DEFAULT 'Medium',
             due_date TEXT,
+            is_completed INTEGER DEFAULT 0, -- Added the missing comma here!
             FOREIGN KEY (exam_id) REFERENCES exams (id) ON DELETE CASCADE
           )
         ''');
@@ -176,6 +177,25 @@ class DatabaseService {
               FOREIGN KEY (topic_id) REFERENCES revision_topics (id) ON DELETE CASCADE
             )
           ''');
+        }
+        // Dynamic Migration step to cleanly handle the conversion from Version 7 to Version 8
+        if (oldVersion < 8) {
+          await _addColumnIfNotExists(
+            db,
+            'revision_topics',
+            'is_completed',
+            'INTEGER DEFAULT 0',
+          );
+        }
+
+        // Catch-all structural upgrade path for version 9 testing environments
+        if (oldVersion < 9) {
+          await _addColumnIfNotExists(
+            db,
+            'revision_topics',
+            'is_completed',
+            'INTEGER DEFAULT 0',
+          );
         }
       },
     );

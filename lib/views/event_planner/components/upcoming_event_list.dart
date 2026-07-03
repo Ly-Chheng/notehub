@@ -184,13 +184,13 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                   MaterialPageRoute(builder: (context) => EventDetailsScreen(event: event)),
                 ).then((_) => _refreshList()),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                   child: Column(
                     children: [
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: baseColor.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(12),
@@ -198,8 +198,8 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                             ),
                             child: Image.asset(
                               _getImageAsset(event.icon),
-                              width: 30,
-                              height: 30,
+                              width: 40,
+                              height: 40,
                               fit: BoxFit.contain,
                             ),
                           ),
@@ -225,7 +225,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                                     ),
                                   ],
                                 ),
-                                Text("${event.date} | ${event.time}", style: text14(context).copyWith(color: AppColor().gray)),
+                                Text("${event.date} | ${event.time}", style: fix16(context).copyWith(color: AppColor().gray)),
                                 const SizedBox(height: 10)
                               ],
                             ),
@@ -235,13 +235,13 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                       const SizedBox(height: 10),
                       Row(
                         children: [
-                          Expanded(child: _countdownCard(days, "Days")),
+                          Expanded(child: _countdownCard(days, "d".tr)),
                           const SizedBox(width: 20),
-                          Expanded(child: _countdownCard(hours, "Hours")),
+                          Expanded(child: _countdownCard(hours, "h".tr)),
                           const SizedBox(width: 20),
-                          Expanded(child: _countdownCard(minutes, "Mins")),
+                          Expanded(child: _countdownCard(minutes, "m".tr)),
                           const SizedBox(width: 20),
-                          Expanded(child: _countdownCard(seconds, "Secs")),
+                          Expanded(child: _countdownCard(seconds, "s".tr)),
                         ],
                       ),
                     ],
@@ -260,8 +260,14 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Column(
         children: [
-          Text(value, style: text22(context).copyWith(fontWeight: FontWeight.bold)),
-          Text(label, style: text12.copyWith(color: AppColor().gray)),
+          Text(
+            value,
+            style: fix18(context).copyWith(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(label, style: text16(context).copyWith(color: AppColor().gray)),
         ],
       ),
     );

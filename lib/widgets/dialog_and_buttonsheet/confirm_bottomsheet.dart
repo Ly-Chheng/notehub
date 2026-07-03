@@ -53,8 +53,8 @@ class ConfirmBottomSheet {
                 children: [
                   Center(
                     child: Container(
-                      width: context.isPhone ? 40 : 50,
-                      height: context.isPhone ? 4 : 8,
+                      width: context.isPhone ? 70 : 90,
+                      height: context.isPhone ? 6 : 10,
                       margin: const EdgeInsets.only(bottom: 10),
                       decoration: BoxDecoration(
                         color: Theme.of(context).scaffoldBackgroundColor,

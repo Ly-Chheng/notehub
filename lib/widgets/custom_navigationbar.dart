@@ -17,28 +17,28 @@ Widget customNavigationBar({
       backgroundColor: Colors.transparent,
       color: Theme.of(context).cardColor,
       buttonBackgroundColor: AppColor().primaryColor,
-       animationDuration: Duration(milliseconds: 600),
+      animationDuration: Duration(milliseconds: 600),
       animationCurve: Curves.easeInOut,
       onTap: onTap,
       items: [
         CurvedNavigationBarItem(
           child: Icon(
             currentIndex == 0 ? Icons.home : Icons.home_outlined,
-            size: 25,
+            size: context.isPhone ? 25 : 30,
             color: currentIndex == 0 ? AppColor().white : AppColor().gray,
           ),
         ),
         CurvedNavigationBarItem(
           child: Icon(
             currentIndex == 1 ? Icons.timer : Icons.timer_outlined,
-            size: 25,
+            size: context.isPhone ? 25 : 30,
             color: currentIndex == 1 ? AppColor().white : AppColor().gray,
           ),
         ),
         CurvedNavigationBarItem(
           child: Icon(
             currentIndex == 2 ? Icons.date_range : Icons.date_range_sharp,
-            size: 25,
+            size: context.isPhone ? 25 : 30,
             color: currentIndex == 2 ? AppColor().white : AppColor().gray,
           ),
         ),
@@ -48,14 +48,14 @@ Widget customNavigationBar({
             children: [
               Image.asset(
                 currentIndex == 3 ? 'assets/images/more_active.png' : 'assets/images/more.png',
-                width: 25,
-                height: 25,
+                width: context.isPhone ? 25 : 30,
+                height: context.isPhone ? 25 : 30,
                 color: currentIndex == 3 ? AppColor().white : AppColor().gray,
               ),
               if (chatBadgeCount > 0)
                 Positioned(
-                  right: -8,
-                  top: -8,
+                  right: context.isPhone ? -8 : -10,
+                  top: context.isPhone ? -8 : -10,
                   child: Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(

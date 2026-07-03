@@ -32,16 +32,26 @@ class EventPlannerController {
     return await dbClient.insert('exams', exam.toMap());
   }
 
-  /// Adds a parent revision topic under a specific exam
-  Future<int> createTopic(RevisionTopic topic) async {
+  /// Updates an existing event entry in the database
+  Future<int> updateEvent(EventModel exam) async {
     final dbClient = await DatabaseService.db;
-    return await dbClient.insert('revision_topics', topic.toMap());
+    return await dbClient.update(
+      'exams',
+      exam.toMap(),
+      where: 'id = ?',
+      whereArgs: [exam.id],
+    );
   }
 
-  /// Adds an individual checklist item subtopic under a main topic
-  Future<int> createSubtopic(RevisionSubtopic subtopic) async {
+  /// Updates the completion status of an exam
+  Future<void> updateEventCompletionStatus(int examId, bool isCompleted) async {
     final dbClient = await DatabaseService.db;
-    return await dbClient.insert('revision_subtopics', subtopic.toMap());
+    await dbClient.update(
+      'exams',
+      {'is_completed': isCompleted ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [examId],
+    );
   }
 
   /// Gets all parent revision modules associated with an exam
@@ -55,55 +65,42 @@ class EventPlannerController {
     return List.generate(maps.length, (i) => RevisionTopic.fromMap(maps[i]));
   }
 
-  /// Resolves all atomic checklist items tied to a single parent topic module
-  Future<List<RevisionSubtopic>> fetchSubtopicsForTopic(int topicId) async {
+  /// Adds a parent revision topic under a specific exam
+  Future<int> createTopic(RevisionTopic topic) async {
     final dbClient = await DatabaseService.db;
-    final List<Map<String, dynamic>> maps = await dbClient.query(
-      'revision_subtopics',
-      where: 'topic_id = ?',
+    return await dbClient.insert('revision_topics', topic.toMap());
+  }
+
+  /// Deletes an individual revision topic item
+  Future<void> deleteTopic(int topicId) async {
+    final dbClient = await DatabaseService.db;
+    await dbClient.delete(
+      'revision_topics',
+      where: 'id = ?',
       whereArgs: [topicId],
     );
-    return List.generate(maps.length, (i) => RevisionSubtopic.fromMap(maps[i]));
   }
 
-  /// Updates checking/unchecking a checkbox status for any checklist subtopic
-  Future<void> updateSubtopicCompletionStatus(int subtopicId, bool isCompleted) async {
+  /// Updates the text/title of an individual revision topic
+  Future<void> updateTopicName(int topicId, String newName) async {
     final dbClient = await DatabaseService.db;
     await dbClient.update(
-      'revision_subtopics',
-      {'is_completed': isCompleted ? 1 : 0},
+      'revision_topics',
+      {'name': newName},
       where: 'id = ?',
-      whereArgs: [subtopicId],
+      whereArgs: [topicId],
     );
   }
 
-  /// Aggregates database tracking numbers to return live layout stats
-  Future<Map<String, int>> calculateExamProgressMetrics(int examId) async {
+  /// Updates the completion status of an individual revision topic
+  Future<void> updateTopicCompletionStatus(int topicId, bool isCompleted) async {
     final dbClient = await DatabaseService.db;
-    final result = await dbClient.rawQuery('''
-      SELECT 
-        COUNT(s.id) as total,
-        SUM(CASE WHEN s.is_completed = 1 THEN 1 ELSE 0 END) as completed
-      FROM revision_topics t
-      LEFT JOIN revision_subtopics s ON t.id = s.topic_id
-      WHERE t.exam_id = ?
-    ''', [examId]);
-
-    if (result.isEmpty || result.first['total'] == 0) {
-      return {'total': 0, 'completed': 0, 'pending': 0, 'percent': 0};
-    }
-
-    int total = (result.first['total'] ?? 0) as int;
-    int completed = (result.first['completed'] ?? 0) as int;
-    int pending = total - completed;
-    int percent = total > 0 ? ((completed / total) * 100).round() : 0;
-
-    return {
-      'total': total,
-      'completed': completed,
-      'pending': pending,
-      'percent': percent,
-    };
+    await dbClient.update(
+      'revision_topics',
+      {'is_completed': isCompleted ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [topicId],
+    );
   }
 
   /// Deletes an event and its associated cascading data
@@ -132,27 +129,5 @@ class EventPlannerController {
         whereArgs: [examId],
       );
     });
-  }
-
-  /// Updates an existing event entry in the database
-  Future<int> updateEvent(EventModel exam) async {
-    final dbClient = await DatabaseService.db;
-    return await dbClient.update(
-      'exams',
-      exam.toMap(),
-      where: 'id = ?',
-      whereArgs: [exam.id],
-    );
-  }
-
-  /// Updates the completion status of an exam
-  Future<void> updateEventCompletionStatus(int examId, bool isCompleted) async {
-    final dbClient = await DatabaseService.db;
-    await dbClient.update(
-      'exams',
-      {'is_completed': isCompleted ? 1 : 0},
-      where: 'id = ?',
-      whereArgs: [examId],
-    );
   }
 }

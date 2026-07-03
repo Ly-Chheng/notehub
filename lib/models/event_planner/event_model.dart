@@ -70,6 +70,45 @@ class EventModel {
   }
 }
 
+// class RevisionTopic {
+//   final int? id;
+//   final int examId;
+//   final String name;
+//   final String notes;
+//   final String priority;
+//   final String dueDate;
+
+//   RevisionTopic({
+//     this.id,
+//     required this.examId,
+//     required this.name,
+//     required this.notes,
+//     required this.priority,
+//     required this.dueDate,
+//   });
+
+//   Map<String, dynamic> toMap() {
+//     return {
+//       'id': id,
+//       'exam_id': examId,
+//       'name': name,
+//       'notes': notes,
+//       'priority': priority,
+//       'due_date': dueDate,
+//     };
+//   }
+
+//   factory RevisionTopic.fromMap(Map<String, dynamic> map) {
+//     return RevisionTopic(
+//       id: map['id'],
+//       examId: map['exam_id'],
+//       name: map['name'],
+//       notes: map['notes'] ?? '',
+//       priority: map['priority'] ?? 'Medium',
+//       dueDate: map['due_date'] ?? '',
+//     );
+//   }
+// }
 class RevisionTopic {
   final int? id;
   final int examId;
@@ -77,6 +116,7 @@ class RevisionTopic {
   final String notes;
   final String priority;
   final String dueDate;
+  final bool isCompleted; // 1. Add this field variable
 
   RevisionTopic({
     this.id,
@@ -85,28 +125,31 @@ class RevisionTopic {
     required this.notes,
     required this.priority,
     required this.dueDate,
+    this.isCompleted = false, // 2. Add defaults to constructor parameters
   });
+
+  factory RevisionTopic.fromMap(Map<String, dynamic> map) {
+    return RevisionTopic(
+      id: map['id'] as int?,
+      examId: map['exam_id'] as int,
+      name: map['name'] as String,
+      notes: map['notes'] as String? ?? '',
+      priority: map['priority'] as String? ?? 'Medium',
+      dueDate: map['due_date'] as String? ?? '',
+      isCompleted: (map['is_completed'] as int? ?? 0) == 1, // 3. Parse dynamic SQL value safely
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
+      if (id != null) 'id': id,
       'exam_id': examId,
       'name': name,
       'notes': notes,
       'priority': priority,
       'due_date': dueDate,
+      'is_completed': isCompleted ? 1 : 0, // 4. Map back to database format
     };
-  }
-
-  factory RevisionTopic.fromMap(Map<String, dynamic> map) {
-    return RevisionTopic(
-      id: map['id'],
-      examId: map['exam_id'],
-      name: map['name'],
-      notes: map['notes'] ?? '',
-      priority: map['priority'] ?? 'Medium',
-      dueDate: map['due_date'] ?? '',
-    );
   }
 }
 
