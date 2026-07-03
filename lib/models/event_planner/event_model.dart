@@ -69,46 +69,6 @@ class EventModel {
     }
   }
 }
-
-// class RevisionTopic {
-//   final int? id;
-//   final int examId;
-//   final String name;
-//   final String notes;
-//   final String priority;
-//   final String dueDate;
-
-//   RevisionTopic({
-//     this.id,
-//     required this.examId,
-//     required this.name,
-//     required this.notes,
-//     required this.priority,
-//     required this.dueDate,
-//   });
-
-//   Map<String, dynamic> toMap() {
-//     return {
-//       'id': id,
-//       'exam_id': examId,
-//       'name': name,
-//       'notes': notes,
-//       'priority': priority,
-//       'due_date': dueDate,
-//     };
-//   }
-
-//   factory RevisionTopic.fromMap(Map<String, dynamic> map) {
-//     return RevisionTopic(
-//       id: map['id'],
-//       examId: map['exam_id'],
-//       name: map['name'],
-//       notes: map['notes'] ?? '',
-//       priority: map['priority'] ?? 'Medium',
-//       dueDate: map['due_date'] ?? '',
-//     );
-//   }
-// }
 class RevisionTopic {
   final int? id;
   final int examId;
