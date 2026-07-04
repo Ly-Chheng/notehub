@@ -114,6 +114,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
+          backgroundColor: Theme.of(context).cardColor,
           title: Text('pick_a_color'.tr, style: text18(context)),
           content: SingleChildScrollView(
             child: ColorPicker(
@@ -306,7 +307,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_formatDate(_selectedDate), style: text16(context).copyWith(color: AppColor().gray)),
+                          Text(_formatDate(_selectedDate), style: fix16(context).copyWith(color: AppColor().gray)),
                           Icon(Icons.date_range, color: AppColor().gray, size: 20),
                         ],
                       ),
@@ -332,7 +333,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_selectedTime.format(context), style: text16(context).copyWith(color: AppColor().gray)),
+                          Text(_selectedTime.format(context), style: fix16(context).copyWith(color: AppColor().gray)),
                           Icon(Icons.access_time, color: AppColor().gray, size: 24),
                         ],
                       ),
@@ -477,7 +478,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_formatDate(_reminderDate), style: text16(context).copyWith(color: AppColor().gray)),
+                          Text(_formatDate(_reminderDate), style: fix16(context).copyWith(color: AppColor().gray)),
                           Icon(Icons.date_range, color: AppColor().gray, size: 20),
                         ],
                       ),
@@ -503,7 +504,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_reminderTime.format(context), style: text16(context).copyWith(color: AppColor().gray)),
+                          Text(_reminderTime.format(context), style: fix16(context).copyWith(color: AppColor().gray)),
                           Icon(Icons.access_time, color: AppColor().gray, size: 24),
                         ],
                       ),
@@ -527,7 +528,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     title: _titleController.text.trim(),
                     date: dateString,
                     time: timeString,
-                    location: _locationController.text.trim().isEmpty ? "not_specified".tr : _locationController.text.trim(),
+                    location: _locationController.text.trim().isEmpty ? "".tr : _locationController.text.trim(),
                     reminderTime: "$reminderDateString $reminderTimeString", // safely constructed fallback string
                     isCompleted: widget.event?.isCompleted ?? false,
                     color: eventColors[selectedColorIndex].value,
