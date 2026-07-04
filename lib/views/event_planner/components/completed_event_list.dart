@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:project_structure/controllers/event_planner/event_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
 import 'package:project_structure/views/event_planner/event_details_screen.dart';
 import 'package:project_structure/widgets/app_slidable_asction.dart';
@@ -19,7 +20,7 @@ class CompletedEventList extends StatefulWidget {
 
 class _CompletedEventListState extends State<CompletedEventList> {
   final EventPlannerController _controller = Get.find<EventPlannerController>();
-  late Future<List<EventModel>> _completedExamsFuture;
+  late Future<List<EventModel>> _completedEventsFuture;
 
   @override
   void initState() {
@@ -29,30 +30,30 @@ class _CompletedEventListState extends State<CompletedEventList> {
 
   void _refreshList() {
     setState(() {
-      _completedExamsFuture = _controller.fetchEvent(completed: true);
+      _completedEventsFuture = _controller.fetchEvent(completed: true);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<EventModel>>(
-      future: _completedExamsFuture,
+      future: _completedEventsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
         if (snapshot.hasError) return Center(child: Text("Error: ${snapshot.error}"));
 
-        final exams = snapshot.data ?? [];
-        if (exams.isEmpty) {
-          return Center(child: Text("No completed exams.", style: const TextStyle(color: Colors.grey)));
+        final events = snapshot.data ?? [];
+        if (events.isEmpty) {
+          return Center(child: Text("no_data".tr, style: const TextStyle(color: Colors.grey)));
         }
 
         return ListView.builder(
           padding: const EdgeInsets.all(16),
-          itemCount: exams.length,
+          itemCount: events.length,
           itemBuilder: (context, index) {
-            final event = exams[index];
+            final event = events[index];
 
             return Container(
               margin: const EdgeInsets.only(bottom: 15),
@@ -93,13 +94,7 @@ class _CompletedEventListState extends State<CompletedEventList> {
                   ),
                   child: Container(
                     width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: const BorderRadius.horizontal(
-                        left: Radius.circular(18),
-                      ),
-                      boxShadow: AppDecorations.subtleShadow,
-                    ),
+                    decoration: Layout.cardDecoration(),
                     child: InkWell(
                       borderRadius: BorderRadius.circular(18),
                       onTap: () => Navigator.push(

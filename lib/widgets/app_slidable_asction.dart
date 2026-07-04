@@ -6,7 +6,7 @@ import 'package:project_structure/core/utils/app_fonts.dart';
 class AppSlidableAction extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
-  final String label;
+  final String? label;
   final Color backgroundColor;
   final Color iconColor;
   final TextStyle? textStyle;
@@ -17,7 +17,7 @@ class AppSlidableAction extends StatelessWidget {
     super.key,
     required this.onPressed,
     required this.icon,
-    required this.label,
+    this.label,
     required this.backgroundColor,
     this.iconColor = Colors.white,
     this.textStyle,
@@ -40,11 +40,18 @@ class AppSlidableAction extends StatelessWidget {
             size: iconSize ?? 24,
           ),
           const SizedBox(height: 4),
-          Text(label,
-              style: textStyle ??
-                  text16(context).copyWith(
-                    color: AppColor().white,
-                  )),
+          // Text(label,
+          //     style: textStyle ??
+          //         text16(context).copyWith(
+          //           color: AppColor().white,
+          //         )),
+          if (label != null) ...[
+            const SizedBox(height: 4),
+            Text(
+              label!,
+              style: textStyle ?? text16(context).copyWith(color: AppColor().white),
+            ),
+          ],
         ],
       ),
     );

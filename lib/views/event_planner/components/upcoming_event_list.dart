@@ -29,7 +29,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
   void initState() {
     super.initState();
     _refreshList();
-    _tickerTimer = Timer.periodic(const Duration(seconds: 0), (timer) {
+    _tickerTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) setState(() {});
     });
   }
@@ -46,18 +46,38 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
     super.dispose();
   }
 
-  Duration _calculateTimeRemaining(EventModel exam) {
+  DateTime? _getEventDateTime(EventModel exam) {
     try {
       String combinedString = "${exam.date.trim()} ${exam.time.trim()}";
-      DateTime examDateTime = exam.time.toUpperCase().contains('AM') || exam.time.toUpperCase().contains('PM')
+      return exam.time.toUpperCase().contains('AM') || exam.time.toUpperCase().contains('PM')
           ? DateFormat("yyyy-MM-dd h:mm a").parse(combinedString)
           : DateTime.parse("${exam.date.trim()} ${exam.time.split(':')[0].padLeft(2, '0')}:${exam.time.split(':')[1].padLeft(2, '0')}:00");
-
-      final difference = examDateTime.difference(DateTime.now());
-      return difference.isNegative ? const Duration() : difference;
     } catch (_) {
-      return const Duration();
+      return null;
     }
+  }
+
+  Duration _calculateTimeRemaining(EventModel event) {
+    final eventDateTime = _getEventDateTime(event);
+    if (eventDateTime == null) return const Duration();
+    final difference = eventDateTime.difference(DateTime.now());
+    return difference.isNegative ? const Duration() : difference;
+  }
+
+  double _calculateProgress(EventModel event) {
+    final targetTime = _getEventDateTime(event);
+    if (targetTime == null) return 0.0;
+
+    // Use a fallback creation time if your model doesn't store it (e.g., 7 days prior)
+    // If your EventModel has a `createdAt` field, replace `subtract` line with: exam.createdAt
+    final startTime = targetTime.subtract(const Duration(days: 7));
+    final totalDuration = targetTime.difference(startTime).inSeconds;
+    final elapsedDuration = DateTime.now().difference(startTime).inSeconds;
+
+    if (totalDuration <= 0) return 1.0;
+
+    double progress = elapsedDuration / totalDuration;
+    return progress.clamp(0.0, 1.0);
   }
 
   String _getImageAsset(String? iconName) {
@@ -73,7 +93,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
     }
   }
 
-  void _showActionBottomSheet(BuildContext context, EventModel exam) {
+  void _showActionBottomSheet(BuildContext context, EventModel event) {
     ConfirmBottomSheet.show(
       context: context,
       title: "event".tr,
@@ -87,14 +107,14 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
               title: "completed".tr,
               onTap: () {
                 Navigator.pop(context);
-                if (exam.id != null) {
+                if (event.id != null) {
                   showConfirmDialog(
                     context: context,
                     title: "make_completed".tr,
                     subTitle: "are_you_sure_make_completed".tr,
                     confirmText: "completed".tr,
                     onConfirm: () async {
-                      await _controller.updateEventCompletionStatus(exam.id!, true);
+                      await _controller.updateEventCompletionStatus(event.id!, true);
                       _refreshList();
                     },
                   );
@@ -110,7 +130,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
               title: "edit".tr,
               onTap: () async {
                 Navigator.pop(context);
-                final result = await Get.to(() => AddEventScreen(exam: exam));
+                final result = await Get.to(() => AddEventScreen(event: event));
                 if (result == true) _refreshList();
               },
             ),
@@ -121,19 +141,19 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
               title: "delete".tr,
               onTap: () {
                 Navigator.pop(context);
-                if (exam.id != null) {
+                if (event.id != null) {
                   showConfirmDialog(
                     context: context,
                     title: "delete".tr,
                     subTitle: "delete_confirm".tr,
                     confirmText: "delete".tr,
                     onConfirm: () async {
-                      await _controller.deleteEvent(exam.id!);
+                      await _controller.deleteEvent(event.id!);
                       _refreshList();
                     },
                   );
                 } else {
-                  AppSnackbar.showError(title: "error".tr, message: "cannot_delete_exam".tr);
+                  AppSnackbar.showError(title: "error".tr, message: "cannot_delete_event".tr);
                 }
               },
             ),
@@ -155,7 +175,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
 
         final events = snapshot.data ?? [];
         if (events.isEmpty) {
-          return Center(child: Text("No upcoming exams scheduled.", style: TextStyle(color: AppColor().gray)));
+          return Center(child: Text("no_data".tr, style: TextStyle(color: AppColor().gray)));
         }
 
         return ListView.builder(
@@ -170,6 +190,8 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
             final hours = (duration.inHours % 24).toString().padLeft(2, '0');
             final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
             final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
+
+            final double progressPercentage = _calculateProgress(event);
 
             return Container(
               margin: const EdgeInsets.only(bottom: 15),
@@ -244,6 +266,32 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                           Expanded(child: _countdownCard(seconds, "s".tr)),
                         ],
                       ),
+                      // Overall Progress Bar Section
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("overall_progress".tr,
+                              style: text14(context).copyWith(
+                                color: AppColor().gray,
+                              )),
+                          Text(
+                            "${(progressPercentage * 100).toStringAsFixed(0)}%",
+                            style: fix16(context).copyWith(color: baseColor, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: LinearProgressIndicator(
+                         value: progressPercentage,
+                          minHeight: 10,
+                          backgroundColor: baseColor.withValues(alpha: 0.1),
+                          valueColor: AlwaysStoppedAnimation<Color>(baseColor),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
                     ],
                   ),
                 ),

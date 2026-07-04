@@ -15,8 +15,8 @@ import 'package:project_structure/widgets/dialog_and_buttonsheet/confirm_bottoms
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
 class AddEventScreen extends StatefulWidget {
-  final EventModel? exam;
-  const AddEventScreen({super.key, this.exam});
+  final EventModel? event;
+  const AddEventScreen({super.key, this.event});
 
   @override
   State<AddEventScreen> createState() => _AddEventScreenState();
@@ -38,7 +38,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   TimeOfDay _reminderTime = TimeOfDay.now();
 
   int selectedColorIndex = 0;
-  bool get _isEditing => widget.exam != null;
+  bool get _isEditing => widget.event != null;
 
   final List<Color> eventColors = [
     const Color(0xFF4CAF50),
@@ -57,14 +57,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   void _initializeFields() {
     if (_isEditing) {
-      final exam = widget.exam!;
-      _titleController.text = exam.title;
-      _locationController.text = exam.location == "Not Specified".tr ? "" : exam.location;
+      final event = widget.event!;
+      _titleController.text = event.title;
+      _locationController.text = event.location == "Not Specified".tr ? "" : event.location;
 
-      _iconController.text = exam.icon ?? "";
+      _iconController.text = event.icon ?? "";
 
-      if (exam.color != null) {
-        final index = eventColors.indexWhere((c) => c.value == exam.color);
+      if (event.color != null) {
+        final index = eventColors.indexWhere((c) => c.value == event.color);
         if (index != -1) selectedColorIndex = index;
       }
 
@@ -73,21 +73,21 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
       // Safe date parsing for event
       try {
-        final parsedDate = DateTime.parse(exam.date);
+        final parsedDate = DateTime.parse(event.date);
         _selectedDate = parsedDate.isBefore(todayStart) ? todayStart : parsedDate;
       } catch (e) {
         _selectedDate = todayStart;
       }
 
       try {
-        _selectedTime = _parseTimeOfDay(exam.time);
+        _selectedTime = _parseTimeOfDay(event.time);
       } catch (e) {
         _selectedTime = TimeOfDay.now();
       }
 
       // Safe date parsing for reminder (Clamped between today and event date)
       try {
-        final parsedReminder = exam.reminderDate != null ? DateTime.parse(exam.reminderDate!) : todayStart;
+        final parsedReminder = event.reminderDate != null ? DateTime.parse(event.reminderDate!) : todayStart;
         if (parsedReminder.isBefore(todayStart)) {
           _reminderDate = todayStart;
         } else if (parsedReminder.isAfter(_selectedDate)) {
@@ -100,7 +100,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       }
 
       try {
-        _reminderTime = exam.reminderTimer != null ? _parseTimeOfDay(exam.reminderTimer!) : TimeOfDay.now();
+        _reminderTime = event.reminderTimer != null ? _parseTimeOfDay(event.reminderTimer!) : TimeOfDay.now();
       } catch (e) {
         _reminderTime = TimeOfDay.now();
       }
@@ -441,7 +441,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              "reminder_alert".tr,
+              "reminder".tr,
               style: text16(context).copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: 10),
@@ -453,7 +453,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       final now = DateTime.now();
                       final todayStart = DateTime(now.year, now.month, now.day);
 
-                      // Ensure initial target is completely within valid limits
                       DateTime verifiedInitial = _reminderDate;
                       if (verifiedInitial.isBefore(todayStart)) {
                         verifiedInitial = todayStart;
@@ -461,7 +460,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                         verifiedInitial = _selectedDate;
                       }
 
-                      // Now safely utilizing your custom themed date picker
                       final DateTime? picked = await customDatePicker(
                         context: context,
                         initialDate: verifiedInitial,
@@ -525,13 +523,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   final reminderTimeString = _reminderTime.format(context);
 
                   final examData = EventModel(
-                    id: widget.exam?.id,
+                    id: widget.event?.id,
                     title: _titleController.text.trim(),
                     date: dateString,
                     time: timeString,
                     location: _locationController.text.trim().isEmpty ? "not_specified".tr : _locationController.text.trim(),
                     reminderTime: "$reminderDateString $reminderTimeString", // safely constructed fallback string
-                    isCompleted: widget.exam?.isCompleted ?? false,
+                    isCompleted: widget.event?.isCompleted ?? false,
                     color: eventColors[selectedColorIndex].value,
                     icon: _iconController.text.trim(),
                     reminderDate: reminderDateString,

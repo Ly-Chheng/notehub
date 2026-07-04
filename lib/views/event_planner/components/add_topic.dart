@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/event_planner/event_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
-import 'package:project_structure/models/event_planner/event_model.dart';
-import 'package:project_structure/widgets/app_snack_bar.dart';
+import 'package:project_structure/models/event_planner/revision_topic_model.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_text_field.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/confirm_bottomsheet.dart';
+import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
 void addTopic(
   BuildContext context,
@@ -62,9 +62,12 @@ void addTopic(
               onTopicSaved();
               nameController.dispose();
             } else {
-              AppSnackbar.showError(
-                title: "Error",
-                message: "Please fill out the Topic Name",
+              showConfirmDialog(
+                context: context,
+                title: "error".tr,
+                subTitle: "Please fill out the Topic Name".tr,
+                confirmText: "ok".tr,
+                onConfirm: () {},
               );
             }
           },

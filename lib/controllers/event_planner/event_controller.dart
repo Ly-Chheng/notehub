@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
+import 'package:project_structure/models/event_planner/revision_topic_model.dart';
 
 class EventPlannerController {
   EventPlannerController();
@@ -26,13 +29,13 @@ class EventPlannerController {
     }
   }
 
-  /// Adds a new event to the database
+  /// Add event
   Future<int> createEvent(EventModel exam) async {
     final dbClient = await DatabaseService.db;
     return await dbClient.insert('exams', exam.toMap());
   }
 
-  /// Updates an existing event entry in the database
+  /// Updates event
   Future<int> updateEvent(EventModel exam) async {
     final dbClient = await DatabaseService.db;
     return await dbClient.update(
@@ -43,7 +46,7 @@ class EventPlannerController {
     );
   }
 
-  /// Updates the completion status of an exam
+  /// Updates the completion status of an event
   Future<void> updateEventCompletionStatus(int examId, bool isCompleted) async {
     final dbClient = await DatabaseService.db;
     await dbClient.update(
@@ -55,7 +58,7 @@ class EventPlannerController {
   }
 
   /// Gets all parent revision modules associated with an exam
-  Future<List<RevisionTopic>> fetchTopicsForExam(int examId) async {
+  Future<List<RevisionTopic>> fetchTopicsForEvent(int examId) async {
     final dbClient = await DatabaseService.db;
     final List<Map<String, dynamic>> maps = await dbClient.query(
       'revision_topics',
@@ -107,27 +110,59 @@ class EventPlannerController {
   Future<int> deleteEvent(int examId) async {
     final dbClient = await DatabaseService.db;
 
-    // Using a transaction ensures both topics and the exam itself are cleaned up reliably
     return await dbClient.transaction((txn) async {
-      // 1. Delete associated subtopics via topics mapping if CASCADE isn't configured in SQL
       await txn.rawDelete('''
         DELETE FROM revision_subtopics 
         WHERE topic_id IN (SELECT id FROM revision_topics WHERE exam_id = ?)
       ''', [examId]);
 
-      // 2. Delete main topic modules
+      // Delete main topic modules
       await txn.delete(
         'revision_topics',
         where: 'exam_id = ?',
         whereArgs: [examId],
       );
 
-      // 3. Finally, delete the root exam record
+      // Finally, delete the root exam record
       return await txn.delete(
         'exams',
         where: 'id = ?',
         whereArgs: [examId],
       );
     });
+  }
+
+  // Calculates the offset between the event date and the reminder date in days, returning a user-friendly string.
+  String reminderConvertFromDateTime({
+    required String eventDateStr,
+    required String? reminderDateStr,
+    required String fallbackReminderTime,
+  }) {
+    if (fallbackReminderTime.isEmpty || reminderDateStr == null) {
+      return "none".tr;
+    }
+
+    try {
+      // Clean and parse strings safely
+      final parsedEvent = DateTime.parse(eventDateStr.trim());
+      final parsedReminder = DateTime.parse(reminderDateStr.trim());
+
+      // This strips any hidden timestamp or time zone offsets causing math errors
+      final cleanEventDate = DateTime.utc(parsedEvent.year, parsedEvent.month, parsedEvent.day);
+      final cleanReminderDate = DateTime.utc(parsedReminder.year, parsedReminder.month, parsedReminder.day);
+
+      //Calculate the true calendar day difference
+      final differenceInDays = cleanEventDate.difference(cleanReminderDate).inDays;
+
+      if (differenceInDays == 0) {
+        return "same_day".tr;
+      } else if (differenceInDays > 0) {
+        return "$differenceInDays ${'days_before'.tr}";
+      }
+    } catch (e) {
+      debugPrint("Error parsing dates in reminderConvertFromDateTime: $e");
+    }
+
+    return fallbackReminderTime;
   }
 }
