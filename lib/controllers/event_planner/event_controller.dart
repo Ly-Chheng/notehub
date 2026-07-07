@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/database/database_service.dart';
+import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
 import 'package:project_structure/models/event_planner/revision_topic_model.dart';
 
-class EventPlannerController {
+class EventPlannerController extends GetxController {
   EventPlannerController();
   final List<Map<String, dynamic>> availableIcons = [
     {'name': 'study', 'image': 'assets/images/study.png'},
@@ -12,6 +13,48 @@ class EventPlannerController {
     {'name': 'todo', 'image': 'assets/images/todo.png'},
     {'name': 'meeting', 'image': 'assets/images/meeting.png'},
   ];
+
+  // /// Add event
+  // Future<int> createEvent(EventModel exam) async {
+  //   final dbClient = await DatabaseService.db;
+  //   return await dbClient.insert('exams', exam.toMap());
+  // }
+
+  // /// Updates event
+  // Future<int> updateEvent(EventModel exam) async {
+  //   final dbClient = await DatabaseService.db;
+  //   return await dbClient.update(
+  //     'exams',
+  //     exam.toMap(),
+  //     where: 'id = ?',
+  //     whereArgs: [exam.id],
+  //   );
+  // }
+
+  // /// Updates the completion status of an event
+  // Future<void> updateEventCompletionStatus(int examId, bool isCompleted) async {
+  //   final dbClient = await DatabaseService.db;
+  //   await dbClient.update(
+  //     'exams',
+  //     {'is_completed': isCompleted ? 1 : 0},
+  //     where: 'id = ?',
+  //     whereArgs: [examId],
+  //   );
+  // }
+
+  DateTime? _parseReminderDateTime(EventModel exam) {
+    if (exam.reminderDate == null || exam.reminderTimer == null) return null;
+    try {
+      final datePart = exam.reminderDate!.trim();
+      final timePart = exam.reminderTimer!.trim();
+
+      // Directly stitches clean "YYYY-MM-DD" and "HH:mm:ss" strings safely
+      return DateTime.parse("$datePart $timePart");
+    } catch (e) {
+      debugPrint("Failed parsing reminder timestamp: $e");
+      return null;
+    }
+  }
 
   /// Fetches either upcoming or completed even
   Future<List<EventModel>> fetchEvent({required bool completed}) async {
@@ -29,24 +72,51 @@ class EventPlannerController {
     }
   }
 
-  /// Add event
+  /// Add event + Schedules Local System Reminder Notification
   Future<int> createEvent(EventModel exam) async {
     final dbClient = await DatabaseService.db;
-    return await dbClient.insert('exams', exam.toMap());
+    final int insertedId = await dbClient.insert('exams', exam.toMap());
+
+    // Schedule notification using the newly generated row ID
+    final reminderTime = _parseReminderDateTime(exam);
+    if (reminderTime != null && !exam.isCompleted) {
+      await FirebaseServices.eventReminderNotification(
+        id: insertedId,
+        title: exam.title,
+        body: "Reminder: Your event is scheduled for ${exam.date} at ${exam.time}",
+        remiderDateTime: reminderTime,
+      );
+    }
+    return insertedId;
   }
 
-  /// Updates event
+  /// Updates event + Syncs System Alarms
   Future<int> updateEvent(EventModel exam) async {
     final dbClient = await DatabaseService.db;
-    return await dbClient.update(
+    final int result = await dbClient.update(
       'exams',
       exam.toMap(),
       where: 'id = ?',
       whereArgs: [exam.id],
     );
+
+    if (exam.id != null) {
+      await FirebaseServices.cancelReminder(exam.id!);
+
+      final reminderTime = _parseReminderDateTime(exam);
+      if (reminderTime != null && !exam.isCompleted) {
+        await FirebaseServices.eventReminderNotification(
+          id: exam.id!,
+          title: exam.title,
+          body: "Reminder: Your event is scheduled for ${exam.date} at ${exam.time}",
+          remiderDateTime: reminderTime,
+        );
+      }
+    }
+    return result;
   }
 
-  /// Updates the completion status of an event
+  /// Updates the completion status of an event and drops pending alarms
   Future<void> updateEventCompletionStatus(int examId, bool isCompleted) async {
     final dbClient = await DatabaseService.db;
     await dbClient.update(
@@ -55,6 +125,11 @@ class EventPlannerController {
       where: 'id = ?',
       whereArgs: [examId],
     );
+
+    // If marked complete, we must drop any pending notification alarms
+    if (isCompleted) {
+      await FirebaseServices.cancelReminder(examId);
+    }
   }
 
   /// Gets all parent revision modules associated with an exam

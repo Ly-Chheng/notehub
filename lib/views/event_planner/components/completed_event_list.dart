@@ -9,6 +9,7 @@ import 'package:project_structure/models/event_planner/event_model.dart';
 import 'package:project_structure/views/event_planner/event_details_screen.dart';
 import 'package:project_structure/widgets/app_slidable_asction.dart';
 import 'package:project_structure/widgets/app_snack_bar.dart';
+import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
 class CompletedEventList extends StatefulWidget {
@@ -46,7 +47,11 @@ class _CompletedEventListState extends State<CompletedEventList> {
 
         final events = snapshot.data ?? [];
         if (events.isEmpty) {
-          return Center(child: Text("no_data".tr, style: const TextStyle(color: Colors.grey)));
+          return Center(
+            child: CustomNoData(
+              message: "no_data".tr,
+            ),
+          );
         }
 
         return ListView.builder(

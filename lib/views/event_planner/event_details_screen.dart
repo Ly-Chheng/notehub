@@ -348,7 +348,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   }
 
   Widget _buildInfoSection() {
-    // _infoRow("reminder".tr, widget.event.reminderTime.isEmpty ? "none".tr : widget.event.reminderTime, Icons.notifications_none_outlined),
     final convertedReminder = _controller.reminderConvertFromDateTime(
       eventDateStr: widget.event.date,
       reminderDateStr: widget.event.reminderDate,

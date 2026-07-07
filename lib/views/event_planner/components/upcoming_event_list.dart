@@ -10,6 +10,7 @@ import 'package:project_structure/views/event_planner/add_event_screen.dart';
 import 'package:project_structure/views/event_planner/event_details_screen.dart';
 import 'package:project_structure/widgets/custom_menu_item.dart.dart';
 import 'package:project_structure/widgets/app_snack_bar.dart';
+import 'package:project_structure/widgets/custome_no_data.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/confirm_bottomsheet.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.dart';
 
@@ -175,7 +176,11 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
 
         final events = snapshot.data ?? [];
         if (events.isEmpty) {
-          return Center(child: Text("no_data".tr, style: TextStyle(color: AppColor().gray)));
+          return Center(
+            child: CustomNoData(
+              message: "no_data".tr,
+            ),
+          );
         }
 
         return ListView.builder(
@@ -285,7 +290,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
                         child: LinearProgressIndicator(
-                         value: progressPercentage,
+                          value: progressPercentage,
                           minHeight: 10,
                           backgroundColor: baseColor.withValues(alpha: 0.1),
                           valueColor: AlwaysStoppedAnimation<Color>(baseColor),

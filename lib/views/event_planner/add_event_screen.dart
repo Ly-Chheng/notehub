@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/event_planner/event_controller.dart';
+import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
+import 'package:project_structure/widgets/app_snack_bar.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_date_picker.dart';
@@ -441,6 +443,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
               ],
             ),
             const SizedBox(height: 16),
+            //Reminder Alert Section (notification)
             Text(
               "reminder".tr,
               style: text16(context).copyWith(fontWeight: FontWeight.w600),
@@ -514,37 +517,52 @@ class _AddEventScreenState extends State<AddEventScreen> {
               ],
             ),
             const SizedBox(height: 40),
+            // CustomButton(
+            //   text: "save".tr,
+            //   onPressed: () async {
+            //     if (_titleController.text.trim().isNotEmpty) {
+            //       final dateString = _formatDate(_selectedDate);
+            //       final timeString = _selectedTime.format(context);
+            //       final reminderDateString = _formatDate(_reminderDate);
+            //       final reminderTimeString = _reminderTime.format(context);
+
+            //       final examData = EventModel(
+            //         id: widget.event?.id,
+            //         title: _titleController.text.trim(),
+            //         date: dateString,
+            //         time: timeString,
+            //         location: _locationController.text.trim().isEmpty ? "".tr : _locationController.text.trim(),
+            //         reminderTime: "$reminderDateString $reminderTimeString", // safely constructed fallback string
+            //         isCompleted: widget.event?.isCompleted ?? false,
+            //         color: eventColors[selectedColorIndex].value,
+            //         icon: _iconController.text.trim(),
+            //         reminderDate: reminderDateString,
+            //         reminderTimer: reminderTimeString,
+            //       );
+
+            //       if (_isEditing) {
+            //         await _controller.updateEvent(examData);
+            //       } else {
+            //         await _controller.createEvent(examData);
+            //       }
+
+            //       Get.back(result: true);
+            //     } else {
+            //       showConfirmDialog(
+            //         context: context,
+            //         title: "error".tr,
+            //         subTitle: "please_provide_exam_title".tr,
+            //         confirmText: "ok".tr,
+            //         onConfirm: () {},
+            //       );
+            //     }
+            //   },
+            // ),
+
             CustomButton(
               text: "save".tr,
               onPressed: () async {
-                if (_titleController.text.trim().isNotEmpty) {
-                  final dateString = _formatDate(_selectedDate);
-                  final timeString = _selectedTime.format(context);
-                  final reminderDateString = _formatDate(_reminderDate);
-                  final reminderTimeString = _reminderTime.format(context);
-
-                  final examData = EventModel(
-                    id: widget.event?.id,
-                    title: _titleController.text.trim(),
-                    date: dateString,
-                    time: timeString,
-                    location: _locationController.text.trim().isEmpty ? "".tr : _locationController.text.trim(),
-                    reminderTime: "$reminderDateString $reminderTimeString", // safely constructed fallback string
-                    isCompleted: widget.event?.isCompleted ?? false,
-                    color: eventColors[selectedColorIndex].value,
-                    icon: _iconController.text.trim(),
-                    reminderDate: reminderDateString,
-                    reminderTimer: reminderTimeString,
-                  );
-
-                  if (_isEditing) {
-                    await _controller.updateEvent(examData);
-                  } else {
-                    await _controller.createEvent(examData);
-                  }
-
-                  Get.back(result: true);
-                } else {
+                if (_titleController.text.trim().isEmpty) {
                   showConfirmDialog(
                     context: context,
                     title: "error".tr,
@@ -552,9 +570,126 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     confirmText: "ok".tr,
                     onConfirm: () {},
                   );
+                  return;
                 }
+
+                // Combine exact date & time parts picked by user
+                final eventDateTime = DateTime(
+                  _selectedDate.year,
+                  _selectedDate.month,
+                  _selectedDate.day,
+                  _selectedTime.hour,
+                  _selectedTime.minute,
+                );
+
+                final reminderDateTime = DateTime(
+                  _reminderDate.year,
+                  _reminderDate.month,
+                  _reminderDate.day,
+                  _reminderTime.hour,
+                  _reminderTime.minute,
+                );
+
+                final now = DateTime.now();
+
+                // Guard rails
+                if (reminderDateTime.isBefore(now)) {
+                  AppSnackbar.showError(
+                    title: "invalid_reminder".tr,
+                    message: "reminder_cannot_be_in_past".tr,
+                  );
+                  return;
+                }
+
+                if (reminderDateTime.isAfter(eventDateTime)) {
+                  AppSnackbar.showError(
+                    title: "invalid_reminder".tr,
+                    message: "reminder_cannot_be_after_event".tr,
+                  );
+                  return;
+                }
+
+                // Convert everything directly to pure ISO parts
+                final dateString = _formatDate(_selectedDate);
+                final timeString = "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00";
+
+                final reminderDateString = _formatDate(_reminderDate);
+                final reminderTimeString = "${_reminderTime.hour.toString().padLeft(2, '0')}:${_reminderTime.minute.toString().padLeft(2, '0')}:00";
+
+                final examData = EventModel(
+                  id: widget.event?.id,
+                  title: _titleController.text.trim(),
+                  date: dateString,
+                  time: timeString,
+                  location: _locationController.text.trim().isEmpty ? "" : _locationController.text.trim(),
+                  reminderTime: "$reminderDateString $reminderTimeString",
+                  isCompleted: widget.event?.isCompleted ?? false,
+                  color: eventColors[selectedColorIndex].value,
+                  icon: _iconController.text.trim(),
+                  reminderDate: reminderDateString, // Exact selected date
+                  reminderTimer: reminderTimeString, // Exact selected time
+                );
+                Get.back(result: true);
+                if (_isEditing) {
+                  await _controller.updateEvent(examData);
+                } else {
+                  await _controller.createEvent(examData);
+                }
+
+                Get.back(result: true);
               },
-            ),
+            )
+
+            // CustomButton(
+            //   text: "Test Notification System".tr,
+            //   onPressed: () async {
+            //     if (_titleController.text.trim().isEmpty) {
+            //       _titleController.text = "🚀 Genuine Channel Test";
+            //     }
+
+            //     // Forces the scheduled background reminder to fire 5 seconds from now
+            //     final DateTime testReminderDateTime = DateTime.now().add(const Duration(seconds: 5));
+
+            //     final dateString = _formatDate(_selectedDate);
+            //     final timeString = _selectedTime.format(context);
+
+            //     // Format with complete Hour:Minute:Second precision for the database parser
+            //     final reminderDateString = _formatDate(testReminderDateTime);
+            //     final reminderTimeString = "${testReminderDateTime.hour.toString().padLeft(2, '0')}:"
+            //         "${testReminderDateTime.minute.toString().padLeft(2, '0')}:"
+            //         "${testReminderDateTime.second.toString().padLeft(2, '0')}";
+
+            //     final examData = EventModel(
+            //       id: widget.event?.id ?? 999,
+            //       title: _titleController.text.trim(),
+            //       date: dateString,
+            //       time: timeString,
+            //       location: "Testing Lab",
+            //       reminderTime: "$reminderDateString $reminderTimeString",
+            //       isCompleted: false,
+            //       color: eventColors[selectedColorIndex].value,
+            //       icon: _iconController.text.trim().isEmpty ? "study" : _iconController.text.trim(),
+            //       reminderDate: reminderDateString,
+            //       reminderTimer: reminderTimeString,
+            //     );
+
+            //     // 1. Save and register the 5-second background countdown via your controller
+            //     if (_isEditing) {
+            //       await _controller.updateEvent(examData);
+            //     } else {
+            //       await _controller.createEvent(examData);
+            //     }
+
+            //     // 2. Triggers your real instant notification using the proper channel configuration
+            //     await FirebaseServices.testReminderNotification(
+            //       id: 8888, // Separate test ID so it doesn't overwrite your scheduled item
+            //       title: "🚀 Test Scheduled Successfully",
+            //       body: "Minimize your app now! The scheduled reminder fires in 5 seconds.",
+            //     );
+
+            //     Get.back(result: true);
+            //   },
+            // ),
           ],
         ),
       ),

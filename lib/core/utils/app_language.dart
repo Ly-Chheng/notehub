@@ -348,6 +348,9 @@ class AppTranslations extends Translations {
           'color_tag': 'Color Tag',
           'revision_check_list': 'Revision Check list',
           'overall_progress': 'Overall Progress',
+          'invalid_reminder': 'Invalid Reminder',
+          'reminder_cannot_be_in_past': 'The reminder time cannot be in the past.',
+          'reminder_cannot_be_after_event': 'The reminder time cannot be after the event time.',
         },
         'km_KM': {
           // General
@@ -691,6 +694,9 @@ class AppTranslations extends Translations {
           'color_tag': 'ស្លាកពណ៌',
           'revision_check_list': 'បញ្ជីត្រួតពិនិត្យការកែប្រែ',
           'overall_progress': 'វឌ្ឍនភាពរួម',
+          'invalid_reminder': 'ការរំលឹកមិនត្រឹមត្រូវ',
+          'reminder_cannot_be_in_past': 'ពេលវេលារំលឹកមិនអាចស្ថិតនៅក្នុងអតីតកាលបានទេ។',
+          'reminder_cannot_be_after_event': 'ពេលវេលារំលឹកមិនអាចនៅក្រោយពេលវេលាព្រឹត្តិការណ៍បានទេ។',
         },
       };
 }
