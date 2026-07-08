@@ -183,7 +183,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20.0),
                               child: Center(
-                                child: Text("no_tracking_modules".tr, style: text14(context).copyWith(color: Colors.grey)),
+                                child: Text("no_data".tr, style: text14(context).copyWith(color: Colors.grey)),
                               ),
                             )
                           else

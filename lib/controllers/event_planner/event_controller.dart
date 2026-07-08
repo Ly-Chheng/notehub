@@ -14,34 +14,6 @@ class EventPlannerController extends GetxController {
     {'name': 'meeting', 'image': 'assets/images/meeting.png'},
   ];
 
-  // /// Add event
-  // Future<int> createEvent(EventModel exam) async {
-  //   final dbClient = await DatabaseService.db;
-  //   return await dbClient.insert('exams', exam.toMap());
-  // }
-
-  // /// Updates event
-  // Future<int> updateEvent(EventModel exam) async {
-  //   final dbClient = await DatabaseService.db;
-  //   return await dbClient.update(
-  //     'exams',
-  //     exam.toMap(),
-  //     where: 'id = ?',
-  //     whereArgs: [exam.id],
-  //   );
-  // }
-
-  // /// Updates the completion status of an event
-  // Future<void> updateEventCompletionStatus(int examId, bool isCompleted) async {
-  //   final dbClient = await DatabaseService.db;
-  //   await dbClient.update(
-  //     'exams',
-  //     {'is_completed': isCompleted ? 1 : 0},
-  //     where: 'id = ?',
-  //     whereArgs: [examId],
-  //   );
-  // }
-
   DateTime? _parseReminderDateTime(EventModel exam) {
     if (exam.reminderDate == null || exam.reminderTimer == null) return null;
     try {
@@ -72,12 +44,11 @@ class EventPlannerController extends GetxController {
     }
   }
 
-  /// Add event + Schedules Local System Reminder Notification
+  /// Add
   Future<int> createEvent(EventModel exam) async {
     final dbClient = await DatabaseService.db;
     final int insertedId = await dbClient.insert('exams', exam.toMap());
 
-    // Schedule notification using the newly generated row ID
     final reminderTime = _parseReminderDateTime(exam);
     if (reminderTime != null && !exam.isCompleted) {
       await FirebaseServices.eventReminderNotification(
@@ -116,7 +87,7 @@ class EventPlannerController extends GetxController {
     return result;
   }
 
-  /// Updates the completion status of an event and drops pending alarms
+  /// Update
   Future<void> updateEventCompletionStatus(int examId, bool isCompleted) async {
     final dbClient = await DatabaseService.db;
     await dbClient.update(
@@ -132,58 +103,12 @@ class EventPlannerController extends GetxController {
     }
   }
 
-  /// Gets all parent revision modules associated with an exam
-  Future<List<RevisionTopic>> fetchTopicsForEvent(int examId) async {
-    final dbClient = await DatabaseService.db;
-    final List<Map<String, dynamic>> maps = await dbClient.query(
-      'revision_topics',
-      where: 'exam_id = ?',
-      whereArgs: [examId],
-    );
-    return List.generate(maps.length, (i) => RevisionTopic.fromMap(maps[i]));
-  }
-
-  /// Adds a parent revision topic under a specific exam
-  Future<int> createTopic(RevisionTopic topic) async {
-    final dbClient = await DatabaseService.db;
-    return await dbClient.insert('revision_topics', topic.toMap());
-  }
-
-  /// Deletes an individual revision topic item
-  Future<void> deleteTopic(int topicId) async {
-    final dbClient = await DatabaseService.db;
-    await dbClient.delete(
-      'revision_topics',
-      where: 'id = ?',
-      whereArgs: [topicId],
-    );
-  }
-
-  /// Updates the text/title of an individual revision topic
-  Future<void> updateTopicName(int topicId, String newName) async {
-    final dbClient = await DatabaseService.db;
-    await dbClient.update(
-      'revision_topics',
-      {'name': newName},
-      where: 'id = ?',
-      whereArgs: [topicId],
-    );
-  }
-
-  /// Updates the completion status of an individual revision topic
-  Future<void> updateTopicCompletionStatus(int topicId, bool isCompleted) async {
-    final dbClient = await DatabaseService.db;
-    await dbClient.update(
-      'revision_topics',
-      {'is_completed': isCompleted ? 1 : 0},
-      where: 'id = ?',
-      whereArgs: [topicId],
-    );
-  }
-
-  /// Deletes an event and its associated cascading data
+  /// Deletes
   Future<int> deleteEvent(int examId) async {
     final dbClient = await DatabaseService.db;
+
+    // Cancel the notification alarm first
+    await FirebaseServices.cancelReminder(examId);
 
     return await dbClient.transaction((txn) async {
       await txn.rawDelete('''
@@ -191,14 +116,12 @@ class EventPlannerController extends GetxController {
         WHERE topic_id IN (SELECT id FROM revision_topics WHERE exam_id = ?)
       ''', [examId]);
 
-      // Delete main topic modules
       await txn.delete(
         'revision_topics',
         where: 'exam_id = ?',
         whereArgs: [examId],
       );
 
-      // Finally, delete the root exam record
       return await txn.delete(
         'exams',
         where: 'id = ?',
@@ -207,7 +130,7 @@ class EventPlannerController extends GetxController {
     });
   }
 
-  // Calculates the offset between the event date and the reminder date in days, returning a user-friendly string.
+  // Converts event/reminder date difference into a localized string.
   String reminderConvertFromDateTime({
     required String eventDateStr,
     required String? reminderDateStr,
@@ -218,15 +141,12 @@ class EventPlannerController extends GetxController {
     }
 
     try {
-      // Clean and parse strings safely
       final parsedEvent = DateTime.parse(eventDateStr.trim());
       final parsedReminder = DateTime.parse(reminderDateStr.trim());
 
-      // This strips any hidden timestamp or time zone offsets causing math errors
       final cleanEventDate = DateTime.utc(parsedEvent.year, parsedEvent.month, parsedEvent.day);
       final cleanReminderDate = DateTime.utc(parsedReminder.year, parsedReminder.month, parsedReminder.day);
 
-      //Calculate the true calendar day difference
       final differenceInDays = cleanEventDate.difference(cleanReminderDate).inDays;
 
       if (differenceInDays == 0) {
@@ -239,5 +159,52 @@ class EventPlannerController extends GetxController {
     }
 
     return fallbackReminderTime;
+  }
+
+  /// get topic
+  Future<List<RevisionTopic>> fetchTopicsForEvent(int examId) async {
+    final dbClient = await DatabaseService.db;
+    final List<Map<String, dynamic>> maps = await dbClient.query(
+      'revision_topics',
+      where: 'exam_id = ?',
+      whereArgs: [examId],
+    );
+    return List.generate(maps.length, (i) => RevisionTopic.fromMap(maps[i]));
+  }
+
+  /// Add topic
+  Future<int> createTopic(RevisionTopic topic) async {
+    final dbClient = await DatabaseService.db;
+    return await dbClient.insert('revision_topics', topic.toMap());
+  }
+
+  /// Deletes topic
+  Future<void> deleteTopic(int topicId) async {
+    final dbClient = await DatabaseService.db;
+    await dbClient.delete(
+      'revision_topics',
+      where: 'id = ?',
+      whereArgs: [topicId],
+    );
+  }
+
+  Future<void> updateTopicName(int topicId, String newName) async {
+    final dbClient = await DatabaseService.db;
+    await dbClient.update(
+      'revision_topics',
+      {'name': newName},
+      where: 'id = ?',
+      whereArgs: [topicId],
+    );
+  }
+
+  Future<void> updateTopicCompletionStatus(int topicId, bool isCompleted) async {
+    final dbClient = await DatabaseService.db;
+    await dbClient.update(
+      'revision_topics',
+      {'is_completed': isCompleted ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [topicId],
+    );
   }
 }

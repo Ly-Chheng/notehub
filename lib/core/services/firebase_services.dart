@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:project_structure/main.dart';
-import 'package:project_structure/views/home/home_screen.dart';
+// import 'package:project_structure/main.dart';
+// import 'package:project_structure/views/home/home_screen.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class FirebaseServices {
@@ -90,52 +90,133 @@ class FirebaseServices {
   //     default:
   //   }
   // }
-  // ! Handle messages click when active app
-  void onDidReceiveNotificationResponse(
-    NotificationResponse notificationResponse,
-  ) async {
+
+  //! show messages when active app
+  // Future<void> configureMessaging() async {
+  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+  //     if (message.notification != null) {
+  //       _showNotification(message);
+  //     }
+  //   });
+
+  //   // Handle messages click when minimised app
+  //   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+  //     final data = message.data;
+
+  //     debugPrint('-----onMessageOpenedApp: $data');
+  //     if (message.notification != null) {
+  //       navigatorKey.currentState?.push(
+  //         MaterialPageRoute(
+  //           builder: (context) => const MyHomePage(),
+  //         ),
+  //       );
+  //     }
+  //   });
+  // }
+
+  // ! FIXED: Handle local notification clicks (App is in Foreground/Active)
+  void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
     switch (notificationResponse.notificationResponseType) {
       case NotificationResponseType.selectedNotification:
-        debugPrint("-----Active Click-----");
-        if (notificationResponse.payload != null) {
-          try {
-            FirebaseMessaging.onMessageOpenedApp.listen((message) {
-              Get.offAllNamed('/mainHome', arguments: {
-                'tab': 1,
-                'focusTab': 1,
-              });
-            });
-          } catch (error) {
-            debugPrint('-----Notification payload error: $error');
-          }
+        debugPrint("-----Active Click (Local Notification)-----");
+        try {
+          // Navigate immediately using GetX instead of listening to a stream
+          Get.offAllNamed('/mainHome', arguments: {
+            'tab': 1,
+            'focusTab': 1,
+          });
+        } catch (error) {
+          debugPrint('-----Notification payload error: $error');
         }
         break;
       default:
+        break;
     }
   }
 
-  //! show messages when active app
+  // ! CONFIGURING FCM LISTENERS
   Future<void> configureMessaging() async {
+    // 1. Foreground messages (Show local notification)
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
       if (message.notification != null) {
         _showNotification(message);
       }
     });
 
-    // Handle messages click when minimised app
+    // 2. FIXED: Handle FCM click when app is in Background (Minimised)
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-      final data = message.data;
+      debugPrint('-----onMessageOpenedApp (Clicked from background): ${message.data}');
 
-      debugPrint('-----onMessageOpenedApp: $data');
-      if (message.notification != null) {
-        navigatorKey.currentState?.push(
-          MaterialPageRoute(
-            builder: (context) => const MyHomePage(),
-          ),
-        );
-      }
+      // Kept consistent with your GetX routing choice
+      Get.offAllNamed('/mainHome', arguments: {
+        'tab': 1,
+        'focusTab': 1,
+      });
     });
+
+    // 3. OPTIONAL: Handle FCM click when app was completely TERMINATED
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      debugPrint('-----App opened from Terminated State via Notification');
+      // Delay slightly if GetX routing needs the widget tree to finish mounting
+      Future.delayed(const Duration(milliseconds: 500), () {
+        Get.offAllNamed('/mainHome', arguments: {
+          'tab': 1,
+          'focusTab': 1,
+        });
+      });
+    }
   }
+
+  // // ! Handle messages click when app is active (Foreground Local Notification Click)
+  // void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
+  //   switch (notificationResponse.notificationResponseType) {
+  //     case NotificationResponseType.selectedNotification:
+  //       debugPrint("-----Active Click (Local Notification)-----");
+  //       try {
+  //         // Instantly routes over your stack to your '/event' page
+  //         Get.toNamed('/event', arguments: {
+  //           'tab': 0, // Defaulting to 0 (Upcoming). Pass 1 for Completed.
+  //         });
+  //       } catch (error) {
+  //         debugPrint('-----Notification payload error: $error');
+  //       }
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // }
+
+  // // ! Configure Messaging & Handle Background / Terminated Clicks
+  // Future<void> configureMessaging() async {
+  //   // 1. App is in Foreground: Listen for notification incoming events
+  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+  //     if (message.notification != null) {
+  //       _showNotification(message);
+  //     }
+  //   });
+
+  //   // 2. App is in Background: Handle click on system tray notification tray
+  //   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+  //     debugPrint('-----onMessageOpenedApp (Clicked from background): ${message.data}');
+
+  //     Get.toNamed('/event', arguments: {
+  //       'tab': 0,
+  //     });
+  //   });
+
+  //   // 3. App is Terminated: Handle notification launch click from dead state
+  //   RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  //   if (initialMessage != null) {
+  //     debugPrint('-----App launched from completely Terminated State via Notification');
+  //     // Tiny delay allows GetX routing engine to wake up with the widget tree
+  //     Future.delayed(const Duration(milliseconds: 350), () {
+  //       Get.toNamed('/event', arguments: {
+  //         'tab': 0,
+  //       });
+  //     });
+  //   }
+  // }
 
   void _showNotification(RemoteMessage message) {
     AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(

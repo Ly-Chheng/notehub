@@ -204,10 +204,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isSelected ? eventColors[selectedColorIndex].withValues(alpha: 0.15) : AppColor().white,
+                    color: isSelected
+                        ? eventColors[selectedColorIndex].withValues(alpha: 0.15)
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(context).cardColor // Dark mode unselected background
+                            : AppColor().white),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: isSelected ? eventColors[selectedColorIndex] : const Color(0xffE8E8EE),
+                      color: isSelected ? eventColors[selectedColorIndex] : (Theme.of(context).brightness == Brightness.dark ? const Color(0xff3A3A3C) : const Color(0xffE8E8EE)),
                       width: 2,
                     ),
                   ),
@@ -379,6 +383,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 ),
               ),
             ),
+
             const SizedBox(height: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -594,17 +599,27 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
                 // Guard rails
                 if (reminderDateTime.isBefore(now)) {
-                  AppSnackbar.showError(
+                  // AppSnackbar.showError(
+                  //   title: "invalid_reminder".tr,
+                  //   message: "reminder_cannot_be_in_past".tr,
+                  // );
+                  showConfirmDialog(
+                    context: context,
                     title: "invalid_reminder".tr,
-                    message: "reminder_cannot_be_in_past".tr,
+                    subTitle: "reminder_cannot_be_in_past".tr,
                   );
                   return;
                 }
 
                 if (reminderDateTime.isAfter(eventDateTime)) {
-                  AppSnackbar.showError(
+                  // AppSnackbar.showError(
+                  //   title: "invalid_reminder".tr,
+                  //   message: "reminder_cannot_be_after_event".tr,
+                  // );
+                  showConfirmDialog(
+                    context: context,
                     title: "invalid_reminder".tr,
-                    message: "reminder_cannot_be_after_event".tr,
+                    subTitle: "reminder_cannot_be_after_event".tr,
                   );
                   return;
                 }
@@ -644,7 +659,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
             //   text: "Test Notification System".tr,
             //   onPressed: () async {
             //     if (_titleController.text.trim().isEmpty) {
-            //       _titleController.text = "🚀 Genuine Channel Test";
+            //       _titleController.text = " Test";
             //     }
 
             //     // Forces the scheduled background reminder to fire 5 seconds from now
@@ -681,11 +696,11 @@ class _AddEventScreenState extends State<AddEventScreen> {
             //     }
 
             //     // 2. Triggers your real instant notification using the proper channel configuration
-            //     await FirebaseServices.testReminderNotification(
-            //       id: 8888, // Separate test ID so it doesn't overwrite your scheduled item
-            //       title: "🚀 Test Scheduled Successfully",
-            //       body: "Minimize your app now! The scheduled reminder fires in 5 seconds.",
-            //     );
+            //     // await FirebaseServices.testReminderNotification(
+            //     //   id: 8888, // Separate test ID so it doesn't overwrite your scheduled item
+            //     //   title: "🚀 Test Scheduled Successfully",
+            //     //   body: "Minimize your app now! The scheduled reminder fires in 5 seconds.",
+            //     // );
 
             //     Get.back(result: true);
             //   },

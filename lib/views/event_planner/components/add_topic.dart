@@ -24,6 +24,7 @@ void addTopic(
 
   ConfirmBottomSheet.show(
     context: context,
+    isFloating: true,
     title: isEditing ? "edit".tr : "add_topic".tr,
     confirmText: isEditing ? "save".tr : "add_topic".tr,
     showTopCancel: true,
@@ -39,7 +40,7 @@ void addTopic(
         ),
         const SizedBox(height: 24),
         CustomButton(
-          text: isEditing ? "save".tr : "add_topic".tr,
+          text: isEditing ? "save".tr : "save".tr,
           backgroundColor: AppColor().primaryColor,
           onPressed: () async {
             final textVal = nameController.text.trim();
@@ -65,7 +66,7 @@ void addTopic(
               showConfirmDialog(
                 context: context,
                 title: "error".tr,
-                subTitle: "Please fill out the Topic Name".tr,
+                subTitle: "please_fill_out_the_topic_name".tr,
                 confirmText: "ok".tr,
                 onConfirm: () {},
               );

@@ -35,7 +35,7 @@ Widget customNavigationBar({
       ),
       CurvedNavigationBarItem(
         child: Icon(
-          currentIndex == 2 ? Icons.date_range : Icons.date_range_sharp,
+          currentIndex == 2 ? Icons.date_range : Icons.date_range,
           size: context.isPhone ? 25 : 30,
           color: currentIndex == 2 ? AppColor().white : AppColor().gray,
         ),

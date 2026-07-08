@@ -97,6 +97,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
   void _showActionBottomSheet(BuildContext context, EventModel event) {
     ConfirmBottomSheet.show(
       context: context,
+      isFloating: true,
       title: "event".tr,
       content: SafeArea(
         child: Wrap(

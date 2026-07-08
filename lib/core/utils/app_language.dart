@@ -332,7 +332,6 @@ class AppTranslations extends Translations {
           'edit_event': 'Edit Event',
           'please_provide_exam_title': 'Please provide an Exam Title',
           'no_checklist_items': 'No checklist items added.',
-          'no_tracking_modules': 'No tracking modules added yet.',
           'revision_checklist': 'Revision Checklist',
           'add_revision_topic': 'Add Revision Topic',
           'topic_name': 'Topic Name',
@@ -351,6 +350,8 @@ class AppTranslations extends Translations {
           'invalid_reminder': 'Invalid Reminder',
           'reminder_cannot_be_in_past': 'The reminder time cannot be in the past.',
           'reminder_cannot_be_after_event': 'The reminder time cannot be after the event time.',
+          'please_fill_out_the_topic_name': 'Please fill out the Topic Name',
+          'same_day': 'same day',
         },
         'km_KM': {
           // General
@@ -678,7 +679,6 @@ class AppTranslations extends Translations {
           'event_title': 'ចំណងជើងព្រឹត្តិការណ៍',
           'please_provide_exam_title': 'សូមបញ្ចូលចំណងជើងការប្រឡង',
           'no_checklist_items': 'មិនទាន់មានបញ្ជីផ្ទៀងផ្ទាត់ត្រូវបានបន្ថែមទេ។',
-          'no_tracking_modules': 'មិនទាន់មានម៉ូឌុលតាមដានត្រូវបានបន្ថែមទេ។',
           'revision_checklist': 'បញ្ជីផ្ទៀងផ្ទាត់ការរំលឹកមេរៀន',
           'add_revision_topic': 'បន្ថែមប្រធានបទរំលឹកមេរៀន',
           'topic_name': 'ឈ្មោះប្រធានបទ',
@@ -697,6 +697,8 @@ class AppTranslations extends Translations {
           'invalid_reminder': 'ការរំលឹកមិនត្រឹមត្រូវ',
           'reminder_cannot_be_in_past': 'ពេលវេលារំលឹកមិនអាចស្ថិតនៅក្នុងអតីតកាលបានទេ។',
           'reminder_cannot_be_after_event': 'ពេលវេលារំលឹកមិនអាចនៅក្រោយពេលវេលាព្រឹត្តិការណ៍បានទេ។',
+          'please_fill_out_the_topic_name': 'សូមបំពេញឈ្មោះប្រធានបទ',
+          'same_day': 'ថ្ងៃដដែល',
         },
       };
 }

@@ -35,9 +35,9 @@ class ConfirmBottomSheet {
         return SafeArea(
           child: Padding(
             padding: EdgeInsets.only(
-              left: isFloating ? 16 : 0,
-              right: isFloating ? 16 : 0,
-              bottom: isFloating ? 16 : 0,
+              left: isFloating ? 13 : 0,
+              right: isFloating ? 13 : 0,
+              bottom: isFloating ? 13 : 0,
             ),
             child: Container(
               decoration: isFloating
@@ -46,7 +46,7 @@ class ConfirmBottomSheet {
                       borderRadius: BorderRadius.circular(20),
                     )
                   : const BoxDecoration(),
-              padding: EdgeInsets.all(isFloating ? 24 : 20),
+              padding: EdgeInsets.all(isFloating ? 15 : 15),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
