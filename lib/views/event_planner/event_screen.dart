@@ -27,13 +27,11 @@ class _EventScreenState extends State<EventScreen> with SingleTickerProviderStat
   void initState() {
     super.initState();
 
-    // 1. Safely extract argument settings passed via Get.toNamed() Routing
     int initialTab = 0;
     if (Get.arguments != null && Get.arguments is Map && Get.arguments['tab'] != null) {
       initialTab = Get.arguments['tab'];
     }
 
-    // 2. Initialize the tab controller utilizing the dynamically passed initialIndex profile
     _tabController = TabController(
       length: 2,
       vsync: this,

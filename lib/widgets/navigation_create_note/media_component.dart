@@ -1,11 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:project_structure/controllers/notes/media_controller.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
+import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_menu_item.dart.dart';
 import 'package:project_structure/widgets/app_snack_bar.dart';
 import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_sheet_header.dart';
@@ -16,134 +16,8 @@ void showMediaSheet({
   required Function(File mediaFile, String type) onMediaSelected,
   Function(String text)? onTextScanned,
 }) {
-  final ImagePicker picker = ImagePicker();
   final MediaController controller = Get.put(MediaController());
-
   final themeColor = Theme.of(context).cardColor;
-
-  Future<void> scanText() async {
-    final XFile? file = await picker.pickImage(source: ImageSource.camera);
-    Get.back();
-    if (file == null) return;
-
-    Get.dialog(
-      Center(child: CircularProgressIndicator(color: AppColor().primaryColor)),
-      barrierDismissible: false,
-    );
-
-    try {
-      final inputImage = InputImage.fromFilePath(file.path);
-
-      // Multiple recognizers
-      final recognizers = [
-        TextRecognizer(script: TextRecognitionScript.korean),
-        TextRecognizer(script: TextRecognitionScript.chinese),
-        TextRecognizer(script: TextRecognitionScript.japanese),
-        TextRecognizer(script: TextRecognitionScript.latin),
-      ];
-
-      String bestText = "";
-
-      for (final recognizer in recognizers) {
-        final result = await recognizer.processImage(inputImage);
-
-        // debugPrint(
-        //   "Detected (${recognizer.script.name}): ${result.text}",
-        // );
-
-        if (result.text.length > bestText.length) {
-          bestText = result.text;
-        }
-
-        await recognizer.close();
-      }
-
-      if (Get.isDialogOpen ?? false) Get.back();
-
-      debugPrint("Final OCR Result: $bestText");
-
-      if (bestText.trim().isNotEmpty && context.mounted) {
-        onTextScanned?.call(bestText);
-      } else {
-        AppSnackbar.showError(
-          title: "error".tr,
-          message: "no_text_detected_in_the_image".tr,
-        );
-      }
-    } catch (e) {
-      if (Get.isDialogOpen ?? false) Get.back();
-      debugPrint("OCR Error: $e");
-    }
-  }
-
-  Future<void> scanVoice(Function(String) onResult) async {
-    final SpeechToText speech = SpeechToText();
-
-    // Initialize
-    bool available = await speech.initialize(
-      onStatus: (status) => debugPrint('Speech status: $status'),
-      onError: (error) => debugPrint('Speech error: $error'),
-    );
-    if (available) {
-      Get.back();
-      speech.listen(
-        onResult: (result) {
-          if (result.finalResult) {
-            if (Get.isDialogOpen == true) {
-              Get.back();
-            }
-            onResult(result.recognizedWords);
-          }
-        },
-      );
-
-      Get.dialog(
-        Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-          backgroundColor: themeColor,
-          child: StatefulBuilder(
-            builder: (context, setDialogState) {
-              final controller = AnimationController(
-                vsync: Navigator.of(context),
-                duration: const Duration(milliseconds: 1000),
-              )..repeat(reverse: true);
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 30, horizontal: 20),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ScaleTransition(
-                      scale: Tween(begin: 0.9, end: 1.1).animate(
-                        CurvedAnimation(parent: controller, curve: Curves.easeInOut),
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: AppColor().red.withValues(alpha: 0.1),
-                        ),
-                        child: Icon(Icons.mic_rounded, size: 64, color: AppColor().red),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    Text("listening".tr, style: text18(context)),
-                    const SizedBox(height: 10),
-                    Text("speak_now".tr, style: text14(context)),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-        barrierDismissible: true,
-      ).then((_) {
-        speech.stop();
-      });
-    } else {
-      AppSnackbar.showError(title: "error".tr, message: "speech_not_available".tr);
-    }
-  }
 
   showModalBottomSheet(
     context: context,
@@ -201,20 +75,28 @@ void showMediaSheet({
               icon: Icons.document_scanner_outlined,
               color: AppColor().primaryColor,
               title: "scan_text".tr,
-              onTap: scanText,
+              onTap: () => controller.scanText(
+                context: context,
+                onTextScanned: (text) {
+                  if (onTextScanned != null) {
+                    onTextScanned(text);
+                  }
+                },
+              ),
             ),
             divider(context),
-            buildActionItem(
-              context,
-              icon: Icons.mic_none,
-              color: AppColor().primaryColor,
-              title: "voice_note".tr,
-              onTap: () => scanVoice((text) {
-                if (onTextScanned != null) {
-                  onTextScanned(text);
-                }
-              }),
-            ),
+            buildActionItem(context,
+                icon: Icons.mic_none,
+                color: AppColor().primaryColor,
+                title: "voice_note".tr,
+                onTap: () => controller.startVoiceScan(
+                      onResult: (text) => onTextScanned?.call(text),
+                      dialogBuilder: (speechEngine) => VoiceListeningDialog(
+                        speech: speechEngine,
+                        backgroundColor: themeColor,
+                        onResult: (text) => onTextScanned?.call(text),
+                      ),
+                    )),
             const SizedBox(height: 10),
           ],
         ),
@@ -231,4 +113,175 @@ Widget divider(BuildContext context) {
       color: Colors.grey.withValues(alpha: 0.08),
     ),
   );
+}
+
+class VoiceListeningDialog extends StatefulWidget {
+  final SpeechToText speech;
+  final Function(String) onResult;
+  final Color backgroundColor;
+
+  const VoiceListeningDialog({
+    super.key,
+    required this.speech,
+    required this.onResult,
+    required this.backgroundColor,
+  });
+
+  @override
+  State<VoiceListeningDialog> createState() => _VoiceListeningDialogState();
+}
+
+class _VoiceListeningDialogState extends State<VoiceListeningDialog> with SingleTickerProviderStateMixin {
+  late final AnimationController _animationController;
+  bool _isListening = false;
+  String _recognizedWords = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    );
+
+    // Automatically start listening when the dialog opens
+    _startListening();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  void _startListening() async {
+    setState(() {
+      _isListening = true;
+      _recognizedWords = "";
+    });
+    _animationController.repeat(reverse: true);
+
+    await widget.speech.listen(
+      onResult: (result) {
+        setState(() {
+          _recognizedWords = result.recognizedWords;
+        });
+
+        // If the plugin naturally detects the user stopped speaking
+        if (result.finalResult) {
+          _finalizeSpeech();
+        }
+      },
+    );
+  }
+
+  void _stopListening() async {
+    await widget.speech.stop();
+    _finalizeSpeech();
+  }
+
+  void _finalizeSpeech() {
+    if (!mounted) return;
+    _animationController.stop();
+    setState(() => _isListening = false);
+
+    if (_recognizedWords.trim().isNotEmpty) {
+      widget.onResult(_recognizedWords);
+    } else {
+      AppSnackbar.showError(
+        title: "error".tr,
+        message: "no_text_detected_in_the_image".tr,
+      );
+    }
+    Get.back(); // Close dialog on success/stop
+  }
+
+  void _cancelListening() async {
+    await widget.speech.cancel();
+    Get.back();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      backgroundColor: widget.backgroundColor,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Animated Mic Button (Acts as Start/Pause toggle)
+            GestureDetector(
+              onTap: _isListening ? _stopListening : _startListening,
+              child: ScaleTransition(
+                scale: _isListening
+                    ? Tween(begin: 0.9, end: 1.1).animate(
+                        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+                      )
+                    : const AlwaysStoppedAnimation(1.0),
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _isListening ? AppColor().primaryColor.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
+                  ),
+                  child: Icon(_isListening ? Icons.mic_rounded : Icons.mic_off_rounded, size: 54, color: _isListening ? AppColor().primaryColor : Colors.grey),
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(_isListening ? "listening".tr : "listening".tr, style: text18(context)),
+            const SizedBox(height: 8),
+            Text(
+              _recognizedWords.isNotEmpty ? _recognizedWords : (_isListening ? "speak_now".tr : "paused_speak".tr),
+              style: text14(context),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+
+            // Action Buttons: Start & Stop
+            Row(
+              children: [
+                // Expanded(
+                //   child: CustomButton(
+                //     text: "start".tr,
+                //     onPressed: _isListening ? null : _startListening,
+                //     backgroundColor: _isListening ? AppColor().primaryColor : AppColor().green,
+                //     textColor: _isListening ? Colors.black : AppColor().white,
+                //   ),
+                // ),
+                // const SizedBox(width: 12),
+                // Expanded(
+                //     child: CustomButton(
+                //   text: "stop".tr,
+                //   onPressed: _isListening ? _stopListening : null,
+                //   backgroundColor: AppColor().red,
+                //   textColor: _isListening ? Colors.white : AppColor().black,
+                // )),
+                Expanded(
+                  child: CustomButton(
+                    text: "cancel".tr,
+                    onPressed: _cancelListening,
+                    backgroundColor: Colors.transparent,
+                    textColor: Colors.black,
+                    borderColor: Colors.grey[200],
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: CustomButton(
+                    text: _isListening ? "stop".tr : "resume".tr,
+                    onPressed: _isListening ? _stopListening : _startListening,
+                    backgroundColor: _isListening ? AppColor().red : AppColor().primaryColor,
+                    textColor: Colors.white,
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
 }

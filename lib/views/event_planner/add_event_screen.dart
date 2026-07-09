@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/controllers/event_planner/event_controller.dart';
-import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 import 'package:project_structure/core/utils/app_fonts.dart';
 import 'package:project_structure/core/utils/app_layout.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
-import 'package:project_structure/widgets/app_snack_bar.dart';
 import 'package:project_structure/widgets/custom_button.dart';
 import 'package:project_structure/widgets/custom_appbar.dart';
 import 'package:project_structure/widgets/custom_date_picker.dart';
@@ -366,7 +364,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     false,
                     null,
                     fillColor: Theme.of(context).cardColor,
-                    // controller: _iconController,
                     controller: TextEditingController(),
                     suffixIcon: Padding(
                       padding: const EdgeInsets.all(12.0),
@@ -522,47 +519,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
               ],
             ),
             const SizedBox(height: 40),
-            // CustomButton(
-            //   text: "save".tr,
-            //   onPressed: () async {
-            //     if (_titleController.text.trim().isNotEmpty) {
-            //       final dateString = _formatDate(_selectedDate);
-            //       final timeString = _selectedTime.format(context);
-            //       final reminderDateString = _formatDate(_reminderDate);
-            //       final reminderTimeString = _reminderTime.format(context);
-
-            //       final examData = EventModel(
-            //         id: widget.event?.id,
-            //         title: _titleController.text.trim(),
-            //         date: dateString,
-            //         time: timeString,
-            //         location: _locationController.text.trim().isEmpty ? "".tr : _locationController.text.trim(),
-            //         reminderTime: "$reminderDateString $reminderTimeString", // safely constructed fallback string
-            //         isCompleted: widget.event?.isCompleted ?? false,
-            //         color: eventColors[selectedColorIndex].value,
-            //         icon: _iconController.text.trim(),
-            //         reminderDate: reminderDateString,
-            //         reminderTimer: reminderTimeString,
-            //       );
-
-            //       if (_isEditing) {
-            //         await _controller.updateEvent(examData);
-            //       } else {
-            //         await _controller.createEvent(examData);
-            //       }
-
-            //       Get.back(result: true);
-            //     } else {
-            //       showConfirmDialog(
-            //         context: context,
-            //         title: "error".tr,
-            //         subTitle: "please_provide_exam_title".tr,
-            //         confirmText: "ok".tr,
-            //         onConfirm: () {},
-            //       );
-            //     }
-            //   },
-            // ),
 
             CustomButton(
               text: "save".tr,
@@ -599,10 +555,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
                 // Guard rails
                 if (reminderDateTime.isBefore(now)) {
-                  // AppSnackbar.showError(
-                  //   title: "invalid_reminder".tr,
-                  //   message: "reminder_cannot_be_in_past".tr,
-                  // );
                   showConfirmDialog(
                     context: context,
                     title: "invalid_reminder".tr,
@@ -612,10 +564,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 }
 
                 if (reminderDateTime.isAfter(eventDateTime)) {
-                  // AppSnackbar.showError(
-                  //   title: "invalid_reminder".tr,
-                  //   message: "reminder_cannot_be_after_event".tr,
-                  // );
                   showConfirmDialog(
                     context: context,
                     title: "invalid_reminder".tr,
