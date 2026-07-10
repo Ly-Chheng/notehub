@@ -30,9 +30,6 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to the camera to take photos for your notes.</string>
 
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app needs access to the microphone if you record videos.</string>
-
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs access to the photo library to select images for your notes.</string>
 	
