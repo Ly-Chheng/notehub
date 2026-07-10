@@ -234,7 +234,7 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
             Text(_isListening ? "listening".tr : "listening".tr, style: text18(context)),
             const SizedBox(height: 8),
             Text(
-              _recognizedWords.isNotEmpty ? _recognizedWords : (_isListening ? "speak_now".tr : "paused_speak".tr),
+              _isListening ? "speak_now".tr : "paused_speak".tr,
               style: text14(context),
               textAlign: TextAlign.center,
             ),

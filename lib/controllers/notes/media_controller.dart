@@ -78,9 +78,7 @@ class MediaController extends GetxController {
   }) async {
     try {
       final XFile? file = await _picker.pickImage(source: ImageSource.camera);
-
-      if (Get.isBottomSheetOpen ?? false) Get.back();
-
+      Get.back();
       if (file == null) return;
 
       Get.dialog(
@@ -127,60 +125,6 @@ class MediaController extends GetxController {
       debugPrint("OCR Error: $e");
     }
   }
-  // Future<void> scanText() async {
-  //   final XFile? file = await picker.pickImage(source: ImageSource.camera);
-  //   Get.back();
-  //   if (file == null) return;
-
-  //   Get.dialog(
-  //     Center(child: CircularProgressIndicator(color: AppColor().primaryColor)),
-  //     barrierDismissible: false,
-  //   );
-
-  //   try {
-  //     final inputImage = InputImage.fromFilePath(file.path);
-
-  //     // Multiple recognizers
-  //     final recognizers = [
-  //       TextRecognizer(script: TextRecognitionScript.korean),
-  //       TextRecognizer(script: TextRecognitionScript.chinese),
-  //       TextRecognizer(script: TextRecognitionScript.japanese),
-  //       TextRecognizer(script: TextRecognitionScript.latin),
-  //     ];
-
-  //     String bestText = "";
-
-  //     for (final recognizer in recognizers) {
-  //       final result = await recognizer.processImage(inputImage);
-
-  //       // debugPrint(
-  //       //   "Detected (${recognizer.script.name}): ${result.text}",
-  //       // );
-
-  //       if (result.text.length > bestText.length) {
-  //         bestText = result.text;
-  //       }
-
-  //       await recognizer.close();
-  //     }
-
-  //     if (Get.isDialogOpen ?? false) Get.back();
-
-  //     debugPrint("Final OCR Result: $bestText");
-
-  //     if (bestText.trim().isNotEmpty && context.mounted) {
-  //       onTextScanned?.call(bestText);
-  //     } else {
-  //       AppSnackbar.showError(
-  //         title: "error".tr,
-  //         message: "no_text_detected_in_the_image".tr,
-  //       );
-  //     }
-  //   } catch (e) {
-  //     if (Get.isDialogOpen ?? false) Get.back();
-  //     debugPrint("OCR Error: $e");
-  //   }
-  // }
 
   /// Initializes Speech Recognition engine and launches the customized UI window
   Future<void> startVoiceScan({

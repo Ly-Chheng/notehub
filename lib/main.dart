@@ -10,11 +10,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:project_structure/controllers/mores/font_size_controller.dart';
 import 'package:project_structure/core/utils/app_bindings.dart';
 import 'package:project_structure/core/database/database_service.dart';
-import 'package:project_structure/core/services/firebase_services.dart';
+// import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/core/services/themes_services.dart';
 import 'package:project_structure/core/utils/app_language.dart';
 import 'package:project_structure/core/functions/local_storage.dart';
-import 'package:project_structure/widgets/firebase_options.dart';
+// import 'package:project_structure/widgets/firebase_options.dart';
 import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/route.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -34,11 +34,11 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  await FirebaseServices().getInstance();
+  // FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  // await Firebase.initializeApp(
+  //   options: DefaultFirebaseOptions.currentPlatform,
+  // );
+  // await FirebaseServices().getInstance();
   await LocalStorage.init();
   await GetStorage.init();
   await dotenv.load(fileName: "assets/.env");
