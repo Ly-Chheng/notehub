@@ -19,6 +19,7 @@ import 'package:project_structure/models/focus_track/timer_model.dart';
 import 'package:project_structure/route.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
 
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -35,9 +36,13 @@ Future<void> main() async {
   ]);
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  // Initialize Firebase FIRST
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  //Initialize the rest of your services
   await FirebaseServices().getInstance();
   await LocalStorage.init();
   await GetStorage.init();
@@ -53,6 +58,8 @@ Future<void> main() async {
   await Hive.deleteFromDisk();
   await Hive.openBox<TimerModel>('timer_box');
   await Hive.openBox('create_timer_box');
+
+  tz.initializeTimeZones();
 
   runApp(const MyApp());
 }

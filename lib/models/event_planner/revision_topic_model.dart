@@ -1,6 +1,6 @@
 class RevisionTopic {
   final int? id;
-  final int examId;
+  final int eventId;
   final String name;
   final String notes;
   final String priority;
@@ -9,7 +9,7 @@ class RevisionTopic {
 
   RevisionTopic({
     this.id,
-    required this.examId,
+    required this.eventId,
     required this.name,
     required this.notes,
     required this.priority,
@@ -20,7 +20,7 @@ class RevisionTopic {
   factory RevisionTopic.fromMap(Map<String, dynamic> map) {
     return RevisionTopic(
       id: map['id'] as int?,
-      examId: map['exam_id'] as int,
+      eventId: map['event_id'] as int,
       name: map['name'] as String,
       notes: map['notes'] as String? ?? '',
       priority: map['priority'] as String? ?? 'Medium',
@@ -32,7 +32,7 @@ class RevisionTopic {
   Map<String, dynamic> toMap() {
     return {
       if (id != null) 'id': id,
-      'exam_id': examId,
+      'event_id': eventId,
       'name': name,
       'notes': notes,
       'priority': priority,

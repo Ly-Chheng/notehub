@@ -364,27 +364,29 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           _infoRow("timer".tr, widget.event.time, Icons.access_time_outlined),
           _divider(),
           _infoRow("reminder".tr, convertedReminder, Icons.notifications_none_outlined),
-          _divider(),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.notes_rounded, size: 22, color: AppColor().gray.withValues(alpha: 0.7)),
-                    const SizedBox(width: 14),
-                    Text("short_description".tr, style: text16(context).copyWith(color: AppColor().gray)),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  widget.event.location.isEmpty ? "No description available." : widget.event.location,
-                  style: fix16(context).copyWith(height: 1.4),
-                ),
-              ],
+          if (widget.event.location.isNotEmpty) ...[
+            _divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.notes_rounded, size: 22, color: AppColor().gray.withValues(alpha: 0.7)),
+                      const SizedBox(width: 14),
+                      Text("short_description".tr, style: text16(context).copyWith(color: AppColor().gray)),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    widget.event.location,
+                    style: fix16(context).copyWith(height: 1.4),
+                  ),
+                ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );

@@ -13,15 +13,37 @@ class FocusTrackScreen extends StatefulWidget {
   State<FocusTrackScreen> createState() => _FocusTrackScreenState();
 }
 
-class _FocusTrackScreenState extends State<FocusTrackScreen> {
+class _FocusTrackScreenState extends State<FocusTrackScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   int selectedIndex = 0;
 
   final List<Widget> screens = [
     StopwatchScreen(),
-    TimerList(),
+    const TimerList(),
   ];
 
+  @override
+  void initState() {
+    super.initState();
+
+    _tabController = TabController(length: 2, vsync: this);
+
+    _tabController.addListener(() {
+      if (!_tabController.indexIsChanging) {
+        _handleToggle(_tabController.index);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   void _handleToggle(int index) {
+    if (selectedIndex == index) return;
+
     setState(() {
       selectedIndex = index;
     });
@@ -38,64 +60,62 @@ class _FocusTrackScreenState extends State<FocusTrackScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: _buildToggleSwitch(context),
+            FocusToggleSwitch(tabController: _tabController),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: screens,
+              ),
             ),
-            Expanded(child: screens[selectedIndex]),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildToggleSwitch(BuildContext context) {
-    double switchWidth = MediaQuery.of(context).size.width - 40;
+// separate StatelessWidget to reduce rebuilds and improve performance.
+class FocusToggleSwitch extends StatelessWidget {
+  final TabController tabController;
+
+  const FocusToggleSwitch({
+    super.key,
+    required this.tabController,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      height: context.isPhone ? 55 : 60,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-       color: Theme.of(Get.context!).cardColor,
-        borderRadius: BorderRadius.circular(context.isPhone ? 25 : 45),
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(30),
       ),
-      child: Stack(
-        children: [
-          AnimatedAlign(
-            duration: const Duration(milliseconds: 300),
-            alignment: selectedIndex == 0 ? Alignment.centerLeft : Alignment.centerRight,
-            child: Container(
-              width: (switchWidth / 2) - 8,
-              margin: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                color: AppColor().primaryColor,
-                borderRadius: BorderRadius.circular(context.isPhone ? 50 : 40),
-              ),
+      child: TabBar(
+        controller: tabController,
+        dividerColor: Colors.transparent,
+        indicatorSize: TabBarIndicatorSize.tab,
+        overlayColor: WidgetStateProperty.all(Colors.transparent),
+        indicator: BoxDecoration(
+          color: AppColor().primaryColor,
+          borderRadius: BorderRadius.circular(context.isPhone ? 25 : 45),
+          boxShadow: [
+            BoxShadow(
+              color: AppColor().primaryColor.withValues(alpha: 0.3),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
             ),
-          ),
-          Row(
-            children: [
-              _toggleItem("stopwatch".tr, 0),
-              _toggleItem("timer".tr, 1),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _toggleItem(String label, int index) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _handleToggle(index),
-        child: Container(
-          alignment: Alignment.center,
-          color: Colors.transparent,
-          child: Text(
-            label,
-            style: text16(context).copyWith(
-              color: selectedIndex == index ? AppColor().white : AppColor().gray,
-            ),
-          ),
+          ],
         ),
+        labelColor: AppColor().white,
+        unselectedLabelColor: AppColor().gray,
+        labelStyle: text16(context),
+        unselectedLabelStyle: text16(context),
+        tabs: [
+          Tab(text: "stopwatch".tr),
+          Tab(text: "timer".tr),
+        ],
       ),
     );
   }

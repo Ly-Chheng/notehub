@@ -52,7 +52,7 @@ void addTopic(
                 await controller.updateTopicName(topicToEdit.id!, textVal);
               } else {
                 await controller.createTopic(RevisionTopic(
-                  examId: eventId,
+                  eventId: eventId,
                   name: textVal,
                   notes: '',
                   priority: '',

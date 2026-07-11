@@ -311,7 +311,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_formatDate(_selectedDate), style: fix16(context).copyWith(color: AppColor().gray)),
+                          Text(_formatDate(_selectedDate), style: fix16(context)),
                           Icon(Icons.date_range, color: AppColor().gray, size: 20),
                         ],
                       ),
@@ -337,7 +337,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_selectedTime.format(context), style: fix16(context).copyWith(color: AppColor().gray)),
+                          Text(_selectedTime.format(context), style: fix16(context)),
                           Icon(Icons.access_time, color: AppColor().gray, size: 24),
                         ],
                       ),
@@ -483,7 +483,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_formatDate(_reminderDate), style: fix16(context).copyWith(color: AppColor().gray)),
+                          Text(_formatDate(_reminderDate), style: fix16(context)),
                           Icon(Icons.date_range, color: AppColor().gray, size: 20),
                         ],
                       ),
@@ -509,7 +509,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(_reminderTime.format(context), style: fix16(context).copyWith(color: AppColor().gray)),
+                          Text(_reminderTime.format(context), style: fix16(context)),
                           Icon(Icons.access_time, color: AppColor().gray, size: 24),
                         ],
                       ),
@@ -579,7 +579,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 final reminderDateString = _formatDate(_reminderDate);
                 final reminderTimeString = "${_reminderTime.hour.toString().padLeft(2, '0')}:${_reminderTime.minute.toString().padLeft(2, '0')}:00";
 
-                final examData = EventModel(
+                final eventData = EventModel(
                   id: widget.event?.id,
                   title: _titleController.text.trim(),
                   date: dateString,
@@ -594,9 +594,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 );
                 Get.back(result: true);
                 if (_isEditing) {
-                  await _controller.updateEvent(examData);
+                  await _controller.updateEvent(eventData);
                 } else {
-                  await _controller.createEvent(examData);
+                  await _controller.createEvent(eventData);
                 }
 
                 Get.back(result: true);

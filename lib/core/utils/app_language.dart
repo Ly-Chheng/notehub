@@ -328,7 +328,7 @@ class AppTranslations extends Translations {
           'contact_website': 'Website',
           'copyright_footer': '© 2026 Quick Note App',
 
-          // Exams / Tabs
+          // Event / Tabs
           'event': 'Event',
           'upcoming': 'Upcoming',
           'completed': 'Completed',
@@ -681,7 +681,7 @@ class AppTranslations extends Translations {
           'contact_website': 'គេហទំព័រ',
           'copyright_footer': '© ២០២៦ កម្មវិធី Quick Note',
 
-          // Exams / Tabs
+          // Event / Tabs
           'event': 'ព្រឹត្តិការណ៍',
           'upcoming': 'ជិតមកដល់',
           'completed': 'បានបញ្ចប់',

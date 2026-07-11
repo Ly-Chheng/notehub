@@ -65,7 +65,7 @@ class DatabaseService {
         await db.insert('security', {'id': 1, 'master_password': ''});
 
         await db.execute('''
-          CREATE TABLE exams (
+          CREATE TABLE events (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
             date TEXT NOT NULL,            -- Format: YYYY-MM-DD
@@ -84,13 +84,13 @@ class DatabaseService {
         await db.execute('''
           CREATE TABLE revision_topics (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            exam_id INTEGER NOT NULL,
+            event_id INTEGER NOT NULL,
             name TEXT NOT NULL,
             notes TEXT,
             priority TEXT DEFAULT 'Medium',
             due_date TEXT,
             is_completed INTEGER DEFAULT 0, -- Added the missing comma here!
-            FOREIGN KEY (exam_id) REFERENCES exams (id) ON DELETE CASCADE
+            FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE
           )
         ''');
 
@@ -139,7 +139,7 @@ class DatabaseService {
         // Handle migration to version 7 seamlessly for existing users
         if (oldVersion < 7) {
           await db.execute('''
-            CREATE TABLE IF NOT EXISTS exams (
+            CREATE TABLE IF NOT EXISTS events (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
               title TEXT NOT NULL,
               date TEXT NOT NULL,
@@ -151,20 +151,20 @@ class DatabaseService {
           ''');
 
           // Check and add new schema fields to existing deployments safely
-          await _addColumnIfNotExists(db, 'exams', 'icon', "TEXT");
-          await _addColumnIfNotExists(db, 'exams', 'color', "INTEGER");
-          await _addColumnIfNotExists(db, 'exams', 'reminder_date', "TEXT");
-          await _addColumnIfNotExists(db, 'exams', 'reminder_timer', "TEXT");
+          await _addColumnIfNotExists(db, 'events', 'icon', "TEXT");
+          await _addColumnIfNotExists(db, 'events', 'color', "INTEGER");
+          await _addColumnIfNotExists(db, 'events', 'reminder_date', "TEXT");
+          await _addColumnIfNotExists(db, 'events', 'reminder_timer', "TEXT");
 
           await db.execute('''
             CREATE TABLE IF NOT EXISTS revision_topics (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
-              exam_id INTEGER NOT NULL,
+              event_id INTEGER NOT NULL,
               name TEXT NOT NULL,
               notes TEXT,
               priority TEXT DEFAULT 'Medium',
               due_date TEXT,
-              FOREIGN KEY (exam_id) REFERENCES exams (id) ON DELETE CASCADE
+              FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE
             )
           ''');
 

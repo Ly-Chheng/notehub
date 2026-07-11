@@ -14,11 +14,11 @@ class EventPlannerController extends GetxController {
     {'name': 'meeting', 'image': 'assets/images/meeting.png'},
   ];
 
-  DateTime? _parseReminderDateTime(EventModel exam) {
-    if (exam.reminderDate == null || exam.reminderTimer == null) return null;
+  DateTime? _parseReminderDateTime(EventModel event) {
+    if (event.reminderDate == null || event.reminderTimer == null) return null;
     try {
-      final datePart = exam.reminderDate!.trim();
-      final timePart = exam.reminderTimer!.trim();
+      final datePart = event.reminderDate!.trim();
+      final timePart = event.reminderTimer!.trim();
 
       // Directly stitches clean "YYYY-MM-DD" and "HH:mm:ss" strings safely
       return DateTime.parse("$datePart $timePart");
@@ -33,7 +33,7 @@ class EventPlannerController extends GetxController {
     try {
       final dbClient = await DatabaseService.db;
       final List<Map<String, dynamic>> maps = await dbClient.query(
-        'exams',
+        'events',
         where: 'is_completed = ?',
         whereArgs: [completed ? 1 : 0],
         orderBy: 'date ASC',
@@ -45,16 +45,16 @@ class EventPlannerController extends GetxController {
   }
 
   /// Add
-  Future<int> createEvent(EventModel exam) async {
+  Future<int> createEvent(EventModel event) async {
     final dbClient = await DatabaseService.db;
-    final int insertedId = await dbClient.insert('exams', exam.toMap());
+    final int insertedId = await dbClient.insert('events', event.toMap());
 
-    final reminderTime = _parseReminderDateTime(exam);
-    if (reminderTime != null && !exam.isCompleted) {
+    final reminderTime = _parseReminderDateTime(event);
+    if (reminderTime != null && !event.isCompleted) {
       await FirebaseServices.eventReminderNotification(
         id: insertedId,
-        title: exam.title,
-        body: "Reminder: Your event is scheduled for ${exam.date} at ${exam.time}",
+        title: event.title,
+        body: "Reminder: Your event is scheduled for ${event.date} at ${event.time}",
         remiderDateTime: reminderTime,
       );
     }
@@ -62,24 +62,24 @@ class EventPlannerController extends GetxController {
   }
 
   /// Updates event + Syncs System Alarms
-  Future<int> updateEvent(EventModel exam) async {
+  Future<int> updateEvent(EventModel event) async {
     final dbClient = await DatabaseService.db;
     final int result = await dbClient.update(
-      'exams',
-      exam.toMap(),
+      'events',
+      event.toMap(),
       where: 'id = ?',
-      whereArgs: [exam.id],
+      whereArgs: [event.id],
     );
 
-    if (exam.id != null) {
-      await FirebaseServices.cancelReminder(exam.id!);
+    if (event.id != null) {
+      await FirebaseServices.cancelReminder(event.id!);
 
-      final reminderTime = _parseReminderDateTime(exam);
-      if (reminderTime != null && !exam.isCompleted) {
+      final reminderTime = _parseReminderDateTime(event);
+      if (reminderTime != null && !event.isCompleted) {
         await FirebaseServices.eventReminderNotification(
-          id: exam.id!,
-          title: exam.title,
-          body: "Reminder: Your event is scheduled for ${exam.date} at ${exam.time}",
+          id: event.id!,
+          title: event.title,
+          body: "Reminder: Your event is scheduled for ${event.date} at ${event.time}",
           remiderDateTime: reminderTime,
         );
       }
@@ -88,44 +88,44 @@ class EventPlannerController extends GetxController {
   }
 
   /// Update
-  Future<void> updateEventCompletionStatus(int examId, bool isCompleted) async {
+  Future<void> updateEventCompletionStatus(int eventId, bool isCompleted) async {
     final dbClient = await DatabaseService.db;
     await dbClient.update(
-      'exams',
+      'events',
       {'is_completed': isCompleted ? 1 : 0},
       where: 'id = ?',
-      whereArgs: [examId],
+      whereArgs: [eventId],
     );
 
     // If marked complete, we must drop any pending notification alarms
     if (isCompleted) {
-      await FirebaseServices.cancelReminder(examId);
+      await FirebaseServices.cancelReminder(eventId);
     }
   }
 
   /// Deletes
-  Future<int> deleteEvent(int examId) async {
+  Future<int> deleteEvent(int eventId) async {
     final dbClient = await DatabaseService.db;
 
     // Cancel the notification alarm first
-    await FirebaseServices.cancelReminder(examId);
+    await FirebaseServices.cancelReminder(eventId);
 
     return await dbClient.transaction((txn) async {
       await txn.rawDelete('''
         DELETE FROM revision_subtopics 
-        WHERE topic_id IN (SELECT id FROM revision_topics WHERE exam_id = ?)
-      ''', [examId]);
+        WHERE topic_id IN (SELECT id FROM revision_topics WHERE event_id = ?)
+      ''', [eventId]);
 
       await txn.delete(
         'revision_topics',
-        where: 'exam_id = ?',
-        whereArgs: [examId],
+        where: 'event_id = ?',
+        whereArgs: [eventId],
       );
 
       return await txn.delete(
-        'exams',
+        'events',
         where: 'id = ?',
-        whereArgs: [examId],
+        whereArgs: [eventId],
       );
     });
   }
@@ -162,12 +162,12 @@ class EventPlannerController extends GetxController {
   }
 
   /// get topic
-  Future<List<RevisionTopic>> fetchTopicsForEvent(int examId) async {
+  Future<List<RevisionTopic>> fetchTopicsForEvent(int eventId) async {
     final dbClient = await DatabaseService.db;
     final List<Map<String, dynamic>> maps = await dbClient.query(
       'revision_topics',
-      where: 'exam_id = ?',
-      whereArgs: [examId],
+      where: 'event_id = ?',
+      whereArgs: [eventId],
     );
     return List.generate(maps.length, (i) => RevisionTopic.fromMap(maps[i]));
   }
