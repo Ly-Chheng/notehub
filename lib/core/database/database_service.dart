@@ -15,7 +15,8 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 9,
+      // version: 9,
+      version: 10,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },
@@ -35,6 +36,9 @@ class DatabaseService {
         await db.execute('''
           CREATE TABLE notes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            firebase_id TEXT UNIQUE,           -- ថែមសម្រាប់ Firebase Doc ID
+            is_synced INTEGER DEFAULT 0,       -- ថែមសម្រាប់ Sync Tracking (0=No, 1=Yes)
+            updated_at TEXT,                    -- ថែមសម្រាប់ Timestamp
             folder_id INTEGER,
             title TEXT,
             content TEXT,
@@ -196,6 +200,11 @@ class DatabaseService {
             'is_completed',
             'INTEGER DEFAULT 0',
           );
+        }
+        if (oldVersion < 10) {
+          await _addColumnIfNotExists(db, 'notes', 'firebase_id', "TEXT UNIQUE");
+          await _addColumnIfNotExists(db, 'notes', 'is_synced', "INTEGER DEFAULT 0");
+          await _addColumnIfNotExists(db, 'notes', 'updated_at', "TEXT");
         }
       },
     );
