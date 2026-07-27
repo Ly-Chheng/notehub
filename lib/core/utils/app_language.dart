@@ -357,6 +357,17 @@ class AppTranslations extends Translations {
           'reminder_cannot_be_after_event': 'The reminder time cannot be after the event time.',
           'please_fill_out_the_topic_name': 'Please fill out the Topic Name',
           'same_day': 'same day',
+          // Sync
+          'sync': 'Sync',
+          'syncing': 'Syncing...',
+          'sync_account': 'បម្រុងទុក និងស្តារឡើងវិញ',
+          'sign_in_sync_desc': 'ចូលជាមួយ Google ដើម្បីធ្វើសមកាលកម្មកំណត់ត្រា',
+          'synced': 'បានធ្វើសមកាលកម្ម',
+          'signing_in': 'កំពុងចូល...',
+          'signed_out': 'បានចាកចេញ',
+          'account_disconnected': 'គណនីរបស់អ្នកត្រូវបានផ្តាច់។',
+          'welcome': 'ស្វាគមន៍',
+          'google_user': 'អ្នកប្រើ Google',
         },
         'km_KM': {
           // General
@@ -710,6 +721,18 @@ class AppTranslations extends Translations {
           'reminder_cannot_be_after_event': 'ពេលវេលារំលឹកមិនអាចនៅក្រោយពេលវេលាព្រឹត្តិការណ៍បានទេ។',
           'please_fill_out_the_topic_name': 'សូមបំពេញឈ្មោះប្រធានបទ',
           'same_day': 'ថ្ងៃដដែល',
+          // Sync
+          'sync': 'ធ្វើសមកាលកម្ម',
+          'syncing': 'កំពុងធ្វើសមកាលកម្ម...',
+          // Sync Account
+          'sync_account': 'Backup & Restore',
+          'sign_in_sync_desc': 'Sign in with Google to sync your notes',
+          'synced': 'Synced',
+          'signing_in': 'Signing in...',
+          'signed_out': 'Signed Out',
+          'account_disconnected': 'Your account has been disconnected.',
+          'welcome': 'Welcome',
+          'google_user': 'Google User',
         },
       };
 }
