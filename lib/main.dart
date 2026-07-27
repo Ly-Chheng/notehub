@@ -125,7 +125,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 
-// 🛡️ ត្រួតពិនិត្យ Firebase ក្នុង Background Handler ដើម្បីការពារការបើកជាន់គ្នា
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -150,7 +149,6 @@ Future<void> main() async {
     DeviceOrientation.portraitDown,
   ]);
 
-  // 1. Initialize Firebase មុនគេបង្អស់ ដោយមានលក្ខខណ្ឌការពារ Duplicate
   try {
     if (Firebase.apps.isEmpty) {
       await Firebase.initializeApp(
@@ -161,10 +159,8 @@ Future<void> main() async {
     debugPrint("Firebase Main Initialization Error: $e");
   }
 
-  // 2. ចាប់ផ្តើមស្តាប់ Background Message
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  // 3. Initialize Services ផ្សេងៗ
   await FirebaseServices().getInstance();
   await LocalStorage.init();
   await GetStorage.init();
@@ -172,8 +168,7 @@ Future<void> main() async {
 
   /// SQLITE INIT (NOTES + FOLDERS)
   await DatabaseService.initDB();
-  
-  // 💡 លុប WidgetsFlutterBinding.ensureInitialized() ដែលស្ទួនចេញ
+
   await Hive.initFlutter();
 
   /// HIVE INIT (SETTINGS + TRASH + TIMER)
@@ -189,7 +184,7 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  
+
   @override
   Widget build(BuildContext context) {
     final storage = GetStorage();
@@ -206,9 +201,7 @@ class MyApp extends StatelessWidget {
       initialBinding: InitialBinding(),
       translations: AppTranslations(),
       fallbackLocale: AppTranslations().fallbackLocale,
-      locale: storage.read('langCode') != null 
-          ? Locale(storage.read('langCode'), storage.read('countryCode')) 
-          : const Locale('km', 'KM'),
+      locale: storage.read('langCode') != null ? Locale(storage.read('langCode'), storage.read('countryCode')) : const Locale('km', 'KM'),
       localizationsDelegates: const [
         FlutterQuillLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
