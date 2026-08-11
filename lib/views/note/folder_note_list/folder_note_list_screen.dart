@@ -176,27 +176,27 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
           //     },
           //   );
           // }),
-          Obx(() {
-            final isSyncing = controller.isSyncing.value;
+          // Obx(() {
+          //   final isSyncing = controller.isSyncing.value;
 
-            return IconButton(
-              // រក្សាទុកទំហំ Icon ឱ្យនៅថេរ ២៤ ដើម្បីកុំឱ្យរង្គើ UI ពេលប្តូររូប
-              iconSize: 24,
-              icon: isSyncing
-                  ? SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        // បងអាចប្រើ CupertinoActivityIndicator សម្រាប់ iOS Style ពិតៗ
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColor().white),
-                      ),
-                    )
-                  : Icon(Icons.sync, color: AppColor().white),
-              // ពេលកំពុង Sync គឺបិទមិនឱ្យចុច (onPressed = null នឹងបង្ហាញ Disabled Style ស្វ័យប្រវត្ត)
-              onPressed: isSyncing ? null : () => controller.syncDataAction(widget.folderId),
-            );
-          }),
+          //   return IconButton(
+          //     // រក្សាទុកទំហំ Icon ឱ្យនៅថេរ ២៤ ដើម្បីកុំឱ្យរង្គើ UI ពេលប្តូររូប
+          //     iconSize: 24,
+          //     icon: isSyncing
+          //         ? SizedBox(
+          //             width: 18,
+          //             height: 18,
+          //             child: CircularProgressIndicator(
+          //               strokeWidth: 2,
+          //               // បងអាចប្រើ CupertinoActivityIndicator សម្រាប់ iOS Style ពិតៗ
+          //               valueColor: AlwaysStoppedAnimation<Color>(AppColor().white),
+          //             ),
+          //           )
+          //         : Icon(Icons.sync, color: AppColor().white),
+          //     // ពេលកំពុង Sync គឺបិទមិនឱ្យចុច (onPressed = null នឹងបង្ហាញ Disabled Style ស្វ័យប្រវត្ត)
+          //     onPressed: isSyncing ? null : () => controller.syncDataAction(widget.folderId),
+          //   );
+          // }),
           Obx(() {
             final bool hasNoData = controller.notes.isEmpty;
 

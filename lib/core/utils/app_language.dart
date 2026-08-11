@@ -34,7 +34,7 @@ class AppTranslations extends Translations {
           'forget_password': 'Forget Password',
 
           // Footer
-          'copyright': 'Copyright © 2026 Quick Note App.\nVersion 1.0.0 (7)',
+          'copyright': 'Copyright © 2026 Quick Note App.\nVersion 1.0.0 (8)',
 
           // Format
           'format': 'Format',
@@ -346,6 +346,7 @@ class AppTranslations extends Translations {
           'days_before': 'day before',
           'reminder': 'Reminder',
           'are_you_sure_make_completed': 'Are you sure you want to mark this as completed?',
+          'make_completed': 'Make Completed',
           'short_description': 'Short Description',
           'icon': 'Icon',
           'event_date_time': 'Event Date & Time',
@@ -396,7 +397,7 @@ class AppTranslations extends Translations {
           'forget_password': 'ភ្លេចពាក្យសម្ងាត់',
 
           // Footer
-          'copyright': 'រក្សាសិទ្ធិ © ២០២៦ កម្មវិធី Quick Note\nកំណែ ១.០.០ (៧)',
+          'copyright': 'រក្សាសិទ្ធិ © ២០២៦ កម្មវិធី Quick Note\nកំណែ ១.០.០ (៨)',
 
           // Format
           'format': 'ទម្រង់',
@@ -709,7 +710,8 @@ class AppTranslations extends Translations {
           'date': 'កាលបរិច្ឆេទ',
           'days_before': 'ថ្ងៃមុន',
           'reminder': 'ការរំលឹក',
-          'are_you_sure_make_completed': 'តើអ្នកប្រាកដថាចង់សម្គាល់ថាបានបញ្ចប់ទេ?',
+          'are_you_sure_make_completed': 'តើអ្នកប្រាកដថាចង់សម្គាល់ថាបានបញ្ចប់ទេ?',  
+          'make_completed': 'បង្កើតការបញ្ចប់',
           'short_description': 'ការពិពណ៌នាខ្លី',
           'icon': 'រូបតំណាង',
           'event_date_time': 'កាលបរិច្ឆេទ និងពេលវេលានៃព្រឹត្តិការណ៍',

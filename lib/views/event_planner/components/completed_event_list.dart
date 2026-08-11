@@ -93,6 +93,7 @@ class _CompletedEventListState extends State<CompletedEventList> {
                         backgroundColor: AppColor().red,
                         borderRadius: const BorderRadius.horizontal(
                           right: Radius.circular(18),
+                          left: Radius.circular(18),
                         ),
                       ),
                     ],

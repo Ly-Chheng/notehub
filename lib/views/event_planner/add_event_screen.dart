@@ -116,11 +116,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
         return AlertDialog(
           backgroundColor: Theme.of(context).cardColor,
           title: Text('pick_a_color'.tr, style: text18(context)),
-          content: SingleChildScrollView(
-            child: ColorPicker(
-              pickerColor: tempColor,
-              onColorChanged: (color) => tempColor = color,
-              pickerAreaHeightPercent: 0.8,
+          content: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: SingleChildScrollView(
+              child: ColorPicker(
+                pickerColor: tempColor,
+                onColorChanged: (color) => tempColor = color,
+                pickerAreaHeightPercent: 0.8,
+                pickerAreaBorderRadius: BorderRadius.circular(16),
+              ),
             ),
           ),
           actions: [
@@ -153,6 +157,125 @@ class _AddEventScreenState extends State<AddEventScreen> {
       },
     );
   }
+  
+  // void _pickCustomColor() {
+  //   Color tempColor = eventColors[selectedColorIndex];
+
+  //   showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //         builder: (context, setDialogState) {
+  //           return Dialog(
+  //             shape: RoundedRectangleBorder(
+  //               borderRadius: BorderRadius.circular(24),
+  //             ),
+  //             backgroundColor: Theme.of(context).cardColor,
+  //             insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+  //             child: Padding(
+  //               padding: const EdgeInsets.all(20),
+  //               child: Column(
+  //                 mainAxisSize: MainAxisSize.min,
+  //                 crossAxisAlignment: CrossAxisAlignment.start,
+  //                 children: [
+  //                   Row(
+  //                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //                     children: [
+  //                       Text(
+  //                         'pick_a_color'.tr,
+  //                         style: text18(context).copyWith(
+  //                           fontWeight: FontWeight.w600,
+  //                         ),
+  //                       ),
+  //                       // Live preview swatch
+  //                       Container(
+  //                         width: 28,
+  //                         height: 28,
+  //                         decoration: BoxDecoration(
+  //                           color: tempColor,
+  //                           shape: BoxShape.circle,
+  //                           border: Border.all(
+  //                             color: Theme.of(context).dividerColor,
+  //                             width: 1.5,
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   const SizedBox(height: 16),
+  //                   ClipRRect(
+  //                     borderRadius: BorderRadius.circular(16),
+  //                     child: SingleChildScrollView(
+  //                       child: ColorPicker(
+  //                         pickerColor: tempColor,
+  //                         onColorChanged: (color) {
+  //                           tempColor = color;
+  //                           setDialogState(() {});
+  //                         },
+  //                         pickerAreaHeightPercent: 0.8,
+  //                         displayThumbColor: true,
+  //                         enableAlpha: false,
+  //                         labelTypes: const [],
+  //                         pickerAreaBorderRadius: BorderRadius.circular(16),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                   const SizedBox(height: 20),
+  //                   Row(
+  //                     children: [
+  //                       Expanded(
+  //                         child: OutlinedButton(
+  //                           style: OutlinedButton.styleFrom(
+  //                             padding: const EdgeInsets.symmetric(vertical: 14),
+  //                             shape: RoundedRectangleBorder(
+  //                               borderRadius: BorderRadius.circular(14),
+  //                             ),
+  //                           ),
+  //                           onPressed: () => Navigator.of(context).pop(),
+  //                           child: Text('cancel'.tr, style: text16(context)),
+  //                         ),
+  //                       ),
+  //                       const SizedBox(width: 12),
+  //                       Expanded(
+  //                         child: FilledButton(
+  //                           style: FilledButton.styleFrom(
+  //                             backgroundColor: tempColor,
+  //                             padding: const EdgeInsets.symmetric(vertical: 14),
+  //                             shape: RoundedRectangleBorder(
+  //                               borderRadius: BorderRadius.circular(14),
+  //                             ),
+  //                           ),
+  //                           onPressed: () {
+  //                             setState(() {
+  //                               int existingIndex = eventColors.indexWhere((c) => c.value == tempColor.value);
+  //                               if (existingIndex != -1) {
+  //                                 selectedColorIndex = existingIndex;
+  //                               } else {
+  //                                 eventColors.add(tempColor);
+  //                                 selectedColorIndex = eventColors.length - 1;
+  //                               }
+  //                             });
+  //                             Navigator.of(context).pop();
+  //                           },
+  //                           child: Text(
+  //                             'apply'.tr,
+  //                             style: text16(context).copyWith(
+  //                               color: tempColor.computeLuminance() > 0.5 ? Colors.black : Colors.white,
+  //                             ),
+  //                           ),
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   TimeOfDay _parseTimeOfDay(String timeStr) {
     final periods = timeStr.split(" ");
