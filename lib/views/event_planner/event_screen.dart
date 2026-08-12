@@ -16,13 +16,6 @@ class EventScreen extends StatefulWidget {
 class _EventScreenState extends State<EventScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _tabController = TabController(length: 2, vsync: this);
-
-  //   Get.put(EventPlannerController());
-  // }
   @override
   void initState() {
     super.initState();

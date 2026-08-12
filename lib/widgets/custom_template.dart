@@ -24,7 +24,7 @@ class CustomTemplate extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
         decoration: BoxDecoration(
-          color: isSelected ? AppColor().primaryColor.withValues(alpha: 0.05) : Colors.white,
+          color: isSelected ? AppColor().primaryColor.withValues(alpha: 0.05) : AppColor().white,
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: isSelected ? AppColor().primaryColor : AppColor().gray.withValues(alpha: 0.2),

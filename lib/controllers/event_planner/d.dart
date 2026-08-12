@@ -1,19 +1,23 @@
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/core/services/firebase_services.dart';
+ 
 import 'package:project_structure/models/event_planner/event_model.dart';
 import 'package:project_structure/models/event_planner/revision_topic_model.dart';
 
 class EventPlannerController extends GetxController {
   EventPlannerController();
 
+  // ---------------------------------------------------------------------------
   // Reactive State
+  // ---------------------------------------------------------------------------
   final RxList<EventModel> upcomingEvents = <EventModel>[].obs;
   final RxList<EventModel> completedEvents = <EventModel>[].obs;
   final RxBool isLoading = false.obs;
 
-  final List<Map<String, dynamic>> availableIcons = [
+  final List<Map<String, dynamic>> availableIcons = const [
     {'name': 'study', 'image': 'assets/images/study.png'},
     {'name': 'work', 'image': 'assets/images/work.png'},
     {'name': 'todo', 'image': 'assets/images/todo.png'},
@@ -26,6 +30,10 @@ class EventPlannerController extends GetxController {
     // Automatically load data when controller initializes
     loadAllEvents();
   }
+
+  // ---------------------------------------------------------------------------
+  // Core Data Fetching & Sync
+  // ---------------------------------------------------------------------------
 
   /// Fetches both upcoming and completed events from SQLite and updates state
   Future<void> loadAllEvents() async {
@@ -43,21 +51,7 @@ class EventPlannerController extends GetxController {
     }
   }
 
-  DateTime? _parseReminderDateTime(EventModel event) {
-    if (event.reminderDate == null || event.reminderTimer == null) return null;
-    try {
-      final datePart = event.reminderDate!.trim();
-      final timePart = event.reminderTimer!.trim();
-
-      // Directly stitches clean "YYYY-MM-DD" and "HH:mm:ss" strings safely
-      return DateTime.parse("$datePart $timePart");
-    } catch (e) {
-      debugPrint("Failed parsing reminder timestamp: $e");
-      return null;
-    }
-  }
-
-  /// Fetches either upcoming or completed even
+  /// Raw database fetch helper
   Future<List<EventModel>> fetchEvent({required bool completed}) async {
     try {
       final dbClient = await DatabaseService.db;
@@ -69,11 +63,16 @@ class EventPlannerController extends GetxController {
       );
       return List.generate(maps.length, (i) => EventModel.fromMap(maps[i]));
     } catch (e) {
+      debugPrint("Error querying events table: $e");
       return [];
     }
   }
 
-  /// Add
+  // ---------------------------------------------------------------------------
+  // Event CRUD Operations (Auto-refreshes state)
+  // ---------------------------------------------------------------------------
+
+  /// Creates a new event, sets up notifications, and updates the reactive lists
   Future<int> createEvent(EventModel event) async {
     final dbClient = await DatabaseService.db;
     final int insertedId = await dbClient.insert('events', event.toMap());
@@ -90,10 +89,11 @@ class EventPlannerController extends GetxController {
 
     // Refresh observable state so UI updates instantly
     await loadAllEvents();
+
     return insertedId;
   }
 
-  /// Updates event + Syncs System Alarms
+  /// Updates event details, reschedules system alarms, and refreshes UI state
   Future<int> updateEvent(EventModel event) async {
     final dbClient = await DatabaseService.db;
     final int result = await dbClient.update(
@@ -121,7 +121,7 @@ class EventPlannerController extends GetxController {
     return result;
   }
 
-  /// Update
+  /// Toggles event completion status and triggers state refresh
   Future<void> updateEventCompletionStatus(int eventId, bool isCompleted) async {
     final dbClient = await DatabaseService.db;
     await dbClient.update(
@@ -131,7 +131,6 @@ class EventPlannerController extends GetxController {
       whereArgs: [eventId],
     );
 
-    // If marked complete, we must drop any pending notification alarms
     if (isCompleted) {
       await FirebaseServices.cancelReminder(eventId);
     }
@@ -139,33 +138,6 @@ class EventPlannerController extends GetxController {
     await loadAllEvents();
   }
 
-  /// Deletes
-  // Future<int> deleteEvent(int eventId) async {
-  //   final dbClient = await DatabaseService.db;
-
-  //   // Cancel the notification alarm first
-  //   await FirebaseServices.cancelReminder(eventId);
-
-  //   return await dbClient.transaction((txn) async {
-  //     await txn.rawDelete('''
-  //       DELETE FROM revision_subtopics
-  //       WHERE topic_id IN (SELECT id FROM revision_topics WHERE event_id = ?)
-  //     ''', [eventId]);
-
-  //     await txn.delete(
-  //       'revision_topics',
-  //       where: 'event_id = ?',
-  //       whereArgs: [eventId],
-  //     );
-
-  //     return await txn.delete(
-  //       'events',
-  //       where: 'id = ?',
-  //       whereArgs: [eventId],
-  //     );
-  //   });
-
-  // }
   /// Deletes event and associated topics/subtopics in a transaction
   Future<int> deleteEvent(int eventId) async {
     final dbClient = await DatabaseService.db;
@@ -195,7 +167,70 @@ class EventPlannerController extends GetxController {
     return result;
   }
 
-  // Converts event/reminder date difference into a localized string.
+  // ---------------------------------------------------------------------------
+  // Topic Methods
+  // ---------------------------------------------------------------------------
+
+  Future<List<RevisionTopic>> fetchTopicsForEvent(int eventId) async {
+    final dbClient = await DatabaseService.db;
+    final List<Map<String, dynamic>> maps = await dbClient.query(
+      'revision_topics',
+      where: 'event_id = ?',
+      whereArgs: [eventId],
+    );
+    return List.generate(maps.length, (i) => RevisionTopic.fromMap(maps[i]));
+  }
+
+  Future<int> createTopic(RevisionTopic topic) async {
+    final dbClient = await DatabaseService.db;
+    return await dbClient.insert('revision_topics', topic.toMap());
+  }
+
+  Future<void> deleteTopic(int topicId) async {
+    final dbClient = await DatabaseService.db;
+    await dbClient.delete(
+      'revision_topics',
+      where: 'id = ?',
+      whereArgs: [topicId],
+    );
+  }
+
+  Future<void> updateTopicName(int topicId, String newName) async {
+    final dbClient = await DatabaseService.db;
+    await dbClient.update(
+      'revision_topics',
+      {'name': newName},
+      where: 'id = ?',
+      whereArgs: [topicId],
+    );
+  }
+
+  Future<void> updateTopicCompletionStatus(int topicId, bool isCompleted) async {
+    final dbClient = await DatabaseService.db;
+    await dbClient.update(
+      'revision_topics',
+      {'is_completed': isCompleted ? 1 : 0},
+      where: 'id = ?',
+      whereArgs: [topicId],
+    );
+  }
+
+  // ---------------------------------------------------------------------------
+  // Helper Utilities
+  // ---------------------------------------------------------------------------
+
+  DateTime? _parseReminderDateTime(EventModel event) {
+    if (event.reminderDate == null || event.reminderTimer == null) return null;
+    try {
+      final datePart = event.reminderDate!.trim();
+      final timePart = event.reminderTimer!.trim();
+      return DateTime.parse("$datePart $timePart");
+    } catch (e) {
+      debugPrint("Failed parsing reminder timestamp: $e");
+      return null;
+    }
+  }
+
   String reminderConvertFromDateTime({
     required String eventDateStr,
     required String? reminderDateStr,
@@ -224,52 +259,5 @@ class EventPlannerController extends GetxController {
     }
 
     return fallbackReminderTime;
-  }
-
-  /// get topic
-  Future<List<RevisionTopic>> fetchTopicsForEvent(int eventId) async {
-    final dbClient = await DatabaseService.db;
-    final List<Map<String, dynamic>> maps = await dbClient.query(
-      'revision_topics',
-      where: 'event_id = ?',
-      whereArgs: [eventId],
-    );
-    return List.generate(maps.length, (i) => RevisionTopic.fromMap(maps[i]));
-  }
-
-  /// Add topic
-  Future<int> createTopic(RevisionTopic topic) async {
-    final dbClient = await DatabaseService.db;
-    return await dbClient.insert('revision_topics', topic.toMap());
-  }
-
-  /// Deletes topic
-  Future<void> deleteTopic(int topicId) async {
-    final dbClient = await DatabaseService.db;
-    await dbClient.delete(
-      'revision_topics',
-      where: 'id = ?',
-      whereArgs: [topicId],
-    );
-  }
-
-  Future<void> updateTopicName(int topicId, String newName) async {
-    final dbClient = await DatabaseService.db;
-    await dbClient.update(
-      'revision_topics',
-      {'name': newName},
-      where: 'id = ?',
-      whereArgs: [topicId],
-    );
-  }
-
-  Future<void> updateTopicCompletionStatus(int topicId, bool isCompleted) async {
-    final dbClient = await DatabaseService.db;
-    await dbClient.update(
-      'revision_topics',
-      {'is_completed': isCompleted ? 1 : 0},
-      where: 'id = ?',
-      whereArgs: [topicId],
-    );
   }
 }

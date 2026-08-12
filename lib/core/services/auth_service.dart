@@ -26,7 +26,7 @@ class AuthService {
         'profile',
       ]);
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: authorization.accessToken,
@@ -36,7 +36,7 @@ class AuthService {
       final UserCredential userCredential = await _auth.signInWithCredential(credential);
       return userCredential.user;
     } catch (e) {
-      debugPrint("❌ Google Sign-In Error: $e");
+      debugPrint(" Google Sign-In Error: $e");
       return null;
     }
   }
@@ -46,7 +46,7 @@ class AuthService {
       await _googleSignIn.signOut();
       await _auth.signOut();
     } catch (e) {
-      debugPrint("❌ Sign-Out Error: $e");
+      debugPrint(" Sign-Out Error: $e");
     }
   }
 }
