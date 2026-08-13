@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:project_structure/core/database/database_service.dart';
 import 'package:project_structure/core/services/firebase_services.dart';
 import 'package:project_structure/models/event_planner/event_model.dart';
@@ -43,16 +44,41 @@ class EventPlannerController extends GetxController {
     }
   }
 
-  DateTime? _parseReminderDateTime(EventModel event) {
-    if (event.reminderDate == null || event.reminderTimer == null) return null;
-    try {
-      final datePart = event.reminderDate!.trim();
-      final timePart = event.reminderTimer!.trim();
+  // DateTime? _parseReminderDateTime(EventModel event) {
+  //   if (event.reminderDate == null || event.reminderTimer == null) return null;
+  //   try {
+  //     final datePart = event.reminderDate!.trim();
+  //     final timePart = event.reminderTimer!.trim();
 
-      // Directly stitches clean "YYYY-MM-DD" and "HH:mm:ss" strings safely
-      return DateTime.parse("$datePart $timePart");
+  //     // Directly stitches clean "YYYY-MM-DD" and "HH:mm:ss" strings safely
+  //     return DateTime.parse("$datePart $timePart");
+  //   } catch (e) {
+  //     debugPrint("Failed parsing reminder timestamp: $e");
+  //     return null;
+  //   }
+  // }
+  /// មុខងារ Parse DateTime របស់ Reminder ឱ្យបានត្រឹមត្រូវ
+  DateTime? _parseReminderDateTime(EventModel event) {
+    try {
+      if (event.reminderDate == null || event.reminderDate!.isEmpty) return null;
+      if (event.reminderTimer == null || event.reminderTimer!.isEmpty) return null;
+
+      final dateStr = event.reminderDate!.trim();
+      final timeStr = event.reminderTimer!.trim();
+      final combinedString = "$dateStr $timeStr";
+
+      // ប្រសិនបើ timeStr មាន AM/PM
+      if (timeStr.toUpperCase().contains('AM') || timeStr.toUpperCase().contains('PM')) {
+        return DateFormat("yyyy-MM-dd h:mm a").parse(combinedString);
+      }
+
+      // ប្រសិនបើ timeStr ជា 24-hour format (HH:mm:ss)
+      final parts = timeStr.split(':');
+      final hour = int.parse(parts[0]).toString().padLeft(2, '0');
+      final minute = int.parse(parts[1]).toString().padLeft(2, '0');
+      return DateTime.parse("$dateStr $hour:$minute:00");
     } catch (e) {
-      debugPrint("Failed parsing reminder timestamp: $e");
+      debugPrint("Error parsing reminder DateTime: $e");
       return null;
     }
   }

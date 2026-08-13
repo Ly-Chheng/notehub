@@ -37,7 +37,7 @@ class StopwatchScreen extends StatelessWidget {
   }
 
   Widget _buildTimerDisplay(BuildContext context) {
-    final size = context.isPhone ? 280.0 : 300.0;
+    final size = context.isPhone ? 230.0 : 300.0;
     return Obx(() => Stack(
           alignment: Alignment.center,
           children: [

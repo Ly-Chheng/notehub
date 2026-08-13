@@ -56,11 +56,23 @@ class StopwatchController extends GetxController {
     isRunning.toggle();
   }
 
-  void resetStopwatch() {
+  // void resetStopwatch() {
+  //   _timer?.cancel();
+  //   milliseconds.value = 0;
+  //   isRunning.value = false;
+  //   laps.clear();
+  // }
+  Future<void> resetStopwatch() async {
     _timer?.cancel();
     milliseconds.value = 0;
     isRunning.value = false;
     laps.clear();
+
+    // Erase persistent data from disk
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_prefKeyStartTime);
+    await prefs.remove(_prefKeyElapsed);
+    await prefs.remove(_keyLaps);
   }
 
   void addLap() async {

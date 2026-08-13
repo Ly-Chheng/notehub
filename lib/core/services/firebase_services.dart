@@ -311,6 +311,65 @@ class FirebaseServices {
   //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, // Forces fire even under device battery optimization sleep modes
   //   );
   // }
+
+  // static Future<void> eventReminderNotification({
+  //   required int id,
+  //   required String title,
+  //   required String body,
+  //   required DateTime remiderDateTime,
+  // }) async {
+  //   // Convert target DateTime to TZDateTime in local timezone
+  //   final tz.TZDateTime scheduledDate = tz.TZDateTime.from(remiderDateTime, tz.local);
+  //   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
+
+  //   // 1. Define the Android channel specifics
+  //   const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+  //     'event_planner_channel',
+  //     'Event Reminders',
+  //     channelDescription: 'Notifications for your scheduled events and revision topics',
+  //     importance: Importance.max,
+  //     priority: Priority.high,
+  //     playSound: true,
+  //   );
+
+  //   // 2. Define iOS specifics
+  //   const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
+  //     presentAlert: true,
+  //     presentBadge: true,
+  //     presentSound: true,
+  //   );
+
+  //   const NotificationDetails platformDetails = NotificationDetails(
+  //     android: androidDetails,
+  //     iOS: iOSDetails,
+  //   );
+
+  //   // 3. Guard Rail: Check if scheduled date is in the past or present
+  //   if (scheduledDate.isBefore(now) || scheduledDate.isAtSameMomentAs(now)) {
+  //     // OPTION A: Fire notification immediately if time has already arrived
+  //     await _notificationsPlugin.show(
+  //       id,
+  //       title,
+  //       body,
+  //       platformDetails,
+  //     );
+  //     return;
+
+  //     // OPTION B: If you prefer NOT to trigger past notifications at all, uncomment below:
+  //     // return;
+  //   }
+
+  //   // 4. Schedule the alarm at the exact date and time
+  //   await _notificationsPlugin.zonedSchedule(
+  //     id,
+  //     title,
+  //     body,
+  //     scheduledDate,
+  //     platformDetails,
+  //     uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  //   );
+  // }
   
   static Future<void> eventReminderNotification({
     required int id,
@@ -318,48 +377,34 @@ class FirebaseServices {
     required String body,
     required DateTime remiderDateTime,
   }) async {
-    // Convert target DateTime to TZDateTime in local timezone
     final tz.TZDateTime scheduledDate = tz.TZDateTime.from(remiderDateTime, tz.local);
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
 
-    // 1. Define the Android channel specifics
+    // ១. ប្រសិនបើម៉ោង Reminder ស្ថិតក្នុងអតីតកាល ឬចំម៉ោងឥឡូវ គឺ Return ចោលភ្លាម (មិនឱ្យលោត Notification ពេល Create ឡើយ)
+    if (scheduledDate.isBefore(now) || scheduledDate.isAtSameMomentAs(now)) {
+      debugPrint("Skipping schedule: Reminder time is in the past or current moment.");
+      return; // ឈប់ធ្វើការត្រឹមនេះ មិនបង្ហាញ Notification ភ្លាមៗទេ
+    }
+
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
       'event_planner_channel',
       'Event Reminders',
-      channelDescription: 'Notifications for your scheduled events and revision topics',
+      channelDescription: 'Notifications for your scheduled events',
       importance: Importance.max,
       priority: Priority.high,
       playSound: true,
     );
 
-    // 2. Define iOS specifics
-    const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
-
     const NotificationDetails platformDetails = NotificationDetails(
       android: androidDetails,
-      iOS: iOSDetails,
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
     );
 
-    // 3. Guard Rail: Check if scheduled date is in the past or present
-    if (scheduledDate.isBefore(now) || scheduledDate.isAtSameMomentAs(now)) {
-      // OPTION A: Fire notification immediately if time has already arrived
-      await _notificationsPlugin.show(
-        id,
-        title,
-        body,
-        platformDetails,
-      );
-      return;
-
-      // OPTION B: If you prefer NOT to trigger past notifications at all, uncomment below:
-      // return;
-    }
-
-    // 4. Schedule the alarm at the exact date and time
+    // ២. ដំឡើង Alarm ឱ្យរង់ចាំលោតចំ "ថ្ងៃ និង ម៉ោង Reminder" នៅពេលអនាគតតែមួយគត់
     await _notificationsPlugin.zonedSchedule(
       id,
       title,
