@@ -37,10 +37,10 @@ class NoteSyncService {
           where: 'id = ?',
           whereArgs: [note['id']],
         );
-        debugPrint("✅ Synced Note Local ID: ${note['id']} to Firebase.");
+        debugPrint("Synced Note Local ID: ${note['id']} to Firebase.");
       }
     } catch (e) {
-      debugPrint("❌ Failed to push notes to Firebase: $e");
+      debugPrint("Failed to push notes to Firebase: $e");
     }
   }
 
@@ -88,18 +88,18 @@ class NoteSyncService {
           }
         }
       }
-      debugPrint("🔄 Pull processes completed successfully.");
+      debugPrint("Pull processes completed successfully.");
     } catch (e) {
-      debugPrint("❌ Error pulling from Firebase: $e");
+      debugPrint(" Error pulling from Firebase: $e");
     }
   }
 
   Future<void> deleteNoteFromFirebase(String userId, String firebaseId) async {
     try {
       await _firestore.collection('users').doc(userId).collection('notes').doc(firebaseId).delete();
-      debugPrint("🔥 Permanently deleted doc $firebaseId from Firebase.");
+      debugPrint("Permanently deleted doc $firebaseId from Firebase.");
     } catch (e) {
-      debugPrint("❌ Error deleting doc from Firebase: $e");
+      debugPrint("Error deleting doc from Firebase: $e");
     }
   }
 }
