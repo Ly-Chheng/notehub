@@ -38,6 +38,9 @@ class AppTranslations extends Translations {
 
           // Format
           'format': 'Format',
+          'copy': 'Copy',
+          'cut': 'Cut',
+          'paste': 'Paste',
           'text_alignment': 'Text Alignment',
           'text_style': 'Text Style',
           'font_size': 'Font Size',
@@ -47,9 +50,13 @@ class AppTranslations extends Translations {
           'huge': 'Huge',
           'table_options': 'Table Options',
           'add_row': 'Add Row',
+          'add_row_below': 'Add Row Below',
+          'add_row_above': 'Add Row Above',
           'a': 'A',
           'add_column': 'Add Column',
           'delete_table': 'Delete Table',
+          'delete_column': 'Delete Column',
+          'delete_row': 'Delete Row',
           'delete_table_confirm': 'Are you sure you want to delete this table?',
 
           //template
@@ -401,6 +408,9 @@ class AppTranslations extends Translations {
 
           // Format
           'format': 'ទម្រង់',
+          'copy': 'ចម្លង',
+          'cut': 'កាត់',
+          'paste': 'បិទភ្ជាប់',
           'text_alignment': 'តម្រឹមអត្ថបទ',
           'text_style': 'រចនាប័ទ្មអត្ថបទ',
           'font_size': 'ទំហំអក្សរ',
@@ -409,9 +419,13 @@ class AppTranslations extends Translations {
           'large': 'ធំ',
           'huge': 'ធំខ្លាំង',
           'table_options': 'ជម្រើសតារាង',
-          'add_row': 'បន្ថែមជួរដេក',
           'add_column': 'បន្ថែមជួរឈរ',
           'delete_table': 'លុបតារាង',
+          'delete_column': 'លុបជួរឈរ',
+          'add_row': 'បន្ថែមជួរដេក',
+          'add_row_below': 'បន្ថែមជួរខាងក្រោម',
+          'add_row_above': 'បន្ថែមជួរខាងលើ',
+          'delete_row': 'លុបជួរដេក',
           'delete_table_confirm': 'តើអ្នកពិតជាចង់លុបតារាងនេះមែនទេ?',
           'a': 'ក',
 
@@ -710,7 +724,7 @@ class AppTranslations extends Translations {
           'date': 'កាលបរិច្ឆេទ',
           'days_before': 'ថ្ងៃមុន',
           'reminder': 'ការរំលឹក',
-          'are_you_sure_make_completed': 'តើអ្នកប្រាកដថាចង់សម្គាល់ថាបានបញ្ចប់ទេ?',  
+          'are_you_sure_make_completed': 'តើអ្នកប្រាកដថាចង់សម្គាល់ថាបានបញ្ចប់ទេ?',
           'make_completed': 'បង្កើតការបញ្ចប់',
           'short_description': 'ការពិពណ៌នាខ្លី',
           'icon': 'រូបតំណាង',

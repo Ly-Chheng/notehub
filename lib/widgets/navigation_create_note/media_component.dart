@@ -70,20 +70,17 @@ void showMediaSheet({
               onTap: () => controller.pickFile(onResult: onMediaSelected),
             ),
             divider(context),
-            buildActionItem(
-              context,
-              icon: Icons.document_scanner_outlined,
-              color: AppColor().primaryColor,
-              title: "scan_text".tr,
-              onTap: () => controller.scanText(
+            buildActionItem(context, icon: Icons.document_scanner_outlined, color: AppColor().primaryColor, title: "scan_text".tr, onTap: () {
+              Get.back();
+              controller.scanText(
                 context: context,
                 onTextScanned: (text) {
                   if (onTextScanned != null) {
                     onTextScanned(text);
                   }
                 },
-              ),
-            ),
+              );
+            }),
             divider(context),
             buildActionItem(context,
                 icon: Icons.mic_none,

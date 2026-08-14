@@ -71,6 +71,60 @@ class MediaController extends GetxController {
     }
   }
 
+  // /// Scans text OCR
+  // Future<void> scanText({
+  //   required BuildContext context,
+  //   required Function(String) onTextScanned,
+  // }) async {
+  //   try {
+  //     final XFile? file = await _picker.pickImage(source: ImageSource.camera);
+  //     Get.back();
+  //     if (file == null) return;
+
+  //     Get.dialog(
+  //       Center(child: CircularProgressIndicator(color: AppColor().primaryColor)),
+  //       barrierDismissible: false,
+  //     );
+
+  //     final inputImage = InputImage.fromFilePath(file.path);
+
+  //     // Multiple text recognizers for cross-language compatibility
+  //     final recognizers = [
+  //       TextRecognizer(script: TextRecognitionScript.korean),
+  //       TextRecognizer(script: TextRecognitionScript.chinese),
+  //       TextRecognizer(script: TextRecognitionScript.japanese),
+  //       TextRecognizer(script: TextRecognitionScript.latin),
+  //     ];
+
+  //     String bestText = "";
+
+  //     for (final recognizer in recognizers) {
+  //       final result = await recognizer.processImage(inputImage);
+
+  //       if (result.text.length > bestText.length) {
+  //         bestText = result.text;
+  //       }
+  //       await recognizer.close();
+  //     }
+
+  //     // Dismiss processing dialog loader
+  //     if (Get.isDialogOpen ?? false) Get.back();
+
+  //     debugPrint("Final OCR Result: $bestText");
+
+  //     if (bestText.trim().isNotEmpty && context.mounted) {
+  //       onTextScanned(bestText);
+  //     } else {
+  //       AppSnackbar.showError(
+  //         title: "error".tr,
+  //         message: "no_text_detected_in_the_image".tr,
+  //       );
+  //     }
+  //   } catch (e) {
+  //     if (Get.isDialogOpen ?? false) Get.back();
+  //     debugPrint("OCR Error: $e");
+  //   }
+  // }
   /// Scans text OCR
   Future<void> scanText({
     required BuildContext context,
@@ -78,9 +132,12 @@ class MediaController extends GetxController {
   }) async {
     try {
       final XFile? file = await _picker.pickImage(source: ImageSource.camera);
-      Get.back();
+
+      // 1. Exit immediately if the user cancels taking a picture
+      // (Removed premature Get.back() that was popping active screens)
       if (file == null) return;
 
+      // 2. Show loading indicator
       Get.dialog(
         Center(child: CircularProgressIndicator(color: AppColor().primaryColor)),
         barrierDismissible: false,
@@ -88,32 +145,41 @@ class MediaController extends GetxController {
 
       final inputImage = InputImage.fromFilePath(file.path);
 
-      // Multiple text recognizers for cross-language compatibility
-      final recognizers = [
-        TextRecognizer(script: TextRecognitionScript.korean),
-        TextRecognizer(script: TextRecognitionScript.chinese),
-        TextRecognizer(script: TextRecognitionScript.japanese),
-        TextRecognizer(script: TextRecognitionScript.latin),
+      // Order scripts (Latin first as fallback)
+      final scripts = [
+        TextRecognitionScript.latin,
+        TextRecognitionScript.korean,
+        TextRecognitionScript.chinese,
+        TextRecognitionScript.japanese,
       ];
 
       String bestText = "";
 
-      for (final recognizer in recognizers) {
-        final result = await recognizer.processImage(inputImage);
+      // 3. Process each script safely
+      for (final script in scripts) {
+        TextRecognizer? recognizer;
+        try {
+          recognizer = TextRecognizer(script: script);
+          final result = await recognizer.processImage(inputImage);
 
-        if (result.text.length > bestText.length) {
-          bestText = result.text;
+          if (result.text.length > bestText.length) {
+            bestText = result.text;
+          }
+        } catch (scriptError) {
+          // Prevents crash if non-latin ML Kit native packages are missing in pubspec
+          debugPrint("Script $script failed or missing native dependency: $scriptError");
+        } finally {
+          await recognizer?.close();
         }
-        await recognizer.close();
       }
 
-      // Dismiss processing dialog loader
+      // 4. Safely dismiss processing loader dialog
       if (Get.isDialogOpen ?? false) Get.back();
 
       debugPrint("Final OCR Result: $bestText");
 
-      if (bestText.trim().isNotEmpty && context.mounted) {
-        onTextScanned(bestText);
+      if (bestText.trim().isNotEmpty) {
+        onTextScanned(bestText.trim());
       } else {
         AppSnackbar.showError(
           title: "error".tr,
@@ -122,7 +188,11 @@ class MediaController extends GetxController {
       }
     } catch (e) {
       if (Get.isDialogOpen ?? false) Get.back();
-      debugPrint("OCR Error: $e");
+      debugPrint("OCR General Error: $e");
+      AppSnackbar.showError(
+        title: "error".tr,
+        message: "no_text_detected_in_the_image".tr,
+      );
     }
   }
 

@@ -111,25 +111,58 @@ class NoteController extends GetxController {
       'drawing_layers': jsonEncode(drawingLayers),
     };
 
+    // try {
+    //   int? resultId;
+
+    //   if (id == null) {
+    //     //  CREATE NEW NOTE
+    //     resultId = await db.insert('notes', row);
+    //     // debugPrint(' Note CREATED: ID $resultId');
+    //   } else {
+    //     // UPDATE EXISTING NOTE
+    //     // int count = await db.update('notes', row, where: 'id = ?', whereArgs: [id]);
+    //     resultId = id;
+    //     // debugPrint(' Note UPDATED: ID $id ($count rows affected)');
+    //   }
+
+    //   await fetchNotesByFolder(folderId);
+
+    //   return resultId;
+    // } catch (e) {
+    //   debugPrint(' SQLite Save Error: $e');
+
+    //   Get.snackbar(
+    //     "Save Failed",
+    //     "Could not save your note to the database.",
+    //     snackPosition: SnackPosition.BOTTOM,
+    //   );
+    //   return null;
+    // }
     try {
       int? resultId;
 
       if (id == null) {
-        //  CREATE NEW NOTE
+        // CREATE NEW NOTE
         resultId = await db.insert('notes', row);
-        // debugPrint(' Note CREATED: ID $resultId');
+        debugPrint('Note CREATED: ID $resultId');
       } else {
-        // UPDATE EXISTING NOTE
-        // int count = await db.update('notes', row, where: 'id = ?', whereArgs: [id]);
+        // ✅ UPDATE EXISTING NOTE (លុប Comment ចេញដើម្បីឲ្យ Save ចូល DB)
+        int count = await db.update(
+          'notes',
+          row,
+          where: 'id = ?',
+          whereArgs: [id],
+        );
         resultId = id;
-        // debugPrint(' Note UPDATED: ID $id ($count rows affected)');
+        debugPrint('Note UPDATED: ID $id ($count rows affected)');
       }
 
+      // Refresh បញ្ជី Note ឡើងវិញ
       await fetchNotesByFolder(folderId);
 
       return resultId;
     } catch (e) {
-      debugPrint(' SQLite Save Error: $e');
+      debugPrint('SQLite Save Error: $e');
 
       Get.snackbar(
         "Save Failed",

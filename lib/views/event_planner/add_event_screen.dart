@@ -897,449 +897,450 @@ class _AddEventScreenState extends State<AddEventScreen> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: customAppBar(
-        title: _isEditing ? "edit_event".tr : "add_event".tr,
-        context: context,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              decoration: Layout.themedBorderDecoration(context),
-              child: customTextField(
-                "event_title".tr,
-                false,
-                null,
-                controller: _titleController,
-                fillColor: Theme.of(context).cardColor,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              decoration: Layout.themedBorderDecoration(context),
-              child: customTextField(
-                "short_description".tr,
-                false,
-                null,
-                maxLines: 3,
-                type: TextInputType.multiline,
-                controller: _locationController,
-                fillColor: Theme.of(context).cardColor,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "event_date_time".tr,
-              style: text16(context).copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    // onTap: () async {
-                    //   final DateTime? picked = await customDatePicker(
-                    //     context: context,
-                    //     initialDate: _selectedDate,
-                    //     firstDate: DateTime(2000), // អនុញ្ញាតឲ្យជ្រើសរើសថ្ងៃណាក៏បាន
-                    //     lastDate: DateTime(2035),
-                    //   );
-
-                    //   if (picked != null) {
-                    //     setState(() {
-                    //       _selectedDate = picked;
-                    //       _clampReminderToEventLimit();
-                    //     });
-                    //   }
-                    // },
-                    onTap: () async {
-                      final now = DateTime.now();
-                      final todayStart = DateTime(now.year, now.month, now.day);
-
-                      final DateTime? picked = await customDatePicker(
-                        context: context,
-                        initialDate: _selectedDate.isBefore(todayStart) ? todayStart : _selectedDate,
-                        firstDate: todayStart, // Disable ថ្ងៃចាស់ៗ
-                        lastDate: DateTime(2035),
-                      );
-
-                      if (picked != null) {
-                        setState(() {
-                          _selectedDate = picked;
-                          _clampReminderToEventLimit();
-                        });
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                      decoration: Layout.themedBorderDecoration(context),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_formatDate(_selectedDate), style: fix16(context)),
-                          Icon(Icons.date_range, color: AppColor().gray, size: 20),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: InkWell(
-                    onTap: () async {
-                      final TimeOfDay? picked = await customTimePicker(
-                        context: context,
-                        initialTime: _selectedTime,
-                      );
-                      if (picked != null) {
-                        setState(() {
-                          _selectedTime = picked;
-                          _clampReminderToEventLimit();
-                        });
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                      decoration: Layout.themedBorderDecoration(context),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_selectedTime.format(context), style: fix16(context)),
-                          Icon(Icons.access_time, color: AppColor().gray, size: 24),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            InkWell(
-              onTap: () => _showIconBottomSheet(context),
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: isDarkMode ? const Color(0xff3A3A3C) : const Color(0xffE8E8EE),
-                  ),
-                ),
-                child: IgnorePointer(
-                  child: customTextField(
-                    "icon".tr,
-                    false,
-                    null,
-                    fillColor: Theme.of(context).cardColor,
-                    controller: _iconController,
-                    suffixIcon: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: _iconController.text.isNotEmpty
-                          ? Image.asset(
-                              'assets/images/${_iconController.text}.png',
-                              width: 24,
-                              height: 24,
-                              fit: BoxFit.contain,
-                            )
-                          : Icon(Icons.category, color: AppColor().gray),
-                    ),
-                  ),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: customAppBar(
+          title: _isEditing ? "edit_event".tr : "add_event".tr,
+          context: context,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                decoration: Layout.themedBorderDecoration(context),
+                child: customTextField(
+                  "event_title".tr,
+                  false,
+                  null,
+                  controller: _titleController,
+                  fillColor: Theme.of(context).cardColor,
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "color_tag".tr,
-                  style: text16(context).copyWith(fontWeight: FontWeight.w600),
+              const SizedBox(height: 16),
+              Container(
+                decoration: Layout.themedBorderDecoration(context),
+                child: customTextField(
+                  "short_description".tr,
+                  false,
+                  null,
+                  maxLines: 3,
+                  type: TextInputType.multiline,
+                  controller: _locationController,
+                  fillColor: Theme.of(context).cardColor,
                 ),
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                  decoration: Layout.themedBorderDecoration(context),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        ...List.generate(
-                          eventColors.length,
-                          (index) {
-                            final selected = selectedColorIndex == index;
-                            return GestureDetector(
-                              onTap: () => setState(() => selectedColorIndex = index),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                margin: const EdgeInsets.only(right: 18),
-                                width: selected ? 32 : 30,
-                                height: selected ? 32 : 30,
-                                decoration: BoxDecoration(
-                                  color: eventColors[index],
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: selected ? AppColor().gray : Colors.transparent,
-                                    width: 2,
-                                  ),
-                                  boxShadow: selected ? [BoxShadow(color: eventColors[index].withValues(alpha: 0.4), blurRadius: 8)] : [],
-                                ),
-                                child: selected ? const Icon(Icons.check, size: 18, color: Colors.white) : null,
-                              ),
-                            );
-                          },
-                        ),
-                        GestureDetector(
-                          onTap: _pickCustomColor,
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 15),
-                            width: 28,
-                            height: 28,
-                            decoration: BoxDecoration(
-                              color: Colors.grey.shade100,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: isDarkMode ? const Color(0xff3A3A3C) : const Color(0xffE8E8EE),
-                              ),
-                            ),
-                            child: Icon(Icons.add, size: 18, color: AppColor().gray),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              "reminder".tr,
-              style: text16(context).copyWith(fontWeight: FontWeight.w600),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    // onTap: () async {
-                    //   final DateTime? picked = await customDatePicker(
-                    //     context: context,
-                    //     initialDate: _reminderDate,
-                    //     firstDate: DateTime(2000),
-                    //     lastDate: _selectedDate, // Reminder Date មិនអាចលើសពី Event Date
-                    //   );
-                    //   if (picked != null) {
-                    //     setState(() {
-                    //       _reminderDate = picked;
-                    //       _clampReminderToEventLimit();
-                    //     });
-                    //   }
-                    // },
-                    onTap: () async {
-                      final now = DateTime.now();
-                      final todayStart = DateTime(now.year, now.month, now.day);
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "event_date_time".tr,
+                style: text16(context).copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      // onTap: () async {
+                      //   final DateTime? picked = await customDatePicker(
+                      //     context: context,
+                      //     initialDate: _selectedDate,
+                      //     firstDate: DateTime(2000), // អនុញ្ញាតឲ្យជ្រើសរើសថ្ងៃណាក៏បាន
+                      //     lastDate: DateTime(2035),
+                      //   );
 
-                      DateTime verifiedInitial = _reminderDate;
-                      if (verifiedInitial.isBefore(todayStart)) {
-                        verifiedInitial = todayStart;
-                      } else if (verifiedInitial.isAfter(_selectedDate)) {
-                        verifiedInitial = _selectedDate;
-                      }
+                      //   if (picked != null) {
+                      //     setState(() {
+                      //       _selectedDate = picked;
+                      //       _clampReminderToEventLimit();
+                      //     });
+                      //   }
+                      // },
+                      onTap: () async {
+                        final now = DateTime.now();
+                        final todayStart = DateTime(now.year, now.month, now.day);
 
-                      final DateTime? picked = await customDatePicker(
-                        context: context,
-                        initialDate: verifiedInitial,
-                        firstDate: todayStart, //Cannot select before today
-                        lastDate: _selectedDate, //Cannot select after event date
-                      );
-                      if (picked != null) {
-                        setState(() => _reminderDate = picked);
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                      decoration: Layout.themedBorderDecoration(context),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_formatDate(_reminderDate), style: fix16(context)),
-                          Icon(Icons.date_range, color: AppColor().gray, size: 20),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Expanded(
-                //   child: InkWell(
-                //     onTap: () async {
-                //       final TimeOfDay? picked = await customTimePicker(
-                //         context: context,
-                //         initialTime: _reminderTime,
-                //       );
-                //       if (picked != null) {
-                //         setState(() {
-                //           _reminderTime = picked;
-                //           _clampReminderToEventLimit();
-                //         });
-                //       }
-                //     },
-                //     borderRadius: BorderRadius.circular(8.0),
-                //     child: Container(
-                //       padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                //       decoration: Layout.themedBorderDecoration(context),
-                //       child: Row(
-                //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //         children: [
-                //           Text(_reminderTime.format(context), style: fix16(context)),
-                //           Icon(Icons.access_time, color: AppColor().gray, size: 24),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                Expanded(
-                  child: InkWell(
-                    onTap: () async {
-                      final TimeOfDay? picked = await customTimePicker(
-                        context: context,
-                        initialTime: _reminderTime,
-                      );
-                      if (picked != null) {
-                        final tempReminderDateTime = DateTime(
-                          _reminderDate.year,
-                          _reminderDate.month,
-                          _reminderDate.day,
-                          picked.hour,
-                          picked.minute,
+                        final DateTime? picked = await customDatePicker(
+                          context: context,
+                          initialDate: _selectedDate.isBefore(todayStart) ? todayStart : _selectedDate,
+                          firstDate: todayStart, // Disable ថ្ងៃចាស់ៗ
+                          lastDate: DateTime(2035),
                         );
 
-                        // ប្រសិនបើ Reminder Time ដែលជ្រើសរើស ធំជាង Event Time
-                        if (tempReminderDateTime.isAfter(_eventDateTime)) {
-                          showConfirmDialog(
-                            context: context,
-                            title: "invalid_reminder".tr,
-                            subTitle: "reminder_cannot_be_after_event".tr,
-                          );
-                          // Clamp មកត្រឹម Event Time វិញ
+                        if (picked != null) {
                           setState(() {
-                            _reminderTime = _selectedTime;
-                          });
-                        } else {
-                          setState(() {
-                            _reminderTime = picked;
+                            _selectedDate = picked;
+                            _clampReminderToEventLimit();
                           });
                         }
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(8.0),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
-                      decoration: Layout.themedBorderDecoration(context),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_reminderTime.format(context), style: fix16(context)),
-                          Icon(Icons.access_time, color: AppColor().gray, size: 24),
-                        ],
+                      },
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                        decoration: Layout.themedBorderDecoration(context),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_formatDate(_selectedDate), style: fix16(context)),
+                            Icon(Icons.date_range, color: AppColor().gray, size: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () async {
+                        final TimeOfDay? picked = await customTimePicker(
+                          context: context,
+                          initialTime: _selectedTime,
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _selectedTime = picked;
+                            _clampReminderToEventLimit();
+                          });
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                        decoration: Layout.themedBorderDecoration(context),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_selectedTime.format(context), style: fix16(context)),
+                            Icon(Icons.access_time, color: AppColor().gray, size: 24),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              InkWell(
+                onTap: () => _showIconBottomSheet(context),
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).cardColor,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isDarkMode ? const Color(0xff3A3A3C) : const Color(0xffE8E8EE),
+                    ),
+                  ),
+                  child: IgnorePointer(
+                    child: customTextField(
+                      "icon".tr,
+                      false,
+                      null,
+                      fillColor: Theme.of(context).cardColor,
+                      controller: _iconController,
+                      suffixIcon: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: _iconController.text.isNotEmpty
+                            ? Image.asset(
+                                'assets/images/${_iconController.text}.png',
+                                width: 24,
+                                height: 24,
+                                fit: BoxFit.contain,
+                              )
+                            : Icon(Icons.category, color: AppColor().gray),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 40),
-            CustomButton(
-              text: "save".tr,
-              onPressed: () async {
-                if (_titleController.text.trim().isEmpty) {
-                  showConfirmDialog(
-                    context: context,
-                    title: "error".tr,
-                    subTitle: "please_provide_exam_title".tr,
-                    confirmText: "ok".tr,
-                    onConfirm: () {},
-                  );
-                  return;
-                }
+              ),
+              const SizedBox(height: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "color_tag".tr,
+                    style: text16(context).copyWith(fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                    decoration: Layout.themedBorderDecoration(context),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          ...List.generate(
+                            eventColors.length,
+                            (index) {
+                              final selected = selectedColorIndex == index;
+                              return GestureDetector(
+                                onTap: () => setState(() => selectedColorIndex = index),
+                                child: AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  margin: const EdgeInsets.only(right: 18),
+                                  width: selected ? 32 : 30,
+                                  height: selected ? 32 : 30,
+                                  decoration: BoxDecoration(
+                                    color: eventColors[index],
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: selected ? AppColor().gray : Colors.transparent,
+                                      width: 2,
+                                    ),
+                                    boxShadow: selected ? [BoxShadow(color: eventColors[index].withValues(alpha: 0.4), blurRadius: 8)] : [],
+                                  ),
+                                  child: selected ? const Icon(Icons.check, size: 18, color: Colors.white) : null,
+                                ),
+                              );
+                            },
+                          ),
+                          GestureDetector(
+                            onTap: _pickCustomColor,
+                            child: Container(
+                              margin: const EdgeInsets.only(right: 15),
+                              width: 28,
+                              height: 28,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: isDarkMode ? const Color(0xff3A3A3C) : const Color(0xffE8E8EE),
+                                ),
+                              ),
+                              child: Icon(Icons.add, size: 18, color: AppColor().gray),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                "reminder".tr,
+                style: text16(context).copyWith(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      // onTap: () async {
+                      //   final DateTime? picked = await customDatePicker(
+                      //     context: context,
+                      //     initialDate: _reminderDate,
+                      //     firstDate: DateTime(2000),
+                      //     lastDate: _selectedDate, // Reminder Date មិនអាចលើសពី Event Date
+                      //   );
+                      //   if (picked != null) {
+                      //     setState(() {
+                      //       _reminderDate = picked;
+                      //       _clampReminderToEventLimit();
+                      //     });
+                      //   }
+                      // },
+                      onTap: () async {
+                        final now = DateTime.now();
+                        final todayStart = DateTime(now.year, now.month, now.day);
 
-                // ពិនិត្យតែលក្ខខណ្ឌមួយគត់៖ ម៉ោង Reminder មិនត្រូវធំជាង ម៉ោង Event ឡើយ
-                final now = DateTime.now();
-                final currentMinute = DateTime(now.year, now.month, now.day, now.hour, now.minute);
+                        DateTime verifiedInitial = _reminderDate;
+                        if (verifiedInitial.isBefore(todayStart)) {
+                          verifiedInitial = todayStart;
+                        } else if (verifiedInitial.isAfter(_selectedDate)) {
+                          verifiedInitial = _selectedDate;
+                        }
 
-                // 1. ពិនិត្យថា Event មិនស្ថិតក្នុងអតីតកាលសម្រាប់ថ្ងៃបច្ចុប្បន្ន
-                // if (_eventDateTime.isBefore(currentMinute)) {
-                //   showConfirmDialog(
-                //     context: context,
-                //     title: "invalid_time".tr,
-                //     subTitle: "event_time_cannot_be_in_past".tr, // ម៉ោង Event ត្រូវតែធំជាងម៉ោងបច្ចុប្បន្ន
-                //   );
-                //   return;
-                // }
+                        final DateTime? picked = await customDatePicker(
+                          context: context,
+                          initialDate: verifiedInitial,
+                          firstDate: todayStart, //Cannot select before today
+                          lastDate: _selectedDate, //Cannot select after event date
+                        );
+                        if (picked != null) {
+                          setState(() => _reminderDate = picked);
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                        decoration: Layout.themedBorderDecoration(context),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_formatDate(_reminderDate), style: fix16(context)),
+                            Icon(Icons.date_range, color: AppColor().gray, size: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  // Expanded(
+                  //   child: InkWell(
+                  //     onTap: () async {
+                  //       final TimeOfDay? picked = await customTimePicker(
+                  //         context: context,
+                  //         initialTime: _reminderTime,
+                  //       );
+                  //       if (picked != null) {
+                  //         setState(() {
+                  //           _reminderTime = picked;
+                  //           _clampReminderToEventLimit();
+                  //         });
+                  //       }
+                  //     },
+                  //     borderRadius: BorderRadius.circular(8.0),
+                  //     child: Container(
+                  //       padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                  //       decoration: Layout.themedBorderDecoration(context),
+                  //       child: Row(
+                  //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //         children: [
+                  //           Text(_reminderTime.format(context), style: fix16(context)),
+                  //           Icon(Icons.access_time, color: AppColor().gray, size: 24),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () async {
+                        final TimeOfDay? picked = await customTimePicker(
+                          context: context,
+                          initialTime: _reminderTime,
+                        );
+                        if (picked != null) {
+                          final tempReminderDateTime = DateTime(
+                            _reminderDate.year,
+                            _reminderDate.month,
+                            _reminderDate.day,
+                            picked.hour,
+                            picked.minute,
+                          );
 
-                // ២. ពិនិត្យថា Reminder DateTime មិនត្រូវធំជាង Event DateTime ឡើយ
-                if (_reminderDateTime.isAfter(_eventDateTime)) {
-                  showConfirmDialog(
-                    context: context,
-                    title: "invalid_reminder".tr,
-                    subTitle: "reminder_cannot_be_after_event".tr,
-                  );
-                  return;
-                }
-
-                final dateString = _formatDate(_selectedDate);
-                final timeString = "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00";
-
-                final reminderDateString = _formatDate(_reminderDate);
-                final reminderTimeString = "${_reminderTime.hour.toString().padLeft(2, '0')}:${_reminderTime.minute.toString().padLeft(2, '0')}:00";
-
-                final eventData = EventModel(
-                  id: widget.event?.id,
-                  title: _titleController.text.trim(),
-                  date: dateString,
-                  time: timeString,
-                  location: _locationController.text.trim().isEmpty ? "" : _locationController.text.trim(),
-                  reminderTime: "$reminderDateString $reminderTimeString",
-                  isCompleted: widget.event?.isCompleted ?? false,
-                  color: eventColors[selectedColorIndex].value,
-                  icon: _iconController.text.trim(),
-                  reminderDate: reminderDateString,
-                  reminderTimer: reminderTimeString,
-                );
-
-                // PRINT EVENT DATA TO CONSOLE
-
-                debugPrint("================= EVENT DATA PRINT =================");
-                debugPrint("ID            : ${eventData.id}");
-                debugPrint("Title         : ${eventData.title}");
-                debugPrint("Location      : ${eventData.location}");
-                debugPrint("Icon          : ${eventData.icon}");
-                debugPrint("Color (Hex)   : ${eventData.color?.toRadixString(16)}");
-                debugPrint("Event Date    : ${eventData.date}");
-                debugPrint("Event Time    : ${eventData.time}");
-                debugPrint("Reminder Date : ${eventData.reminderDate}");
-                debugPrint("Reminder Timer: ${eventData.reminderTimer}");
-                debugPrint("Reminder Full : ${eventData.reminderTime}");
-                debugPrint("Is Completed  : ${eventData.isCompleted}");
-                debugPrint("====================================================");
-
-                if (_isEditing) {
-                  await _controller.updateEvent(eventData);
-                } else {
-                  await _controller.createEvent(eventData);
-                }
-
-                Get.back(result: true);
-              },
-            )
-          ],
+                          // ប្រសិនបើ Reminder Time ដែលជ្រើសរើស ធំជាង Event Time
+                          if (tempReminderDateTime.isAfter(_eventDateTime)) {
+                            showConfirmDialog(
+                              context: context,
+                              title: "invalid_reminder".tr,
+                              subTitle: "reminder_cannot_be_after_event".tr,
+                            );
+                            // Clamp មកត្រឹម Event Time វិញ
+                            setState(() {
+                              _reminderTime = _selectedTime;
+                            });
+                          } else {
+                            setState(() {
+                              _reminderTime = picked;
+                            });
+                          }
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(8.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
+                        decoration: Layout.themedBorderDecoration(context),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(_reminderTime.format(context), style: fix16(context)),
+                            Icon(Icons.access_time, color: AppColor().gray, size: 24),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+        bottomNavigationBar: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: CustomButton(
+            text: "save".tr,
+            onPressed: () async {
+              if (_titleController.text.trim().isEmpty) {
+                showConfirmDialog(
+                  context: context,
+                  title: "error".tr,
+                  subTitle: "please_provide_exam_title".tr,
+                  confirmText: "ok".tr,
+                  onConfirm: () {},
+                );
+                return;
+              }
+
+              // ពិនិត្យតែលក្ខខណ្ឌមួយគត់៖ ម៉ោង Reminder មិនត្រូវធំជាង ម៉ោង Event ឡើយ
+              final now = DateTime.now();
+              final currentMinute = DateTime(now.year, now.month, now.day, now.hour, now.minute);
+
+              // 1. ពិនិត្យថា Event មិនស្ថិតក្នុងអតីតកាលសម្រាប់ថ្ងៃបច្ចុប្បន្ន
+              // if (_eventDateTime.isBefore(currentMinute)) {
+              //   showConfirmDialog(
+              //     context: context,
+              //     title: "invalid_time".tr,
+              //     subTitle: "event_time_cannot_be_in_past".tr, // ម៉ោង Event ត្រូវតែធំជាងម៉ោងបច្ចុប្បន្ន
+              //   );
+              //   return;
+              // }
+
+              // ២. ពិនិត្យថា Reminder DateTime មិនត្រូវធំជាង Event DateTime ឡើយ
+              if (_reminderDateTime.isAfter(_eventDateTime)) {
+                showConfirmDialog(
+                  context: context,
+                  title: "invalid_reminder".tr,
+                  subTitle: "reminder_cannot_be_after_event".tr,
+                );
+                return;
+              }
+
+              final dateString = _formatDate(_selectedDate);
+              final timeString = "${_selectedTime.hour.toString().padLeft(2, '0')}:${_selectedTime.minute.toString().padLeft(2, '0')}:00";
+
+              final reminderDateString = _formatDate(_reminderDate);
+              final reminderTimeString = "${_reminderTime.hour.toString().padLeft(2, '0')}:${_reminderTime.minute.toString().padLeft(2, '0')}:00";
+
+              final eventData = EventModel(
+                id: widget.event?.id,
+                title: _titleController.text.trim(),
+                date: dateString,
+                time: timeString,
+                location: _locationController.text.trim().isEmpty ? "" : _locationController.text.trim(),
+                reminderTime: "$reminderDateString $reminderTimeString",
+                isCompleted: widget.event?.isCompleted ?? false,
+                color: eventColors[selectedColorIndex].value,
+                icon: _iconController.text.trim(),
+                reminderDate: reminderDateString,
+                reminderTimer: reminderTimeString,
+              );
+
+              // PRINT EVENT DATA TO CONSOLE
+
+              // debugPrint("================= EVENT DATA PRINT =================");
+              // debugPrint("ID            : ${eventData.id}");
+              // debugPrint("Title         : ${eventData.title}");
+              // debugPrint("Location      : ${eventData.location}");
+              // debugPrint("Icon          : ${eventData.icon}");
+              // debugPrint("Color (Hex)   : ${eventData.color?.toRadixString(16)}");
+              // debugPrint("Event Date    : ${eventData.date}");
+              // debugPrint("Event Time    : ${eventData.time}");
+              // debugPrint("Reminder Date : ${eventData.reminderDate}");
+              // debugPrint("Reminder Timer: ${eventData.reminderTimer}");
+              // debugPrint("Reminder Full : ${eventData.reminderTime}");
+              // debugPrint("Is Completed  : ${eventData.isCompleted}");
+              // debugPrint("====================================================");
+
+              if (_isEditing) {
+                await _controller.updateEvent(eventData);
+              } else {
+                await _controller.createEvent(eventData);
+              }
+
+              Get.back(result: true);
+            },
+          ),
+        ));
   }
 }

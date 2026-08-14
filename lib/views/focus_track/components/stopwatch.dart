@@ -12,7 +12,7 @@ class StopwatchScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = context.isPhone ? 20.0 : 40.0;
+    final size = context.isPhone ? 15.0 : 30.0;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -26,7 +26,6 @@ class StopwatchScreen extends StatelessWidget {
               Expanded(
                 child: _buildLapList(context),
               ),
-              SizedBox(height: 20),
               _glowCircle(context),
               SizedBox(height: 25),
             ],
@@ -37,7 +36,7 @@ class StopwatchScreen extends StatelessWidget {
   }
 
   Widget _buildTimerDisplay(BuildContext context) {
-    final size = context.isPhone ? 230.0 : 300.0;
+    final size = context.isPhone ? 200.0 : 300.0;
     return Obx(() => Stack(
           alignment: Alignment.center,
           children: [
@@ -60,7 +59,7 @@ class StopwatchScreen extends StatelessWidget {
               controller.formatTime(controller.milliseconds.value),
               style: TextStyle(
                 fontFamily: 'EN-REGULAR',
-                fontSize: context.isPhone ? 40 : 50,
+                fontSize: context.isPhone ? 38 : 50,
                 letterSpacing: -1,
               ),
             ),
@@ -70,7 +69,7 @@ class StopwatchScreen extends StatelessWidget {
 
   Widget _buildLapList(BuildContext context) {
     return SizedBox(
-      height: context.isPhone ? 150 : 220,
+      height: context.isPhone ? 140 : 220,
       child: Obx(() => Column(
             children: [
               Container(
@@ -79,7 +78,7 @@ class StopwatchScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(context.isPhone ? 12 : 14),
+                  padding: EdgeInsets.all(context.isPhone ? 8 : 14),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -95,7 +94,7 @@ class StopwatchScreen extends StatelessWidget {
                   itemBuilder: (context, index) {
                     final lap = controller.laps[index];
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+                      padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -134,7 +133,7 @@ class StopwatchScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: Icon(
                   isRunning ? Icons.pause : Icons.play_arrow,
-                  size: context.isPhone ? 50 : 60,
+                  size: context.isPhone ? 45 : 60,
                   color: AppColor().white,
                 ),
               ),
