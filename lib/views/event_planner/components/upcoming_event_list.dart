@@ -852,126 +852,123 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
         );
       }
 
-      return RefreshIndicator(
-        onRefresh: _controller.loadAllEvents,
-        child: ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: events.length,
-          itemBuilder: (context, index) {
-            final event = events[index];
-            final Color baseColor = event.color != null ? Color(event.color!) : AppColor().primaryColor;
-
-            final duration = _calculateTimeRemaining(event);
-            final days = duration.inDays.toString().padLeft(2, '0');
-            final hours = (duration.inHours % 24).toString().padLeft(2, '0');
-            final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
-            final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
-
-            final double progressPercentage = _calculateProgress(event);
-
-            return Container(
-              margin: const EdgeInsets.only(bottom: 15),
-              decoration: BoxDecoration(
-                color: baseColor.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(18),
-              ),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(18),
-                onTap: () => Get.to(() => EventDetailsScreen(event: event)),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: baseColor.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(width: 1, color: baseColor.withValues(alpha: 0.4)),
-                            ),
-                            child: Image.asset(
-                              _getImageAsset(event.icon),
-                              width: 40,
-                              height: 40,
-                              fit: BoxFit.contain,
-                            ),
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: events.length,
+        itemBuilder: (context, index) {
+          final event = events[index];
+          final Color baseColor = event.color != null ? Color(event.color!) : AppColor().primaryColor;
+      
+          final duration = _calculateTimeRemaining(event);
+          final days = duration.inDays.toString().padLeft(2, '0');
+          final hours = (duration.inHours % 24).toString().padLeft(2, '0');
+          final minutes = (duration.inMinutes % 60).toString().padLeft(2, '0');
+          final seconds = (duration.inSeconds % 60).toString().padLeft(2, '0');
+      
+          final double progressPercentage = _calculateProgress(event);
+      
+          return Container(
+            margin: const EdgeInsets.only(bottom: 15),
+            decoration: BoxDecoration(
+              color: baseColor.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(18),
+              onTap: () => Get.to(() => EventDetailsScreen(event: event)),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: baseColor.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(width: 1, color: baseColor.withValues(alpha: 0.4)),
                           ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        event.title,
-                                        style: fix18(context),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    IconButton(
-                                      icon: Icon(Icons.more_horiz_outlined, color: AppColor().gray),
-                                      onPressed: () => _showActionBottomSheet(context, event),
-                                    ),
-                                  ],
-                                ),
-                                Text("${event.date} | ${event.time}", style: fix16(context).copyWith(color: AppColor().gray)),
-                                const SizedBox(height: 10)
-                              ],
-                            ),
+                          child: Image.asset(
+                            _getImageAsset(event.icon),
+                            width: 40,
+                            height: 40,
+                            fit: BoxFit.contain,
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        children: [
-                          Expanded(child: _countdownCard(days, "d".tr)),
-                          const SizedBox(width: 20),
-                          Expanded(child: _countdownCard(hours, "h".tr)),
-                          const SizedBox(width: 20),
-                          Expanded(child: _countdownCard(minutes, "m".tr)),
-                          const SizedBox(width: 20),
-                          Expanded(child: _countdownCard(seconds, "s".tr)),
-                        ],
-                      ),
-                      // Overall Progress Bar Section
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text("overall_progress".tr,
-                              style: text14(context).copyWith(
-                                color: AppColor().gray,
-                              )),
-                          Text(
-                            "${(progressPercentage * 100).toStringAsFixed(0)}%",
-                            style: fix16(context).copyWith(color: baseColor, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: LinearProgressIndicator(
-                          value: progressPercentage,
-                          minHeight: 10,
-                          backgroundColor: baseColor.withValues(alpha: 0.1),
-                          valueColor: AlwaysStoppedAnimation<Color>(baseColor),
                         ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      event.title,
+                                      style: fix18(context),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(Icons.more_horiz_outlined, color: AppColor().gray),
+                                    onPressed: () => _showActionBottomSheet(context, event),
+                                  ),
+                                ],
+                              ),
+                              Text("${event.date} | ${event.time}", style: fix16(context).copyWith(color: AppColor().gray)),
+                              const SizedBox(height: 10)
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(child: _countdownCard(days, "d".tr)),
+                        const SizedBox(width: 20),
+                        Expanded(child: _countdownCard(hours, "h".tr)),
+                        const SizedBox(width: 20),
+                        Expanded(child: _countdownCard(minutes, "m".tr)),
+                        const SizedBox(width: 20),
+                        Expanded(child: _countdownCard(seconds, "s".tr)),
+                      ],
+                    ),
+                    // Overall Progress Bar Section
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("overall_progress".tr,
+                            style: text14(context).copyWith(
+                              color: AppColor().gray,
+                            )),
+                        Text(
+                          "${(progressPercentage * 100).toStringAsFixed(0)}%",
+                          style: fix16(context).copyWith(color: baseColor, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: LinearProgressIndicator(
+                        value: progressPercentage,
+                        minHeight: 10,
+                        backgroundColor: baseColor.withValues(alpha: 0.1),
+                        valueColor: AlwaysStoppedAnimation<Color>(baseColor),
                       ),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(height: 10),
+                  ],
                 ),
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       );
     });
   }

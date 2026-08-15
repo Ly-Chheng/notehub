@@ -40,11 +40,6 @@ class AppSlidableAction extends StatelessWidget {
             size: iconSize ?? 24,
           ),
           const SizedBox(height: 4),
-          // Text(label,
-          //     style: textStyle ??
-          //         text16(context).copyWith(
-          //           color: AppColor().white,
-          //         )),
           if (label != null) ...[
             const SizedBox(height: 4),
             Text(

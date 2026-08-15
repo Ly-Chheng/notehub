@@ -210,15 +210,13 @@ class _ResizableMediaWidgetState extends State<ResizableMedia> {
                       final file = File('${tempDir.path}/shared_media.$ext');
 
                       await file.writeAsBytes(response.bodyBytes);
-                      // await Share.shareXFiles([XFile(file.path)]);
+
                       await SharePlus.instance.share(
                         ShareParams(
                           files: [XFile(file.path)],
-                          // text: 'Check out this file',
                         ),
                       );
                     } else {
-                      // await Share.shareXFiles([XFile(mediaPath)]);
                       await SharePlus.instance.share(
                         ShareParams(
                           files: [XFile(mediaPath)],
@@ -286,6 +284,7 @@ class FullScreenVideoPage extends StatelessWidget {
     );
   }
 }
+
 Widget divider(BuildContext context) {
   return Padding(
     padding: const EdgeInsets.symmetric(horizontal: 16),

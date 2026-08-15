@@ -247,95 +247,111 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
       );
     }
 
-    const double colWidth = 140.0;
+    //   const double colWidth = 140.0;
+    //   const double rowHandleWidth = 28.0;
+
     const double rowHandleWidth = 28.0;
+    const double horizontalPadding = 10.0;
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                const SizedBox(width: rowHandleWidth),
-                ...List.generate(colCount, (colIndex) {
-                  final isColSelected = _selectedCol == colIndex;
-                  return SizedBox(
-                    width: colWidth,
-                    height: 24,
-                    child: Center(
-                      child: _buildColumnHandle(colIndex, isColSelected),
-                    ),
-                  );
-                }),
-              ],
-            ),
-            const SizedBox(height: 4),
-            ...List.generate(rowCount, (rowIndex) {
-              final isRowSelected = _selectedRow == rowIndex;
+    return LayoutBuilder(builder: (context, constraints) {
+      final double availableWidth = constraints.maxWidth - rowHandleWidth - (horizontalPadding * 2);
 
-              return IntrinsicHeight(
-                child: Container(
-                  // decoration: BoxDecoration(
-                  //   border: isRowSelected ? Border.all(color: widget.accentColor, width: 2) : null,
-                  //   borderRadius: isRowSelected ? BorderRadius.circular(4) : null,
-                  // ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SizedBox(
-                        width: rowHandleWidth,
-                        child: Center(
-                          child: _buildRowHandle(rowIndex, isRowSelected),
-                        ),
+      // Calculate Column Width:
+      // - 1 or 2 Columns: Expand dynamically to fit full phone screen width (50% each for 2 columns)
+      // - 3+ Columns: Use fixed width (140.0) with horizontal scroll enabled
+      final double colWidth = (colCount <= 2)
+          ? (colCount > 0 ? availableWidth / colCount : availableWidth)
+          : context.isPhone
+              ? 140.0
+              : 220.0;
+
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: horizontalPadding),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  const SizedBox(width: rowHandleWidth),
+                  ...List.generate(colCount, (colIndex) {
+                    final isColSelected = _selectedCol == colIndex;
+                    return SizedBox(
+                      width: colWidth,
+                      height: 24,
+                      child: Center(
+                        child: _buildColumnHandle(colIndex, isColSelected),
                       ),
-                      ...List.generate(colCount, (colIndex) {
-                        final isCellSelected = isRowSelected && _selectedCol == colIndex;
-                        final rawCellData = widget.tableData[rowIndex][colIndex];
+                    );
+                  }),
+                ],
+              ),
+              const SizedBox(height: 4),
+              ...List.generate(rowCount, (rowIndex) {
+                final isRowSelected = _selectedRow == rowIndex;
 
-                        return Container(
-                          width: colWidth,
-                          decoration: BoxDecoration(
-                            color: isCellSelected ? widget.accentColor.withValues(alpha: 0.1) : Colors.transparent,
-                            border: Border.all(
-                              color: CupertinoColors.systemGrey4.resolveFrom(context),
-                              width: 0.5,
+                return IntrinsicHeight(
+                  child: SizedBox(
+                    // decoration: BoxDecoration(
+                    //   border: isRowSelected ? Border.all(color: widget.accentColor, width: 2) : null,
+                    //   borderRadius: isRowSelected ? BorderRadius.circular(4) : null,
+                    // ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(
+                          width: rowHandleWidth,
+                          child: Center(
+                            child: _buildRowHandle(rowIndex, isRowSelected),
+                          ),
+                        ),
+                        ...List.generate(colCount, (colIndex) {
+                          final isCellSelected = isRowSelected && _selectedCol == colIndex;
+                          final rawCellData = widget.tableData[rowIndex][colIndex];
+
+                          return Container(
+                            width: colWidth,
+                            decoration: BoxDecoration(
+                              color: isCellSelected ? widget.accentColor.withValues(alpha: 0.1) : Colors.transparent,
+                              border: Border.all(
+                                color: CupertinoColors.systemGrey4.resolveFrom(context),
+                                width: 0.5,
+                              ),
                             ),
-                          ),
-                          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
-                          child: CupertinoTextField(
-                            controller: _controllers[rowIndex][colIndex],
-                            focusNode: _focusNodes[rowIndex][colIndex],
-                            onChanged: (val) {
-                              String formatted = val;
-                              if (rawCellData.contains('**')) formatted = '**$val**';
-                              if (rawCellData.contains('*') && !rawCellData.contains('**')) formatted = '*$val*';
-                              if (rawCellData.contains('<u>')) formatted = '<u>$formatted</u>';
-                              widget.onCellChanged(rowIndex, colIndex, formatted);
-                            },
-                            maxLines: null,
-                            keyboardType: TextInputType.multiline,
-                            textInputAction: TextInputAction.newline,
-                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
-                            decoration: null,
-                            style: _getCellTextStyle(rawCellData, textColor),
-                          ),
-                        );
-                      }),
-                    ],
+                            padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 4),
+                            child: CupertinoTextField(
+                              controller: _controllers[rowIndex][colIndex],
+                              focusNode: _focusNodes[rowIndex][colIndex],
+                              onChanged: (val) {
+                                String formatted = val;
+                                if (rawCellData.contains('**')) formatted = '**$val**';
+                                if (rawCellData.contains('*') && !rawCellData.contains('**')) formatted = '*$val*';
+                                if (rawCellData.contains('<u>')) formatted = '<u>$formatted</u>';
+                                widget.onCellChanged(rowIndex, colIndex, formatted);
+                              },
+                              maxLines: null,
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.newline,
+                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+                              decoration: null,
+                              style: _getCellTextStyle(rawCellData, textColor),
+                            ),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            }),
-          ],
+                );
+              }),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildColumnHandle(int colIndex, bool isSelected) {
