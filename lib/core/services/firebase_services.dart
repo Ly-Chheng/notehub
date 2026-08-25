@@ -370,7 +370,7 @@ class FirebaseServices {
   //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
   //   );
   // }
-  
+
   static Future<void> eventReminderNotification({
     required int id,
     required String title,
@@ -415,56 +415,6 @@ class FirebaseServices {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
-
-  // static Future<void> eventReminderNotification({
-  //   required int id,
-  //   required String title,
-  //   required String body,
-  //   required DateTime remiderDateTime,
-  // }) async {
-  //   // Convert target DateTime to TZDateTime in local timezone
-  //   final tz.TZDateTime scheduledDate = tz.TZDateTime.from(remiderDateTime, tz.local);
-  //   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-
-  //   // 1. Define the Android channel specifics
-  //   const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-  //     'event_planner_channel',
-  //     'Event Reminders',
-  //     channelDescription: 'Notifications for your scheduled events and revision topics',
-  //     importance: Importance.max,
-  //     priority: Priority.high,
-  //     playSound: true,
-  //   );
-
-  //   // 2. Define iOS specifics
-  //   const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
-  //     presentAlert: true,
-  //     presentBadge: true,
-  //     presentSound: true,
-  //   );
-
-  //   const NotificationDetails platformDetails = NotificationDetails(
-  //     android: androidDetails,
-  //     iOS: iOSDetails,
-  //   );
-
-  //   // 3. Guard Rail: ប្រសិនបើម៉ោង Reminder ស្ថិតក្នុងអតីតកាល មិនបាច់ Schedule ឬ លោត Notification ឡើយ
-  //   if (scheduledDate.isBefore(now) || scheduledDate.isAtSameMomentAs(now)) {
-  //     debugPrint("Skipping notification: Scheduled time is in the past or present.");
-  //     return;
-  //   }
-
-  //   // 4. Schedule Notification ឱ្យលោតចំថ្ងៃ និងម៉ោងដែលបានកំណត់ស្វ័យប្រវត្តិ
-  //   await _notificationsPlugin.zonedSchedule(
-  //     id,
-  //     title,
-  //     body,
-  //     scheduledDate,
-  //     platformDetails,
-  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-  //     uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-  //   );
-  // }
 
   static Future<void> cancelReminder(int id) async {
     await _notificationsPlugin.cancel(id);

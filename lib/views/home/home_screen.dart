@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
             onPressed: () => ShowcaseView.get().dismiss(),
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xffEE5366)),
+            style: ElevatedButton.styleFrom(backgroundColor: AppColor().red),
             child: Text('skip'.tr, style: text12.copyWith(color: AppColor().white)),
           ),
         ),
@@ -185,6 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             startActionPane: ActionPane(
                               motion: const BehindMotion(),
                               children: [
+                                //swipe actions
                                 AppSlidableAction(
                                   onPressed: () => _togglePin(folder),
                                   icon: folder.isPinned ? Icons.push_pin_outlined : Icons.push_pin,
@@ -456,7 +457,6 @@ class _MyHomePageState extends State<MyHomePage> {
             const SizedBox(width: 12),
             Expanded(
               child: Text(controller.isDefaultFolder(folder) ? controller.displayDefaultFolderName : folder.title,
-                  // folder.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: fix16(context)),

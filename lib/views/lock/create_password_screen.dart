@@ -68,7 +68,6 @@ class _CreatePasswordScreenState extends State<CreatePasswordScreen> {
             padding: Layout.padding(),
             child: Column(
               children: [
-                // Center(child: customHeader("create_new_password".tr, context)),
                 const SizedBox(height: 8),
                 Text(
                   "create_password_desc".tr,

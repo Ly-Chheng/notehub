@@ -90,7 +90,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             padding: Layout.padding(),
             child: Column(
               children: [
-                // Center(child: customHeader("change_password".tr, context)),
                 const SizedBox(height: 8),
                 Text(
                   "change_password_desc".tr,

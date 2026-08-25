@@ -39,7 +39,6 @@ class QuillEditorComponent extends StatelessWidget {
           CustomMediaEmbedBuilder(controller: controller, mediaType: BlockEmbed.imageType),
           CustomMediaEmbedBuilder(controller: controller, mediaType: BlockEmbed.videoType),
           CustomFileEmbedBuilder(),
-          // TableEmbedBuilder(),
           ...FlutterQuillEmbeds.editorBuilders(),
         ],
         customStyles: DefaultStyles(

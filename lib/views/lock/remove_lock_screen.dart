@@ -57,7 +57,6 @@ class _RemoveLockScreenState extends State<RemoveLockScreen> {
           padding: Layout.padding(),
           child: Column(
             children: [
-              // Center(child: customHeader("reset_password".tr, context)),
               const SizedBox(height: 8),
               Text(
                 "remove_lock_desc".tr,

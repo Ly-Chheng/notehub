@@ -256,9 +256,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
     return LayoutBuilder(builder: (context, constraints) {
       final double availableWidth = constraints.maxWidth - rowHandleWidth - (horizontalPadding * 2);
 
-      // Calculate Column Width:
-      // - 1 or 2 Columns: Expand dynamically to fit full phone screen width (50% each for 2 columns)
-      // - 3+ Columns: Use fixed width (140.0) with horizontal scroll enabled
       final double colWidth = (colCount <= 2)
           ? (colCount > 0 ? availableWidth / colCount : availableWidth)
           : context.isPhone

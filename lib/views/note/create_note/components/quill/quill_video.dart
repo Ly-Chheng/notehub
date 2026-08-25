@@ -5,7 +5,6 @@ import 'package:project_structure/views/note/create_note/components/resizable_me
 import 'package:video_player/video_player.dart';
 import 'package:project_structure/core/utils/app_color.dart';
 
-// VIDEO CONTROLLER COMPONENTS & VIEWS
 class CustomVideoPlayerWithControls extends StatefulWidget {
   final VideoPlayerController? controller;
   final bool isInitialized;

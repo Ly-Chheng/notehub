@@ -52,13 +52,10 @@ class TimerDetailScreen extends StatelessWidget {
                   Colors.grey[800]!,
                   AppColor().white,
                   () {
-                    // 1. Remove from active running keys
                     controller.activeTimerKeys.remove(timerKey);
 
-                    // 2. CRITICAL: Force the GetX reactive map value to 0 so the home list updates immediately
                     controller.runningSeconds[timerKey] = 0;
 
-                    // 3. Save to Hive database so it moves to Recents permanently
                     data.remainingSeconds = 0;
                     data.completedAt = DateTime.now();
                     data.save();

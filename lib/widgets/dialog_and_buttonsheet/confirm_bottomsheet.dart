@@ -131,7 +131,7 @@ class ConfirmBottomSheet {
                     ] else if (subtitle != null) ...[
                       Text(
                         subtitle,
-                        style: text16(context).copyWith(color: Colors.grey),
+                        style: text16(context).copyWith(color: AppColor().gray),
                         textAlign: TextAlign.center,
                       ),
                     ],

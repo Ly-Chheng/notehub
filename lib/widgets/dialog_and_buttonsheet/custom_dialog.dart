@@ -13,7 +13,6 @@ Future<void> showConfirmDialog({
   required String title,
   required String subTitle,
   String? confirmText,
-  // required VoidCallback onConfirm,
   VoidCallback? onConfirm,
   bool showCancel = true,
   DialogType type = DialogType.normal,
@@ -129,7 +128,6 @@ Future<void> showConfirmDialog({
                       text: confirmText ?? 'ok'.tr,
                       onPressed: () {
                         Navigator.pop(context);
-                        // onConfirm();
                         onConfirm?.call();
                       },
                       backgroundColor: confirmColor,

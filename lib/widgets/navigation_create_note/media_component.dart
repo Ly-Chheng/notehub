@@ -141,8 +141,7 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
       duration: const Duration(milliseconds: 1000),
     );
 
-    // Automatically start listening when the dialog opens
-    _startListening();
+    // _startListening();
   }
 
   @override
@@ -151,7 +150,29 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
     super.dispose();
   }
 
+  // void _startListening() async {
+  //   setState(() {
+  //     _isListening = true;
+  //     _recognizedWords = "";
+  //   });
+  //   _animationController.repeat(reverse: true);
+
+  //   await widget.speech.listen(
+  //     onResult: (result) {
+  //       setState(() {
+  //         _recognizedWords = result.recognizedWords;
+  //       });
+
+  //       if (result.finalResult) {
+  //         _finalizeSpeech();
+  //       }
+  //     },
+  //   );
+  // }
+
   void _startListening() async {
+    if (_isListening) return; // Prevent double trigger
+
     setState(() {
       _isListening = true;
       _recognizedWords = "";
@@ -164,7 +185,6 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
           _recognizedWords = result.recognizedWords;
         });
 
-        // If the plugin naturally detects the user stopped speaking
         if (result.finalResult) {
           _finalizeSpeech();
         }
@@ -190,7 +210,7 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
         message: "no_text_detected_in_the_image".tr,
       );
     }
-    Get.back(); // Close dialog on success/stop
+    Get.back();
   }
 
   void _cancelListening() async {
@@ -208,23 +228,27 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Animated Mic Button (Acts as Start/Pause toggle)
-            GestureDetector(
-              onTap: _isListening ? _stopListening : _startListening,
-              child: ScaleTransition(
-                scale: _isListening
-                    ? Tween(begin: 0.9, end: 1.1).animate(
-                        CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-                      )
-                    : const AlwaysStoppedAnimation(1.0),
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _isListening ? AppColor().primaryColor.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
-                  ),
-                  child: Icon(_isListening ? Icons.mic_rounded : Icons.mic_off_rounded, size: 54, color: _isListening ? AppColor().primaryColor : Colors.grey),
+            Container(
+              alignment: Alignment.topRight,
+              child: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: _cancelListening,
+                color: AppColor().gray,
+              ),
+            ),
+            ScaleTransition(
+              scale: _isListening
+                  ? Tween(begin: 0.9, end: 1.1).animate(
+                      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+                    )
+                  : const AlwaysStoppedAnimation(1.0),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _isListening ? AppColor().primaryColor.withValues(alpha: 0.1) : Colors.grey.withValues(alpha: 0.1),
                 ),
+                child: Icon(_isListening ? Icons.mic_rounded : Icons.mic_off_rounded, size: 54, color: _isListening ? AppColor().primaryColor : AppColor().gray),
               ),
             ),
             const SizedBox(height: 20),
@@ -236,32 +260,16 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-
-            // Action Buttons: Start & Stop
             Row(
               children: [
-                // Expanded(
-                //   child: CustomButton(
-                //     text: "start".tr,
-                //     onPressed: _isListening ? null : _startListening,
-                //     backgroundColor: _isListening ? AppColor().primaryColor : AppColor().green,
-                //     textColor: _isListening ? Colors.black : AppColor().white,
-                //   ),
-                // ),
-                // const SizedBox(width: 12),
-                // Expanded(
-                //     child: CustomButton(
-                //   text: "stop".tr,
-                //   onPressed: _isListening ? _stopListening : null,
-                //   backgroundColor: AppColor().red,
-                //   textColor: _isListening ? Colors.white : AppColor().black,
-                // )),
                 Expanded(
                   child: CustomButton(
-                    text: "cancel".tr,
-                    onPressed: _cancelListening,
+                    text: "start".tr,
+                    // onPressed: _isListening ? null : _startListening, // Trigger voice listening here
+                    onPressed: _startListening,
                     backgroundColor: Colors.transparent,
-                    textColor: Colors.black,
+                    // textColor: _startListening ? AppColor().gray : AppColor().black,
+                    textColor: AppColor().black,
                     borderColor: Colors.grey[200],
                   ),
                 ),
@@ -271,7 +279,7 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
                     text: _isListening ? "stop".tr : "resume".tr,
                     onPressed: _isListening ? _stopListening : _startListening,
                     backgroundColor: _isListening ? AppColor().red : AppColor().primaryColor,
-                    textColor: Colors.white,
+                    textColor: AppColor().white,
                   ),
                 ),
               ],

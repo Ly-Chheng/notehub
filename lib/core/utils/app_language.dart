@@ -143,7 +143,6 @@ class AppTranslations extends Translations {
           'enter_your_answer': 'Enter your answer',
           'remove_lock_desc': 'Please enter your current password to remove all protection.',
           'select_option': 'Select option',
-
           'submit': 'Submit',
           'forget_password_desc': 'Verify your identity using your security question to reset your password.',
           'no_security_question': 'No security question set up.',
@@ -486,8 +485,8 @@ class AppTranslations extends Translations {
           'cancel': 'បោះបង់',
           'backgrounds': 'ផ្ទៃខាងក្រោយ',
           'save': 'រក្សាទុក',
-          'pin': 'បិទភ្ជាប់',
-          'unpin': 'ដកការបិទភ្ជាប់',
+          'pin': 'ខ្ទាស់',
+          'unpin': 'ដោះខ្ទាស់',
           'pinned_header': 'បានបិទភ្ជាប់',
           'share': 'ចែករំលែក',
           'move_note': 'ផ្លាស់ប្តូរកំណត់ត្រា',
@@ -737,10 +736,8 @@ class AppTranslations extends Translations {
           'reminder_cannot_be_after_event': 'ពេលវេលារំលឹកមិនអាចនៅក្រោយពេលវេលាព្រឹត្តិការណ៍បានទេ។',
           'please_fill_out_the_topic_name': 'សូមបំពេញឈ្មោះប្រធានបទ',
           'same_day': 'ថ្ងៃដដែល',
-          // Sync
           'sync': 'ធ្វើសមកាលកម្ម',
           'syncing': 'កំពុងធ្វើសមកាលកម្ម...',
-          // Sync Account
           'sync_account': 'Backup & Restore',
           'sign_in_sync_desc': 'Sign in with Google to sync your notes',
           'synced': 'Synced',

@@ -16,9 +16,9 @@ void createFolder(BuildContext context, {FolderModel? folder}) {
     Get.back();
     showConfirmDialog(
       context: context,
-      title: "Duplicate Name",
-      subTitle: "A folder with this name already exists.",
-      confirmText: "OK",
+      title: "duplicate_name".tr,
+      subTitle: "folder_exists".tr,
+      confirmText: "ok".tr,
       onConfirm: () {
         Navigator.pop(context);
       },

@@ -34,7 +34,6 @@ void formatNote({
 }) {
   bool isColorPickerOpen = false;
   bool isHighlightPickerOpen = false;
-  // String activeSize = 'Normal';
   String activeSize = initialFontSize;
 
   final List<int> colorValues = [
@@ -274,15 +273,14 @@ void formatNote({
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
                     children: ['Small', 'Normal', 'Large', 'Huge'].map((size) {
-                      // activeSize now tracks the local state
                       bool isSelected = activeSize.toLowerCase() == size.toLowerCase();
 
                       return Padding(
                         padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 5 : 10),
                         child: GestureDetector(
                           onTap: () {
-                            setSheetState(() => activeSize = size); // Updates UI
-                            onFontSizeChanged(size.toLowerCase()); // Updates Controller
+                            setSheetState(() => activeSize = size);
+                            onFontSizeChanged(size.toLowerCase());
                             Navigator.pop(context);
                           },
                           child: AnimatedContainer(
@@ -290,7 +288,6 @@ void formatNote({
                             alignment: Alignment.center,
                             padding: EdgeInsets.symmetric(horizontal: context.isPhone ? 16 : 20),
                             decoration: BoxDecoration(
-                              // Visual state based on isSelected
                               color: isSelected ? AppColor().primaryColor : Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(

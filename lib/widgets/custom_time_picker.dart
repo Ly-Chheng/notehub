@@ -7,7 +7,6 @@ Future<TimeOfDay?> customTimePicker({
   required BuildContext context,
   required TimeOfDay initialTime,
 }) async {
-  // Cache theme values to prevent multiple class instantiations inside the builder
   final appColors = AppColor();
   final primaryColor = appColors.primaryColor;
   final whiteColor = appColors.white;
@@ -26,15 +25,12 @@ Future<TimeOfDay?> customTimePicker({
             surface: cardColor,
             onSurface: surfaceTextColor,
           ),
-          // Action buttons styling overrides (OK / CANCEL)
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(
               foregroundColor: primaryColor,
               textStyle: text16(context).copyWith(fontWeight: FontWeight.bold),
             ),
           ),
-
-          // Dialog border curvature matching the date picker
           dialogTheme: DialogThemeData(
             backgroundColor: cardColor,
             elevation: 4,
@@ -42,27 +38,19 @@ Future<TimeOfDay?> customTimePicker({
               borderRadius: BorderRadius.circular(20),
             ),
           ),
-          // Individual time picker structural stylings
           timePickerTheme: TimePickerThemeData(
-            // dayPeriodColor: primaryColor.withValues(alpha: 0.15),
-            // dayPeriodTextColor: primaryColor,
-            //   AM/PM BACKGROUND COLOR
             dayPeriodColor: WidgetStateColor.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
                 return primaryColor.withValues(alpha: 0.15);
               }
               return AppColor().gray.withValues(alpha: 0.15);
             }),
-
-            // UPDATED AM/PM TEXT COLOR
             dayPeriodTextColor: WidgetStateColor.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
                 return primaryColor;
               }
               return surfaceTextColor.withValues(alpha: 0.6);
             }),
-
-            //Changes the border around the AM/PM boxes
             dayPeriodBorderSide: BorderSide(
               color: primaryColor.withValues(alpha: 0.5),
               width: 1,
@@ -73,7 +61,6 @@ Future<TimeOfDay?> customTimePicker({
             entryModeIconColor: primaryColor,
           ),
         ),
-        // child: child!,
         child: Localizations.override(
           context: context,
           locale: Get.locale ?? const Locale('km', 'KM'),

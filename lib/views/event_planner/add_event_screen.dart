@@ -900,7 +900,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: customAppBar(
           title: _isEditing ? "edit_event".tr : "add_event".tr,
-          context: context,
+          context: context, 
         ),
         body: SingleChildScrollView(
           padding: const EdgeInsets.all(20.0),
@@ -962,7 +962,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                         final DateTime? picked = await customDatePicker(
                           context: context,
                           initialDate: _selectedDate.isBefore(todayStart) ? todayStart : _selectedDate,
-                          firstDate: todayStart, // Disable ថ្ងៃចាស់ៗ
+                          firstDate: todayStart,
                           lastDate: DateTime(2035),
                         );
 
@@ -1088,7 +1088,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     ),
                                     boxShadow: selected ? [BoxShadow(color: eventColors[index].withValues(alpha: 0.4), blurRadius: 8)] : [],
                                   ),
-                                  child: selected ? const Icon(Icons.check, size: 18, color: Colors.white) : null,
+                                  child: selected ? Icon(Icons.check, size: 18, color: AppColor().white) : null,
                                 ),
                               );
                             },
@@ -1315,22 +1315,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 reminderDate: reminderDateString,
                 reminderTimer: reminderTimeString,
               );
-
-              // PRINT EVENT DATA TO CONSOLE
-
-              // debugPrint("================= EVENT DATA PRINT =================");
-              // debugPrint("ID            : ${eventData.id}");
-              // debugPrint("Title         : ${eventData.title}");
-              // debugPrint("Location      : ${eventData.location}");
-              // debugPrint("Icon          : ${eventData.icon}");
-              // debugPrint("Color (Hex)   : ${eventData.color?.toRadixString(16)}");
-              // debugPrint("Event Date    : ${eventData.date}");
-              // debugPrint("Event Time    : ${eventData.time}");
-              // debugPrint("Reminder Date : ${eventData.reminderDate}");
-              // debugPrint("Reminder Timer: ${eventData.reminderTimer}");
-              // debugPrint("Reminder Full : ${eventData.reminderTime}");
-              // debugPrint("Is Completed  : ${eventData.isCompleted}");
-              // debugPrint("====================================================");
 
               if (_isEditing) {
                 await _controller.updateEvent(eventData);

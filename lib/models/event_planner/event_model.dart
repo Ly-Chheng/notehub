@@ -1,15 +1,15 @@
 class EventModel {
   final int? id;
   final String title;
-  final String date; // YYYY-MM-DD
-  final String time; // HH:MM
+  final String date;
+  final String time;
   final String location;
   final String reminderTime;
   final bool isCompleted;
   final String? icon;
   final int? color;
-  final String? reminderDate; // YYYY-MM-DD
-  final String? reminderTimer; // HH:MM
+  final String? reminderDate;
+  final String? reminderTimer;
 
   EventModel({
     this.id,
@@ -57,7 +57,6 @@ class EventModel {
     );
   }
 
-  // Helper to calculate remaining days
   int get daysLeft {
     try {
       final examDate = DateTime.parse(date);

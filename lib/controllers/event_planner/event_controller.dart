@@ -24,7 +24,6 @@ class EventPlannerController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // Automatically load data when controller initializes
     loadAllEvents();
   }
 
@@ -44,19 +43,6 @@ class EventPlannerController extends GetxController {
     }
   }
 
-  // DateTime? _parseReminderDateTime(EventModel event) {
-  //   if (event.reminderDate == null || event.reminderTimer == null) return null;
-  //   try {
-  //     final datePart = event.reminderDate!.trim();
-  //     final timePart = event.reminderTimer!.trim();
-
-  //     // Directly stitches clean "YYYY-MM-DD" and "HH:mm:ss" strings safely
-  //     return DateTime.parse("$datePart $timePart");
-  //   } catch (e) {
-  //     debugPrint("Failed parsing reminder timestamp: $e");
-  //     return null;
-  //   }
-  // }
   /// មុខងារ Parse DateTime របស់ Reminder ឱ្យបានត្រឹមត្រូវ
   DateTime? _parseReminderDateTime(EventModel event) {
     try {
@@ -165,33 +151,6 @@ class EventPlannerController extends GetxController {
     await loadAllEvents();
   }
 
-  /// Deletes
-  // Future<int> deleteEvent(int eventId) async {
-  //   final dbClient = await DatabaseService.db;
-
-  //   // Cancel the notification alarm first
-  //   await FirebaseServices.cancelReminder(eventId);
-
-  //   return await dbClient.transaction((txn) async {
-  //     await txn.rawDelete('''
-  //       DELETE FROM revision_subtopics
-  //       WHERE topic_id IN (SELECT id FROM revision_topics WHERE event_id = ?)
-  //     ''', [eventId]);
-
-  //     await txn.delete(
-  //       'revision_topics',
-  //       where: 'event_id = ?',
-  //       whereArgs: [eventId],
-  //     );
-
-  //     return await txn.delete(
-  //       'events',
-  //       where: 'id = ?',
-  //       whereArgs: [eventId],
-  //     );
-  //   });
-
-  // }
   /// Deletes event and associated topics/subtopics in a transaction
   Future<int> deleteEvent(int eventId) async {
     final dbClient = await DatabaseService.db;

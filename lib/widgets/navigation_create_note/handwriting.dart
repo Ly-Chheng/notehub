@@ -112,7 +112,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
       List<Map<String, dynamic>> exportData = allControllers
           .where((c) => c.isNotEmpty)
           .map((c) => {
-                // 'color': c.penColor.value,
                 'color': c.penColor.toARGB32(),
                 'width': c.penStrokeWidth,
                 'points': c.points.map((p) => {'x': p.offset.dx, 'y': p.offset.dy, 't': p.type.index}).toList(),
@@ -400,7 +399,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                   icon: Icon(
                     canvasMode == 0 ? Icons.grid_off : (canvasMode == 1 ? Icons.view_headline : Icons.grid_on),
                     size: 25,
-                    color: canvasMode == 0 ? Colors.grey : AppColor().primaryColor,
+                    color: canvasMode == 0 ? AppColor().gray : AppColor().primaryColor,
                   ),
                   onPressed: () {
                     ConfirmBottomSheet.show(

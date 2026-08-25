@@ -119,19 +119,10 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     _quillController.addListener(_triggerAutoSave);
   }
 
-  // void _triggerAutoSave() {
-  //   if (!isAutoSaveEnabled) return;
-  //   if (_autoSaveTimer?.isActive ?? false) _autoSaveTimer!.cancel();
-
-  //   _autoSaveTimer = Timer(const Duration(milliseconds: 0), () {
-  //     _saveNote(isAuto: true);
-  //   });
-  // }
   void _triggerAutoSave() {
     if (!isAutoSaveEnabled) return;
     if (_autoSaveTimer?.isActive ?? false) _autoSaveTimer!.cancel();
 
-    // Debounced auto-save timer (800ms) prevents database locking and UI stutter while typing
     _autoSaveTimer = Timer(const Duration(milliseconds: 800), () {
       _saveNote(isAuto: true);
     });
@@ -164,61 +155,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
     return {'images': images, 'videos': videos, 'files': files};
   }
-
-  // Future<void> _saveNote({bool isAuto = false}) async {
-  //   final String title = titleController.text.trim();
-
-  //   final String plainText = _quillController.document.toPlainText().replaceAll('\n', '').trim();
-  //   final bool isTextContentEmpty = plainText.isEmpty;
-
-  //   final mediaData = _extractEmbeddedMedia();
-  //   final List<String> activeImagePaths = mediaData['images']!;
-  //   final List<String> activeVideoPaths = mediaData['videos']!;
-  //   final List<String> activeFilePaths = mediaData['files']!;
-
-  //   final drawingPaths = selectedImages.map((f) => f.path).where((path) => path.contains('draw_')).toList();
-  //   activeImagePaths.addAll(drawingPaths);
-
-  //   setState(() {
-  //     selectedImages = activeImagePaths.map((path) => File(path)).toList();
-  //   });
-  //   bool isEmpty = title.isEmpty && isTextContentEmpty && activeImagePaths.isEmpty && activeVideoPaths.isEmpty && activeFilePaths.isEmpty && !showTable && drawingLayers.isEmpty;
-
-  //   if (isEmpty) {
-  //     if (isAuto && currentNoteId != null) {
-  //       await noteController.moveToTrash(currentNoteId!, widget.folderId);
-  //       // currentNoteId = null;
-  //     }
-
-  //     if (!isAuto) Get.back();
-  //     return;
-  //   }
-
-  //   final String contentJson = jsonEncode(_quillController.document.toDelta().toJson());
-
-  //   final savedId = await noteController.saveNoteSQLite(
-  //     id: currentNoteId,
-  //     folderId: widget.folderId,
-  //     title: title,
-  //     contentJson: contentJson,
-  //     isLocked: isLocked,
-  //     isPinned: isPinned,
-  //     // bgColor: noteBgColor?.value ?? 0,
-  //     bgColor: noteBgColor?.toARGB32() ?? 0,
-  //     imagePaths: activeImagePaths,
-  //     showTable: showTable,
-  //     tableData: tableData,
-  //     drawingLayers: drawingLayers,
-  //   );
-
-  //   if (savedId != null && !widget.isEditing) {
-  //     currentNoteId = savedId;
-  //   }
-
-  //   if (!isAuto) {
-  //     Get.back(result: true);
-  //   }
-  // }
 
   Future<void> _saveNote({bool isAuto = false}) async {
     try {
@@ -265,7 +201,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         drawingLayers: drawingLayers,
       );
 
-      // Crucial: Keep track of saved SQLite ID to update existing note on subsequent auto-saves
       if (savedId != null) {
         currentNoteId = savedId;
       }
@@ -685,55 +620,6 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                       _triggerAutoSave();
                     },
                   ),
-                // if (showTable)
-                //   EditableTableComponent(
-                //     tableData: tableData,
-                //     noteBgColor: effectiveBg,
-                //     onCellChanged: (row, col, value) {
-                //       tableData[row][col] = value;
-                //       _triggerAutoSave();
-                //     },
-                //     onAddRow: () {
-                //       setState(() {
-                //         tableData.add(List.generate(tableData[0].length, (_) => ""));
-                //       });
-                //       _triggerAutoSave();
-                //     },
-                //     onAddColumn: () {
-                //       setState(() {
-                //         for (var row in tableData) {
-                //           row.add("");
-                //         }
-                //       });
-                //       _triggerAutoSave();
-                //     },
-                //     onRemoveRow: (index) {
-                //       setState(() {
-                //         if (tableData.length > 1) tableData.removeAt(index);
-                //       });
-                //       _triggerAutoSave();
-                //     },
-                //     onRemoveColumn: (index) {
-                //       setState(() {
-                //         if (tableData[0].length > 1) {
-                //           for (var row in tableData) {
-                //             row.removeAt(index);
-                //           }
-                //         }
-                //       });
-                //       _triggerAutoSave();
-                //     },
-                //     onDeleteTable: () {
-                //       setState(() {
-                //         showTable = false;
-                //         tableData = [
-                //           ["", ""],
-                //           ["", ""]
-                //         ];
-                //       });
-                //       _triggerAutoSave();
-                //     },
-                //   ),
               ],
             ),
           ),

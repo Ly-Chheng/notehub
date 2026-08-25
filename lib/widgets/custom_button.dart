@@ -5,7 +5,6 @@ import '../core/utils/app_color.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
-  // final VoidCallback onPressed;
   final VoidCallback? onPressed;
 
   final Color? backgroundColor;
@@ -22,7 +21,6 @@ class CustomButton extends StatelessWidget {
   const CustomButton({
     super.key,
     required this.text,
-    // required this.onPressed,
     this.onPressed,
     this.backgroundColor,
     this.textColor,

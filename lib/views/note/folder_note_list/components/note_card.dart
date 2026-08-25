@@ -54,6 +54,7 @@ class NoteCard extends StatelessWidget {
           motion: const ScrollMotion(),
           extentRatio: 0.7,
           children: [
+            //swipe actions
             AppSlidableAction(
               onPressed: () => controller.togglePinNote(note, folderId),
               icon: note.isPinned ? Icons.push_pin_outlined : Icons.push_pin,

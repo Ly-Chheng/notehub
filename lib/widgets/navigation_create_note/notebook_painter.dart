@@ -29,7 +29,6 @@ class NotebookPainter extends CustomPainter {
       ..strokeWidth = 2.0
       ..style = PaintingStyle.stroke;
 
-    // Horizontal lines
     for (double y = spacing; y < size.height; y += spacing) {
       canvas.drawLine(
         Offset(0, y),
@@ -38,7 +37,6 @@ class NotebookPainter extends CustomPainter {
       );
     }
 
-    // Vertical lines (Grid mode)
     if (mode == 2) {
       for (double x = spacing; x < size.width; x += spacing) {
         canvas.drawLine(
@@ -49,7 +47,6 @@ class NotebookPainter extends CustomPainter {
       }
     }
 
-    // Margin line
     canvas.drawLine(
       Offset(marginX, 0),
       Offset(marginX, size.height),

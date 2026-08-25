@@ -25,18 +25,54 @@ class EventDetailsScreen extends StatefulWidget {
 
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
   final EventPlannerController _controller = EventPlannerController();
+  DateTime? _eventDateTime;
   Duration _timeRemaining = const Duration();
   Timer? _timer;
   bool _hasError = false;
   late Future<List<RevisionTopic>> _topicsFuture;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _refreshData();
+  //   if (!widget.event.isCompleted) {
+  //     _calculateTimeRemaining();
+  //     _timer = Timer.periodic(const Duration(seconds: 1), (timer) => _calculateTimeRemaining());
+  //   }
+  // }
+
   @override
   void initState() {
     super.initState();
+    _parseDateTime();
     _refreshData();
+
     if (!widget.event.isCompleted) {
       _calculateTimeRemaining();
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) => _calculateTimeRemaining());
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) => _calculateTimeRemaining());
+    }
+  }
+
+  void _parseDateTime() {
+    try {
+      String rawTime = widget.event.time.trim();
+      String rawDate = widget.event.date.trim();
+      String combinedString = "$rawDate $rawTime";
+
+      if (rawTime.toUpperCase().contains('AM') || rawTime.toUpperCase().contains('PM')) {
+        _eventDateTime = DateFormat("yyyy-MM-dd h:mm a").parse(combinedString);
+      } else {
+        List<String> timeParts = rawTime.split(':');
+        if (timeParts.length >= 2) {
+          String hour = timeParts[0].padLeft(2, '0');
+          String minute = timeParts[1].padLeft(2, '0');
+          _eventDateTime = DateTime.parse("$rawDate $hour:$minute:00");
+        } else {
+          _eventDateTime = DateTime.parse(rawDate);
+        }
+      }
+    } catch (e) {
+      _eventDateTime = null;
     }
   }
 
@@ -49,40 +85,72 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     });
   }
 
+  // void _calculateTimeRemaining() {
+  //   if (!mounted) return;
+
+  //   try {
+  //     DateTime eventDateTime;
+  //     String rawTime = widget.event.time.trim();
+  //     String rawDate = widget.event.date.trim();
+
+  //     String combinedString = "$rawDate $rawTime";
+
+  //     if (rawTime.toUpperCase().contains('AM') || rawTime.toUpperCase().contains('PM')) {
+  //       eventDateTime = DateFormat("yyyy-MM-dd h:mm a").parse(combinedString);
+  //     } else {
+  //       List<String> timeParts = rawTime.split(':');
+  //       if (timeParts.length >= 2) {
+  //         String hour = timeParts[0].padLeft(2, '0');
+  //         String minute = timeParts[1].padLeft(2, '0');
+  //         eventDateTime = DateTime.parse("$rawDate $hour:$minute:00");
+  //       } else {
+  //         eventDateTime = DateTime.parse(rawDate);
+  //       }
+  //     }
+
+  //     final now = DateTime.now();
+  //     setState(() {
+  //       _timeRemaining = eventDateTime.difference(now);
+  //       _hasError = false;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       _timeRemaining = const Duration();
+  //       _hasError = true;
+  //     });
+  //   }
+  // }
+  /// គណនារយៈពេលនៅសល់ (ឬរយៈពេលដែលបានកន្លងផុតប្រសិនបើម៉ោងតូចជាង)
   void _calculateTimeRemaining() {
-    if (!mounted) return;
+    if (!mounted || widget.event.isCompleted) return;
 
-    try {
-      DateTime eventDateTime;
-      String rawTime = widget.event.time.trim();
-      String rawDate = widget.event.date.trim();
-
-      String combinedString = "$rawDate $rawTime";
-
-      if (rawTime.toUpperCase().contains('AM') || rawTime.toUpperCase().contains('PM')) {
-        eventDateTime = DateFormat("yyyy-MM-dd h:mm a").parse(combinedString);
-      } else {
-        List<String> timeParts = rawTime.split(':');
-        if (timeParts.length >= 2) {
-          String hour = timeParts[0].padLeft(2, '0');
-          String minute = timeParts[1].padLeft(2, '0');
-          eventDateTime = DateTime.parse("$rawDate $hour:$minute:00");
-        } else {
-          eventDateTime = DateTime.parse(rawDate);
-        }
-      }
-
-      final now = DateTime.now();
+    if (_eventDateTime == null) {
       setState(() {
-        _timeRemaining = eventDateTime.difference(now);
-        _hasError = false;
-      });
-    } catch (e) {
-      setState(() {
-        _timeRemaining = const Duration();
+        _timeRemaining = Duration.zero;
         _hasError = true;
       });
+      return;
     }
+
+    final now = DateTime.now();
+    final isToday = _eventDateTime!.year == now.year && _eventDateTime!.month == now.month && _eventDateTime!.day == now.day;
+
+    Duration diff;
+
+    // 1. ប្រសិនបើ Event ស្ថិតក្នុងថ្ងៃបច្ចុប្បន្ន (Today) ប៉ុន្តែម៉ោងតូចជាងម៉ោងបច្ចុប្បន្ន
+    // យើងគណនារយៈពេលរហូតដល់ចុងបញ្ចប់នៃថ្ងៃនេះ (23:59:59)
+    if (isToday && _eventDateTime!.isBefore(now)) {
+      final endOfToday = DateTime(now.year, now.month, now.day, 23, 59, 59);
+      diff = endOfToday.difference(now);
+    } else {
+      // 2. គណនា difference រវាង EventDateTime និង ម៉ោងបច្ចុប្បន្នធម្មតា
+      diff = _eventDateTime!.difference(now);
+    }
+
+    setState(() {
+      _timeRemaining = diff.isNegative ? Duration.zero : diff;
+      _hasError = false;
+    });
   }
 
   String _getImageAsset(String? iconName) {
@@ -144,7 +212,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                       if (snapshot.hasError) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text("Error loading topics: ${snapshot.error}", style: const TextStyle(color: Colors.red)),
+                          child: Text("Error loading topics: ${snapshot.error}", style: TextStyle(color: AppColor().red)),
                         );
                       }
 
@@ -183,7 +251,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 20.0),
                               child: Center(
-                                child: Text("no_data".tr, style: text14(context).copyWith(color: Colors.grey)),
+                                child: Text("no_data".tr, style: text14(context).copyWith(color: AppColor().gray)),
                               ),
                             )
                           else
@@ -204,6 +272,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                                         motion: const ScrollMotion(),
                                         extentRatio: 0.35,
                                         children: [
+                                          //swipe actions
                                           AppSlidableAction(
                                             onPressed: () {
                                               addTopic(
@@ -323,7 +392,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   Widget _buildCountdownSection() {
     if (_hasError) {
-      return const Text("Invalid countdown formatting structure.", style: TextStyle(color: Colors.red));
+      return Text("Invalid countdown formatting structure.", style: TextStyle(color: AppColor().red));
     }
 
     final positiveDuration = (widget.event.isCompleted || _timeRemaining.isNegative) ? const Duration() : _timeRemaining;

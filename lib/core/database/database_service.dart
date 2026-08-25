@@ -16,7 +16,6 @@ class DatabaseService {
     return await openDatabase(
       path,
       version: 9,
-      // version: 10,
       onConfigure: (db) async {
         await db.execute('PRAGMA foreign_keys = ON');
       },

@@ -34,7 +34,7 @@ class SelectionModeToggle extends StatelessWidget {
         child: Center(
           child: Icon(
             isSelectionMode ? Icons.close : Icons.more_vert_outlined,
-            size: 18,
+            size: context.isPhone ? 18 : 22,
             color: currentColor,
           ),
         ),

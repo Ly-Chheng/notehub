@@ -305,7 +305,6 @@ class _FolderNoteListScreenState extends State<FolderNoteListScreen> {
                           ),
                         ],
                       );
-                      // }).toList(),
                     }),
                   ],
                 ),
