@@ -71,6 +71,7 @@ class _CompletedEventListState extends State<CompletedEventList> {
                     motion: const ScrollMotion(),
                     extentRatio: 0.3,
                     children: [
+                      //swipe to delete action
                       AppSlidableAction(
                         onPressed: () async {
                           if (event.id != null) {

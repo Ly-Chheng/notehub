@@ -85,41 +85,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     });
   }
 
-  // void _calculateTimeRemaining() {
-  //   if (!mounted) return;
-
-  //   try {
-  //     DateTime eventDateTime;
-  //     String rawTime = widget.event.time.trim();
-  //     String rawDate = widget.event.date.trim();
-
-  //     String combinedString = "$rawDate $rawTime";
-
-  //     if (rawTime.toUpperCase().contains('AM') || rawTime.toUpperCase().contains('PM')) {
-  //       eventDateTime = DateFormat("yyyy-MM-dd h:mm a").parse(combinedString);
-  //     } else {
-  //       List<String> timeParts = rawTime.split(':');
-  //       if (timeParts.length >= 2) {
-  //         String hour = timeParts[0].padLeft(2, '0');
-  //         String minute = timeParts[1].padLeft(2, '0');
-  //         eventDateTime = DateTime.parse("$rawDate $hour:$minute:00");
-  //       } else {
-  //         eventDateTime = DateTime.parse(rawDate);
-  //       }
-  //     }
-
-  //     final now = DateTime.now();
-  //     setState(() {
-  //       _timeRemaining = eventDateTime.difference(now);
-  //       _hasError = false;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       _timeRemaining = const Duration();
-  //       _hasError = true;
-  //     });
-  //   }
-  // }
   /// គណនារយៈពេលនៅសល់ (ឬរយៈពេលដែលបានកន្លងផុតប្រសិនបើម៉ោងតូចជាង)
   void _calculateTimeRemaining() {
     if (!mounted || widget.event.isCompleted) return;

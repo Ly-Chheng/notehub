@@ -91,6 +91,7 @@ class TimerList extends StatelessWidget {
           endActionPane: ActionPane(
             motion: const DrawerMotion(),
             children: [
+              //swipe actions
               AppSlidableAction(
                 onPressed: () {
                   controller.activeTimerKeys.remove(timer.key);
@@ -145,6 +146,7 @@ class TimerList extends StatelessWidget {
                             )),
                         Text("${'total'.tr} ${controller.formatToHMS(timer.totalSeconds)}",
                             style: text12.copyWith(
+                              fontFamily: Get.locale?.languageCode == 'km' ? 'KH-REGULAR' : 'EN-REGULAR',
                               color: isFinished ? AppColor().gray : Theme.of(context).colorScheme.onSurface.withAlpha(150),
                             )),
                       ],

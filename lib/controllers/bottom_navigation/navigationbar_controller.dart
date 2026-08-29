@@ -13,7 +13,7 @@ class BottomNavigationBarController extends GetxController {
   String get currentTitle {
     switch (selectedIndex) {
       case 0:
-        return 'Quick Notes';
+        return 'Quick Note';
       case 1:
         return 'focus_track'.tr;
       case 2:

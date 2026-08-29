@@ -70,7 +70,7 @@ class FirebaseServices {
   ) async {
     switch (notificationResponse.notificationResponseType) {
       case NotificationResponseType.selectedNotification:
-        debugPrint("-----Active Click-----");
+        // debugPrint("-----Active Click-----");
         if (notificationResponse.payload != null) {
           try {
             // navigatorKey.currentState?.push(
@@ -115,110 +115,6 @@ class FirebaseServices {
       }
     });
   }
-
-  // ! FIXED: Handle local notification clicks (App is in Foreground/Active)
-  // void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
-  //   switch (notificationResponse.notificationResponseType) {
-  //     case NotificationResponseType.selectedNotification:
-  //       debugPrint("-----Active Click (Local Notification)-----");
-  //       try {
-  //         // Navigate immediately using GetX instead of listening to a stream
-  //         Get.offAllNamed('/mainHome', arguments: {
-  //           'tab': 1,
-  //           'focusTab': 1,
-  //         });
-  //       } catch (error) {
-  //         debugPrint('-----Notification payload error: $error');
-  //       }
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
-
-  // // ! CONFIGURING FCM LISTENERS
-  // Future<void> configureMessaging() async {
-  //   // 1. Foreground messages (Show local notification)
-  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-  //     if (message.notification != null) {
-  //       _showNotification(message);
-  //     }
-  //   });
-
-  //   // 2. FIXED: Handle FCM click when app is in Background (Minimised)
-  //   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-  //     debugPrint('-----onMessageOpenedApp (Clicked from background): ${message.data}');
-
-  //     // Kept consistent with your GetX routing choice
-  //     Get.offAllNamed('/mainHome', arguments: {
-  //       'tab': 1,
-  //       'focusTab': 1,
-  //     });
-  //   });
-
-  //   // 3. OPTIONAL: Handle FCM click when app was completely TERMINATED
-  //   RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-  //   if (initialMessage != null) {
-  //     debugPrint('-----App opened from Terminated State via Notification');
-  //     // Delay slightly if GetX routing needs the widget tree to finish mounting
-  //     Future.delayed(const Duration(milliseconds: 500), () {
-  //       Get.offAllNamed('/mainHome', arguments: {
-  //         'tab': 1,
-  //         'focusTab': 1,
-  //       });
-  //     });
-  //   }
-  // }
-
-  // // ! Handle messages click when app is active (Foreground Local Notification Click)
-  // void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
-  //   switch (notificationResponse.notificationResponseType) {
-  //     case NotificationResponseType.selectedNotification:
-  //       debugPrint("-----Active Click (Local Notification)-----");
-  //       try {
-  //         // Instantly routes over your stack to your '/event' page
-  //         Get.toNamed('/event', arguments: {
-  //           'tab': 0, // Defaulting to 0 (Upcoming). Pass 1 for Completed.
-  //         });
-  //       } catch (error) {
-  //         debugPrint('-----Notification payload error: $error');
-  //       }
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // }
-
-  // // ! Configure Messaging & Handle Background / Terminated Clicks
-  // Future<void> configureMessaging() async {
-  //   // 1. App is in Foreground: Listen for notification incoming events
-  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-  //     if (message.notification != null) {
-  //       _showNotification(message);
-  //     }
-  //   });
-
-  //   // 2. App is in Background: Handle click on system tray notification tray
-  //   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
-  //     debugPrint('-----onMessageOpenedApp (Clicked from background): ${message.data}');
-
-  //     Get.toNamed('/event', arguments: {
-  //       'tab': 0,
-  //     });
-  //   });
-
-  //   // 3. App is Terminated: Handle notification launch click from dead state
-  //   RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
-  //   if (initialMessage != null) {
-  //     debugPrint('-----App launched from completely Terminated State via Notification');
-  //     // Tiny delay allows GetX routing engine to wake up with the widget tree
-  //     Future.delayed(const Duration(milliseconds: 350), () {
-  //       Get.toNamed('/event', arguments: {
-  //         'tab': 0,
-  //       });
-  //     });
-  //   }
-  // }
 
   void _showNotification(RemoteMessage message) {
     AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -272,105 +168,6 @@ class FirebaseServices {
     );
   }
 
-  // static Future<void> eventReminderNotification({
-  //   required int id,
-  //   required String title,
-  //   required String body,
-  //   required DateTime remiderDateTime,
-  // }) async {
-  //   // 1. Define the Android channel specifics
-  //   const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-  //     'event_planner_channel',
-  //     'Event Reminders',
-  //     channelDescription: 'Notifications for your scheduled events and revision topics',
-  //     importance: Importance.max,
-  //     priority: Priority.high,
-  //     playSound: true,
-  //   );
-
-  //   // 2. Define iOS specifics
-  //   const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
-  //     presentAlert: true,
-  //     presentBadge: true,
-  //     presentSound: true,
-  //   );
-
-  //   const NotificationDetails platformDetails = NotificationDetails(
-  //     android: androidDetails,
-  //     iOS: iOSDetails,
-  //   );
-
-  //   // 3. Event the alarm at the exact user-selected date and time
-  //   await _notificationsPlugin.zonedSchedule(
-  //     id,
-  //     title,
-  //     body,
-  //     tz.TZDateTime.from(remiderDateTime, tz.local),
-  //     platformDetails,
-  //     uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle, // Forces fire even under device battery optimization sleep modes
-  //   );
-  // }
-
-  // static Future<void> eventReminderNotification({
-  //   required int id,
-  //   required String title,
-  //   required String body,
-  //   required DateTime remiderDateTime,
-  // }) async {
-  //   // Convert target DateTime to TZDateTime in local timezone
-  //   final tz.TZDateTime scheduledDate = tz.TZDateTime.from(remiderDateTime, tz.local);
-  //   final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-
-  //   // 1. Define the Android channel specifics
-  //   const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-  //     'event_planner_channel',
-  //     'Event Reminders',
-  //     channelDescription: 'Notifications for your scheduled events and revision topics',
-  //     importance: Importance.max,
-  //     priority: Priority.high,
-  //     playSound: true,
-  //   );
-
-  //   // 2. Define iOS specifics
-  //   const DarwinNotificationDetails iOSDetails = DarwinNotificationDetails(
-  //     presentAlert: true,
-  //     presentBadge: true,
-  //     presentSound: true,
-  //   );
-
-  //   const NotificationDetails platformDetails = NotificationDetails(
-  //     android: androidDetails,
-  //     iOS: iOSDetails,
-  //   );
-
-  //   // 3. Guard Rail: Check if scheduled date is in the past or present
-  //   if (scheduledDate.isBefore(now) || scheduledDate.isAtSameMomentAs(now)) {
-  //     // OPTION A: Fire notification immediately if time has already arrived
-  //     await _notificationsPlugin.show(
-  //       id,
-  //       title,
-  //       body,
-  //       platformDetails,
-  //     );
-  //     return;
-
-  //     // OPTION B: If you prefer NOT to trigger past notifications at all, uncomment below:
-  //     // return;
-  //   }
-
-  //   // 4. Schedule the alarm at the exact date and time
-  //   await _notificationsPlugin.zonedSchedule(
-  //     id,
-  //     title,
-  //     body,
-  //     scheduledDate,
-  //     platformDetails,
-  //     uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-  //   );
-  // }
-
   static Future<void> eventReminderNotification({
     required int id,
     required String title,
@@ -380,10 +177,9 @@ class FirebaseServices {
     final tz.TZDateTime scheduledDate = tz.TZDateTime.from(remiderDateTime, tz.local);
     final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
 
-    // ១. ប្រសិនបើម៉ោង Reminder ស្ថិតក្នុងអតីតកាល ឬចំម៉ោងឥឡូវ គឺ Return ចោលភ្លាម (មិនឱ្យលោត Notification ពេល Create ឡើយ)
     if (scheduledDate.isBefore(now) || scheduledDate.isAtSameMomentAs(now)) {
       debugPrint("Skipping schedule: Reminder time is in the past or current moment.");
-      return; // ឈប់ធ្វើការត្រឹមនេះ មិនបង្ហាញ Notification ភ្លាមៗទេ
+      return;
     }
 
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
@@ -404,7 +200,6 @@ class FirebaseServices {
       ),
     );
 
-    // ២. ដំឡើង Alarm ឱ្យរង់ចាំលោតចំ "ថ្ងៃ និង ម៉ោង Reminder" នៅពេលអនាគតតែមួយគត់
     await _notificationsPlugin.zonedSchedule(
       id,
       title,

@@ -61,6 +61,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
           const SizedBox(width: 10),
         ],
       ),
+      
       body: Column(
         children: [
           Expanded(
@@ -93,6 +94,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                           motion: const ScrollMotion(),
                           extentRatio: 0.7,
                           children: [
+                            //swipe actions
                             AppSlidableAction(
                               onPressed: () {
                                 _showMoveRestoreSheet(note.id!);

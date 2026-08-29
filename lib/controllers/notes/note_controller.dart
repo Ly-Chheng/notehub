@@ -146,7 +146,7 @@ class NoteController extends GetxController {
         resultId = await db.insert('notes', row);
         debugPrint('Note CREATED: ID $resultId');
       } else {
-        // UPDATE EXISTING NOTE (លុប Comment ចេញដើម្បីឲ្យ Save ចូល DB)
+        // UPDATE EXISTING NOTE
         int count = await db.update(
           'notes',
           row,
@@ -157,7 +157,7 @@ class NoteController extends GetxController {
         debugPrint('Note UPDATED: ID $id ($count rows affected)');
       }
 
-      // Refresh បញ្ជី Note ឡើងវិញ
+      // Refresh
       await fetchNotesByFolder(folderId);
 
       return resultId;

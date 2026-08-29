@@ -142,6 +142,7 @@ class _MoreScreenState extends State<MoreScreen> {
                   textAlign: TextAlign.center,
                   style: text12.copyWith(
                     height: 1.5,
+                    fontFamily: Get.locale?.languageCode == 'km' ? 'KH-REGULAR' : 'EN-REGULAR',
                   )),
             ],
           ),
