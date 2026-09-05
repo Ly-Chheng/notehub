@@ -153,7 +153,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                   onTap: () => Navigator.pop(context),
                   child: Padding(
                     padding: const EdgeInsets.only(left: 10),
-                    child: Text('cancel'.tr, style: text16(context).copyWith(color: Colors.red)),
+                    child: Text('cancel'.tr, style: text16(context).copyWith(color: AppColor().red)),
                   ),
                 ),
                 Row(

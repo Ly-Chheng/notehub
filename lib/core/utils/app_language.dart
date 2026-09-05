@@ -487,7 +487,7 @@ class AppTranslations extends Translations {
           'save': 'រក្សាទុក',
           'pin': 'ខ្ទាស់',
           'unpin': 'ដោះខ្ទាស់',
-          'pinned_header': 'បានបិទភ្ជាប់',
+          'pinned_header': 'បានខ្ទាស់',
           'share': 'ចែករំលែក',
           'move_note': 'ផ្លាស់ប្តូរកំណត់ត្រា',
           'lock_note': 'ចាក់សោកំណត់ត្រា',

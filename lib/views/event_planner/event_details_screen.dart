@@ -31,16 +31,6 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   bool _hasError = false;
   late Future<List<RevisionTopic>> _topicsFuture;
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   _refreshData();
-  //   if (!widget.event.isCompleted) {
-  //     _calculateTimeRemaining();
-  //     _timer = Timer.periodic(const Duration(seconds: 1), (timer) => _calculateTimeRemaining());
-  //   }
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -430,7 +420,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(value, style: fix18(context).copyWith(fontSize: 26, fontWeight: FontWeight.bold)),
+        Text(value, style: fix18(context).copyWith(fontSize: 26, fontWeight: FontWeight.bold, color: AppColor().primaryColor)),
         const SizedBox(height: 2),
         Text(label, style: text16(context).copyWith(color: AppColor().gray)),
       ],

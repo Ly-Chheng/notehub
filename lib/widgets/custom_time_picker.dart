@@ -11,7 +11,7 @@ Future<TimeOfDay?> customTimePicker({
   final primaryColor = appColors.primaryColor;
   final whiteColor = appColors.white;
   final cardColor = Theme.of(context).cardColor;
-  final surfaceTextColor = text16(context).color ?? Colors.black;
+  final surfaceTextColor = text16(context).color ?? AppColor().black;
 
   return await showTimePicker(
     context: context,

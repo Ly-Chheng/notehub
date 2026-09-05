@@ -63,7 +63,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
       _iconController.text = event.icon ?? "";
 
       if (event.color != null) {
-        // final index = eventColors.indexWhere((c) => c.value == event.color);
         final index = eventColors.indexWhere((c) => c.toARGB32() == event.color);
         if (index != -1) selectedColorIndex = index;
       }
@@ -183,7 +182,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   child: Text('apply'.tr, style: text16(context)),
                   onPressed: () {
                     setState(() {
-                      // int existingIndex = eventColors.indexWhere((c) => c.value == tempColor.value);
                       int existingIndex = eventColors.indexWhere((c) => c.toARGB32() == tempColor.toARGB32());
                       if (existingIndex != -1) {
                         selectedColorIndex = existingIndex;
@@ -688,7 +686,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 location: _locationController.text.trim().isEmpty ? "" : _locationController.text.trim(),
                 reminderTime: "$reminderDateString $reminderTimeString",
                 isCompleted: widget.event?.isCompleted ?? false,
-                // color: eventColors[selectedColorIndex].value,
                 color: eventColors[selectedColorIndex].toARGB32(),
                 icon: _iconController.text.trim(),
                 reminderDate: reminderDateString,

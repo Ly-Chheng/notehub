@@ -32,7 +32,7 @@ Future<DateTime?> customDatePicker({
             primary: AppColor().primaryColor,
             onPrimary: AppColor().white,
             surface: Theme.of(context).cardColor,
-            onSurface: text16(context).color ?? Colors.black,
+            onSurface: text16(context).color ?? AppColor().black,
           ),
           textButtonTheme: TextButtonThemeData(
             style: TextButton.styleFrom(

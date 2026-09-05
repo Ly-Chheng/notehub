@@ -228,14 +228,14 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              alignment: Alignment.topRight,
-              child: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: _cancelListening,
-                color: AppColor().gray,
-              ),
-            ),
+            // Container(
+            //   alignment: Alignment.topRight,
+            //   child: IconButton(
+            //     icon: const Icon(Icons.close),
+            //     onPressed: _cancelListening,
+            //     color: AppColor().gray,
+            //   ),
+            // ),
             ScaleTransition(
               scale: _isListening
                   ? Tween(begin: 0.9, end: 1.1).animate(
@@ -252,7 +252,7 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
               ),
             ),
             const SizedBox(height: 20),
-            Text(_isListening ? "listening".tr : "listening".tr, style: text18(context)),
+            // Text(_isListening ? "listening".tr : "listening".tr, style: text18(context)),
             const SizedBox(height: 8),
             Text(
               _isListening ? "speak_now".tr : "paused_speak".tr,
@@ -260,15 +260,37 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
+            // Row(
+            //   children: [
+            //     Expanded(
+            //       child: CustomButton(
+            //         text: "start".tr,
+            //         // onPressed: _isListening ? null : _startListening, // Trigger voice listening here
+            //         onPressed: _startListening,
+            //         backgroundColor: Colors.transparent,
+            //         // textColor: _startListening ? AppColor().gray : AppColor().black,
+            //         textColor: AppColor().black,
+            //         borderColor: Colors.grey[200],
+            //       ),
+            //     ),
+            //     const SizedBox(width: 12),
+            //     Expanded(
+            //       child: CustomButton(
+            //         text: _isListening ? "stop".tr : "resume".tr,
+            //         onPressed: _isListening ? _stopListening : _startListening,
+            //         backgroundColor: _isListening ? AppColor().red : AppColor().primaryColor,
+            //         textColor: AppColor().white,
+            //       ),
+            //     ),
+            //   ],
+            // )
             Row(
               children: [
                 Expanded(
                   child: CustomButton(
-                    text: "start".tr,
-                    // onPressed: _isListening ? null : _startListening, // Trigger voice listening here
-                    onPressed: _startListening,
+                    text: "cancel".tr,
+                    onPressed: _cancelListening,
                     backgroundColor: Colors.transparent,
-                    // textColor: _startListening ? AppColor().gray : AppColor().black,
                     textColor: AppColor().black,
                     borderColor: Colors.grey[200],
                   ),
@@ -276,7 +298,7 @@ class _VoiceListeningDialogState extends State<VoiceListeningDialog> with Single
                 const SizedBox(width: 12),
                 Expanded(
                   child: CustomButton(
-                    text: _isListening ? "stop".tr : "resume".tr,
+                    text: _isListening ? "stop".tr : "start".tr,
                     onPressed: _isListening ? _stopListening : _startListening,
                     backgroundColor: _isListening ? AppColor().red : AppColor().primaryColor,
                     textColor: AppColor().white,

@@ -38,7 +38,7 @@ class NoteCard extends StatelessWidget {
     final imagePaths = note.imagePaths;
     final Color noteBgColor = note.bgColor == 0 ? Theme.of(context).cardColor : Color(note.bgColor);
     final Color itemTextColor = note.bgColor == 0
-        ? (Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black)
+        ? (Theme.of(context).textTheme.bodyLarge?.color ?? AppColor().black)
         : (ThemeData.estimateBrightnessForColor(noteBgColor) == Brightness.dark ? AppColor().white : AppColor().black);
     final Color itemSubTextColor = itemTextColor.withValues(alpha: 0.7);
     final String titleText = note.title.trim().isNotEmpty ? note.title : controller.getPlainTextFromNote(note.content).trim();

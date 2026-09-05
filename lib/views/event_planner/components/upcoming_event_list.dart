@@ -125,7 +125,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
               context,
               icon: Icons.check,
               color: AppColor().primaryColor,
-              title: "completed".tr,
+              title: "make_completed".tr,
               onTap: () {
                 Navigator.pop(context);
                 if (event.id != null) {
@@ -133,7 +133,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                     context: context,
                     title: "make_completed".tr,
                     subTitle: "are_you_sure_make_completed".tr,
-                    confirmText: "completed".tr,
+                    confirmText: "ok".tr,
                     onConfirm: () async {
                       await _controller.updateEventCompletionStatus(event.id!, true);
                     },
@@ -291,9 +291,16 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                             style: text14(context).copyWith(
                               color: AppColor().gray,
                             )),
-                        Text(
-                          "${(progressPercentage * 100).toStringAsFixed(0)}%",
-                          style: fix16(context).copyWith(color: baseColor, fontWeight: FontWeight.bold),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColor().primaryColor.withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Text(
+                            "${(progressPercentage * 100).toStringAsFixed(0)}%",
+                            style: fix16(context).copyWith(color: AppColor().primaryColor, fontWeight: FontWeight.bold),
+                          ),
                         ),
                       ],
                     ),
@@ -303,8 +310,8 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
                       child: LinearProgressIndicator(
                         value: progressPercentage,
                         minHeight: 10,
-                        backgroundColor: baseColor.withValues(alpha: 0.1),
-                        valueColor: AlwaysStoppedAnimation<Color>(baseColor),
+                        backgroundColor: AppColor().primaryColor.withValues(alpha: 0.1),
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColor().primaryColor),
                       ),
                     ),
                     const SizedBox(height: 10),
