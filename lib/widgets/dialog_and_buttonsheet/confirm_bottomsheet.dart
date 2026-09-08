@@ -66,7 +66,6 @@ class ConfirmBottomSheet {
                     ),
                     const SizedBox(height: 10),
 
-                    // Header
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

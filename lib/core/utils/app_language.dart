@@ -316,13 +316,15 @@ class AppTranslations extends Translations {
           'step_03_desc': 'Lock important notes to protect private information.',
           'step_04_title': 'Study with Stopwatch',
           'step_04_desc': 'Track your study time and improve focus.',
+          'step_05_title': 'Track Events & Revision',
+          'step_05_desc': 'Schedule important events and track progress.',
 
           // About
           'about_app_name': 'Quick Note App',
           'about_slogan': 'Study smarter, stay organized',
           'about_version': 'Version 1.0.0',
           'about_application': 'About Application',
-          'about_description': 'Quick Note App helps students organize notes, manage study materials, and improve productivity through a clean, simple, and modern experience.',
+          'about_description': 'Quick Note is a smart digital app designed to help users efficiently create, organize, store, and manage various data, documents, and notes.',
           'about_features': 'Features',
           'about_create_notes': 'Create Notes',
           'about_create_notes_sub': 'Write and save study notes easily',
@@ -688,13 +690,16 @@ class AppTranslations extends Translations {
           'step_03_desc': 'ចាក់សោកំណត់ត្រាសំខាន់ៗ ដើម្បីការពារព័ត៌មានផ្ទាល់ខ្លួន។',
           'step_04_title': 'សិក្សាដោយប្រើនាឡិកាកំណត់ពេល',
           'step_04_desc': 'តាមដានពេលវេលាសិក្សារបស់អ្នក និងបង្កើនការផ្ដោតអារម្មណ៍។',
+          'step_05_title': 'តាមដានព្រឹត្តិការណ៍ និងការរំលឹក',
+          'step_05_desc': 'រៀបចំកាលវិភាគព្រឹត្តិការណ៍សំខាន់ៗ និងតាមដានវឌ្ឍនភាព។',
 
           // About
           'about_app_name': 'កម្មវិធី Quick Note',
           'about_slogan': 'សិក្សាកាន់តែឆ្លាតវៃ រៀបចំបានល្អប្រសើរ',
           'about_version': 'កំណែ ១.០.០',
           'about_application': 'អំពីកម្មវិធី',
-          'about_description': 'កម្មវិធី Quick Note ជួយសិស្សានុសិស្សក្នុងការរៀបចំកំណត់ត្រា និងបង្កើនផលិតភាពតាមរយៈបទពិសោធន៍ដ៏សាមញ្ញ និងទំនើប។',
+          'about_description':
+              'Quick Note គឺជាកម្មវិធីឌីជីថលដ៏ឆ្លាតវៃមួយ ដែលត្រូវបានរចនាឡើងដើម្បីជួយអ្នកប្រើប្រាស់ទូទៅ ក្នុងការបង្កើត រៀបចំ រក្សាទុក និងគ្រប់គ្រងទិន្នន័យ ឯកសារ និងកំណត់ត្រាផ្សេងៗប្រកបដោយប្រសិទ្ធភាពខ្ពស់។',
           'about_features': 'លក្ខណៈពិសេស',
           'about_create_notes': 'បង្កើតកំណត់ត្រា',
           'about_create_notes_sub': 'សរសេរ និងរក្សាទុកកំណត់ត្រាសិក្សាបានយ៉ាងងាយស្រួល',

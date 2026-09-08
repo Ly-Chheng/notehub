@@ -22,16 +22,13 @@ class AboutScreen extends StatelessWidget {
         padding: Layout.padding(),
         child: Column(
           children: [
+            const SizedBox(height: 10),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(35),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [primaryColor, primaryColor.withValues(alpha: 0.75)],
-                ),
+                color: primaryColor,
               ),
               child: Column(
                 children: [
@@ -42,7 +39,14 @@ class AboutScreen extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: AppColor().white.withValues(alpha: 0.18),
                     ),
-                    child: Icon(Icons.auto_stories_rounded, size: 50, color: AppColor().white),
+                    child: Center(
+                      child: Image.asset(
+                        'assets/icons/note_book.png',
+                        height: 60,
+                        width: 60,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 18),
                   Text("about_app_name".tr,
@@ -51,8 +55,7 @@ class AboutScreen extends StatelessWidget {
                         color: AppColor().white,
                       )),
                   const SizedBox(height: 8),
-                  Text("about_slogan".tr, style: text14(context).copyWith(color: AppColor().white.withValues(alpha: 0.9))),
-                  const SizedBox(height: 22),
+                  const SizedBox(height: 8),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(30), color: AppColor().white.withValues(alpha: 0.16)),
@@ -85,7 +88,7 @@ class AboutScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   _buildFeatureItem(Icons.note_alt_outlined, "about_create_notes".tr, "about_create_notes_sub".tr, context),
                   _buildFeatureItem(Icons.edit_note_rounded, "about_edit_anytime".tr, "about_edit_anytime_sub".tr, context),
-                  _buildFeatureItem(Icons.school_outlined, "about_study_smarter".tr, "about_study_smarter_sub".tr, context),
+                  // _buildFeatureItem(Icons.school_outlined, "about_study_smarter".tr, "about_study_smarter_sub".tr, context),
                 ],
               ),
             ),

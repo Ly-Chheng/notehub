@@ -59,7 +59,7 @@ class _CreateTimerScreenState extends State<CreateTimerScreen> {
       selectedMinutes = 20;
       selectedSeconds = 40;
       _labelController = TextEditingController(text: (widget.existingTimer?.title != null && widget.existingTimer!.title.isNotEmpty) ? widget.existingTimer!.title : "timer".tr);
-      selectedSound = _timerController.soundMap.keys.first; // 3. Fallback to first map element
+      selectedSound = _timerController.soundMap.keys.first; 
     }
 
     hourController = FixedExtentScrollController(initialItem: selectedHours);

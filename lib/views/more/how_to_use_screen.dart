@@ -29,9 +29,7 @@ class HowToUseScreen extends StatelessWidget {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              gradient: LinearGradient(
-                colors: [AppColor().primaryColor, AppColor().primaryColor.withValues(alpha: 0.7)],
-              ),
+              color: AppColor().primaryColor,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,6 +53,7 @@ class HowToUseScreen extends StatelessWidget {
           _buildTimelineCard(context, "02", "step_02_title".tr, "step_02_desc".tr, Icons.folder_copy_rounded, AppColor().orange),
           _buildTimelineCard(context, "03", "step_03_title".tr, "step_03_desc".tr, Icons.lock_rounded, AppColor().red),
           _buildTimelineCard(context, "04", "step_04_title".tr, "step_04_desc".tr, Icons.timer_rounded, AppColor().green),
+          _buildTimelineCard(context, "05", "step_05_title".tr, "step_05_desc".tr, Icons.event_rounded, Colors.blue),
           const SizedBox(height: 30),
         ],
       ),
