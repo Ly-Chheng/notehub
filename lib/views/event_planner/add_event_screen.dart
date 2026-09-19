@@ -357,7 +357,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(_formatDate(_selectedDate), style: fix16(context)),
-                            Icon(Icons.date_range, color: AppColor().gray, size: 20),
+                            Icon(Icons.date_range, color: AppColor().gray, size: context.isPhone ? 25 : 25),
                           ],
                         ),
                       ),
@@ -386,7 +386,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(_selectedTime.format(context), style: fix16(context)),
-                            Icon(Icons.access_time, color: AppColor().gray, size: 24),
+                            Icon(Icons.access_time, color: AppColor().gray, size: context.isPhone ? 24 : 23),
                           ],
                         ),
                       ),
@@ -464,7 +464,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                     ),
                                     boxShadow: selected ? [BoxShadow(color: eventColors[index].withValues(alpha: 0.4), blurRadius: 8)] : [],
                                   ),
-                                  child: selected ? Icon(Icons.check, size: 18, color: AppColor().white) : null,
+                                  child: selected ? Icon(Icons.check, size: context.isPhone ? 18 : 24, color: AppColor().white) : null,
                                 ),
                               );
                             },
@@ -544,7 +544,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(_formatDate(_reminderDate), style: fix16(context)),
-                            Icon(Icons.date_range, color: AppColor().gray, size: 20),
+                            Icon(Icons.date_range, color: AppColor().gray, size: context.isPhone ? 20 : 24),
                           ],
                         ),
                       ),
@@ -621,7 +621,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(_reminderTime.format(context), style: fix16(context)),
-                            Icon(Icons.access_time, color: AppColor().gray, size: 24),
+                            Icon(Icons.access_time, color: AppColor().gray, size: context.isPhone ? 24 : 30),
                           ],
                         ),
                       ),

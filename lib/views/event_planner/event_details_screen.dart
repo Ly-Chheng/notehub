@@ -397,7 +397,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.notes_rounded, size: 22, color: AppColor().gray.withValues(alpha: 0.7)),
+                      Icon(Icons.notes_rounded, size: context.isPhone ? 22 : 28, color: AppColor().gray.withValues(alpha: 0.7)),
                       const SizedBox(width: 14),
                       Text("short_description".tr, style: text16(context).copyWith(color: AppColor().gray)),
                     ],
@@ -435,7 +435,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         children: [
           Row(
             children: [
-              Icon(icon, size: 20, color: AppColor().gray),
+              Icon(icon, size: context.isPhone ? 20 : 24, color: AppColor().gray),
               const SizedBox(width: 14),
               Text(label, style: text16(context).copyWith(color: AppColor().gray)),
             ],

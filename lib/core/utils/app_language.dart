@@ -551,7 +551,7 @@ class AppTranslations extends Translations {
           'verify_error': 'មានបញ្ហាក្នុងការផ្ទៀងផ្ទាត់។ សូមព្យាយាមម្តងទៀតក្រោយ។',
 
           //Qustion
-          "first_school_question": "តើសាលាដំបូងរបស់អ្នកមានឈ្មោះអ្វី?",
+          "first_school_question": "តើសាលារៀនដំបូងរបស់អ្នកមានឈ្មោះអ្វី?",
           "mother_maiden_name_question": "តើនាមត្រកូលពីកំណើតរបស់ម្តាយអ្នកជាអ្វី?",
           "birth_city_question": "តើអ្នកកើតនៅទីក្រុងណា?",
           "dream_job_child_question": "តើការងារក្នុងក្តីស្រមៃរបស់អ្នកនៅពេលកុមារគឺអ្វី?",

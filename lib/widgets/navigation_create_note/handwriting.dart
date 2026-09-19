@@ -36,7 +36,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
   final List<SignatureController> _layers = [];
   late SignatureController _activeController;
 
-  Color currentPenColor = Colors.black;
+  Color currentPenColor = AppColor().black;
   double currentWidth = 2.0;
   bool isEraser = false;
   bool showColorPalette = false;
@@ -204,12 +204,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                 child: Container(
                   margin: const EdgeInsets.only(top: 5, bottom: 5),
                   decoration: BoxDecoration(color: canvasBgColor),
-                  // child: Stack(
-                  //   children: [
-                  //     ..._layers.map((l) => Signature(controller: l, backgroundColor: Colors.transparent)),
-                  //     Signature(controller: _activeController, backgroundColor: Colors.transparent),
-                  //   ],
-                  // ),
                   child: Stack(
                     children: [
                       ..._layers.map((l) => Signature(controller: l, backgroundColor: Colors.transparent)),
@@ -309,6 +303,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
       Colors.purple,
       Colors.amber,
       Colors.pink,
+      Colors.teal,
     ];
 
     return SafeArea(
@@ -341,7 +336,6 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                       ),
                     ),
                   ),
-                  // ...colors.map((c) => _colorCircle(c)).toList(),
                   ...colors.map((c) => _colorCircle(c)),
                   if (!colors.contains(currentPenColor) && !isEraser) _colorCircle(currentPenColor),
                 ],
@@ -398,7 +392,7 @@ class _HandwritingCanvasState extends State<HandwritingCanvas> {
                 IconButton(
                   icon: Icon(
                     canvasMode == 0 ? Icons.grid_off : (canvasMode == 1 ? Icons.view_headline : Icons.grid_on),
-                    size: 25,
+                    size: context.isPhone ? 25 : 30,
                     color: canvasMode == 0 ? AppColor().gray : AppColor().primaryColor,
                   ),
                   onPressed: () {

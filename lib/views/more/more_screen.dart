@@ -55,7 +55,12 @@ class _MoreScreenState extends State<MoreScreen> {
                   icon: Icons.text_fields,
                   title: "font_size".tr,
                   onTap: () {
-                    Get.bottomSheet(const FontSizeBottomSheet());
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      constraints: const BoxConstraints(maxWidth: double.infinity),
+                      builder: (context) => const FontSizeBottomSheet(),
+                    );
                   },
                 ),
                 CustomCardSetting(
@@ -181,42 +186,44 @@ class CustomCardSetting extends StatelessWidget {
   Widget build(BuildContext context) {
     final isPhone = context.isPhone;
 
-    return InkWell(
-      onTap: onTap,
+    return ClipRRect(
       borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: EdgeInsets.symmetric(
-          vertical: isPhone ? 12 : 16,
-          horizontal: 16,
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColor().primaryColor.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Icon(
-                icon,
-                color: AppColor().primaryColor,
-                size: isPhone ? 20 : 24,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                title,
-                style: text16(context),
-              ),
-            ),
-            trailing ??
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: context.isPhone ? 16 : 20,
-                  color: AppColor().gray,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            vertical: isPhone ? 12 : 16,
+            horizontal: 16,
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColor().primaryColor.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-          ],
+                child: Icon(
+                  icon,
+                  color: AppColor().primaryColor,
+                  size: isPhone ? 20 : 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  style: text16(context),
+                ),
+              ),
+              trailing ??
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    size: context.isPhone ? 16 : 20,
+                    color: AppColor().gray,
+                  ),
+            ],
+          ),
         ),
       ),
     );

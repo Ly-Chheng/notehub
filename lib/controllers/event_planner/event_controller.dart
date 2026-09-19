@@ -27,7 +27,7 @@ class EventPlannerController extends GetxController {
     loadAllEvents();
   }
 
-  /// Fetches both upcoming and completed events from SQLite and updates state
+  // Fetches both upcoming and completed events from SQLite and updates state
   Future<void> loadAllEvents() async {
     isLoading.value = true;
     try {
@@ -43,7 +43,7 @@ class EventPlannerController extends GetxController {
     }
   }
 
-  /// មុខងារ Parse DateTime របស់ Reminder ឱ្យបានត្រឹមត្រូវ
+  // មុខងារ Parse DateTime របស់ Reminder ឱ្យបានត្រឹមត្រូវ
   DateTime? _parseReminderDateTime(EventModel event) {
     try {
       if (event.reminderDate == null || event.reminderDate!.isEmpty) return null;

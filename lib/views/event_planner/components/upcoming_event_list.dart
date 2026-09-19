@@ -25,12 +25,39 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
   final EventPlannerController _controller = Get.find<EventPlannerController>();
   Timer? _tickerTimer;
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _tickerTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+  //     if (mounted) setState(() {});
+  //   });
+  // }
+
   @override
   void initState() {
     super.initState();
     _tickerTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) setState(() {});
+      if (mounted) {
+        _checkAndCompleteExpiredEvents();
+        setState(() {});
+      }
     });
+  }
+
+  /// ពិនិត្យ និងកត់ត្រា Event ណាដែលដល់ម៉ោងឱ្យទៅជា Completed ស្វ័យប្រវត្តិ
+  void _checkAndCompleteExpiredEvents() {
+    final events = _controller.upcomingEvents;
+    final now = DateTime.now();
+
+    for (var event in events) {
+      if (event.id == null) continue;
+
+      final eventDateTime = _getEventDateTime(event);
+      if (eventDateTime != null && now.isAfter(eventDateTime)) {
+        // ប្តូរស្ថានភាព Event ទៅជា Completed ស្វ័យប្រវត្តិ
+        _controller.updateEventCompletionStatus(event.id!, true);
+      }
+    }
   }
 
   @override

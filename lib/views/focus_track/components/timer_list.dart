@@ -40,7 +40,7 @@ class TimerList extends StatelessWidget {
                 ],
               );
             }
-            // FILTERING LOGIC
+            // filter logic
             final activeTimers = allTimers.where((t) {
               bool isCurrentlyRunning = controller.activeTimerKeys.contains(t.key);
               return t.remainingSeconds > 0 || isCurrentlyRunning;

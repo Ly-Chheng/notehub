@@ -15,7 +15,7 @@ class CustomFab extends StatelessWidget {
     return FloatingActionButton(
       backgroundColor: AppColor().primaryColor,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(context.isPhone ? 12 : 16),
+        borderRadius: BorderRadius.circular(context.isPhone ? 14 : 16),
       ),
       onPressed: onPressed,
       child: Icon(Icons.add, size: context.isPhone ? 30 : 40, color: AppColor().white),

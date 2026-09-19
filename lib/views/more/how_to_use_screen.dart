@@ -34,7 +34,7 @@ class HowToUseScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.menu_book_rounded, color: AppColor().white, size: 45),
+                Icon(Icons.menu_book_rounded, color: AppColor().white, size: context.isPhone ? 45 : 50),
                 const SizedBox(height: 14),
                 Text(
                   "how_to_use_title".tr,

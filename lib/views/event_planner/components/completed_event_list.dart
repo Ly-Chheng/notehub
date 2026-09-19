@@ -54,17 +54,16 @@ class _CompletedEventListState extends State<CompletedEventList> {
           );
         }
 
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: events.length,
-          itemBuilder: (context, index) {
-            final event = events[index];
+        return SlidableAutoCloseBehavior(
+          closeWhenOpened: true,
+          child: ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: events.length,
+            itemBuilder: (context, index) {
+              final event = events[index];
 
-            return Container(
-              margin: const EdgeInsets.only(bottom: 15),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(18)),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(18),
+              return Container(
+                margin: const EdgeInsets.only(bottom: 15),
                 child: Slidable(
                   key: ValueKey(event.id),
                   endActionPane: ActionPane(
@@ -93,34 +92,34 @@ class _CompletedEventListState extends State<CompletedEventList> {
                         label: 'delete'.tr,
                         backgroundColor: AppColor().red,
                         borderRadius: const BorderRadius.horizontal(
-                          right: Radius.circular(18),
-                          left: Radius.circular(18),
+                          right: Radius.circular(20),
+                          left: Radius.circular(20),
                         ),
                       ),
                     ],
                   ),
                   child: Container(
                     width: double.infinity,
-                    decoration: Layout.cardDecoration(),
+                    decoration: Layout.cardDecoration(radius: 20.0),
                     child: InkWell(
-                      borderRadius: BorderRadius.circular(18),
+                      borderRadius: BorderRadius.circular(25),
                       onTap: () => Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => EventDetailsScreen(event: event)),
                       ).then((_) => _refreshList()),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        padding: const EdgeInsets.all(20),
                         child: Row(
                           children: [
                             Container(
                               padding: const EdgeInsets.all(6),
                               decoration: BoxDecoration(
                                 color: AppColor().green.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(14),
                               ),
                               child: Icon(
                                 Icons.check,
-                                size: 40,
+                                size: context.isPhone ? 40 : 45,
                                 color: AppColor().green,
                               ),
                             ),
@@ -146,9 +145,9 @@ class _CompletedEventListState extends State<CompletedEventList> {
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         );
       },
     );

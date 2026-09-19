@@ -88,7 +88,6 @@ class AboutScreen extends StatelessWidget {
                   const SizedBox(height: 20),
                   _buildFeatureItem(Icons.note_alt_outlined, "about_create_notes".tr, "about_create_notes_sub".tr, context),
                   _buildFeatureItem(Icons.edit_note_rounded, "about_edit_anytime".tr, "about_edit_anytime_sub".tr, context),
-                  // _buildFeatureItem(Icons.school_outlined, "about_study_smarter".tr, "about_study_smarter_sub".tr, context),
                 ],
               ),
             ),

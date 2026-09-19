@@ -456,16 +456,13 @@ class _MyHomePageState extends State<MyHomePage> {
             buildFolderIcon(folder, isDefault),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(controller.isDefaultFolder(folder) ? controller.displayDefaultFolderName : folder.title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: fix16(context)),
+              child: Text(controller.isDefaultFolder(folder) ? controller.displayDefaultFolderName : folder.title, maxLines: 1, overflow: TextOverflow.ellipsis, style: fix16(context)),
             ),
             const SizedBox(width: 10),
             if (folder.isPinned)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Icon(Icons.push_pin, size: 18, color: AppColor().orange),
+                child: Icon(Icons.push_pin, size: context.isPhone ? 18 : 24, color: AppColor().orange),
               ),
             Obx(() {
               noteController.notes.length;
@@ -502,12 +499,12 @@ class _MyHomePageState extends State<MyHomePage> {
         Icon(
           Icons.folder,
           color: isDefault ? AppColor().primaryColor : AppColor().primaryColor,
-          size: 35,
+          size: context.isPhone ? 35 : 40,
         ),
         if (!isDefault && folder.isLocked)
           Icon(
             Icons.lock,
-            size: 16,
+            size: context.isPhone ? 16 : 20,
             color: AppColor().white,
           ),
       ],

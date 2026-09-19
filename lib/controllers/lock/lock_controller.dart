@@ -9,9 +9,10 @@ import 'package:project_structure/widgets/dialog_and_buttonsheet/custom_dialog.d
 
 class LockController extends GetxController {
   List<String> get questions => [
-        "mother_maiden_name_question".tr,
+        "first_school_question".tr,
         "birth_city_question".tr,
         "dream_job_child_question".tr,
+        "mother_maiden_name_question".tr,
         "favorite_teacher_question".tr,
       ];
 

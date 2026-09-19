@@ -106,7 +106,7 @@ class NoteCard extends StatelessWidget {
                     Icon(
                       isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
                       color: AppColor().primaryColor,
-                      size: 24,
+                      size: context.isPhone ? 24 : 30,
                     ),
                   const SizedBox(width: 10),
                   Expanded(
@@ -126,7 +126,7 @@ class NoteCard extends StatelessWidget {
                                 ),
                                 child: Icon(
                                   Icons.lock,
-                                  size: 18,
+                                  size: context.isPhone ? 18 : 24,
                                   color: AppColor().primaryColor,
                                 ),
                               ),

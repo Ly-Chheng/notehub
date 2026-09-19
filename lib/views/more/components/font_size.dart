@@ -70,14 +70,14 @@ class FontSizeBottomSheet extends StatelessWidget {
                         activeTrackColor: Get.theme.primaryColor,
                         inactiveTrackColor: Get.theme.primaryColor.withValues(alpha: 0.2),
                         thumbColor: Get.theme.primaryColor,
-                        trackHeight: 8.0,
+                        trackHeight: context.isPhone ? 8.0 : 10.0,
                         thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 10.0),
                       ),
                       child: Slider(
                         value: controller.fontScale.value,
                         min: 0.8,
                         max: 1.2,
-                        divisions: 2,
+                        divisions: context.isPhone ? 2 : 4,
                         onChanged: (value) {
                           double snapped = _snapValue(value);
                           if (controller.fontScale.value != snapped) {

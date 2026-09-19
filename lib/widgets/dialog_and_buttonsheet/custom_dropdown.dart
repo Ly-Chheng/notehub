@@ -21,30 +21,35 @@ class CustomDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 10),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-          decoration: BoxDecoration(
-            color: Colors.grey.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: selectedValue,
-              hint: Text(hint, style: text16(context).copyWith(color: AppColor().gray)),
-              dropdownColor: Theme.of(context).cardColor,
-              isExpanded: true,
-              items: itemsMap.keys.map((String name) {
-                return DropdownMenuItem<String>(
-                  value: name,
-                  child: Text(name, style: text16(context)),
-                );
-              }).toList(),
-              onChanged: (String? newValue) {
-                if (newValue != null) {
-                  onChanged(newValue);
-                }
-              },
+        Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.grey.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: selectedValue,
+                hint: Text(hint, style: text16(context).copyWith(color: AppColor().gray)),
+                dropdownColor: Theme.of(context).cardColor,
+                isExpanded: true,
+                elevation: 9,
+                borderRadius: BorderRadius.circular(16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                items: itemsMap.keys.map((String name) {
+                  return DropdownMenuItem<String>(
+                    value: name,
+                    child: Text(name, style: text16(context)),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  if (newValue != null) {
+                    onChanged(newValue);
+                  }
+                },
+              ),
             ),
           ),
         ),

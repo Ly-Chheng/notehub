@@ -61,7 +61,6 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
           const SizedBox(width: 10),
         ],
       ),
-      
       body: Column(
         children: [
           Expanded(
@@ -160,7 +159,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                                     Icon(
                                       isSelected ? Icons.check_circle : Icons.radio_button_unchecked,
                                       color: AppColor().primaryColor,
-                                      size: 24,
+                                      size: context.isPhone ? 24 : 30,
                                     ),
                                   ],
                                   Expanded(
