@@ -62,7 +62,7 @@ class _EventScreenState extends State<EventScreen> with SingleTickerProviderStat
   }
 }
 
-// separate StatelessWidget to reduce rebuilds and improve performance.
+// separate StatelessWidget to reduce rebuilds and improve performance
 class EventToggleSwitch extends StatelessWidget {
   final TabController tabController;
 

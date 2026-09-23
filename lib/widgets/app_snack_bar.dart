@@ -38,7 +38,7 @@ class AppSnackbar {
       snackPosition: SnackPosition.TOP,
       backgroundColor: AppColor().green,
       margin: const EdgeInsets.all(12),
-      borderRadius: 8,
+      borderRadius: 10,
       duration: const Duration(seconds: 2),
       titleText: Text(title,
           style: text16(Get.context!).copyWith(

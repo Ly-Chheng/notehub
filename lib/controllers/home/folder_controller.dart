@@ -194,7 +194,6 @@ class FolderController extends GetxController {
     );
   }
 
-  // Inside FolderController class
   Future<void> clearAllFolderLocks() async {
     final db = await DatabaseService.db;
 

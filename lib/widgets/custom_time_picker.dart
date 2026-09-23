@@ -53,7 +53,7 @@ Future<TimeOfDay?> customTimePicker({
             }),
             dayPeriodBorderSide: BorderSide(
               color: primaryColor.withValues(alpha: 0.5),
-              width: 1,
+              width: context.isPhone ? 1 : 2,
             ),
             dialBackgroundColor: Theme.of(context).brightness == Brightness.dark ? const Color.fromARGB(179, 50, 50, 50) : const Color.fromARGB(179, 245, 245, 245),
             dialHandColor: primaryColor,

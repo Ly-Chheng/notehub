@@ -36,7 +36,7 @@ class AuthService {
       final UserCredential userCredential = await _auth.signInWithCredential(credential);
       return userCredential.user;
     } catch (e) {
-      debugPrint(" Google Sign-In Error: $e");
+      // debugPrint(" Google Sign-In Error: $e");
       return null;
     }
   }

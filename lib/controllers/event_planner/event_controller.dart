@@ -77,7 +77,8 @@ class EventPlannerController extends GetxController {
         'events',
         where: 'is_completed = ?',
         whereArgs: [completed ? 1 : 0],
-        orderBy: 'date ASC',
+        // orderBy: 'date ASC',
+        orderBy: 'id DESC',
       );
       return List.generate(maps.length, (i) => EventModel.fromMap(maps[i]));
     } catch (e) {

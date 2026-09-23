@@ -288,11 +288,18 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                             ),
                           CustomButton(
                             text: "add_topic".tr,
-                            onPressed: () => addTopic(
-                              context,
-                              widget.event.id!,
-                              () => _refreshData(),
-                            ),
+                            // onPressed: () => addTopic(
+                            //   context,
+                            //   widget.event.id!,
+                            //   () => _refreshData(),
+                            // ),
+                            onPressed: widget.event.isCompleted
+                                ? null // Disables the button when the event is completed
+                                : () => addTopic(
+                                      context,
+                                      widget.event.id!,
+                                      () => _refreshData(),
+                                    ),
                           ),
                         ],
                       );

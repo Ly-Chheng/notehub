@@ -80,7 +80,7 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                   itemBuilder: (context, index) {
                     final note = controller.trashNotes[index];
                     final String plainContent = controller.getPlainTextFromNote(note.content).trim();
-                    final String displayTitle = (note.title.trim().isNotEmpty) ? note.title : (plainContent.isNotEmpty ? plainContent : "Untitled");
+                    final String displayTitle = (note.title.trim().isNotEmpty) ? note.title : (plainContent.isNotEmpty ? plainContent : "untitled".tr);
 
                     bool isSelected = selectedNoteIds.contains(note.id);
 
@@ -147,7 +147,12 @@ class _RecentlyDeletedScreenState extends State<RecentlyDeletedScreen> {
                             decoration: BoxDecoration(
                               color: Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(18),
-                              border: isSelected ? Border.all(color: AppColor().primaryColor, width: 1.5) : null,
+                              border: isSelected
+                                  ? Border.all(
+                                      color: AppColor().primaryColor,
+                                      width: context.isPhone ? 1 : 2,
+                                    )
+                                  : null,
                               boxShadow: AppDecorations.subtleShadow,
                             ),
                             child: Padding(

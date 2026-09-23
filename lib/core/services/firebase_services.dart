@@ -207,7 +207,8 @@ class FirebaseServices {
       scheduledDate,
       platformDetails,
       uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      // androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
     );
   }
 

@@ -84,7 +84,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         _selectedTime = TimeOfDay.now();
       }
 
-      // Safe date parsing for reminder
+      // Safe date parsing for reminde
       try {
         final parsedReminder = event.reminderDate != null ? DateTime.parse(event.reminderDate!) : todayStart;
         _reminderDate = parsedReminder;
