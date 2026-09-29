@@ -40,7 +40,7 @@ class CreateNoteScreen extends StatefulWidget {
     this.existingNote,
     required this.folderId,
   });
-
+   
   @override
   State<CreateNoteScreen> createState() => _CreateNoteScreenState();
 }
@@ -571,7 +571,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                         int colCount = tableData.isNotEmpty ? tableData[0].length : 2;
                         List<String> newRow = List.generate(colCount, (_) => "");
 
-                        // Insert at target index (above/below) or append if at end
+                        // Insert at target index (above/below)
                         if (targetIndex >= tableData.length) {
                           tableData.add(newRow);
                         } else {
@@ -583,7 +583,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                     onAddColumn: (targetIndex) {
                       setState(() {
                         for (var row in tableData) {
-                          // Insert at target index (before/after) or append if at end
+                          // Insert at target index (before/after)
                           if (targetIndex >= row.length) {
                             row.add("");
                           } else {

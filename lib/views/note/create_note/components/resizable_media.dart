@@ -119,6 +119,7 @@ class _ResizableMediaWidgetState extends State<ResizableMedia> {
     ConfirmBottomSheet.show(
       context: context,
       title: widget.isVideo ? "video_options".tr : "image_options".tr,
+      showTopCancel: true,
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -149,7 +150,7 @@ class _ResizableMediaWidgetState extends State<ResizableMedia> {
                           value: _widthPercentage,
                           min: 0.25,
                           max: 1.0,
-                          divisions: 3,
+                          divisions: 4,
                           activeColor: AppColor().primaryColor,
                           onChanged: (val) {
                             setModalState(() => _widthPercentage = val);
@@ -157,7 +158,7 @@ class _ResizableMediaWidgetState extends State<ResizableMedia> {
                           },
                           onChangeEnd: (val) {
                             _updateMediaStyleInDocument(val);
-                            Get.back();
+                            // Get.back();
                           },
                         ),
                       ],

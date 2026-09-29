@@ -144,6 +144,7 @@ class _UpcomingEventListState extends State<UpcomingEventList> {
     ConfirmBottomSheet.show(
       context: context,
       isFloating: true,
+      showTopCancel: true,
       title: "event".tr,
       content: SafeArea(
         child: Wrap(

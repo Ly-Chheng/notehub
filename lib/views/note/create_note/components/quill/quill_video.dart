@@ -123,7 +123,7 @@ class _CustomVideoPlayerWithControlsState extends State<CustomVideoPlayerWithCon
       },
       onLongPress: _isLocked ? null : widget.onLongPress,
       child: Container(
-        color: Colors.black,
+        color: AppColor().black,
         child: Stack(
           alignment: Alignment.center,
           children: [

@@ -29,7 +29,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final _locationController = TextEditingController();
   final _iconController = TextEditingController();
 
-  // Event Date & Time States
+  // Event Date & Time State
   DateTime _selectedDate = DateTime.now();
   TimeOfDay _selectedTime = TimeOfDay.now();
 
@@ -316,21 +316,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 children: [
                   Expanded(
                     child: InkWell(
-                      // onTap: () async {
-                      //   final DateTime? picked = await customDatePicker(
-                      //     context: context,
-                      //     initialDate: _selectedDate,
-                      //     firstDate: DateTime(2000), // អនុញ្ញាតឲ្យជ្រើសរើសថ្ងៃណាក៏បាន
-                      //     lastDate: DateTime(2035),
-                      //   );
-
-                      //   if (picked != null) {
-                      //     setState(() {
-                      //       _selectedDate = picked;
-                      //       _clampReminderToEventLimit();
-                      //     });
-                      //   }
-                      // },
                       onTap: () async {
                         final now = DateTime.now();
                         final todayStart = DateTime(now.year, now.month, now.day);

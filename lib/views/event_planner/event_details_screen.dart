@@ -393,6 +393,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           _infoRow("date".tr, widget.event.date, Icons.calendar_today_outlined),
           _divider(),
           _infoRow("timer".tr, widget.event.time, Icons.access_time_outlined),
+          // _infoRow(
+          //   "timer".tr,
+          //   formatTimeTo12Hour(widget.event.time),
+          //   Icons.access_time_outlined,
+          // ),
           _divider(),
           _infoRow("reminder".tr, convertedReminder, Icons.notifications_none_outlined),
           if (widget.event.location.isNotEmpty) ...[

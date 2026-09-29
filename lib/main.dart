@@ -31,7 +31,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
       );
     }
   } catch (e) {
-    // debugPrint("Firebase Background Initialization Error: $e");
+    debugPrint("Firebase Background Initialization Error: $e");
   }
 }
 

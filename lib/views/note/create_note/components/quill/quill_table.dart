@@ -168,7 +168,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
   }
 
   // WORKING COPY / CUT / PASTE LOGIC
-
   Future<void> _copyRow(int rowIndex) async {
     final rowText = widget.tableData[rowIndex].map((cell) => _stripMarkdown(cell)).join('\t');
     await Clipboard.setData(ClipboardData(text: rowText));
@@ -246,9 +245,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
         ),
       );
     }
-
-    //   const double colWidth = 140.0;
-    //   const double rowHandleWidth = 28.0;
 
     const double rowHandleWidth = 28.0;
     const double horizontalPadding = 10.0;
@@ -363,8 +359,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
       onSelected: (value) => _handleColumnAction(value, colIndex),
       itemBuilder: (context) => [
         _buildPopupMenuItem(value: 'delete', label: 'delete_column'.tr, icon: CupertinoIcons.rectangle_badge_xmark),
-        // _buildPopupMenuItem(value: 'add_after', label: 'Add Column After', icon: CupertinoIcons.plus_rectangle),
-        // _buildPopupMenuItem(value: 'add_before', label: 'Add Column Before', icon: CupertinoIcons.plus_rectangle),
         _buildPopupMenuItem(value: 'add_column', label: 'add_column'.tr, icon: CupertinoIcons.plus_rectangle),
         const PopupMenuDivider(height: 1),
         _buildFormatMenuItem(targetCol: colIndex),
@@ -397,8 +391,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
       onSelected: (value) => _handleRowAction(value, rowIndex),
       itemBuilder: (context) => [
         _buildPopupMenuItem(value: 'delete', label: 'delete_row'.tr, icon: CupertinoIcons.rectangle_stack_badge_minus),
-        // _buildPopupMenuItem(value: 'add_below', label: 'add_row_below'.tr, icon: CupertinoIcons.rectangle_stack_badge_plus),
-        // _buildPopupMenuItem(value: 'add_above', label: 'add_row_above'.tr, icon: CupertinoIcons.rectangle_stack_badge_plus),
         _buildPopupMenuItem(value: 'add_row', label: 'add_row'.tr, icon: CupertinoIcons.rectangle_stack_badge_plus),
         const PopupMenuDivider(height: 1),
         _buildFormatMenuItem(targetRow: rowIndex),
@@ -446,8 +438,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
         children: [
           Row(
             children: [
-              // Icon(Icons.chevron_right, size: 18, color: Colors.black54),
-              // SizedBox(width: 4),
               Text('format'.tr, style: text16(context).copyWith(color: Colors.black87)),
             ],
           ),
@@ -497,12 +487,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
       case 'delete':
         widget.onRemoveColumn(colIndex);
         break;
-      // case 'add_after':
-      //   widget.onAddColumn(colIndex + 1);
-      //   break;
-      // case 'add_before':
-      //   widget.onAddColumn(colIndex);
-      //   break;
       case 'add_column':
         widget.onAddColumn(colIndex + 1);
         break;
@@ -523,12 +507,6 @@ class _EditableTableComponentState extends State<EditableTableComponent> {
       case 'delete':
         widget.onRemoveRow(rowIndex);
         break;
-      // case 'add_below':
-      //   widget.onAddRow(rowIndex + 1);
-      //   break;
-      // case 'add_above':
-      //   widget.onAddRow(rowIndex);
-      //   break;
       case 'add_row':
         widget.onAddRow(rowIndex + 1);
         break;
